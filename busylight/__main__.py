@@ -28,6 +28,8 @@ def main_callback(
 ):
     """Control USB attached LED lights like a Human™
 
+    ![Two Lights at Once](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
+
     Make a supported USB attached LED light turn on, off and blink; all
     from the comfort of your very own command-line. If your platform
     supports HIDAPI (Linux, MacOS, Windows and probably others), then
@@ -44,6 +46,15 @@ def main_callback(
     $ busylight blink yellow  # all hands man your stations.
     $ busylight blink red     # RED ALERT!
     $ busylight off           # all clear.
+    ```
+
+    ## Supported Lights
+    
+    \b
+    ```console
+    $ busylight supported
+    Embrava BlyncLight
+    Luxafor Flag
     ```
 
     ## Install
