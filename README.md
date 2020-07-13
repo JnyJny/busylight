@@ -1,4 +1,4 @@
-# `blync`
+# `busylight`
 
 Control USB attached LED lights like a Human™
 
@@ -36,7 +36,7 @@ $ busylight --help
 **Usage**:
 
 ```console
-$ blync [OPTIONS] COMMAND [ARGS]...
+$ busylight [OPTIONS] COMMAND [ARGS]...
 ```
 
 **Options**:
@@ -55,7 +55,7 @@ $ blync [OPTIONS] COMMAND [ARGS]...
 * `on`: Turn selected lights on.
 * `supported`: List supported LED lights.
 
-## `blync blink`
+## `busylight blink`
 
 Activate the selected light in blink mode.
 
@@ -78,7 +78,7 @@ $ busylight --all off      # that's enough of that!
 **Usage**:
 
 ```console
-$ blync blink [OPTIONS] [COLOR]
+$ busylight blink [OPTIONS] [COLOR]
 ```
 
 **Options**:
@@ -86,7 +86,7 @@ $ blync blink [OPTIONS] [COLOR]
 * `-s, --speed`: Blink speed
 * `--help`: Show this message and exit.
 
-## `blync list`
+## `busylight list`
 
 List available lights (currently connected).
     
@@ -95,14 +95,14 @@ List available lights (currently connected).
 **Usage**:
 
 ```console
-$ blync list [OPTIONS]
+$ busylight list [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-## `blync off`
+## `busylight off`
 
 Turn selected lights off.
 
@@ -115,14 +115,14 @@ $ busylight --all off
 **Usage**:
 
 ```console
-$ blync off [OPTIONS]
+$ busylight off [OPTIONS]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-## `blync on`
+## `busylight on`
 
 Turn selected lights on.
 
@@ -145,14 +145,14 @@ $ busylight --all on    # now all available lights are green
 **Usage**:
 
 ```console
-$ blync on [OPTIONS] [COLOR]
+$ busylight on [OPTIONS] [COLOR]
 ```
 
 **Options**:
 
 * `--help`: Show this message and exit.
 
-## `blync supported`
+## `busylight supported`
 
 List supported LED lights.
     
@@ -160,7 +160,7 @@ List supported LED lights.
 **Usage**:
 
 ```console
-$ blync supported [OPTIONS]
+$ busylight supported [OPTIONS]
 ```
 
 **Options**:
