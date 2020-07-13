@@ -22,6 +22,15 @@ $ busylight blink red     # RED ALERT!
 $ busylight off           # all clear.
 ```
 
+## Supported Lights
+
+
+```console
+$ busylight supported
+Embrava BlyncLight
+Luxafor Flag
+```
+
 ## Install
 
 
