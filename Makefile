@@ -35,7 +35,7 @@ PATCH:
 
 
 README.md:
-	@typer $(TARGET).__main__ utils docs --name blync --output $@
+	@typer $(TARGET).__main__ utils docs --name busylight --output $@
 	@sed -i '' -e  "s///g" $@
 
 
