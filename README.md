@@ -2,6 +2,8 @@
 
 Control USB attached LED lights like a Human™
 
+![Two Lights at Once](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
+
 Make a supported USB attached LED light turn on, off and blink; all
 from the comfort of your very own command-line. If your platform
 supports HIDAPI (Linux, MacOS, Windows and probably others), then
