@@ -65,6 +65,7 @@ $ busylight [OPTIONS] COMMAND [ARGS]...
 * `off`: Turn selected lights off.
 * `on`: Turn selected lights on.
 * `supported`: List supported LED lights.
+* `udev-rules`: Generate a Linux udev rules file.
 
 ## `busylight blink`
 
@@ -176,4 +177,33 @@ $ busylight supported [OPTIONS]
 
 **Options**:
 
+* `--help`: Show this message and exit.
+
+## `busylight udev-rules`
+
+Generate a Linux udev rules file.
+
+Linux uses the udev subsystem to manage USB devices as they are
+plugged and unplugged. By default, only the root user has read and
+write access. The rules generated grant read/write access to all users
+for all known USB lights by vendor id. Modify the rules to suit your
+particular environment.
+
+### Example
+
+
+```console
+$ busylight udev-rules -o 99-busylight.rules
+$ sudo cp 99-busylight.rules /etc/udev/rules.d
+```
+
+**Usage**:
+
+```console
+$ busylight udev-rules [OPTIONS]
+```
+
+**Options**:
+
+* `-o, --output PATH`: Save rules to this file.
 * `--help`: Show this message and exit.
