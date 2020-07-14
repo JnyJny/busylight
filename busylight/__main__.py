@@ -1,13 +1,16 @@
 """Control USB attached LED lights like a Human™
 """
 
+
+from pathlib import Path
+from sys import stdout
 from typing import Tuple, Union, List
 
 import typer
 import webcolors
 
 from .lights import available_lights, get_light, get_all_lights
-from .lights import SUPPORTED_LIGHTS
+from .lights import SUPPORTED_LIGHTS, KNOWN_VENDOR_IDS
 
 cli = typer.Typer()
 
@@ -70,7 +73,7 @@ def main_callback(
     \b
     [busylight](https://github.com/JnyJny/busylight.git)
     """
-    if ctx.invoked_subcommand != "supported":
+    if ctx.invoked_subcommand not in ["supported", "udev-rules"]:
         try:
             if all_lights:
                 ctx.obj = list(get_all_lights())
@@ -199,8 +202,39 @@ def blink_subcommand(
 
 
 @cli.command(name="supported")
-def supported():
+def supported_subcommand():
     """List supported LED lights.
     """
     for light in SUPPORTED_LIGHTS:
         typer.secho(f"{light.__vendor__} {light.__name__}", fg="green")
+
+
+@cli.command(name="udev-rules")
+def udev_rules_subcommand(
+    filename: Path = typer.Option(
+        None, "--output", "-o", help="Save rules to this file."
+    )
+):
+    """Generate a Linux udev rules file.
+
+    Linux uses the udev subsystem to manage USB devices as they are
+    plugged and unplugged. By default, only the root user has read and
+    write access. The rules generated grant read/write access to all users
+    for all known USB lights by vendor id. Modify the rules to suit your
+    particular environment.
+
+    ### Example
+    
+    \b
+    ```console
+    $ busylight udev-rules -o 99-busylight.rules
+    $ sudo cp 99-busylight.rules /etc/udev/rules.d
+    ```
+    """
+
+    output = filename.open("w") if filename else stdout
+
+    for vendor_id in KNOWN_VENDOR_IDS:
+        v = hex(vendor_id)[2:]
+        print(f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{v}", MODE="0666"', file=output)
+        print(f'SUBSYSTEM=="usb", ATTRS{{idVendor}}=="{v}", MODE="0666"', file=output)
