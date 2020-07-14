@@ -12,7 +12,7 @@ from .lights import SUPPORTED_LIGHTS
 cli = typer.Typer()
 
 
-@cli.callback()
+@cli.callback(invoke_without_command=True)
 def main_callback(
     ctx: typer.Context,
     light_id: int = typer.Option(
@@ -70,14 +70,15 @@ def main_callback(
     \b
     [busylight](https://github.com/JnyJny/busylight.git)
     """
-    try:
-        if all_lights:
-            ctx.obj = list(get_all_lights())
-        else:
-            ctx.obj = [get_light(light_id)]
-    except Exception as error:
-        typer.secho(str(error), fg="red")
-        raise typer.Exit()
+    if ctx.invoked_subcommand != "supported":
+        try:
+            if all_lights:
+                ctx.obj = list(get_all_lights())
+            else:
+                ctx.obj = [get_light(light_id)]
+        except Exception as error:
+            typer.secho(str(error), fg="red")
+            raise typer.Exit()
 
 
 @cli.command(name="list")
