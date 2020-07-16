@@ -19,10 +19,11 @@ from .usblight import UnknownUSBLight
 ## and string class attribute named __vendor__.
 
 from .blynclight import BlyncLight
+from .kuando import BusyLight
 from .luxafor import Flag
 from .thingm import Blink1
 
-SUPPORTED_LIGHTS = [BlyncLight, Flag, Blink1]
+SUPPORTED_LIGHTS = [BlyncLight, Blink1, BusyLight, Flag]
 
 KNOWN_VENDOR_IDS = sum([l.VENDOR_IDS for l in SUPPORTED_LIGHTS], [])
 
