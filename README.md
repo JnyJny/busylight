@@ -29,6 +29,7 @@ $ busylight off           # all clear.
 $ busylight supported
 Embrava BlyncLight
 Luxafor Flag
+ThingM Blink1
 ```
 
 ## Install

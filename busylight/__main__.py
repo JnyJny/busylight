@@ -58,6 +58,7 @@ def main_callback(
     $ busylight supported
     Embrava BlyncLight
     Luxafor Flag
+    ThingM Blink1
     ```
 
     ## Install
