@@ -94,7 +94,7 @@ $ busylight blink [OPTIONS] [COLOR]
 
 **Options**:
 
-* `-s, --speed`: Blink speed
+* `-f, --faster`: Increase blink speed.
 * `--help`: Show this message and exit.
 
 ## `busylight list`
