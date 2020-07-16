@@ -178,7 +178,9 @@ def off_subcommand(ctx: typer.Context,):
 def blink_subcommand(
     ctx: typer.Context,
     color: str = typer.Argument("red", callback=handle_color,),
-    speed: int = typer.Option(1, "--speed", "-s", count=True, help="Blink speed"),
+    speed: int = typer.Option(
+        1, "--faster", "-f", count=True, help="Increase blink speed."
+    ),
 ):
     """Activate the selected light in blink mode.
 
