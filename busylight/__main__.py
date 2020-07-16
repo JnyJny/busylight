@@ -70,6 +70,11 @@ def main_callback(
     \b
     [busylight](https://github.com/JnyJny/busylight.git)
     """
+
+    if not ctx.invoked_subcommand:
+        ctx.invoke(list_subcommand)
+        raise typer.Exit()
+
     if ctx.invoked_subcommand != "supported":
         try:
             if all_lights:
@@ -82,7 +87,7 @@ def main_callback(
 
 
 @cli.command(name="list")
-def list_subcommand(ctx: typer.Context):
+def list_subcommand():
     """List available lights (currently connected).
     
     """
