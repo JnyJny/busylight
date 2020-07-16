@@ -33,7 +33,8 @@ class USBLightImmediateAttribute(BitField):
 
     def __set__(self, obj, value) -> None:
         super().__set__(obj, value)
-        obj.update()
+        if value:
+            obj.update()
 
 
 class USBLightReadOnlyAttribute(BitField):
