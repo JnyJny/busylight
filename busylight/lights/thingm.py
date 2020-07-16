@@ -101,24 +101,30 @@ class Blink1(USBLight):
             self.device.send_feature_report(self.bytes)
 
     def on(self, color: Tuple[int, int, int] = None) -> None:
-        """
+        """Turn the light on with the specified color [default=green].
         """
         self.b1_fade_to_color(color, self.default_fade)
 
     def off(self) -> None:
-        """
+        """Turn the light off.
         """
         self.b1_fade_to_color((0, 0, 0), self.default_fade)
 
     def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
-        """
+        """Turn the light on with specified color [default=red] and begin blinking.
+
+        :param color: Tuple[int, int, int]
+        :param speed: 1 == slow, 2 == medium, 3 == fast
         """
 
         if not any(color):
             color = (255, 0, 0)
 
-        self.b1_write_pattern_line(color, 10, 0)
-        self.b1_write_pattern_line((0, 0, 0), 100, 1)
+        activate = 10
+        decay = 100 // speed
+
+        self.b1_write_pattern_line(color, activate, 0)
+        self.b1_write_pattern_line((0, 0, 0), decay, 1)
         self.b1_save_patterns()
         self.b1_play_loop(1, 0, 1)
 
