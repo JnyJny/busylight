@@ -20,8 +20,9 @@ from .usblight import UnknownUSBLight
 
 from .blynclight import BlyncLight
 from .luxafor import Flag
+from .thingm import Blink1
 
-SUPPORTED_LIGHTS = [BlyncLight, Flag]
+SUPPORTED_LIGHTS = [BlyncLight, Flag, Blink1]
 
 KNOWN_VENDOR_IDS = sum([l.VENDOR_IDS for l in SUPPORTED_LIGHTS], [])
 
