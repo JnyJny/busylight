@@ -7,10 +7,11 @@ from sys import stdout
 from typing import Tuple, Union, List
 
 import typer
-import webcolors
 
 from .lights import available_lights, get_light, get_all_lights
 from .lights import SUPPORTED_LIGHTS, KNOWN_VENDOR_IDS
+
+from .color import color_to_rgb
 
 cli = typer.Typer()
 
@@ -121,13 +122,7 @@ def handle_color(value: str) -> Tuple[int, int, int]:
         return None
 
     try:
-        if value.startswith("0x"):
-            return tuple(webcolors.hex_to_rgb("#" + value[2:]))
-
-        if value.startswith("#"):
-            return tuple(webcolors.hex_to_rgb(value))
-
-        return tuple(webcolors.name_to_rgb(value))
+        return color_to_rgb(valeu)
     except Exception:
         typer.secho(f"Unable to decode color from '{value}'.", fg="red")
         raise typer.Exit(-1)
