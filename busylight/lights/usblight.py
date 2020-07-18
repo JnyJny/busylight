@@ -4,6 +4,7 @@
 import hid
 
 from contextlib import contextmanager
+from threading import Thread
 from typing import Dict, Tuple, Union
 
 from bitvector import BitVector, BitField
@@ -175,6 +176,15 @@ class USBLight(BitVector):
         """Close this device. Attempts to update will fail after closing.
         """
         self.device.close()
+
+    def reopen(self) -> None:
+        """
+        """
+        try:
+            self.close()
+        except:
+            pass
+        self.device.open(self.vendor_id, self.product_id)
 
     def update(self, flush: bool = False) -> None:
         """Writes the in-memory state of the device to the hardware.
