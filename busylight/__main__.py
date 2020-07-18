@@ -122,7 +122,7 @@ def handle_color(value: str) -> Tuple[int, int, int]:
         return None
 
     try:
-        return color_to_rgb(valeu)
+        return color_to_rgb(value)
     except Exception:
         typer.secho(f"Unable to decode color from '{value}'.", fg="red")
         raise typer.Exit(-1)
