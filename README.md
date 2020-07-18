@@ -27,9 +27,10 @@ $ busylight off           # all clear.
 
 ```console
 $ busylight supported
-Embrava BlyncLight
-Luxafor Flag
 ThingM Blink1
+Embrava BlyncLight
+Kuando BusyLight
+Luxafor Flag
 ```
 
 ## Install

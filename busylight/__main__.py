@@ -57,9 +57,10 @@ def main_callback(
     \b
     ```console
     $ busylight supported
-    Embrava BlyncLight
-    Luxafor Flag
     ThingM Blink1
+    Embrava BlyncLight
+    Kuando BusyLight
+    Luxafor Flag
     ```
 
     ## Install
