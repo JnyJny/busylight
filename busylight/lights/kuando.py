@@ -1,21 +1,16 @@
-"""Kuanda BusyLight support.
+"""Kuando BusyLight support.
 """
 
+import threading
 
 from enum import Enum
-from math import log
+from time import sleep
 from typing import List, Tuple
 
 from bitvector import BitVector, BitField
-from functools import lru_cache
 
 from .usblight import USBLight, UnknownUSBLight
 from .usblight import USBLightAttribute
-
-
-@lru_cache(maxsize=255)
-def gamma_correct(value: int, step: int = 255) -> int:
-    return round((log(1 + value) / 5.545) * step)
 
 
 class RingTones(int, Enum):
@@ -30,40 +25,57 @@ class RingTones(int, Enum):
     Buzz = 216
 
 
-class Step(BitVector):
-    def __init__(self, value: int = 0):
-        super().__init__(value, size=64)
+class StepCommand(int, Enum):
+    KEEP_ALIVE = 1 << 3
+    BOOT_LOADER = 1 << 2
+    RESET = 1 << 1
+    JUMP = 1 << 0
 
-    cmd = BitField(56, 8)
+
+class Step(BitVector):
+    @classmethod
+    def jump_to(cls, target: int):
+        default = ((StepCommand.JUMP << 4) | (target & 0x7)) << 56
+        return cls(default=default)
+
+    @classmethod
+    def keep_alive(cls, timeout: int):
+        default = ((StepCommand.KEEP_ALIVE << 4) | (timeout & 0xF)) << 56
+        return cls(default=default)
+
+    @classmethod
+    def reset(cls):
+        return cls(default=(StepCommand.RESET << 60))
+
+    @classmethod
+    def boot_loader(cls):
+        return cls(default=(StepCommand.BOOT_LOADER << 60))
+
+    def __init__(self, default: int = 0):
+        super().__init__(default, size=64)
+
+    cmd0 = BitField(60, 4)
+    cmd1 = BitField(56, 4)
+    target = BitField(56, 4)
+    timeout = BitField(56, 4)
+
     repeat = BitField(48, 8)
     red = BitField(40, 8)
     green = BitField(32, 8)
     blue = BitField(24, 8)
-    on_duration = BitField(16, 8)
-    off_duration = BitField(8, 8)
+    dc_on = BitField(16, 8)
+    dc_off = BitField(8, 8)
     update = BitField(7, 1)
     ringtone = BitField(3, 4)
     volume = BitField(0, 3)
 
-    def keepalive(self, timeout: int) -> None:
-        """
-        """
-        self.cmd = (1 << 8) | (timeout & 0xF)
+    @property
+    def color(self) -> Tuple[int, int, int]:
+        return (self.red, self.green, self.blue)
 
-    def start_bootloader(self) -> None:
-        """
-        """
-        self.cmd = 1 << 7
-
-    def reset(self) -> None:
-        """
-        """
-        self.cmd = 1 << 6
-
-    def jump_to_step(self, step: int) -> None:
-        """
-        """
-        self.cmd = (1 << 5) | (step & 0x3)
+    @color.setter
+    def color(self, new_value: Tuple[int, int, int]) -> None:
+        self.red, self.green, self.blue = new_value
 
 
 class BusyLight(USBLight):
@@ -86,7 +98,7 @@ class BusyLight(USBLight):
         if vendor_id not in self.VENDOR_IDS:
             raise UnknownUSBLight(vendor_id)
 
-        super().__init__(vendor_id, product_id, 0, 512)
+        super().__init__(vendor_id, product_id, 0x00FF_FFFF_0000, 512)
         self.immediate_mode = True
 
     step0 = BitField(448, 64)
@@ -96,30 +108,63 @@ class BusyLight(USBLight):
     step4 = BitField(192, 64)
     step5 = BitField(128, 64)
     step6 = BitField(64, 64)
+    final = BitField(0, 64)
 
     sensitivity = BitField(56, 8)
     timeout = BitField(48, 8)
     trigger = BitField(40, 8)
-    pad = BitField(16, 24)  # set to 0xff
+    padbytes = BitField(16, 24)
     chksum = BitField(0, 16)
+
+    def __debug_str__(self):
+        return "\n".join(
+            [
+                "====================",
+                str(self),
+                "====================",
+                f"00: {self.step0:016x}",
+                f"01: {self.step1:016x}",
+                f"02: {self.step2:016x}",
+                f"03: {self.step3:016x}",
+                f"04: {self.step4:016x}",
+                f"05: {self.step5:016x}",
+                f"06: {self.step6:016x}",
+                "--------------------",
+                f"07: {self.final:016x}",
+            ]
+        )
+
+    def helper(self, timeout: int = 0xF) -> None:
+        """A loop body that sends a keepalive message.
+
+        The loop body sleeps for half of the timeout value,
+        wakes up to write a KEEP_ALIVE message to the
+        current device and goes back to sleep.
+        """
+        keepalive = Step.keep_alive(timeout).value
+        interval = timeout // 2
+        while True:
+            self.step0 = keepalive
+            self.update(flush=True)
+            sleep(interval)
+            yield
 
     def update(self, flush: bool = False) -> None:
         """
         """
         if self.immediate_mode or flush:
-            self.bo_checksum()
+            self.chksum = sum(self.bytes[:-2])
             self.device.write(self.bytes)
 
-    def on(self, color: Tuple[int, int, int] = None) -> None:
+    def on(self, color: Tuple[int, int, int] = None, duration: int = 0) -> None:
         """Turn the light on with the specified color [default=green].
         """
-
-        self.bo_on(color or (0, 255, 0))
+        self.bl_on(color or (0, 255, 0))
 
     def off(self) -> None:
         """Turn the light off.
         """
-        self.bo_off()
+        self.bl_off()
 
     def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
         """Turn the light on with specified color [default=red] and begin blinking.
@@ -127,29 +172,45 @@ class BusyLight(USBLight):
         :param color: Tuple[int, int, int]
         :param speed: 1 == slow, 2 == medium, 3 == fast
         """
+        self.bl_blink(color or (255, 0, 0), speed)
 
-        self.bo_blink(color or (255, 0, 0), speed)
+    def bl_on(self, color: Tuple[int, int, int], duration: int = 0) -> None:
+        """
+        """
 
-    def bo_checksum(self) -> None:
-        """
-        """
-        pass
-        print("checksum")
+        step = Step.jump_to(0)
+        step.color = color
+        step.update = 1
 
-    def bo_on(self, color: Tuple[int, int, int]) -> None:
-        """
-        """
         with self.updates_paused():
-            print("bo_on", color)
+            self.reset()
+            self.step0 = step.value
 
-    def bo_off(self) -> None:
+    def bl_off(self) -> None:
         """
         """
-        with self.updates_paused():
-            print("bo_off")
 
-    def bo_blink(self, color: Tuple[int, int, int], speed: int):
-        """
-        """
+        step = Step.jump_to(0)
+        step.color = (0, 0, 0)
+        step.update = 1
+        step.ringtone = 0
+        step.volume = 0
+
         with self.updates_paused():
-            print("bo_blink", color, speed)
+            self.reset()
+            self.step0 = step.value
+
+    def bl_blink(self, color: Tuple[int, int, int], speed: int):
+        """
+        """
+
+        step = Step.jump_to(0)
+        step.color = color
+        step.repeat = 1
+        step.update = 1
+        step.dc_on = 10 // speed
+        step.dc_off = 10 // speed
+
+        with self.updates_paused():
+            self.reset()
+            self.step0 = step.value
