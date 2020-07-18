@@ -1,4 +1,4 @@
-"""
+"""USB Connected Presence Lights
 """
 
 
@@ -6,17 +6,21 @@ from typing import Dict, List, Union
 
 import hid
 
-from .usblight import UnknownUSBLight
+from .usblight import UnknownUSBLight, USBLightInUse
 
-## To add a new light, create a new light class subclassed from
-## usblight.USBLight and import it here.
+## Developer: How To Add Support for a New Light
 ##
-## from .coolnewlight import CoolNewLight
+## 0. Create a new light class subclassed from busylight.light.USBLIght
+##    - implement 'on', 'off', 'blink' methods at a minimum
+##    - define class attribute list VENDOR_IDS
+##    - define class asttribute string __vendor__
 ##
-## Added it to the SUPPORTED_LIGHTS list and you are done (provided you have
-## implemented the on, off and blink methods in your CoolNewLight). Also
-## make sure CoolNewLight defines a list class attribute named VENDOR_IDS
-## and string class attribute named __vendor__.
+##    Use the existing light subclasses as inspiration.
+##
+## 1. Import the module for the new light here in this file.
+## 2. Add the new class to the SUPPORTED_LIGHTS list
+## 3. Add the name of the new class to the __all__ list
+
 
 from .blynclight import BlyncLight
 from .kuando import BusyLight
@@ -34,7 +38,7 @@ def available_lights(vendor_ids: List[int] = None) -> List[Dict[str, Union[int, 
 
     The available list can be filtered by an optionally supplied list of 16-bit USB
     vendor_ids. Otherwise the list is filtered by devices known to this package (see
-    SUPPORTED_LIGHTS and KNOWN_VENDOR_IDS).
+    the lists SUPPORTED_LIGHTS and KNOWN_VENDOR_IDS in this module).
 
     :param vendor_ids: int
     :return: List[Dict[str, Union[int, str]]]
@@ -58,7 +62,7 @@ def get_light(index: int = 0) -> object:
     try:
         info = available_lights()[index]
     except IndexError:
-        raise Exception("No lights detected")
+        raise Exception("No light available with id '{index}'")
 
     for LightClass in SUPPORTED_LIGHTS:
         try:
@@ -66,7 +70,7 @@ def get_light(index: int = 0) -> object:
         except UnknownUSBLight:
             pass
     else:
-        raise Exception("Did not find known light.")
+        raise Exception("Did not find known light.", info)
 
 
 def get_all_lights() -> object:
@@ -76,13 +80,22 @@ def get_all_lights() -> object:
     :return: USBLight subclass
     """
 
-    lights = []
     for info in available_lights():
         for LightClass in SUPPORTED_LIGHTS:
             try:
                 yield LightClass.from_dict(info)
             except UnknownUSBLight:
                 pass
+            except USBLightInUse:
+                pass
 
 
-__all__ = ["BlyncLight", "Flag", "available_lights", "get_light", "get_all_lights"]
+__all__ = [
+    "Blink1",
+    "BlyncLight",
+    "BusyLight",
+    "Flag",
+    "available_lights",
+    "get_light",
+    "get_all_lights",
+]
