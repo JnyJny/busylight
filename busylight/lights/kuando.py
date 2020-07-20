@@ -44,7 +44,7 @@ class Step(BitVector):
         return cls(default=default)
 
     @classmethod
-    def reset(cls):
+    def hardreset(cls):
         return cls(default=(StepCommand.RESET << 60))
 
     @classmethod
@@ -135,11 +135,7 @@ class BusyLight(USBLight):
         )
 
     def helper(self) -> None:
-        """A loop body that sends a keepalive message.
-
-        The loop body sleeps for half of the timeout value,
-        wakes up to write a KEEP_ALIVE message to the
-        current device and goes back to sleep.
+        """A loop that sends a keepalive message.
 
         This generator function is intended to be used in
         a busylight.effects.thread.EffectThread. 
@@ -154,7 +150,11 @@ class BusyLight(USBLight):
             sleep(interval)
 
     def update(self, flush: bool = False) -> None:
-        """
+        """The Kuando BusyLight requires a checksum for valid
+        control packets. This method computes the checksum
+        only when immediate_mode or flush is True. 
+
+        :param flush: bool
         """
         if self.immediate_mode or flush:
             self.chksum = sum(self.bytes[:-2])
@@ -168,7 +168,7 @@ class BusyLight(USBLight):
     def off(self) -> None:
         """Turn the light off.
         """
-        self.bl_off()
+        self.bl_on((0, 0, 0))
 
     def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
         """Turn the light on with specified color [default=red] and begin blinking.
@@ -178,27 +178,15 @@ class BusyLight(USBLight):
         """
         self.bl_blink(color or (255, 0, 0), speed)
 
-    def bl_on(self, color: Tuple[int, int, int], duration: int = 0) -> None:
-        """
+    def bl_on(self, color: Tuple[int, int, int]) -> None:
+        """Turn the BusyLight on with the specified color. 
+        
+        :param color: Tuple[int, int, int]
         """
 
         step = Step.jump_to(0)
         step.color = color
         step.update = 1
-
-        with self.updates_paused():
-            self.reset()
-            self.step0 = step.value
-
-    def bl_off(self) -> None:
-        """
-        """
-
-        step = Step.jump_to(0)
-        step.color = (0, 0, 0)
-        step.update = 1
-        step.ringtone = 0
-        step.volume = 0
 
         with self.updates_paused():
             self.reset()
