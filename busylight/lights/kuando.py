@@ -134,20 +134,24 @@ class BusyLight(USBLight):
             ]
         )
 
-    def helper(self, timeout: int = 0xF) -> None:
+    def helper(self) -> None:
         """A loop body that sends a keepalive message.
 
         The loop body sleeps for half of the timeout value,
         wakes up to write a KEEP_ALIVE message to the
         current device and goes back to sleep.
+
+        This generator function is intended to be used in
+        a busylight.lights.effect_thread.EffectThread. 
         """
+        timeout = 0xF
         keepalive = Step.keep_alive(timeout).value
         interval = timeout // 2
         while True:
             self.step0 = keepalive
             self.update(flush=True)
-            sleep(interval)
             yield
+            sleep(interval)
 
     def update(self, flush: bool = False) -> None:
         """
