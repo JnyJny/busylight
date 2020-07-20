@@ -1,7 +1,6 @@
 """
 """
 
-from threading import Thread
 from typing import Callable, Dict, List, Tuple, Union
 
 import hid
@@ -12,61 +11,6 @@ from . import SUPPORTED_LIGHTS
 from .usblight import USBLight
 
 from ..color import color_to_rgb
-
-
-class StoppableThread(Thread):
-    """StoppableThread
-    """
-
-    def __init__(self, target: Callable, name: str, args=None, daemon: bool = None):
-        """
-        :param target: Callable
-        :param name: str
-        :param args: tuple
-        :param daemon: bool
-        """
-        super().__init__(target=target, name=name, args=args, daemon=daemon)
-        self._RUN: bool = True
-
-    def run(self):
-        """
-        """
-        for _ in self._target(self._args):
-            if not self._RUN:
-                break
-
-    def stop(self):
-        """
-        """
-        self._RUN = False
-
-
-class LightHelperThread(StoppableThread):
-    """
-    """
-
-    def __init__(self, light: USBLight):
-        """
-        """
-        try:
-            super().__init__(
-                name=f"helper-{light.identifier}", target=light.helper, daemon=True
-            )
-        except AttributeError:
-            raise ValueError(f"Light {light!s} does not implement a helper method.")
-        self.light = light
-
-
-class LightEffectThread(StoppableThread):
-    """
-    """
-
-    def __init__(self, effect: Callable, light: USBLight):
-        """
-        """
-        super().__init__(
-            name=f"effect-{light.identifier}", target=effect, args=light, daemon=True
-        )
 
 
 class LightManager:
@@ -86,7 +30,7 @@ class LightManager:
             pass
         self._supported = []
         for light in SUPPORTED_LIGHTS:
-            self._supported.append(f"{light.__vendor__}:{light.__name__}")
+            self._supported.append(light.name)
 
         return self._supported
 
@@ -97,54 +41,25 @@ class LightManager:
         return available_lights()
 
     @property
-    def managed_lights(self) -> List[USBLight]:
-        try:
-            return self._managed_lights
-        except AttributeError:
-            pass
-        self._managed_lights = []
-        return self._managed_lights
-
-    @property
-    def helpers(self) -> Dict[str, LightHelperThread]:
-        """
+    def managed(self) -> List[USBLight]:
+        """List of USBLight subclasses that the manager is currently
+        controlling. 
         """
         try:
-            return self._helpers
+            return self._managed
         except AttributeError:
             pass
-        self._helpers = {}
-        return self._helpers
-
-    @property
-    def effects(self) -> Dict[str, LightEffectThread]:
-        """
-        """
-        try:
-            return self._effects
-        except AttributeError:
-            pass
-        self._effects = {}
-        return self._effects
+        self._managed = []
+        return self._managed
 
     def lights_for(self, light_id: int = -1) -> List[USBLight]:
         """
         """
-        return (
-            self.managed_lights if light_id == -1 else [self.managed_lights[light_id]]
-        )
+        return self.managed if light_id == -1 else [self.managed[light_id]]
 
     def shutdown(self, effects: bool = True, helpers: bool = False) -> None:
         """ **Not Needed** if threads are daemons
         """
-
-        if effects:
-            for t in self.effects:
-                t.stop()
-
-        if helpers:
-            for t in self.helpers:
-                t.stop()
 
     def update(self) -> int:
         """Checks for lights that are currently not managed and
@@ -159,35 +74,28 @@ class LightManager:
         if not new_lights:
             return
 
-        self.managed_lights.extend(new_lights)
+        self.managed.extend(new_lights)
 
         for light in new_lights:
             try:
-                thrd = LightHelperThread(light)
-                self.helpers[light.identifier] = thrd
-                thrd.start()
-            except ValueError:
+                light.helper_thread.start()
+            except AttributeError:
                 pass
 
         return len(new_lights)
 
     def release(self) -> None:
         """Stops all helper and effects threads, closes all lights and empties
-        the `managed_lights` property.
+        the `managed` property.
 
-        Call `update` to repopulate the `managed_lights` property and restart
+        Call `update` to repopulate the `managed` property and restart
         helper threads.
         """
 
-        for helper in self.helpers:
-            helper.stop()
-        for effect in self.effects:
-            effect.stop()
+        for light in self.managed:
+            light.close()
 
-        for light in self.managed_lights:
-            light.device.close()
-
-        self.managed_lights.clear()
+        self.managed.clear()
 
     def light_on(self, light_id: int = -1, color: str = "green") -> None:
         """Turn on a light or all lights with supplied color value.
@@ -204,6 +112,7 @@ class LightManager:
         rgb = color_to_rgb(color)
 
         for light in self.lights_for(light_id):
+            light.stop_effect()
             light.on(rgb)
 
     def light_off(self, light_id: int = -1) -> None:
@@ -218,9 +127,7 @@ class LightManager:
         """
 
         for light in self.lights_for(light_id):
-            running_effect = self.effects.get(light.identifier, None)
-            if running_effect:
-                running_effect.stop()
+            light.stop_effect()
             light.off()
 
     def light_blink(
@@ -235,6 +142,8 @@ class LightManager:
 
         rgb = color_to_rgb(color)
 
+        self.light_off(light_id)
+
         for light in self.lights_for(light_id):
             light.blink(rgb, speed)
 
@@ -248,8 +157,5 @@ class LightManager:
         """
 
         self.light_off(light_id)
-
         for light in self.lights_for(light_id):
-            thrd = LightEffectThread(effect, light)
-            thrd.start()
-            self.effects[light.identifier] = thrd
+            light.start_effect(effect)
