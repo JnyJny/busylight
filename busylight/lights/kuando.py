@@ -142,7 +142,7 @@ class BusyLight(USBLight):
         current device and goes back to sleep.
 
         This generator function is intended to be used in
-        a busylight.lights.effect_thread.EffectThread. 
+        a busylight.effects.thread.EffectThread. 
         """
         timeout = 0xF
         keepalive = Step.keep_alive(timeout).value
