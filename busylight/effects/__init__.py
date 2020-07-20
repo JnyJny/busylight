@@ -27,8 +27,8 @@ def rainbow(light: object, interval: float = 0.05) -> None:
     while True:
         for color in cycle(colors):
             light.on(color)
-            time.sleep(interval)
             yield
+            time.sleep(interval)
 
 
 async def rainbow_async(light: object, interval: float = 0.05) -> None:
