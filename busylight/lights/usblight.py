@@ -4,10 +4,13 @@
 import hid
 
 from contextlib import contextmanager
+from functools import partial
 from threading import Thread
-from typing import Dict, Tuple, Union
+from typing import Dict, Generator, Tuple, Union
 
 from bitvector import BitVector, BitField
+
+from .effect_thread import EffectThread
 
 
 class USBLightInUse(Exception):
@@ -137,8 +140,18 @@ class USBLight(BitVector):
         return f"{class_name}({vendor_id}, {product_id}, {default}, {cmdlen})"
 
     def __str__(self):
-        info = hid.enumerate(self.vendor_id, self.product_id)[0]
-        return f"{info['product_string'].title()}:{self.identifier}"
+        return f"{self.info['product_string'].title()}:{self.identifier}"
+
+    @property
+    def info(self) -> Dict[str, Union[int, str]]:
+        """A dictionary of HIDAPI attributes for this light.
+        """
+        try:
+            return self._info
+        except AttributeError:
+            pass
+        self._info = hid.enumerate(self.vendor_id, self.product_id)
+        return self._info
 
     def __del__(self):
         self.close()
@@ -147,6 +160,11 @@ class USBLight(BitVector):
     def identifier(self) -> str:
         """A string identifier for this device."""
         return f"0x{self.vendor_id:04x}:0x{self.product_id:04x}"
+
+    @property
+    def name(self) -> str:
+        """Concatenation of the light's vendor and class names."""
+        return f"{self.__vendor__} {self.__class__.__name__}"
 
     @property
     def immediate_mode(self) -> bool:
@@ -163,7 +181,7 @@ class USBLight(BitVector):
 
     @property
     def device(self) -> hid.device:
-        """A HID.device instance.
+        """A hid.device instance.
         """
         try:
             return self._device
@@ -172,19 +190,52 @@ class USBLight(BitVector):
         self._device = hid.device()
         return self._device
 
-    def close(self) -> None:
-        """Close this device. Attempts to update will fail after closing.
-        """
-        self.device.close()
-
-    def reopen(self) -> None:
-        """
+    @property
+    def helper_thread(self) -> Union[EffectThread, None]:
+        """Starts a helper thread if the USBLight subclass
+        implements a generator helper method [see EffectThread].
         """
         try:
-            self.close()
-        except:
+            return self._helper_thread
+        except AttributeError:
             pass
-        self.device.open(self.vendor_id, self.product_id)
+
+        try:
+            self._helper_thread = EffectThread(self.helper, f"helper-{self.identifier}")
+        except AttributeError:
+            self._helper_thread = None
+
+        return self._helper_thread
+
+    @property
+    def effect_thread(self) -> Union[EffectThread, None]:
+        """An EffectThread that is currently animating the
+        light. Returns None if not animating.
+        """
+        return getattr(self, "_effect_thread", None)
+
+    def close(self, turn_off: bool = False) -> None:
+        """Shutdown any helper or effect threads active for this light,
+        optionally turn the light off and close the USB HIDAPI device.
+
+        The light cannot be re-used after it's closed. 
+
+        :param turn_off: bool
+        """
+        try:
+            self.helper_thread.cancel()
+            while self.helper_thread.is_alive():
+                self.helper_thread.join(0.1)
+            self._helper_thread = None
+        except AttributeError:
+            pass
+
+        self.stop_effect()
+
+        if turn_off:
+            self.off()
+
+        self.device.close()
 
     def update(self, flush: bool = False) -> None:
         """Writes the in-memory state of the device to the hardware.
@@ -228,6 +279,35 @@ class USBLight(BitVector):
         self.immediate_mode = False
         yield
         self.immediate_mode = prev_mode
+
+    def start_effect(self, effect: Generator) -> None:
+        """Start an effect in another thread. The effect subroutine
+        is expected to be a generator that takes the light object as
+        it's only argument.  The effect generator should call yield
+        as often as possible to make the thread more  responsive to
+        canceling [see EffectThread].
+
+        :param effect: Generator
+        """
+        self._effect_thread = EffectThread(
+            partial(effect, self), f"effect-{self.identifier}"
+        )
+        self._effect_thread.start()
+
+    def stop_effect(self) -> None:
+        """Cancels the effect_thread (if it is an EffectThread)). The
+        light is left in an unknown color/on/off state after this method
+        returns.
+        """
+        try:
+            self.effect_thread.cancel()
+            while self.effect_thread.is_alive():
+                self.effect_thread.join(0.1)
+            self._effect_thread = None
+        except AttributeError:
+            pass
+
+    # EJO The color property might not belong here.
 
     @property
     def color(self) -> Tuple[int, int, int]:
