@@ -10,7 +10,7 @@ from typing import Dict, Generator, Tuple, Union
 
 from bitvector import BitVector, BitField
 
-from .effect_thread import EffectThread
+from ..effects.thread import EffectThread
 
 
 class USBLightInUse(Exception):
