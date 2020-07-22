@@ -2,5 +2,5 @@
 build/*
 dist/*
 tst.py
-.DS_Store/*
+.DS_Store
 *.mov
