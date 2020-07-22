@@ -6,8 +6,6 @@ from typing import Dict, List, Union
 
 import hid
 
-from .usblight import UnknownUSBLight, USBLightInUse
-
 ## Developer: How To Add Support for a New Light
 ##
 ## 0. Create a new light class subclassed from busylight.light.USBLIght
@@ -26,6 +24,9 @@ from .blynclight import BlyncLight
 from .kuando import BusyLight
 from .luxafor import Flag
 from .thingm import Blink1
+
+from .usblight import USBLight
+from .usblight import UnknownUSBLight, USBLightInUse
 
 SUPPORTED_LIGHTS = [BlyncLight, Blink1, BusyLight, Flag]
 
@@ -90,12 +91,4 @@ def get_all_lights() -> object:
                 pass
 
 
-__all__ = [
-    "Blink1",
-    "BlyncLight",
-    "BusyLight",
-    "Flag",
-    "available_lights",
-    "get_light",
-    "get_all_lights",
-]
+__all__ = ["Blink1", "BlyncLight", "BusyLight", "Flag", "USBLight"]
