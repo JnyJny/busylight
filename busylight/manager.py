@@ -1,16 +1,25 @@
-"""
+"""A USBLight Manager
 """
 
+from enum import Enum
 from typing import Callable, Dict, List, Tuple, Union
 
 import hid
 
-from . import available_lights, get_all_lights
-from . import SUPPORTED_LIGHTS
+from .lights import SUPPORTED_LIGHTS, KNOWN_VENDOR_IDS
+from .lights import UnknownUSBLight, USBLightInUse
+from .lights import USBLight
 
-from .usblight import USBLight
+from .color import color_to_rgb
 
-from ..color import color_to_rgb
+
+class BlinkSpeed(str, Enum):
+    SLOW = "slow"
+    MEDIUM = "medium"
+    FAST = "fast"
+
+    def to_int(self):
+        return {"slow": 1, "medium": 2, "fast": 3}.get(self.value, 1)
 
 
 class LightManager:
@@ -30,77 +39,80 @@ class LightManager:
             pass
         self._supported = []
         for light in SUPPORTED_LIGHTS:
-            self._supported.append(light.name)
-
+            self._supported.append(f"{light.__vendor__} {light.__name__}")
         return self._supported
 
     @property
     def available(self) -> List[Dict[str, Union[str, int]]]:
         """A list of dictionaries describing currently available lights.
         """
-        return available_lights()
+        lights = []
+        for vendor_id in KNOWN_VENDOR_IDS:
+            lights.extend(hid.enumerate(vendor_id))
+        return lights
 
     @property
-    def managed(self) -> List[USBLight]:
+    def lights(self) -> List[USBLight]:
         """List of USBLight subclasses that the manager is currently
         controlling. 
         """
         try:
-            return self._managed
+            return self._lights
         except AttributeError:
             pass
-        self._managed = []
-        return self._managed
+        self._lights = []
+        return self._lights
 
     def lights_for(self, light_id: int = -1) -> List[USBLight]:
         """
         """
-        return self.managed if light_id == -1 else [self.managed[light_id]]
-
-    def shutdown(self, effects: bool = True, helpers: bool = False) -> None:
-        """ **Not Needed** if threads are daemons
-        """
+        return self.lights if light_id == -1 else [self.lights[light_id]]
 
     def update(self) -> int:
-        """Checks for lights that are currently not managed and
-        adds them to the stable of managed lights. Optionally
-        starts a helper thread for lights that implement a
-        `helper` method.
+        """Checks for available lights that are not lights and adds
+        them to the list of lights. Optionally starts a helper
+        thread for lights that require one.
 
-        :return: number of new lights added to managed list
+        :return: number of new lights added to lights list
         """
-        new_lights = list(get_all_lights())
 
-        if not new_lights:
-            return
+        new_lights = []
+        for info in self.available:
+            for LightClass in SUPPORTED_LIGHTS:
+                try:
+                    new_lights.append(LightClass.from_dict(info))
+                except UnknownUSBLight:
+                    pass
+                except USBLightInUse:
+                    pass
 
-        self.managed.extend(new_lights)
-
-        for light in new_lights:
-            try:
-                light.helper_thread.start()
-            except AttributeError:
-                pass
+        if new_lights:
+            self.lights.extend(new_lights)
+            for light in new_lights:
+                try:
+                    light.helper_thread.start()
+                except AttributeError:
+                    pass
 
         return len(new_lights)
 
     def release(self) -> None:
         """Stops all helper and effects threads, closes all lights and empties
-        the `managed` property.
+        the `lights` property.
 
-        Call `update` to repopulate the `managed` property and restart
+        Call `update` to repopulate the `lights` property and restart
         helper threads.
         """
 
-        for light in self.managed:
+        for light in self.lights:
             light.close()
 
-        self.managed.clear()
+        self.lights.clear()
 
     def light_on(self, light_id: int = -1, color: str = "green") -> None:
         """Turn on a light or all lights with supplied color value.
         
-        If light_id is -1 the operation is applied to all managed lights.
+        If light_id is -1 the operation is applied to all lights.
 
         :param light_id: int
         :param color: 3-tuple of red, green and blue 8-bit integers
@@ -118,7 +130,7 @@ class LightManager:
     def light_off(self, light_id: int = -1) -> None:
         """Turn off a light or all lights.
         
-        If light_id is -1 the operation is applied to all managed lights.
+        If light_id is -1 the operation is applied to all lights.
 
         :param light_id: int
 
@@ -131,13 +143,16 @@ class LightManager:
             light.off()
 
     def light_blink(
-        self, light_id: int = -1, color: str = "red", speed: int = 1
+        self,
+        light_id: int = -1,
+        color: str = "red",
+        speed: BlinkSpeed = BlinkSpeed.SLOW,
     ) -> None:
         """Start a light or lights blinking with the supplied color and speed.
 
         :param light_id: int
         :param color: str
-        :param speed: int
+        :param speed: BlinkSpeed
         """
 
         rgb = color_to_rgb(color)
@@ -145,7 +160,7 @@ class LightManager:
         self.light_off(light_id)
 
         for light in self.lights_for(light_id):
-            light.blink(rgb, speed)
+            light.blink(rgb, speed.to_int())
 
     def apply_effect_to_light(self, light_id: int, effect: Callable, *args, **kwds):
         """Apply an effect function to the specified light.
