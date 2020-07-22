@@ -78,27 +78,23 @@ class Blink1(USBLight):
     leds = USBLightAttribute(0, 8)
     line = USBLightAttribute(0, 8)
 
-    def read(self, buf):
+    def read(self, buf: bytes) -> bytes:
+        """ ¯\_(ツ)_/¯ 
+        """
         rc = self.device.send_feature_report(buf)
 
         return self.device.get_feature_report(buf[0], 8)
 
-    def update(self, flush: bool = False) -> None:
-        """Writes the in-memory state of the device to the hardware.
+    def write(self) -> int:
+        """Write the in-memory state of the device to hardware.
 
-        The update is skipped if immediate_mode is False and flush
-        is False. If flush is True, the value of immediate_mode is
-        ignored.
-
-        Note: ThingM Blink(1) communicates via the USB feature
-        report mechanism and *not* vanilla write operations. Writing
-        to the device will cause it to lockup and stop responding.
-
-        :param flush: bool
+        The ThingM blink(1) uses the `send_feature_report` interface
+        instead of the `write` interface. 
+        
+        :return: int number of bytes written.
         """
-
-        if flush or self.immediate_mode:
-            self.device.send_feature_report(self.bytes)
+        self.device.send_feature_report(self.bytes)
+        return len(self.bytes)
 
     def on(self, color: Tuple[int, int, int] = None) -> None:
         """Turn the light on with the specified color [default=green].
