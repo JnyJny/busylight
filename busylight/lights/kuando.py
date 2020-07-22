@@ -149,16 +149,17 @@ class BusyLight(USBLight):
             yield
             sleep(interval)
 
-    def update(self, flush: bool = False) -> None:
-        """The Kuando BusyLight requires a checksum for valid
-        control packets. This method computes the checksum
-        only when immediate_mode or flush is True. 
+    def write(self) -> int:
+        """Write the in-memory state of the device to hardare.
 
-        :param flush: bool
+        The Kuando BusyLight requires a checksum for valid
+        control packets, which is computed just prior to the
+        I/O operation.
+
+        :return: int number of bytes written
         """
-        if self.immediate_mode or flush:
-            self.chksum = sum(self.bytes[:-2])
-            self.device.write(self.bytes)
+        self.chksum = sum(self.bytes[:-2])
+        return self.device.write(self.bytes)
 
     def on(self, color: Tuple[int, int, int] = None, duration: int = 0) -> None:
         """Turn the light on with the specified color [default=green].
