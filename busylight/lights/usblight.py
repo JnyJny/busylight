@@ -4,13 +4,11 @@
 import hid
 
 from contextlib import contextmanager
-from functools import partial
-from threading import Thread
-from typing import Dict, Generator, Tuple, Union
+from typing import Callable, Dict, Generator, Tuple, Union
 
 from bitvector import BitVector, BitField
 
-from ..effects.thread import EffectThread
+from ..thread import CancellableThread
 
 
 class USBLightInUse(Exception):
@@ -150,7 +148,8 @@ class USBLight(BitVector):
             return self._info
         except AttributeError:
             pass
-        self._info = hid.enumerate(self.vendor_id, self.product_id)
+
+        self._info = hid.enumerate(self.vendor_id, self.product_id)[0]
         return self._info
 
     def __del__(self):
@@ -164,7 +163,12 @@ class USBLight(BitVector):
     @property
     def name(self) -> str:
         """Concatenation of the light's vendor and class names."""
-        return f"{self.__vendor__} {self.__class__.__name__}"
+        try:
+            return self._name
+        except AttributeError:
+            pass
+        self._name = f"{self.__vendor__} {self.info['product_string']}"
+        return self._name
 
     @property
     def immediate_mode(self) -> bool:
@@ -191,9 +195,11 @@ class USBLight(BitVector):
         return self._device
 
     @property
-    def helper_thread(self) -> Union[EffectThread, None]:
-        """Starts a helper thread if the USBLight subclass
-        implements a generator helper method [see EffectThread].
+    def helper_thread(self) -> Union[CancellableThread, None]:
+        """Starts a helper thread if the USBLight subclass implements a
+        generator helper method.  
+
+        [see busylight.lights.kuando.BusyLight.helper].
         """
         try:
             return self._helper_thread
@@ -201,15 +207,17 @@ class USBLight(BitVector):
             pass
 
         try:
-            self._helper_thread = EffectThread(self.helper, f"helper-{self.identifier}")
+            self._helper_thread = CancellableThread(
+                self.helper(), f"helper-{self.identifier}"
+            )
         except AttributeError:
             self._helper_thread = None
 
         return self._helper_thread
 
     @property
-    def effect_thread(self) -> Union[EffectThread, None]:
-        """An EffectThread that is currently animating the
+    def effect_thread(self) -> Union[CancellableThread, None]:
+        """An CancellableThread that is currently animating the
         light. Returns None if not animating.
         """
         return getattr(self, "_effect_thread", None)
@@ -224,8 +232,6 @@ class USBLight(BitVector):
         """
         try:
             self.helper_thread.cancel()
-            while self.helper_thread.is_alive():
-                self.helper_thread.join(0.1)
             self._helper_thread = None
         except AttributeError:
             pass
@@ -237,8 +243,15 @@ class USBLight(BitVector):
 
         self.device.close()
 
+    def write(self) -> int:
+        """Write the in-memory state of the device to the hardware.
+
+        :return: int number of bytes written
+        """
+        return self.device.write(self.bytes)
+
     def update(self, flush: bool = False) -> None:
-        """Writes the in-memory state of the device to the hardware.
+        """Conditionally writes the in-memory state of the device to the hardware.
 
         The update is skipped if immediate_mode is False and flush
         is False. If flush is True, the value of immediate_mode is
@@ -248,8 +261,8 @@ class USBLight(BitVector):
         """
 
         if flush or self.immediate_mode:
-            self.device.write(self.bytes)
-            # raise exception if bytes written != len(self.bytes)?
+            self.write()
+            # EJO raise exception if bytes written != len(self.bytes)?
 
     def reset(self, flush: bool = False) -> None:
         """Reset the in-memory state to the default configuration.
@@ -280,29 +293,26 @@ class USBLight(BitVector):
         yield
         self.immediate_mode = prev_mode
 
-    def start_effect(self, effect: Generator) -> None:
+    def start_effect(self, effect: Callable) -> None:
         """Start an effect in another thread. The effect subroutine
-        is expected to be a generator that takes the light object as
+        is expected to return a generator that takes the light object as
         it's only argument.  The effect generator should call yield
         as often as possible to make the thread more  responsive to
-        canceling [see EffectThread].
+        canceling [see CancellableThread].
 
         :param effect: Generator
         """
-        self._effect_thread = EffectThread(
-            partial(effect, self), f"effect-{self.identifier}"
+        self._effect_thread = CancellableThread(
+            effect(self), f"effect-{self.identifier}"
         )
         self._effect_thread.start()
 
     def stop_effect(self) -> None:
-        """Cancels the effect_thread (if it is an EffectThread)). The
-        light is left in an unknown color/on/off state after this method
-        returns.
+        """Cancels the effect_thread if running. The light is left in an
+        unknown color/on/off state after this method returns.
         """
         try:
             self.effect_thread.cancel()
-            while self.effect_thread.is_alive():
-                self.effect_thread.join(0.1)
             self._effect_thread = None
         except AttributeError:
             pass
