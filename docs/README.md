@@ -1,4 +1,4 @@
-!(BusyLight Project Logo)[0]
+![BusyLight Project Logo][0]
 
 
 
