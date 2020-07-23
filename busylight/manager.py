@@ -1,6 +1,7 @@
 """A USBLight Manager
 """
 
+from contextlib import contextmanager
 from enum import Enum
 from typing import Callable, Dict, List, Tuple, Union
 
@@ -20,6 +21,23 @@ class BlinkSpeed(str, Enum):
 
     def to_int(self):
         return {"slow": 1, "medium": 2, "fast": 3}.get(self.value, 1)
+
+
+class LightIdRangeError(Exception):
+    def __init__(self, light_id: int, max_id: int = 0):
+        self.light_id = light_id
+        self.max_id = max_id
+
+    def __str__(self):
+        return f"Light '{self.light_id}' not in the range of 0..{self.max_id}"
+
+
+class ColorLookupError(Exception):
+    def __init__(self, color: str):
+        self.color = color
+
+    def __str__(self):
+        return f"Unable to decode color for string '{self.color}'"
 
 
 class LightManager:
@@ -63,10 +81,20 @@ class LightManager:
         self._lights = []
         return self._lights
 
-    def lights_for(self, light_id: int = -1) -> List[USBLight]:
+    def lights_for(self, light_id: Union[int, None] = -1) -> List[USBLight]:
         """
+
+        :param light_id: Union[int, None]
+        :return: List[USBLight]
         """
-        return self.lights if light_id == -1 else [self.lights[light_id]]
+
+        if light_id is None:
+            return []
+
+        try:
+            return self.lights if light_id == -1 else [self.lights[light_id]]
+        except IndexError:
+            raise LightIdRangeError(light_id, len(self.lights)) from None
 
     def update(self) -> int:
         """Checks for available lights that are not lights and adds
@@ -109,7 +137,7 @@ class LightManager:
 
         self.lights.clear()
 
-    def light_on(self, light_id: int = -1, color: str = "green") -> None:
+    def light_on(self, light_id: Union[int, None] = -1, color: str = "green") -> None:
         """Turn on a light or all lights with supplied color value.
         
         If light_id is -1 the operation is applied to all lights.
@@ -118,24 +146,28 @@ class LightManager:
         :param color: 3-tuple of red, green and blue 8-bit integers
 
         Raises:
-        - IndexError
+        - LightIdRangeError
+        - ColorLookupError
         """
 
-        rgb = color_to_rgb(color)
+        try:
+            rgb = color_to_rgb(color)
+        except ValueError:
+            raise ColorLookupError(color) from None
 
         for light in self.lights_for(light_id):
             light.stop_effect()
             light.on(rgb)
 
-    def light_off(self, light_id: int = -1) -> None:
+    def light_off(self, light_id: Union[int, None] = -1) -> None:
         """Turn off a light or all lights.
         
         If light_id is -1 the operation is applied to all lights.
 
-        :param light_id: int
+        :param light_id: Union[int, None]
 
         Raises:
-        - IndexError
+        - LightIdRangeError
         """
 
         for light in self.lights_for(light_id):
@@ -144,7 +176,7 @@ class LightManager:
 
     def light_blink(
         self,
-        light_id: int = -1,
+        light_id: Union[int, None] = -1,
         color: str = "red",
         speed: BlinkSpeed = BlinkSpeed.SLOW,
     ) -> None:
@@ -155,14 +187,19 @@ class LightManager:
         :param speed: BlinkSpeed
         """
 
-        rgb = color_to_rgb(color)
+        try:
+            rgb = color_to_rgb(color)
+        except ValueError:
+            raise ColorLookupError(color) from None
 
         self.light_off(light_id)
 
         for light in self.lights_for(light_id):
             light.blink(rgb, speed.to_int())
 
-    def apply_effect_to_light(self, light_id: int, effect: Callable, *args, **kwds):
+    def apply_effect_to_light(
+        self, light_id: Union[int, None], effect: Callable, *args, **kwds
+    ):
         """Apply an effect function to the specified light.
 
         :param light_id: 
@@ -172,5 +209,24 @@ class LightManager:
         """
 
         self.light_off(light_id)
+
         for light in self.lights_for(light_id):
             light.start_effect(effect)
+
+    @contextmanager
+    def operate_on(
+        self,
+        light_id: Union[int, None] = -1,
+        turn_off_first: bool = True,
+        cleanup: bool = False,
+    ) -> object:
+        """
+        """
+
+        if turn_off_first:
+            self.light_off(light_id)
+
+        yield self
+
+        if cleanup:
+            self.light_off(light_id)
