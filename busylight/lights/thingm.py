@@ -60,6 +60,11 @@ class Blink1ColorField(USBLightAttribute):
     """
 
 
+class Blink1PlayField(USBLightAttribute):
+    """
+    """
+
+
 class Blink1StartField(USBLightAttribute):
     """
     """
@@ -117,7 +122,7 @@ class Blink1(USBLight):
     action = Blink1ActionField(48, 8)
 
     red = Blink1ColorField(40, 8)
-    play = Blink1ColorField(40, 8)
+    play = Blink1PlayField(40, 8)
 
     green = Blink1ColorField(32, 8)
     start = Blink1StartField(32, 8)
