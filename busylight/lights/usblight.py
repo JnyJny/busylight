@@ -28,17 +28,6 @@ class USBLightAttribute(BitField):
     """
 
 
-class USBLightImmediateAttribute(BitField):
-    """Read-write USB light attribute that also optionally updates
-    hardware state.
-    """
-
-    def __set__(self, obj, value) -> None:
-        super().__set__(obj, value)
-        if value:
-            obj.update()
-
-
 class USBLightReadOnlyAttribute(BitField):
     """Read-only USB light attribute. 
     """
@@ -49,7 +38,7 @@ class USBLightReadOnlyAttribute(BitField):
 
 class USBLight(BitVector):
     """A generic USB light that uses HIDAPI to control devices.
-
+    
     The assumption is most hardware devices have a control word
     of N-bits that describes the capabilities of the device. Since
     the capabilities of lights varies widely, the generic device
@@ -62,22 +51,36 @@ class USBLight(BitVector):
     This class only provides stub methods for those features which
     all raise NotImplementedError. It is up to concrete subclasses
     to fill in the blanks.
-
+    
     See `busylight.lights.blynclight` and `busylight.lights.luxafor`
     for two different implementations based on USBLight.
-
+    
     The USBLight models the state of the light in-memory and updates
     the physical device. Updates to the device can be made immediately
     whenever an attribute is modified, or in batch-mode to avoid
     unwanted physical artificts (flickering, chirping, etc). Subclasses
     can use the `USBLightImmediateAttribute` descriptor class to define
     sub-bitfields in the device command buffer which can be controlled
-    this way. 
-
+    this way.
+    
     """
 
     VENDOR_IDS = []  # subclasses must provide
     __vendor__ = "generic"  # subclasses must provide
+
+    @classmethod
+    def first_light(cls):
+        """
+        """
+
+        for vendor_id in cls.VENDOR_IDS:
+            try:
+                info = hid.enumerate(vendor_id)[0]
+                return cls.from_dict(info)
+            except IndexError:
+                pass
+
+        raise USBLightNotFound()
 
     @classmethod
     def from_dict(cls, info: Dict[str, Union[int, str]]):
@@ -116,11 +119,12 @@ class USBLight(BitVector):
         - USBLightInUse
         - USBLightNotFound
         """
-        self.immediate_mode = False
+
         super().__init__(value=default_state, size=cmd_length)
         self.default_state = default_state
         self.vendor_id = vendor_id
         self.product_id = product_id
+
         try:
             self.device.open(vendor_id, product_id)
         except OSError:
@@ -167,21 +171,8 @@ class USBLight(BitVector):
             return self._name
         except AttributeError:
             pass
-        self._name = f"{self.__vendor__} {self.info['product_string']}"
+        self._name = f"{self.__vendor__} {self.info['product_string'].title()}"
         return self._name
-
-    @property
-    def immediate_mode(self) -> bool:
-        """The immediate_mode attribute controls whether updates to the
-        in-memory state of the device cause an immediate write to the
-        device.
-        """
-        return getattr(self, "_immediate_mode", False)
-
-    @immediate_mode.setter
-    def immediate_mode(self, new_mode: bool) -> None:
-        self._immediate_mode = new_mode
-        self.update()
 
     @property
     def device(self) -> hid.device:
@@ -250,19 +241,11 @@ class USBLight(BitVector):
         """
         return self.device.write(self.bytes)
 
-    def update(self, flush: bool = False) -> None:
-        """Conditionally writes the in-memory state of the device to the hardware.
-
-        The update is skipped if immediate_mode is False and flush
-        is False. If flush is True, the value of immediate_mode is
-        ignored.
-
-        :param flush: bool
+    def read(self) -> bytes:
         """
-
-        if flush or self.immediate_mode:
-            self.write()
-            # EJO raise exception if bytes written != len(self.bytes)?
+        :return: bytes
+        """
+        return bytes(0)
 
     def reset(self, flush: bool = False) -> None:
         """Reset the in-memory state to the default configuration.
@@ -272,26 +255,15 @@ class USBLight(BitVector):
         :param flush: bool
         """
         self.value = self.default_state
-        self.update(flush=flush)
+        if flush:
+            self.write()
 
     @contextmanager
-    def updates_paused(self):
-        """Context manager that pauses device updates. This is useful
-        for making multiple updates to a device and avoiding unwanted
-        physical artifacts from manifesting (flickering, chirping, etc).
-
-        with light.updates_paused():
-            self.on = 1
-            self.red = 0xff
-            self.green = 0
-            self.blue = 0
-        # changes will be flushed on exit from the context manager
-
+    def batch_update(self):
         """
-        prev_mode = self.immediate_mode
-        self.immediate_mode = False
+        """
         yield
-        self.immediate_mode = prev_mode
+        self.write()
 
     def start_effect(self, effect: Callable) -> None:
         """Start an effect in another thread. The effect subroutine
@@ -318,6 +290,8 @@ class USBLight(BitVector):
             pass
 
     # EJO The color property might not belong here.
+    #     Some usblight implementations might not
+    #     expose red, green and blue instance properties.
 
     @property
     def color(self) -> Tuple[int, int, int]:
@@ -328,8 +302,7 @@ class USBLight(BitVector):
     @color.setter
     def color(self, new_value: Tuple[int, int, int]) -> None:
 
-        with self.updates_paused():
-            self.red, self.green, self.blue = new_value
+        self.red, self.green, self.blue = new_value
 
     def on(self, color: Tuple[int, int, int] = None):
         """Stub on method.
