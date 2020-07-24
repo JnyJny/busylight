@@ -32,6 +32,56 @@ class StepCommand(int, Enum):
     JUMP = 1 << 0
 
 
+class StepCmdHiField(BitField):
+    """
+    """
+
+
+class StepCmdLoField(BitField):
+    """
+    """
+
+
+class StepTargetField(BitField):
+    """
+    """
+
+
+class StepTimeoutField(BitField):
+    """
+    """
+
+
+class StepRepeatField(BitField):
+    """
+    """
+
+
+class StepColorField(BitField):
+    """
+    """
+
+
+class StepDutyCycleField(BitField):
+    """
+    """
+
+
+class StepUpdateField(BitField):
+    """
+    """
+
+
+class StepRingtoneField(BitField):
+    """
+    """
+
+
+class StepVolumeField(BitField):
+    """
+    """
+
+
 class Step(BitVector):
     @classmethod
     def jump_to(cls, target: int):
@@ -54,20 +104,20 @@ class Step(BitVector):
     def __init__(self, default: int = 0):
         super().__init__(default, size=64)
 
-    cmd0 = BitField(60, 4)
-    cmd1 = BitField(56, 4)
-    target = BitField(56, 4)
-    timeout = BitField(56, 4)
+    cmd0 = StepCmdHiField(60, 4)
+    cmd1 = StepCmdLoField(56, 4)
+    target = StepTargetField(56, 4)
+    timeout = StepTimeoutField(56, 4)
 
-    repeat = BitField(48, 8)
-    red = BitField(40, 8)
-    green = BitField(32, 8)
-    blue = BitField(24, 8)
-    dc_on = BitField(16, 8)
-    dc_off = BitField(8, 8)
-    update = BitField(7, 1)
-    ringtone = BitField(3, 4)
-    volume = BitField(0, 3)
+    repeat = StepRepeatField(48, 8)
+    red = StepColorField(40, 8)
+    green = StepColorField(32, 8)
+    blue = StepColorField(24, 8)
+    dc_on = StepDutyCycleField(16, 8)
+    dc_off = StepDutyCycleField(8, 8)
+    update = StepUpdateField(7, 1)
+    ringtone = StepRingtoneField(3, 4)
+    volume = StepVolumeField(0, 3)
 
     @property
     def color(self) -> Tuple[int, int, int]:
