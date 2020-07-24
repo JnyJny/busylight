@@ -132,7 +132,13 @@ class USBLight(BitVector):
         self.default_state = default_state
         self.vendor_id = vendor_id
         self.product_id = product_id
-        self.open()
+
+        try:
+            self.device.open(self.vendor_id, self.product_id)
+        except OSError:
+            raise USBLightInUse(self) from None
+        except ValueError:
+            raise USBLightNotFound(self) from None
 
     def __repr__(self):
         class_name = self.__class__.__name__
@@ -150,6 +156,11 @@ class USBLight(BitVector):
     def info(self) -> Dict[str, Union[int, str]]:
         """A dictionary of HIDAPI attributes for this light.
         """
+
+        ## BUG: if multiple devices sharing vid/pid exist, this method
+        ##      will return erroneous information for all but the first
+        ##      device.
+
         try:
             return self._info
         except AttributeError:
@@ -216,37 +227,6 @@ class USBLight(BitVector):
         light. Returns None if not animating.
         """
         return getattr(self, "_effect_thread", None)
-
-    def open(self) -> None:
-        """Opens the device for I/O. 
-
-        Raises:
-        - USBLightInUse
-        """
-
-        try:
-            self.device.open(self.vendor_id, self.product_id)
-            return
-        except ValueError:
-            raise USBLightNotFound(self) from None
-        except OSError:
-            pass
-
-        # device might be in use and we will look for another device with the
-        # same vid/pid but a different path.
-
-        for info in hid.enumerate(self.product_id, vendor_id):
-            try:
-                self.device.open_path(info["path"])
-                return
-            except KeyError:
-                raise Exception(
-                    f"USB HID device {self!r} had no path. perms?"
-                ) from None
-            except OSError:
-                pass
-        else:
-            raise USBLightNotFound(self)
 
     def close(self, turn_off: bool = False) -> None:
         """Shutdown any helper or effect threads active for this light,
