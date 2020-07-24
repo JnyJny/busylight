@@ -56,7 +56,7 @@ class Blink1ActionField(USBLightAttribute):
 
 
 class Blink1ColorField(USBLightAttribute):
-    """
+    """8-bit color value.
     """
 
 

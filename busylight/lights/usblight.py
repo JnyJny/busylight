@@ -1,6 +1,7 @@
 """A generic USB attached LED light.
 """
 
+
 import hid
 
 from contextlib import contextmanager
@@ -29,11 +30,14 @@ class USBLightAttribute(BitField):
 
 
 class USBLightReadOnlyAttribute(BitField):
-    """Read-only USB light attribute. 
+    """Read-only USB light attribute.
     """
 
     def __set__(self, obj, value) -> None:
         return
+
+
+# EJO investigate ABC?
 
 
 class USBLight(BitVector):
@@ -52,17 +56,11 @@ class USBLight(BitVector):
     all raise NotImplementedError. It is up to concrete subclasses
     to fill in the blanks.
     
-    See `busylight.lights.blynclight` and `busylight.lights.luxafor`
-    for two different implementations based on USBLight.
-    
-    The USBLight models the state of the light in-memory and updates
-    the physical device. Updates to the device can be made immediately
-    whenever an attribute is modified, or in batch-mode to avoid
-    unwanted physical artificts (flickering, chirping, etc). Subclasses
-    can use the `USBLightImmediateAttribute` descriptor class to define
-    sub-bitfields in the device command buffer which can be controlled
-    this way.
-    
+    The USBLight models the state of the light in-memory and changes to
+    the physical device are not made until the write method is
+    invoked. The `batch_update` context manager is a handy way to
+    visually group attribute updates which automatically calls `write`
+    when the context manager exits.
     """
 
     VENDOR_IDS = []  # subclasses must provide
@@ -70,17 +68,21 @@ class USBLight(BitVector):
 
     @classmethod
     def first_light(cls):
-        """
+        """Returns the first open USBLight that matches a vendor id known
+        to this class.
+
+        Raises:
+        - USBLightNotFound
         """
 
         for vendor_id in cls.VENDOR_IDS:
-            try:
-                info = hid.enumerate(vendor_id)[0]
-                return cls.from_dict(info)
-            except IndexError:
-                pass
-
-        raise USBLightNotFound()
+            for info in hid.enumerate(vendor_id):
+                try:
+                    return cls.from_dict(info)
+                except (USBLightUnknown, USBLightInUse):
+                    pass
+        else:
+            raise USBLightNotFound()
 
     @classmethod
     def from_dict(cls, info: Dict[str, Union[int, str]]):
@@ -142,7 +144,7 @@ class USBLight(BitVector):
         return f"{class_name}({vendor_id}, {product_id}, {default}, {cmdlen})"
 
     def __str__(self):
-        return f"{self.info['product_string'].title()}:{self.identifier}"
+        return f"{self.name}:{self.identifier}"
 
     @property
     def info(self) -> Dict[str, Union[int, str]]:
@@ -157,16 +159,18 @@ class USBLight(BitVector):
         return self._info
 
     def __del__(self):
+        """Shutdown helper and effects threads, closes the HID device.
+        """
         self.close()
 
     @property
     def identifier(self) -> str:
-        """A string identifier for this device."""
+        """A string identifier for this device: vendor_id:product_id."""
         return f"0x{self.vendor_id:04x}:0x{self.product_id:04x}"
 
     @property
     def name(self) -> str:
-        """Concatenation of the light's vendor and class names."""
+        """Concatenation of the light's vendor and class names title cased.."""
         try:
             return self._name
         except AttributeError:
@@ -187,8 +191,8 @@ class USBLight(BitVector):
 
     @property
     def helper_thread(self) -> Union[CancellableThread, None]:
-        """Starts a helper thread if the USBLight subclass implements a
-        generator helper method.  
+        """Start a helper thread if the USBLight subclass implements a
+        generator helper method. 
 
         [see busylight.lights.kuando.BusyLight.helper].
         """
@@ -237,12 +241,14 @@ class USBLight(BitVector):
     def write(self) -> int:
         """Write the in-memory state of the device to the hardware.
 
-        :return: int number of bytes written
+        :return: integer number of bytes written
         """
         return self.device.write(self.bytes)
 
-    def read(self) -> bytes:
-        """
+    def read(self, nbytes: int) -> bytes:
+        """Reads `nbytes` from the device (if supported) and returns the data.
+
+        :param nbytes: int 
         :return: bytes
         """
         return bytes(0)
@@ -261,7 +267,7 @@ class USBLight(BitVector):
     @contextmanager
     def batch_update(self) -> None:
         """This method is a convenience context manager that will call
-        this object's `write` method on exit.
+        the `write` method on exit. 
         """
         yield
         self.write()
