@@ -109,7 +109,7 @@ async def Turn_On_Light(light_id: int = Path(..., title="Light identifier", ge=0
     """
 
     api.manager.light_on(light_id)
-    return {"action": "on", "light": light_id, color: "green"}
+    return {"action": "on", "light_id": light_id, "color": "green"}
 
 
 @api.get(
