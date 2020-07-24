@@ -7,12 +7,13 @@ from typing import List
 from fastapi import FastAPI, HTTPException, Path, Request
 from fastapi.responses import JSONResponse
 
-from .exceptions import LightIdRangeError, ColorLookupError
+
 from .models import LightOperation, LightDescription
 
 from ..__version__ import __version__
 from ..effects import rainbow, throbber, flash_lights_impressively
 from ..manager import LightManager, BlinkSpeed
+from ..manager import LightIdRangeError, ColorLookupError
 
 
 api = FastAPI(
@@ -20,7 +21,7 @@ api = FastAPI(
     description="""An API server for USB connected presense lights.
 
 **Supported USB lights:**
-- Embrava BlyncLight, BlyncLight +, BlyncLight Mini
+- Embrava Blynclight, Blynclight +, Blynclight Mini
 - ThingM blink(1)
 - Luxafor Flag
 - Kuando BusyLight UC Omega
@@ -54,20 +55,14 @@ async def shutdown():
 
 @api.exception_handler(LightIdRangeError)
 async def light_id_range_error_handler(request: Request, error: LightIdRangeError):
-    """Handle light_id that are out of bounds.
+    """Handle light_id values that are out of bounds.
     """
-    nlights = len(api.manager.lights)
-    return JSONResponse(
-        status_code=404,
-        content={
-            "message": f"Light {error.light_id} is out of range. Must be an integer between zero and {nlights-1}"
-        },
-    )
+    return JSONResponse(status_code=404, content={"message": str(error)},)
 
 
 @api.exception_handler(ColorLookupError)
 async def color_lookup_error_handler(request: Request, error: ColorLookupError):
-    """Handle malformed color specifications.
+    """Handle color strings that do not result in a valid color.
     """
     return JSONResponse(status_code=404, content={"message": str(error)})
 
@@ -84,15 +79,12 @@ async def Light_Description(
     """Information about the light selected by `light_id`.
     """
 
-    try:
-        light = api.manager.lights[light_id]
-        return {
-            "light_id": light_id,
-            "name": light.name,
-            "info": light.info,
-        }
-    except IndexError:
-        raise LightIdRangeError(light_id)
+    light = api.manager.lights[light_id]
+    return {
+        "light_id": light_id,
+        "name": light.name,
+        "info": light.info,
+    }
 
 
 @api.get("/1/lights", response_model=List[LightDescription])
@@ -115,11 +107,9 @@ async def Lights_Description() -> dict:
 async def Turn_On_Light(light_id: int = Path(..., title="Light identifier", ge=0)):
     """Turn on the specified light with the default color, green.
     """
-    try:
-        api.manager.light_on(light_id)
-        return {"action": "on", "light": light_id, color: "green"}
-    except IndexError:
-        raise LightIdRangeError(light_id)
+
+    api.manager.light_on(light_id)
+    return {"action": "on", "light": light_id, color: "green"}
 
 
 @api.get(
@@ -137,13 +127,9 @@ async def Turn_On_Light_With_Color(
     string: red, #ff0000, #f00, 0xff0000, 0xf00
     """
 
-    try:
-        api.manager.light_on(light_id, color)
-        return {"action": "on", "light_id": light_id, "color": color}
-    except IndexError:
-        raise LightIdRangeError(light_id)
-    except ValueError:
-        raise ColorLookupError(color)
+    api.manager.light_on(light_id, color)
+
+    return {"action": "on", "light_id": light_id, "color": color}
 
 
 @api.get(
@@ -152,11 +138,9 @@ async def Turn_On_Light_With_Color(
 async def Turn_On_Lights() -> dict:
     """Turn on all lights with the default color, green.
     """
-    try:
-        api.manager.light_on(-1)
-        return {"action": "on", "light_id": "all", "color": "green"}
-    except IndexError:
-        raise LightIdRangeError(light_id)
+
+    api.manager.light_on(-1)
+    return {"action": "on", "light_id": "all", "color": "green"}
 
 
 @api.get(
@@ -172,13 +156,9 @@ async def Turn_On_Lights_With_Color(
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00
     """
-    try:
-        api.manager.light_on(-1, color)
-        return {"action": "on", "light_id": "all", "color": color}
-    except IndexError:
-        raise LightIdRangeError(light_id)
-    except ValueError:
-        raise ColorLookupError(color)
+
+    api.manager.light_on(-1, color)
+    return {"action": "on", "light_id": "all", "color": color}
 
 
 @api.get(
@@ -192,11 +172,9 @@ async def Turn_Off_Light(
 
     """Turn off the specified light.
     """
-    try:
-        api.manager.light_off(light_id)
-        return {"action": "off", "light_id": light_id}
-    except IndexError:
-        raise LightIdRangeError(light_id)
+
+    api.manager.light_off(light_id)
+    return {"action": "off", "light_id": light_id}
 
 
 @api.get(
@@ -205,11 +183,9 @@ async def Turn_Off_Light(
 async def Turn_Off_Lights() -> dict:
     """Turn off all lights.
     """
-    try:
-        api.manager.light_off(-1)
-        return {"action": "off", "light_id": "all"}
-    except IndexError:
-        raise LightIdRangeError(light_id)
+
+    api.manager.light_off(-1)
+    return {"action": "off", "light_id": "all"}
 
 
 @api.get(
@@ -222,16 +198,14 @@ async def Blink_Light(
 ) -> dict:
     """Start blinking the specified light: red and off.
     """
-    try:
-        api.manager.light_blink(light_id)
-        return {
-            "action": "blink",
-            "light_id": light_id,
-            "color": "red",
-            "speed": BlinkSpeed.SLOW,
-        }
-    except IndexError:
-        raise LightIdRangeError(light_id)
+
+    api.manager.light_blink(light_id)
+    return {
+        "action": "blink",
+        "light_id": light_id,
+        "color": "red",
+        "speed": BlinkSpeed.SLOW,
+    }
 
 
 @api.get(
@@ -248,18 +222,14 @@ async def Blink_Light_With_Color(
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00
     """
-    try:
-        api.manager.light_blink(light_id, color)
-        return {
-            "action": "blink",
-            "light_id": light_id,
-            "color": color,
-            "speed": BlinkSpeed.SLOW,
-        }
-    except IndexError:
-        raise LightIdRangeError(light_id)
-    except ValueError:
-        raise ColorLookupError(color)
+
+    api.manager.light_blink(light_id, color)
+    return {
+        "action": "blink",
+        "light_id": light_id,
+        "color": color,
+        "speed": BlinkSpeed.SLOW,
+    }
 
 
 @api.get(
@@ -277,17 +247,9 @@ async def Blink_Light_With_Color_and_Speed(
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00
     """
-    try:
-        api.manager.light_blink(light_id, color, speed)
-        return {"action": "blink", "light_id": light_id, "color": color, "speed": speed}
-    except IndexError:
-        raise HTTPException(
-            status_code=404, detail=f"Light {light_id} not found."
-        ) from None
-    except ValueError:
-        raise HTTPException(
-            status_code=404, detail=f"Color {color} not found."
-        ) from None
+
+    api.manager.light_blink(light_id, color, speed)
+    return {"action": "blink", "light_id": light_id, "color": color, "speed": speed}
 
 
 @api.get(
@@ -297,11 +259,9 @@ async def Blink_Lights() -> dict:
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
     """
-    try:
-        api.manager.light_blink(-1)
-        return {"action": "blink", "light_id": "all", "color": "red", "speed": "slow"}
-    except IndexError:
-        raise HTTPException(status_code=404, detail="No lights found.") from None
+
+    api.manager.light_blink(-1)
+    return {"action": "blink", "light_id": "all", "color": "red", "speed": "slow"}
 
 
 @api.get(
@@ -318,20 +278,14 @@ async def Blink_Lights_With_Color(
     string: red, #ff0000, #f00, 0xff0000, 0xf00 </p>
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
-    try:
-        api.manager.light_blink(-1, color)
-        return {
-            "action": "blink",
-            "light_id": light_id,
-            "color": color,
-            "speed": "slow",
-        }
-    except IndexError:
-        raise HTTPException(status_code=404, detail="No lights found.") from None
-    except ValueError:
-        raise HTTPException(
-            status_code=404, detail=f"Color {color} not found."
-        ) from None
+
+    api.manager.light_blink(-1, color)
+    return {
+        "action": "blink",
+        "light_id": light_id,
+        "color": color,
+        "speed": "slow",
+    }
 
 
 @api.get(
@@ -349,13 +303,9 @@ async def Blink_Lights_With_Color_and_Speed(
 
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
-    try:
-        api.manager.light_blink(-1, color, speed)
-        return {"action": "blink", "light_id": "all", "color": color, "speed": speed}
-    except IndexError:
-        raise HTTPException(status_code=404, detail="No lights found.") from None
-    except ValueError as error:
-        raise HTTPException(status_code=404, detail=str(error)) from None
+
+    api.manager.light_blink(-1, color, speed)
+    return {"action": "blink", "light_id": "all", "color": color, "speed": speed}
 
 
 @api.get(
@@ -368,13 +318,9 @@ async def Rainbow_Light(
 ) -> dict:
     """Start a rainbow animation on the specified light.
     """
-    try:
-        api.manager.apply_effect_to_light(light_id, rainbow)
-        return {"action": "effect", "name": "rainbow", "light_id": light_id}
-    except IndexError:
-        raise HTTPException(
-            status_code=404, detail=f"Light {light_id} not found."
-        ) from None
+
+    api.manager.apply_effect_to_light(light_id, rainbow)
+    return {"action": "effect", "name": "rainbow", "light_id": light_id}
 
 
 @api.get(
@@ -386,8 +332,6 @@ async def Rainbow_Lights():
     """Start a rainbow animation on all lights.
     <p><em>Note:</em> lights will not be synchronized.</p>
     """
-    try:
-        api.manager.apply_effect_to_light(-1, rainbow)
-        return {"action": "effect", "name": "rainbow", "light_id": "all"}
-    except IndexError:
-        raise HTTPException(status_code=404, detail=f"No lights found.") from None
+
+    api.manager.apply_effect_to_light(-1, rainbow)
+    return {"action": "effect", "name": "rainbow", "light_id": "all"}
