@@ -1,7 +1,5 @@
 ![BusyLight Project Logo][1]
 
-# BusyLight for Humans™
-
 The [BusyLight for Humans™][0] project provides a common interface to
 several types of USB connected LED lights from multiple vendors:
 
@@ -17,12 +15,13 @@ busy communicating and changes the color of the light to signal they
 are busy. The general capabilities of the presense lights tend to be
 similar: turn on with a color, turn off, and blink on and off.
 
-After that, the capabilities of lights begins to diverge. Several can
-play a tune from a selection stored in firmware. Some lights are
+After that, the capabilities of lights begin to diverge. Several lights
+can also play a tune from a selection stored in firmware. Some lights are
 "write-only" and others provide introspection into the current state
 of the device. Most devices can maintain their current state without
 further software intervention, while some require a keep-alive
-heartbeat to continue their current state.
+heartbeat to continue their current state. Some are even capabable of
+running rudimentary stored programs!
 
 The following is a technical review of each of the lights, their capabilties,
 and difficulties encountered while adding support for them. All of these
@@ -36,7 +35,7 @@ the hard work and generosity of these two projects:
 
 ## Embrava Blynclight
 
-The Embrava Blynclight family of products is diverse but the articles I've
+The Embrava Blynclight family of products is diverse but the physical articles I've
 tested all seem to share a base implementation. Specifically, I've personally
 tested the BLYNCUSB30 (Blynclight) and BLYNCUSB40S (Blynclight Plus) models
 and have secondhand accounts of success with the Blynclight mini.
