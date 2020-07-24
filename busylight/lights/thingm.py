@@ -45,6 +45,51 @@ class Blink1Report(int, Enum):
     TWO = 2
 
 
+class Blink1ReportField(BitField):
+    """
+    """
+
+
+class Blink1ActionField(BitField):
+    """
+    """
+
+
+class Blink1ColorField(BitField):
+    """
+    """
+
+
+class Blink1StopField(BitField):
+    """
+    """
+
+
+class Blink1CountField(BitField):
+    """
+    """
+
+
+class Blink1FadeField(BitField):
+    """
+    """
+
+
+class Blink1LEDSField(BitField):
+    """
+    """
+
+
+class Blink1LineField(BitField):
+    """
+    """
+
+
+class Blink1Field(BitField):
+    """
+    """
+
+
 class Blink1(USBLight):
     """ThingM blink(1) USB connnected LED light.
     
@@ -63,23 +108,23 @@ class Blink1(USBLight):
 
         self.default_fade = 10
 
-    report = USBLightAttribute(56, 8)
-    action = USBLightAttribute(48, 8)
+    report = Blink1ReportField(56, 8)
+    action = Blink1ActionField(48, 8)
 
-    red = USBLightAttribute(40, 8)
-    play = USBLightAttribute(40, 8)
+    red = Blink1ColorField(40, 8)
+    play = Blink1ColorField(40, 8)
 
-    green = USBLightAttribute(32, 8)
-    start = USBLightAttribute(32, 8)
+    green = Blink1ColorField(32, 8)
+    start = Blink1StartField(32, 8)
 
-    blue = USBLightAttribute(24, 8)
-    stop = USBLightAttribute(24, 8)
+    blue = Blink1ColorField(24, 8)
+    stop = Blink1StopField(24, 8)
 
-    count = USBLightAttribute(16, 8)
-    fade = USBLightAttribute(8, 16)
+    count = Blink1CountField(16, 8)
+    fade = Blink1FadeField(8, 16)
 
-    leds = USBLightAttribute(0, 8)
-    line = USBLightAttribute(0, 8)
+    leds = Blink1LEDSField(0, 8)
+    line = Blink1LineField(0, 8)
 
     def read(self, buf: bytes) -> bytes:
         """ ¯\_(ツ)_/¯ 
