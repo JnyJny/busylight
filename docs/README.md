@@ -60,7 +60,7 @@ controlled by writing a nine (9) byte packet to the device.
 
 
 [0]: https://github.com/JnyJny/busylight
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/BusyLightLogo.png
+[1]: https://github.com/JnyJny/busylight/blob/master/docs/BusyLightLogo_200h.png
 [2]: https://embrava.com
 [3]: https://busylight.com
 [4]: https://luxafor.com
