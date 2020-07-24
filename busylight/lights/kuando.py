@@ -82,6 +82,36 @@ class StepVolumeField(BitField):
     """
 
 
+class StepField(USBLightAttribute):
+    """
+    """
+
+
+class BusyLightSensitivityField(USBLightAttribute):
+    """
+    """
+
+
+class BusyLightTimeoutField(USBLightAttribute):
+    """
+    """
+
+
+class BusyLightTriggerField(USBLightAttribute):
+    """
+    """
+
+
+class BusyLightPadBytes(USBLightAttribute):
+    """
+    """
+
+
+class BusyLightChecksumField(USBLightAttribute):
+    """
+    """
+
+
 class Step(BitVector):
     @classmethod
     def jump_to(cls, target: int):
@@ -150,20 +180,20 @@ class BusyLight(USBLight):
 
         super().__init__(vendor_id, product_id, 0x00FF_FFFF_0000, 512)
 
-    step0 = BitField(448, 64)
-    step1 = BitField(384, 64)
-    step2 = BitField(320, 64)
-    step3 = BitField(256, 64)
-    step4 = BitField(192, 64)
-    step5 = BitField(128, 64)
-    step6 = BitField(64, 64)
-    final = BitField(0, 64)
+    step0 = StepField(448, 64)
+    step1 = StepField(384, 64)
+    step2 = StepField(320, 64)
+    step3 = StepField(256, 64)
+    step4 = StepField(192, 64)
+    step5 = StepField(128, 64)
+    step6 = StepField(64, 64)
+    final = StepField(0, 64)
 
-    sensitivity = BitField(56, 8)
-    timeout = BitField(48, 8)
-    trigger = BitField(40, 8)
-    padbytes = BitField(16, 24)
-    chksum = BitField(0, 16)
+    sensitivity = BusyLightSensitivityField(56, 8)
+    timeout = BusyLightTimeoutField(48, 8)
+    trigger = BusyLightTriggerField(40, 8)
+    padbytes = BusyLightPadBytes(16, 24)
+    chksum = BusyLightChecksumField(0, 16)
 
     def __debug_str__(self):
         return "\n".join(
