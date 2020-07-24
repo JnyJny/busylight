@@ -45,47 +45,52 @@ class Blink1Report(int, Enum):
     TWO = 2
 
 
-class Blink1ReportField(BitField):
+class Blink1ReportField(USBLightAttribute):
     """
     """
 
 
-class Blink1ActionField(BitField):
+class Blink1ActionField(USBLightAttribute):
     """
     """
 
 
-class Blink1ColorField(BitField):
+class Blink1ColorField(USBLightAttribute):
     """
     """
 
 
-class Blink1StopField(BitField):
+class Blink1StartField(USBLightAttribute):
     """
     """
 
 
-class Blink1CountField(BitField):
+class Blink1StopField(USBLightAttribute):
     """
     """
 
 
-class Blink1FadeField(BitField):
+class Blink1CountField(USBLightAttribute):
     """
     """
 
 
-class Blink1LEDSField(BitField):
+class Blink1FadeField(USBLightAttribute):
     """
     """
 
 
-class Blink1LineField(BitField):
+class Blink1LEDSField(USBLightAttribute):
     """
     """
 
 
-class Blink1Field(BitField):
+class Blink1LineField(USBLightAttribute):
+    """
+    """
+
+
+class Blink1Field(USBLightAttribute):
     """
     """
 
