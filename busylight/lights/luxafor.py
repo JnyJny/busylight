@@ -86,6 +86,9 @@ class FlagCommand(int, Enum):
 
 
 class Flag(USBLight):
+    """A Luxfor Flag presence light.
+
+    """
 
     VENDOR_IDS = [0x04D8]
 
@@ -107,12 +110,9 @@ class Flag(USBLight):
             raise UnknownUSBLight(vendor_id)
 
         super().__init__(vendor_id, product_id, 0, 64)
-        self.immediate_mode = True
-        self.off()
 
-    # The Luxafor Flag command buffer isn't regular
-    # so there are some fields that are aliased to make
-    # the controlling code more straight forward.
+    # The Luxafor Flag command buffer isn't regular so there are some fields
+    # that are aliased to make code more straight forward.
 
     cmd = FlagCmdAttribute(56, 8)
 
@@ -134,16 +134,28 @@ class Flag(USBLight):
     strobe_repeat = FlagRepeatAttribute(0, 8)
     wave_speed = FlagSpeedAttribute(0, 8)
 
+    @property
+    def name(self) -> str:
+        """Luxafor products include 'Luxafor' in the product_string
+        so `name` is an alias for `light.info['product_string'.title()`.
+        """
+        try:
+            return self._name
+        except AttributeError:
+            pass
+        self._name = self.info["product_string"].title()
+        return self._name
+
     def on(self, color: Tuple[int, int, int] = None) -> None:
-        """Turn the light on with specified color [default=green]. 
+        """Turn the light on with specified color [default=green].
 
         :param color: Tuple[int, int, int]:
         """
-        with self.updates_paused():
-            color = color or self.color
-            if not any(color):
-                color = (0, 255, 0)
-            self.lf_activate(FlagLED.ALL, color, 0)
+
+        color = color or self.color
+        if not any(color):
+            color = (0, 255, 0)
+        self.lf_activate(FlagLED.ALL, color, 0)
 
     def off(self) -> None:
         """Turn the light off.
@@ -175,7 +187,7 @@ class Flag(USBLight):
         :param color: Tuple[int, int, int]
         :param fade: int
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.reset()
             self.cmd = FlagCommand.COLOR
             self.leds = leds
@@ -195,7 +207,7 @@ class Flag(USBLight):
         :param repeat: int [default=0, forever]
 
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.reset()
             self.cmd = FlagCommand.STROBE
             self.leds = leds
@@ -213,7 +225,7 @@ class Flag(USBLight):
         :param speed: int
         :param repeat: int [default=0, forever]
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.reset()
             self.cmd = FlagCommand.WAVE
             self.color = color
@@ -226,7 +238,7 @@ class Flag(USBLight):
         :param pattern: luxafor.FlagPattern
         :param repeat: int [default=0, forever]
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.reset()
             self.cmd = FlagCommand.PATTERN
             self.pattern = pattern

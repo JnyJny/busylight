@@ -99,7 +99,6 @@ class BusyLight(USBLight):
             raise UnknownUSBLight(vendor_id)
 
         super().__init__(vendor_id, product_id, 0x00FF_FFFF_0000, 512)
-        self.immediate_mode = True
 
     step0 = BitField(448, 64)
     step1 = BitField(384, 64)
@@ -145,7 +144,7 @@ class BusyLight(USBLight):
         interval = timeout // 2
         while True:
             self.step0 = keepalive
-            self.update(flush=True)
+            self.write()
             yield
             sleep(interval)
 
@@ -189,7 +188,7 @@ class BusyLight(USBLight):
         step.color = color
         step.update = 1
 
-        with self.updates_paused():
+        with self.batch_update():
             self.reset()
             self.step0 = step.value
 
@@ -204,6 +203,6 @@ class BusyLight(USBLight):
         step.dc_on = 10 // speed
         step.dc_off = 10 // speed
 
-        with self.updates_paused():
+        with self.batch_update():
             self.reset()
             self.step0 = step.value

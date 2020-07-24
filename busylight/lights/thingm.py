@@ -1,11 +1,11 @@
-"""ThingM Blink support.
+"""ThingM blink(1) support.
 """
 
 from enum import Enum
 from typing import Tuple
 
 from .usblight import USBLight
-from .usblight import USBLightAttribute, USBLightImmediateAttribute
+from .usblight import USBLightAttribute
 from .usblight import UnknownUSBLight
 
 
@@ -46,6 +46,11 @@ class Blink1Report(int, Enum):
 
 
 class Blink1(USBLight):
+    """ThingM blink(1) USB connnected LED light.
+    
+    
+    """
+
     VENDOR_IDS = [0x27B8]
     __vendor__ = "ThingM"
 
@@ -54,11 +59,9 @@ class Blink1(USBLight):
         if vendor_id not in self.VENDOR_IDS:
             raise UnknownUSBLight(vendor_id)
 
-        super().__init__(vendor_id, product_id, 0, 64)
+        super().__init__(vendor_id, product_id, (Blink1Report.ONE << 56), 64)
 
-        self.report == Blink1Report.ONE
         self.default_fade = 10
-        self.immediate_mode = True
 
     report = USBLightAttribute(56, 8)
     action = USBLightAttribute(48, 8)
@@ -129,7 +132,7 @@ class Blink1(USBLight):
     ) -> None:
         """
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.clear()
             self.report = Blink1Report.ONE
             self.action = Blink1Action.FadeColor
@@ -140,7 +143,8 @@ class Blink1(USBLight):
     def b1_set_color_now(self, color: Tuple[int, int, int]) -> None:
         """Only of devices with fw val 204+
         """
-        with self.updates_paused():
+
+        with self.batch_update():
             self.clear()
             self.report = Blink1Report.ONE
             self.action = Blink1Action.SetColor
@@ -151,7 +155,7 @@ class Blink1(USBLight):
     ) -> None:
         """
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.clear()
             self.report = Blink1Report.ONE
             self.action = Blink1Action.SetColorPattern
@@ -162,7 +166,7 @@ class Blink1(USBLight):
     def b1_save_patterns(self):
         """
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.clear()
             self.report = Blink1Report.ONE
             self.action = Blink1Action.SaveColorPatterns
@@ -174,7 +178,7 @@ class Blink1(USBLight):
     def b1_play_loop(self, play: int, start: int, stop: int, count: int = 0) -> None:
         """
         """
-        with self.updates_paused():
+        with self.batch_update():
             self.clear()
             self.report = Blink1Report.ONE
             self.action = Blink1Action.PlayLoop

@@ -1,71 +1,72 @@
-"""Embrava BlyncLight support.
+"""Embrava Blynclight support.
 """
 
 from typing import Tuple
 
 from .usblight import USBLight, UnknownUSBLight
 from .usblight import USBLightAttribute
-from .usblight import USBLightImmediateAttribute
 from .usblight import USBLightReadOnlyAttribute
 
 
-class BlyncLightCommandHeader(USBLightReadOnlyAttribute):
+class BlynclightCommandHeader(USBLightReadOnlyAttribute):
     """A constant 16-bit field with zero value."""
 
 
-class BlyncLightColor(USBLightImmediateAttribute):
+class BlynclightColor(USBLightAttribute):
     """An 8-bit color."""
 
 
-class BlyncLightOff(USBLightImmediateAttribute):
+class BlynclightOff(USBLightAttribute):
     """Toggle the light off and on: 1 == off, 0 == on."""
 
 
-class BlyncLightDim(USBLightImmediateAttribute):
+class BlynclightDim(USBLightAttribute):
     """Toggle the light from bright to dim. bright == 0, dim == 1."""
 
 
-class BlyncLightFlash(USBLightImmediateAttribute):
+class BlynclightFlash(USBLightAttribute):
     """Toggle the light from steady to flash mode."""
 
 
-class BlyncLightSpeed(USBLightImmediateAttribute):
+class BlynclightSpeed(USBLightAttribute):
     """A four bit field that specifies the flash speed."""
 
 
-class BlyncLightRepeat(USBLightImmediateAttribute):
+class BlynclightRepeat(USBLightAttribute):
     """Toggle tune repeat: 0 once, 1 repeat"""
 
 
-class BlyncLightPlay(USBLightImmediateAttribute):
+class BlynclightPlay(USBLightAttribute):
     """Toggle playing selected tune."""
 
 
-class BlyncLightMusic(USBLightImmediateAttribute):
+class BlynclightMusic(USBLightAttribute):
     """Select a tune in firmware: 0 - 10"""
 
 
-class BlyncLightMute(USBLightImmediateAttribute):
+class BlynclightMute(USBLightAttribute):
     """Toggle muting the tune being played. 0 == play, 1 == mute."""
 
 
-class BlyncLightVolume(USBLightImmediateAttribute):
+class BlynclightVolume(USBLightAttribute):
     """Volume of the tune when played: 0 - 10"""
 
 
-class BlyncLightCommandFooter(USBLightReadOnlyAttribute):
+class BlynclightCommandFooter(USBLightReadOnlyAttribute):
     """A 16-bit constant field with value 0xFF22."""
 
 
-class BlyncLight(USBLight):
+class Blynclight(USBLight):
+    """An Embrava Blynclight device.
+
+    """
 
     VENDOR_IDS = [0x2C0D, 0x03E5]
 
     __vendor__ = "Embrava"
 
     def __init__(self, vendor_id: int, product_id: int):
-        """An Embrava Blynclight device.
-
+        """
         :param vendor_id: 16-bit int
         :param product_id: 16-bit int
         
@@ -79,22 +80,21 @@ class BlyncLight(USBLight):
             raise UnknownUSBLight(vendor_id)
 
         super().__init__(vendor_id, product_id, 0x00000000090080FF22, 72)
-        self.immediate_mode = True
 
-    header = BlyncLightCommandHeader(64, 8)
-    red = BlyncLightColor(56, 8)
-    blue = BlyncLightColor(48, 8)
-    green = BlyncLightColor(40, 8)
-    _off = BlyncLightOff(32, 1)
-    dim = BlyncLightDim(33, 1)
-    flash = BlyncLightFlash(34, 1)
-    speed = BlyncLightSpeed(35, 3)
-    repeat = BlyncLightRepeat(29, 1)
-    play = BlyncLightPlay(28, 1)
-    music = BlyncLightMusic(24, 4)
-    mute = BlyncLightMute(23, 1)
-    volume = BlyncLightVolume(18, 4)
-    footer = BlyncLightCommandFooter(0, 16)
+    header = BlynclightCommandHeader(64, 8)
+    red = BlynclightColor(56, 8)
+    blue = BlynclightColor(48, 8)
+    green = BlynclightColor(40, 8)
+    _off = BlynclightOff(32, 1)
+    dim = BlynclightDim(33, 1)
+    flash = BlynclightFlash(34, 1)
+    speed = BlynclightSpeed(35, 3)
+    repeat = BlynclightRepeat(29, 1)
+    play = BlynclightPlay(28, 1)
+    music = BlynclightMusic(24, 4)
+    mute = BlynclightMute(23, 1)
+    volume = BlynclightVolume(18, 4)
+    footer = BlynclightCommandFooter(0, 16)
 
     def on(self, color: Tuple[int, int, int] = None) -> None:
         """Turn the light on with the specified color [default=green].
@@ -107,6 +107,7 @@ class BlyncLight(USBLight):
     def off(self) -> None:
         """Turn the light off.
         """
+
         self.bl_off()
 
     def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
@@ -122,7 +123,7 @@ class BlyncLight(USBLight):
         """
         """
 
-        with self.updates_paused():
+        with self.batch_update():
             self.reset()
             self.color = color
             self.dim = dim
@@ -132,14 +133,14 @@ class BlyncLight(USBLight):
         """
         """
 
-        with self.updates_paused():
+        with self.batch_update():
             self._off = 1
 
     def bl_blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
         """
         """
 
-        with self.updates_paused():
+        with self.batch_update():
             self.color = color
             self.flash = 1
             self.speed = 1 << (speed - 1)
