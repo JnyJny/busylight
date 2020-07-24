@@ -8,10 +8,11 @@ from typing import Tuple, Union, List
 
 import typer
 
-from .lights import available_lights, get_light, get_all_lights
-from .lights import SUPPORTED_LIGHTS, KNOWN_VENDOR_IDS
+from .manager import LightManager, BlinkSpeed
+from .manager import LightIdRangeError, ColorLookupError
 
-from .color import color_to_rgb
+from .lights import KNOWN_VENDOR_IDS
+
 
 cli = typer.Typer()
 
@@ -32,7 +33,7 @@ def main_callback(
 ):
     """Control USB attached LED lights like a Human™
 
-    ![Two Lights at Once](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
+    ![Five Lights at Once](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
 
     Make a supported USB attached LED light turn on, off and blink; all
     from the comfort of your very own command-line. If your platform
@@ -77,63 +78,49 @@ def main_callback(
     [busylight](https://github.com/JnyJny/busylight.git)
     """
 
-    if not ctx.invoked_subcommand:
-        ctx.invoke(list_subcommand)
-        raise typer.Exit()
+    ctx.obj = -1 if all_lights else light_id
+
+    #    if not ctx.invoked_subcommand:
+    #        ctx.invoke(list_subcommand, ctx)
+    #        raise typer.Exit()
 
     if ctx.invoked_subcommand not in ["supported", "udev-rules"]:
-        try:
-            if all_lights:
-                ctx.obj = list(get_all_lights())
-            else:
-                ctx.obj = [get_light(light_id)]
-        except Exception as error:
-            typer.secho(str(error), fg="red")
-            raise typer.Exit()
+        pass
 
 
 @cli.command(name="list")
-def list_subcommand():
+def list_subcommand(
+    ctx: typer.Context,
+    detail: bool = typer.Option(False, "--long", "-l", is_flag=True),
+):
     """List available lights (currently connected).
-    
     """
 
-    lights = available_lights()
+    available = LightManager.available()
 
-    if not lights:
+    if not available:
         typer.secho("No lights found.", fg="red")
         raise typer.Exit(-1)
 
     typer.secho("ID: Device Name", fg="blue")
-    for index, light in enumerate(lights):
+    for index, light in enumerate(available):
         typer.secho(f"{index:2d}", fg="red", nl=False)
         typer.secho(": ", nl=False)
         typer.secho(f"{light['product_string'].title()}", fg="green")
-
-
-def handle_color(value: str) -> Tuple[int, int, int]:
-    """Returns a tuple of RGB integer values decoded from the supplied `value`.
-    
-    Value can be a hexidecimal string (0xRRGGBB|0xRGB) or a color name. 
-
-    :param value: str
-    """
-
-    if value is None:
-        return None
-
-    try:
-        return color_to_rgb(value)
-    except Exception:
-        typer.secho(f"Unable to decode color from '{value}'.", fg="red")
-        raise typer.Exit(-1)
-    return None
+        if detail:
+            for key, value in light.items():
+                typer.secho(f"\t{index:2d}", fg="red", nl=False)
+                typer.secho(": ", nl=False)
+                typer.secho(f"{key!s}", fg="blue", nl=False)
+                typer.secho(": ", nl=False)
+                try:
+                    typer.secho(f"0x{int(value):02x}", fg="green")
+                except ValueError:
+                    typer.secho(f"{value!s}", fg="green")
 
 
 @cli.command(name="on")
-def on_subcommand(
-    ctx: typer.Context, color: str = typer.Argument("green", callback=handle_color,),
-):
+def on_subcommand(ctx: typer.Context, color: str = typer.Argument("green")):
     """Turn selected lights on.
 
     The light selected is turned on with the specified color. The default color is green
@@ -154,8 +141,14 @@ def on_subcommand(
     
     """
 
-    for light in ctx.obj:
-        light.on(color=color)
+    light_id = ctx.obj
+
+    try:
+        with LightManager().operate_on(light_id) as manager:
+            manager.light_on(light_id, color)
+    except (LightIdRangeError, ColorLookupError) as error:
+        typer.secho(str(error), fg="red")
+        raise typer.Exit(-1) from None
 
 
 @cli.command(name="off")
@@ -169,18 +162,21 @@ def off_subcommand(ctx: typer.Context,):
     ```
 
     """
+    light_id = ctx.obj
 
-    for light in ctx.obj:
-        light.off()
+    try:
+        with LightManager().operate_on(light_id) as manager:
+            manager.light_off(light_id)
+    except LightIdRangeError as error:
+        typer.secho(str(error), fg="red")
+        raise typer.Exit(-1) from None
 
 
 @cli.command(name="blink")
 def blink_subcommand(
     ctx: typer.Context,
-    color: str = typer.Argument("red", callback=handle_color,),
-    speed: int = typer.Option(
-        1, "--faster", "-f", count=True, help="Increase blink speed."
-    ),
+    color: str = typer.Argument("red"),
+    speed: BlinkSpeed = typer.Argument(BlinkSpeed.SLOW),
 ):
     """Activate the selected light in blink mode.
 
@@ -200,17 +196,23 @@ def blink_subcommand(
     $ busylight --all off      # that's enough of that!
     ```
     """
+    light_id = ctx.obj
 
-    for light in ctx.obj:
-        light.blink(color=color, speed=speed)
+    try:
+        with LightManager().operate_on(light_id) as manager:
+            manager.light_blink(light_id, color, speed)
+    except (LightIdRangeError, ColorLookupError) as error:
+        typer.secho(str(error), fg="red")
+        raise typer.Exit(-1) from None
 
 
 @cli.command(name="supported")
-def supported_subcommand():
+def supported_subcommand(ctx: typer.Context):
     """List supported LED lights.
     """
-    for light in SUPPORTED_LIGHTS:
-        typer.secho(f"{light.__vendor__} {light.__name__}", fg="green")
+    with LightManager().operate_on(None) as manager:
+        for supported_light in manager.supported:
+            typer.secho(supported_light, fg="green")
 
 
 @cli.command(name="udev-rules")
