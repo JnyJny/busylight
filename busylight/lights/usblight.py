@@ -112,6 +112,12 @@ class USBLight(BitVector):
     ):
         """A generic USB light device.
 
+        The default_state value is especially important for subclasses with
+        read-only data descriptor fields. Those data descriptors cannont
+        be used to set their value, however the passed in default value can
+        define those fields and updates the device bitvector whenever
+        the reset method is called.
+
         :param vendor_id: 16-bit integer
         :param product_id: 16-bit integer
         :param default_state: integer
@@ -126,13 +132,7 @@ class USBLight(BitVector):
         self.default_state = default_state
         self.vendor_id = vendor_id
         self.product_id = product_id
-
-        try:
-            self.device.open(vendor_id, product_id)
-        except OSError:
-            raise USBLightInUse(self) from None
-        except ValueError:
-            raise USBLightNotFound(self) from None
+        self.open()
 
     def __repr__(self):
         class_name = self.__class__.__name__
@@ -216,6 +216,37 @@ class USBLight(BitVector):
         light. Returns None if not animating.
         """
         return getattr(self, "_effect_thread", None)
+
+    def open(self) -> None:
+        """Opens the device for I/O. 
+
+        Raises:
+        - USBLightInUse
+        """
+
+        try:
+            self.device.open(self.vendor_id, self.product_id)
+            return
+        except ValueError:
+            raise USBLightNotFound(self) from None
+        except OSError:
+            pass
+
+        # device might be in use and we will look for another device with the
+        # same vid/pid but a different path.
+
+        for info in hid.enumerate(self.product_id, vendor_id):
+            try:
+                self.device.open_path(info["path"])
+                return
+            except KeyError:
+                raise Exception(
+                    f"USB HID device {self!r} had no path. perms?"
+                ) from None
+            except OSError:
+                pass
+        else:
+            raise USBLightNotFound(self)
 
     def close(self, turn_off: bool = False) -> None:
         """Shutdown any helper or effect threads active for this light,
