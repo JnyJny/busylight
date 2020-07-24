@@ -1,4 +1,5 @@
 """Embrava Blynclight support.
+
 """
 
 from typing import Tuple
@@ -6,6 +7,10 @@ from typing import Tuple
 from .usblight import USBLight, UnknownUSBLight
 from .usblight import USBLightAttribute
 from .usblight import USBLightReadOnlyAttribute
+
+## The following data descriptor class definitions
+## exist to provide docstrings for the individual
+## fields declared in the Blynclight class.
 
 
 class BlynclightCommandHeader(USBLightReadOnlyAttribute):
@@ -57,12 +62,35 @@ class BlynclightCommandFooter(USBLightReadOnlyAttribute):
 
 
 class Blynclight(USBLight):
-    """An Embrava Blynclight device.
+    """Support for the Embrava Blynclight family of devices.
 
+    Blinklights are controlled by writing a nine-byte buffer
+    to the device:
+
+    header: 8 bits  must be zeros
+       red: 8 bits
+      blue: 8 bits
+     green: 8 bits
+       off: 1 bit   turns light off if set
+       dim: 1 bit   dims light if set
+     flash: 1 bit   enables flash mode
+     speed: 3 bits  valid speeds: 0x1 0x2 0x4
+    repeat: 1 bit   enables music repeat if set
+      play: 1 bit   starts selected music if set
+     music: 4 bits  selects firmware resident music to play
+      mute: 1 bit   mutes playing music if set
+    volume: 4 bits  sets music volume
+    footer: 16 bits must be 0xff22
+
+    Tested Devices:
+    - BLYNCUSB30   Blynclight
+    - BLYNCUSB40S  Blynclight Plus
+    
+    Reported Working:
+    - BLMINI40     Blynclight Mini
     """
 
     VENDOR_IDS = [0x2C0D, 0x03E5]
-
     __vendor__ = "Embrava"
 
     def __init__(self, vendor_id: int, product_id: int):
