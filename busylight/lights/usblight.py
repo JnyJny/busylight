@@ -259,8 +259,9 @@ class USBLight(BitVector):
             self.write()
 
     @contextmanager
-    def batch_update(self):
-        """
+    def batch_update(self) -> None:
+        """This method is a convenience context manager that will call
+        this object's `write` method on exit.
         """
         yield
         self.write()
@@ -270,7 +271,7 @@ class USBLight(BitVector):
         is expected to return a generator that takes the light object as
         it's only argument.  The effect generator should call yield
         as often as possible to make the thread more  responsive to
-        canceling [see CancellableThread].
+        canceling [see busylight.thread.CancellableThread].
 
         :param effect: Generator
         """
