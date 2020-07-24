@@ -3,7 +3,7 @@
 
 from contextlib import contextmanager
 from enum import Enum
-from typing import Callable, Dict, List, Tuple, Union
+from typing import Generator, Dict, List, Tuple, Union
 
 import hid
 
@@ -19,7 +19,13 @@ class BlinkSpeed(str, Enum):
     MEDIUM = "medium"
     FAST = "fast"
 
-    def to_int(self):
+    def to_numeric_value(self) -> int:
+        """Map the BlinkSpeed to a numeric value; low:1, medium:2 and fast:3.
+
+        Returns 1 by default.
+
+        :return: int
+        """
         return {"slow": 1, "medium": 2, "fast": 3}.get(self.value, 1)
 
 
@@ -44,12 +50,26 @@ class LightManager:
     """
     """
 
+    @classmethod
+    def available(cls) -> List[Dict[str, Union[str, int]]]:
+        """A list of dictionaries describing currently available lights.
+
+        The list is returned in sorted order, by filesystem path.
+
+        :return: List[Dict[str, Union[str, int]]]
+        """
+        lights = []
+        for vendor_id in KNOWN_VENDOR_IDS:
+            lights.extend(hid.enumerate(vendor_id))
+
+        return sorted(lights, key=lambda v: v["path"])
+
     def __init__(self):
         self.update()
 
     @property
     def supported(self) -> List[str]:
-        """
+        """A list of supported lights (not necessarily available).
         """
         try:
             return self._supported
@@ -61,18 +81,10 @@ class LightManager:
         return self._supported
 
     @property
-    def available(self) -> List[Dict[str, Union[str, int]]]:
-        """A list of dictionaries describing currently available lights.
-        """
-        lights = []
-        for vendor_id in KNOWN_VENDOR_IDS:
-            lights.extend(hid.enumerate(vendor_id))
-        return lights
-
-    @property
     def lights(self) -> List[USBLight]:
         """List of USBLight subclasses that the manager is currently
-        controlling. 
+        controlling (the devices are open and cannot be used by another
+        process).
         """
         try:
             return self._lights
@@ -81,31 +93,54 @@ class LightManager:
         self._lights = []
         return self._lights
 
+    # EJO __get_item__ implementation here to allow slice notation?
+    #     maybe make LightManager an iterator?
+
     def lights_for(self, light_id: Union[int, None] = -1) -> List[USBLight]:
-        """
+        """Returns a list of USBLights that match `light_id`, which can be
+        None, -1 or a positive integer.
+
+        If `light_id` is None, no lights are matched and an empty list is
+        returned.
+
+        A `light_id` value of -1 signals "all lights" and the entire list
+        of managed lights is returned. 
+
+        A zero or positive `light_id` will return a list containing the
+        matching light. 
+
+        Indices less than -1 or that trigger a IndexError raise a
+        LightIdRangeError exception.
 
         :param light_id: Union[int, None]
         :return: List[USBLight]
+
+        Raises:
+        - LightIdRangeError
         """
 
         if light_id is None:
             return []
 
+        if light_id < -1:
+            raise LightIdRangeError(light_id, len(self.lights) - 1)
+
         try:
             return self.lights if light_id == -1 else [self.lights[light_id]]
         except IndexError:
-            raise LightIdRangeError(light_id, len(self.lights)) from None
+            raise LightIdRangeError(light_id, len(self.lights) - 1) from None
 
     def update(self) -> int:
-        """Checks for available lights that are not lights and adds
-        them to the list of lights. Optionally starts a helper
-        thread for lights that require one.
+        """Checks for available lights that are not lights and adds them
+        to the list of lights. Optionally starts a helper thread for
+        lights that require one.
 
-        :return: number of new lights added to lights list
+        :return: number of new lights added to the managed `lights` list.
         """
 
         new_lights = []
-        for info in self.available:
+        for light_id, info in enumerate(self.available()):
+
             for LightClass in SUPPORTED_LIGHTS:
                 try:
                     new_lights.append(LightClass.from_dict(info))
@@ -185,6 +220,9 @@ class LightManager:
         :param light_id: int
         :param color: str
         :param speed: BlinkSpeed
+
+        - LightIdRangeError
+        - ColorLookupError
         """
 
         try:
@@ -195,15 +233,15 @@ class LightManager:
         self.light_off(light_id)
 
         for light in self.lights_for(light_id):
-            light.blink(rgb, speed.to_int())
+            light.blink(rgb, speed.to_numeric_value())
 
     def apply_effect_to_light(
-        self, light_id: Union[int, None], effect: Callable, *args, **kwds
+        self, light_id: Union[int, None], effect: Generator, *args, **kwds
     ):
         """Apply an effect function to the specified light.
 
-        :param light_id: 
-        :param effect: 
+        :param light_id: int
+        :param effect: generator
         :param args:
         :param kwds:
         """
@@ -217,16 +255,16 @@ class LightManager:
     def operate_on(
         self,
         light_id: Union[int, None] = -1,
-        turn_off_first: bool = True,
-        cleanup: bool = False,
+        pre_cleanup: bool = True,
+        post_cleanup: bool = False,
     ) -> object:
         """
         """
 
-        if turn_off_first:
+        if pre_cleanup:
             self.light_off(light_id)
 
         yield self
 
-        if cleanup:
+        if post_cleanup:
             self.light_off(light_id)
