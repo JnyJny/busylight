@@ -8,7 +8,7 @@ from typing import Generator, Dict, List, Tuple, Union
 import hid
 
 from .lights import SUPPORTED_LIGHTS, KNOWN_VENDOR_IDS
-from .lights import UnknownUSBLight, USBLightInUse
+from .lights import UnknownUSBLight, USBLightInUse, USBLightIOError
 from .lights import USBLight
 
 from .color import color_to_rgb
@@ -131,7 +131,7 @@ class LightManager:
             raise LightIdRangeError(light_id, len(self.lights) - 1) from None
 
     def update(self) -> int:
-        """Checks for available lights that are not lights and adds them
+        """Checks for available lights that are not managed and adds them
         to the list of lights. Optionally starts a helper thread for
         lights that require one.
 
@@ -192,7 +192,10 @@ class LightManager:
 
         for light in self.lights_for(light_id):
             light.stop_effect()
-            light.on(rgb)
+            try:
+                light.on(rgb)
+            except USBLightIOError as error:
+                pass
 
     def light_off(self, light_id: Union[int, None] = -1) -> None:
         """Turn off a light or all lights.
@@ -207,7 +210,10 @@ class LightManager:
 
         for light in self.lights_for(light_id):
             light.stop_effect()
-            light.off()
+            try:
+                light.off()
+            except USBLightIOError as error:
+                pass
 
     def light_blink(
         self,
@@ -233,7 +239,10 @@ class LightManager:
         self.light_off(light_id)
 
         for light in self.lights_for(light_id):
-            light.blink(rgb, speed.to_numeric_value())
+            try:
+                light.blink(rgb, speed.to_numeric_value())
+            except USBLightIOError as error:
+                pass
 
     def apply_effect_to_light(
         self, light_id: Union[int, None], effect: Generator, *args, **kwds
@@ -249,7 +258,9 @@ class LightManager:
         self.light_off(light_id)
 
         for light in self.lights_for(light_id):
-            light.start_effect(effect)
+            light.start_effect(effect)  # what happens with IO here???
+
+    # EJO not sure this context manager is needed
 
     @contextmanager
     def operate_on(
