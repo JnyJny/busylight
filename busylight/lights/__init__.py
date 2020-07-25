@@ -26,10 +26,23 @@ from .luxafor import Flag
 from .thingm import Blink1
 
 from .usblight import USBLight
-from .usblight import UnknownUSBLight, USBLightInUse
+from .usblight import UnknownUSBLight
+from .usblight import USBLightInUse
+from .usblight import USBLightIOError
+from .usblight import USBLightNotFound
 
 SUPPORTED_LIGHTS = [Blynclight, Blink1, BusyLight, Flag]
 
 KNOWN_VENDOR_IDS = sum([l.VENDOR_IDS for l in SUPPORTED_LIGHTS], [])
 
-__all__ = ["Blink1", "Blynclight", "BusyLight", "Flag", "USBLight"]
+__all__ = [
+    "Blink1",
+    "Blynclight",
+    "BusyLight",
+    "Flag",
+    "UnknownUSBLight",
+    "USBLight",
+    "USBLightInUse",
+    "USBLightIOError",
+    "USBLightNotFound",
+]
