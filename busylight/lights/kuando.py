@@ -224,7 +224,10 @@ class BusyLight(USBLight):
         interval = timeout // 2
         while True:
             self.step0 = keepalive
-            self.write()
+            try:
+                self.write()
+            except USBLightIOError:
+                break
             yield
             sleep(interval)
 
@@ -236,17 +239,28 @@ class BusyLight(USBLight):
         I/O operation.
 
         :return: int number of bytes written
+        Raises
+        - USBLightIOError
         """
         self.chksum = sum(self.bytes[:-2])
-        return self.device.write(self.bytes)
+
+        retval = self.device.write(self.bytes)
+        if retval != len(self.bytes):
+            raise USBLightIOError(self, retval)
 
     def on(self, color: Tuple[int, int, int] = None, duration: int = 0) -> None:
         """Turn the light on with the specified color [default=green].
+
+        Raises
+        - USBLightIOError
         """
         self.bl_on(color or (0, 255, 0))
 
     def off(self) -> None:
         """Turn the light off.
+
+        Raises
+        - USBLightIOError
         """
         self.bl_on((0, 0, 0))
 
@@ -255,6 +269,9 @@ class BusyLight(USBLight):
         
         :param color: Tuple[int, int, int]
         :param speed: 1 == slow, 2 == medium, 3 == fast
+
+        Raises
+        - USBLightIOError
         """
         self.bl_blink(color or (255, 0, 0), speed)
 
@@ -262,6 +279,9 @@ class BusyLight(USBLight):
         """Turn the BusyLight on with the specified color. 
         
         :param color: Tuple[int, int, int]
+
+        Raises
+        - USBLightIOError
         """
 
         step = Step.jump_to(0)
@@ -274,6 +294,12 @@ class BusyLight(USBLight):
 
     def bl_blink(self, color: Tuple[int, int, int], speed: int):
         """
+
+        :param color: Tuple[int, int, int]
+        :param speed: int
+
+        Raises
+        - USBLightIOError
         """
 
         step = Step.jump_to(0)

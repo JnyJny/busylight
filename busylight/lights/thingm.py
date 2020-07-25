@@ -7,6 +7,7 @@ from typing import Tuple
 from .usblight import USBLight
 from .usblight import USBLightAttribute
 from .usblight import UnknownUSBLight
+from .usblight import USBLightIOError
 
 
 class Blink1Action(int, Enum):
@@ -150,9 +151,14 @@ class Blink1(USBLight):
         instead of the `write` interface. 
         
         :return: int number of bytes written.
+        
         """
-        self.device.send_feature_report(self.bytes)
-        return len(self.bytes)
+        result = self.device.send_feature_report(self.bytes)
+
+        if result != len(self.bytes):
+            raise USBLightIOError(self, result)
+
+        return result
 
     def on(self, color: Tuple[int, int, int] = None) -> None:
         """Turn the light on with the specified color [default=green].

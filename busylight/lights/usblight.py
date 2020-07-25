@@ -24,6 +24,15 @@ class UnknownUSBLight(Exception):
     pass
 
 
+class USBLightIOError(Exception):
+    def __init__(self, light, retval):
+        self.light = light
+        self.retval = retval
+
+    def __str__(self):
+        return f"Write to {self.light.identifier} failed. Expected {len(self.light.bytes)} got {self.retval}"
+
+
 class USBLightAttribute(BitField):
     """Read-write USB light attribute.
     """
@@ -254,7 +263,11 @@ class USBLight(BitVector):
 
         :return: integer number of bytes written
         """
-        return self.device.write(self.bytes)
+        result = self.device.write(self.bytes)
+        if result != len(self.bytes):
+            raise USBLightIOError(self, result)
+
+        return result
 
     def read(self, nbytes: int) -> bytes:
         """Reads `nbytes` from the device (if supported) and returns the data.
