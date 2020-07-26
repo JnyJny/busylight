@@ -132,18 +132,27 @@ class LightManager:
 
     def update(self) -> int:
         """Checks for available lights that are not managed and adds them
+
         to the list of lights. Optionally starts a helper thread for
-        lights that require one.
+        lights that require one. Checks for lights whose is_open attribute
+        is False, indicating that the last IO operation to that light failed.
+        Calls the light's close method to shutdown any threads associated
+        with the thread and removes it from the list of managed lights.
+
+        Light identfiers of remaining lights will dchange after `update`
+        if lights are unplugged. ¯\_(ツ)_/¯
 
         :return: number of new lights added to the managed `lights` list.
         """
 
         new_lights = []
+
         for light_id, info in enumerate(self.available()):
 
             for LightClass in SUPPORTED_LIGHTS:
                 try:
                     new_lights.append(LightClass.from_dict(info))
+                    new_lights[-1].is_open = True
                 except UnknownUSBLight:
                     pass
                 except USBLightInUse:
@@ -156,6 +165,11 @@ class LightManager:
                     light.helper_thread.start()
                 except AttributeError:
                     pass
+
+        dead_lights = [l for l in self.lights if not l.is_open]
+        for dead_light in dead_lights:
+            dead_light.close()
+            self.lights.remove(dead_light)
 
         return len(new_lights)
 
@@ -195,7 +209,7 @@ class LightManager:
             try:
                 light.on(rgb)
             except USBLightIOError as error:
-                pass
+                light.is_open = False
 
     def light_off(self, light_id: Union[int, None] = -1) -> None:
         """Turn off a light or all lights.
@@ -213,7 +227,7 @@ class LightManager:
             try:
                 light.off()
             except USBLightIOError as error:
-                pass
+                light.is_open = False
 
     def light_blink(
         self,
@@ -242,7 +256,7 @@ class LightManager:
             try:
                 light.blink(rgb, speed.to_numeric_value())
             except USBLightIOError as error:
-                pass
+                light.is_open = False
 
     def apply_effect_to_light(
         self, light_id: Union[int, None], effect: Generator, *args, **kwds
@@ -260,7 +274,7 @@ class LightManager:
         for light in self.lights_for(light_id):
             light.start_effect(effect)  # what happens with IO here???
 
-    # EJO not sure this context manager is needed
+    # EJO not sure this context manager is needed, used in the CLI
 
     @contextmanager
     def operate_on(
