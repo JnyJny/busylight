@@ -68,6 +68,19 @@ async def color_lookup_error_handler(request: Request, error: ColorLookupError):
 
 
 ##
+## Middleware Handlers
+##
+
+
+@api.middleware("http")
+async def light_manager_update(request: Request, call_next):
+    """Check for plug/unplug events and update the light manager.
+    """
+    api.manager.update()
+    return await call_next(request)
+
+
+##
 ## API Routes
 ##
 
@@ -124,7 +137,7 @@ async def Turn_On_Light_With_Color(
     """Turn on the specified light with the given `color`. 
     
     The `color` can be a color name or a hexadecimal
-    string: red, #ff0000, #f00, 0xff0000, 0xf00
+    string: red, #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
     api.manager.light_on(light_id, color)
@@ -154,7 +167,7 @@ async def Turn_On_Lights_With_Color(
     """Turn on all lights with the given `color`.
 
     The `color` can be a color name or a hexadecimal string: red,
-    #ff0000, #f00, 0xff0000, 0xf00
+    #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
     api.manager.light_on(-1, color)
@@ -220,7 +233,7 @@ async def Blink_Light_With_Color(
     """Start blinking the specified light: color and off.
 
     The `color` can be a color name or a hexadecimal string: red,
-    #ff0000, #f00, 0xff0000, 0xf00
+    #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
     api.manager.light_blink(light_id, color)
@@ -245,7 +258,7 @@ async def Blink_Light_With_Color_and_Speed(
     """Start blinking the specified light: `color` and off with the specified `speed`.
     
     The `color` can be a color name or a hexadecimal string: red,
-    #ff0000, #f00, 0xff0000, 0xf00
+    #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
     api.manager.light_blink(light_id, color, speed)
@@ -275,7 +288,7 @@ async def Blink_Lights_With_Color(
     """Start blinking all the lights: `color` and off.
     <p>
     The `color` can be a color name or a hexadecimal
-    string: red, #ff0000, #f00, 0xff0000, 0xf00 </p>
+    string: red, #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000</p>
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
 
@@ -299,8 +312,8 @@ async def Blink_Lights_With_Color_and_Speed(
 ) -> dict:
     """Start blinking all the lights: `color` and off with the specified speed.
   
-    The `color` can be a color name or a hexadecimal string: red, #ff0000, #f00, 0xff0000, 0xf00 </p>
-
+    <p>The `color` can be a color name or a hexadecimal string: red,
+    #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000 </p>
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
 
