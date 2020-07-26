@@ -11,6 +11,8 @@ from typing import Callable, Dict, List, Tuple, Union
 from .gradient import Gradient
 from .spectrum import Spectrum
 
+from ..lights import USBLightIOError
+
 ## Effects are called from a threading.Thread.run subclass
 ## that can be stopped externally. The effects functions
 ## need to yield ocassionlly to allow the thread to decide
@@ -26,7 +28,10 @@ def rainbow(light: object, interval: float = 0.05) -> None:
     colors = [rgb for rgb in Spectrum(steps=255)]
     while True:
         for color in cycle(colors):
-            light.on(color)
+            try:
+                light.on(color)
+            except USBLightIOError:
+                exit()
             yield
             time.sleep(interval)
 
@@ -40,7 +45,10 @@ async def rainbow_async(light: object, interval: float = 0.05) -> None:
     colors = [rgb for rgb in Spectrum(steps=255)]
     while True:
         for color in cycle(colors):
-            light.on(color)
+            try:
+                light.on(color)
+            except USBLightIOError:
+                exit()
             await asyncio.sleep(interval)
             yield
 
