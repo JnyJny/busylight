@@ -1,27 +1,65 @@
-"""
+"""turn strings into RGB
 """
 
 from functools import lru_cache
 from math import log
+from string import hexdigits
 from typing import Tuple
 
 import webcolors
 
 
-def color_to_rgb(value: str) -> Tuple[int, int, int]:
-    """Returns a tuple of red, green and blue integer values
-    interpreted from the input string. The string can be a
-    hexadecimal string that starts with 0x or # or a color name.
+def normalize_hex_str(value: str) -> str:
+    """Given a `value`, normalizes hex strings to webcolor format.
+
+    The function checks for known hexadecimal string prefixes; 0x
+    and # and normalizes the string to the # notation used by
+    webcolors. Also checks for a bare hexadecimal value, checking
+    that all characters are valid hex digits. 
+
+    :param str: possible hexadecimal string
+    :return: normalized hexadecimal string 
 
     Raises:
-    - ValueError
+    - ValueError Unrecognized hex string
+
     """
 
-    if value.startswith("0x"):
-        return tuple(webcolors.hex_to_rgb("#" + value[2:]))
+    if value[0] == "#":
+        return value
 
-    if value.startswith("#"):
-        return tuple(webcolors.hex_to_rgb(value))
+    if value[0:2] == "0x":
+        return "#" + value[2:]
+
+    if all(c in hexdigits for c in value):
+        return "#" + value
+
+    raise ValueError(f"Unrecognized hex string '{value}'")
+
+
+def color_to_rgb(value: str) -> Tuple[int, int, int]:
+    """Returns a tuple of red, green and blue integer values.
+
+    The input string string can be a hexadecimal string that
+    optionally starts with 0x or # or a color name.
+    
+    Examples of 'red':
+    - 0xf00
+    - #f00
+    - f00
+    - 0xff0000
+    - #ff0000
+    - ff0000
+    - red
+
+    Raises:
+    - ValueError Unable to decode color string
+    """
+
+    try:
+        return tuple(webcolors.hex_to_rgb(normalize_hex_str(value)))
+    except ValueError:
+        pass
 
     return tuple(webcolors.name_to_rgb(value))
 
