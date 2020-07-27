@@ -40,19 +40,47 @@ tested all seem to share a base implementation. Specifically, I've personally
 tested the BLYNCUSB30 (Blynclight) and BLYNCUSB40S (Blynclight Plus) models
 and have secondhand accounts of success with the Blynclight mini.
 
-### Basic Info
+### Physical Description
+
+#### Blynclight & Blynclight Plus
+
+These two lights are very similar and consist of a "pedastal" topped
+by a cubical transluscent diffuser. The pedastal houses the PCB board
+of the device and features five LEDs exposed on the top. The LEDs are
+arranged in a "checkerboard" configuration and are not individually
+addressable. There is a female USB mini connector which allows
+connecting the device to a host with any in-spec length cable.
+
+The Blynclight Plus appears to have a downward firing speaker, however
+covering the bottom "grille" does not seem to attenuate how loud the
+device is.
+
+The devices are roughly 2 inches tall, and 1.5 inches on a side. 
+
+### Basic Human Interface Device Info 
 
 - Vendor Id values: 0x2c0d, 0x03e5
-- I/O Interface: POSIX-style `write` 
+- I/O Interface: POSIX-style `write`
 - I/O Control: 9 byte word
 
 ### Control Word Format
 
-The Embrava Blynclight is a USB HID accessible device whose attributes are
-controlled by writing a nine (9) byte packet to the device. 
+The Embrava Blynclight is a [USB HID][8] accessible device whose
+attributes are controlled by writing a nine (9) byte packet to the
+device.
 
-The C language specification supports bit fields in `struct` definitions,
-so it's more natural to use C in this case to describe the control word.
+The following is a C language structure type definition using bit
+fields to illustrate the structure of the 9-byte packet. Examples
+for configuring the device for different functions will be given
+in C, however they should be very accessible regardless of what
+language the reader may be familiar with. 
+
+A structure bit field in C is declared as a member of a struct,
+usually an `unsigned int`, followed by a width specifier. The
+`header` field specified below is an 8-bit (1-byte) field, while
+the `off` field is a single bit field. Fields prefixed with `pad`
+are unused and defined to maintain the correct offsets within the
+structure for fields that follow. 
 
 ```C
 typedef struct {
@@ -74,13 +102,113 @@ typedef struct {
    
    unsigned int volume: 4;  /* 20:23 Volume of music: [0-15]
    unsigned int mute: 1;    /* 19:19 Set is mute, zero is unmute */
-   unsigned int padX: 3;    /* 16:18 unused bits */
+   unsigned int pad2: 3;    /* 16:18 unused bits */
    
    unsigned int footer: 16; /* 00:15 Constant: 0xFF22 */
 } blynclight_ctrl_t
 ```
 
+### Device Operation
 
+The devices requires the inital byte of the control word be zero and
+the final two bytes of the word be set to 0xFF22. The device is
+effectively write-only as I have not been able to get the device to
+return anything via the `read` or `get_feature_report` interfaces
+(beyond nulls).
+
+#### Activating With a RGB Color
+
+Turning the light on requires the user to supply a control word with
+`off` de-asserted (zero) and one or more red, blue or green values.
+Please note that this device does not follow the RGB convention of
+color ordering; the order of green and blue is swapped, **RBG**.
+
+**Example: Activate Light with Purple Color.**
+```C
+	blynclight_ctrl_t cword;
+	
+	cword.red = 0xff;
+	cword.blue = 0xff;
+	cword.green = 0x00;
+	cword.off = 0;
+	/* write control word to device */
+```	
+
+Please note that clearing the `off` field is not enough to provoke a
+visible effect form the device; a color must also be given otherwise
+the light is "on" with a black color. This can be frustrating.
+
+#### Turning Light Off
+
+Turning the light off only requires setting the `off` field and writing
+the control word to the device.
+
+
+#### Dimming the Light
+
+The light can be put into a dim state by asserting the `dim` bit, resuming
+"bright" operation when `dim` is cleared.
+
+#### Flash Mode
+
+The light can be made to flash on and off, alternating between the
+specified RGB value and off. The flash speed is controlled by the
+3-bit `speed` field which is used to specify three speeds: slow, medium
+and fast. 
+
+**Example: Configuring Flash Mode**
+```C
+	blynclight_ctl_t cword;
+	
+	cword.flash = 1
+	cword.speed = 1 << 0; /* slow speed */
+	cword.speed = 1 << 1; /* medium speed */
+	cword.speed = 1 << 2; /* fast speed */
+```
+
+When `flash` is set and `speed` is set to any value other than (1, 2, 4),
+the light will respond by strobing on and off very quickly. 
+
+#### Sound Operation
+
+Some models of Blynclight provide the ability to trigger playback of tones
+stored in the firmware of the device, e.g. Blynclight Plus and others.
+
+Playback of stored tones is controlled by the `play`, `repeat`,
+`music`, `volume` and `mute` fields. The 4-bit `music` field selects
+which stored sound to play. The `repeat` field toggles whether the
+sound is played one time or repeated indefinitely.  The 4-bit `volume`
+field specifies the volume the sound is played at where zero is silent
+and 0xF is the maximum. The `mute` bit controls whether the volume
+setting is respected or clamped to zero at the device. Finally, the
+`play` bit initiates playback of the selected sound with the specified
+volume and repeat value.
+
+Practically, I could not distinguish any difference in loudness
+for volume values between 1 and 0xf.
+
+**Example: Playing the First Sound One Time**
+```C
+    blynclight_ctl_t cword;
+	
+	cword.play = 1
+	cword.music = 1
+	cword.volume = 1
+	cword.mute = 0
+	cword.repeat = 0
+```
+
+### Observations
+
+The Embrava Blynclight is simple robust device. The only _edge_ case behavior I've
+encountered is the strobe effect achieved when `flash` is set and `speed` is [0,3,5,7].
+The light is very responsive and I have **not** been able to induce an error state in the
+light that required "rebooting" (unplug/plug) the light to recover normal function.
+
+### Functionality Wishlist 
+
+- Read current state
+- Individual control of the five LEDs
 
 
 [0]: https://github.com/JnyJny/busylight
