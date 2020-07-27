@@ -48,13 +48,37 @@ and have secondhand accounts of success with the Blynclight mini.
 
 ### Control Word Format
 
-
-
-
 The Embrava Blynclight is a USB HID accessible device whose attributes are
 controlled by writing a nine (9) byte packet to the device. 
 
+The C language specification supports bit fields in `struct` definitions,
+so it's more natural to use C in this case to describe the control word.
 
+```C
+typedef struct {
+   unsigned int header: 8;  /* 64:71 Constant 0x0 */
+   unsigned int red: 8;     /* 56:63 Red color value [-255] */
+   unsigned int blue: 8;    /* 48:55 Blue color value [0-255] */
+   unsigned int green: 8;   /* 40:47 Green color value [0-255] */
+
+   unsigned int off: 1;     /* 39:39 Set is off, zero is on */
+   unsigned int dim: 1;     /* 38:38 Set is dim, zero is bright */
+   unsigned int flash: 1;   /* 37:37 Set is flash on/off, zero is steady */
+   unsigned int speed: 3;   /* 34:36 Flash speed mask: 1<<0, 1<<1, 1<<2 */
+   unsigned int pad0: 2;    /* 32:33 Unused bits */
+   
+   unsigned int music: 4;   /* 28:31 Stored music index: [0-15]
+   unsigned int play: 1;    /* 27:27 Set play selected music, zero is stop */
+   unsigned int repeat: 1;  /* 26:26 Set repeats playing music, zero is once */
+   unsigned int pad1: 2;    /* 24:25 Unused pits */
+   
+   unsigned int volume: 4;  /* 20:23 Volume of music: [0-15]
+   unsigned int mute: 1;    /* 19:19 Set is mute, zero is unmute */
+   unsigned int padX: 3;    /* 16:18 unused bits */
+   
+   unsigned int footer: 16; /* 00:15 Constant: 0xFF22 */
+} blynclight_ctrl_t
+```
 
 
 
