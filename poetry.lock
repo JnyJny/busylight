@@ -365,7 +365,7 @@ description = "Fast, correct Python JSON library supporting dataclasses, datetim
 name = "orjson"
 optional = false
 python-versions = ">=3.6"
-version = "3.2.2"
+version = "3.3.0"
 
 [[package]]
 category = "dev"
@@ -613,7 +613,7 @@ description = "HTTP library with thread-safe connection pooling, file post, and 
 name = "urllib3"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
-version = "1.25.9"
+version = "1.25.10"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
@@ -626,7 +626,7 @@ description = "The lightning-fast ASGI server."
 name = "uvicorn"
 optional = false
 python-versions = "*"
-version = "0.11.6"
+version = "0.11.7"
 
 [package.dependencies]
 click = ">=7.0.0,<8.0.0"
@@ -685,6 +685,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
 content-hash = "483768470b4b1bb399ccebfc125b22cf1b1de2276c81c0d77287349cbbc7b5c2"
+lock-version = "1.0"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -849,21 +850,21 @@ more-itertools = [
     {file = "more_itertools-8.4.0-py3-none-any.whl", hash = "sha256:b78134b2063dd214000685165d81c154522c3ee0a1c0d4d113c80361c234c5a2"},
 ]
 orjson = [
-    {file = "orjson-3.2.2-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:570a93d1973aab27bb5ca9e8f811c156c6a55e49bc27a767600db3051f8c1718"},
-    {file = "orjson-3.2.2-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:0591c86e1e7449f08f66e554c53134a989cda947569f2ba8d12e972f83ba855c"},
-    {file = "orjson-3.2.2-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:83023862ba3fb68b692340952d05b18ca5fc5fc9c023d458773ef064afb74a6d"},
-    {file = "orjson-3.2.2-cp36-none-win_amd64.whl", hash = "sha256:cce78c38de7b4df39a53c7769b458e5b44c33da1db4f393125f5b40596d92d91"},
-    {file = "orjson-3.2.2-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:8a8b0e43190149f2fce0e5264973389ded1b3bbe652bb9602099579f58356969"},
-    {file = "orjson-3.2.2-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:d957229f9c4df046b34e815cb4c99d0b851730fc9d0386efceec723f5c76c6f7"},
-    {file = "orjson-3.2.2-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:7c3d6cdeebff7e677206b8f55ffc3ed3d5a20fdbe6e01c009840cba1974ae772"},
-    {file = "orjson-3.2.2-cp37-none-win_amd64.whl", hash = "sha256:7893ed2aae34fb80499590c8d26e05f5af38f4c75778cf2c953cc4c5827546e8"},
-    {file = "orjson-3.2.2-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:6c6ef415876cf2ea1350d7a83800997d82f3dadc6a2b9bbba24b93bb2f1dbeac"},
-    {file = "orjson-3.2.2-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:45b5b2634753e87d0c39ee55b9e7791089f32a1ec15821d5ccfd59b523146abc"},
-    {file = "orjson-3.2.2-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:86fd9deeb0572cf78770c84fb438f2fdec217ea2f0c28cf6b488575ca1ffc42e"},
-    {file = "orjson-3.2.2-cp38-none-win_amd64.whl", hash = "sha256:57727e14e85a75d0cc657d2df33502c44b23dacc25a67da734de7c26dab2c06f"},
-    {file = "orjson-3.2.2-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:33543506a36e425f5a4154fb416a851e73c5cbf34076c767d4a71c9b55c37478"},
-    {file = "orjson-3.2.2-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:08520b19908aaaca7362134c0db9862159fa6363e7d9651c6c2bb83dbe006fb1"},
-    {file = "orjson-3.2.2.tar.gz", hash = "sha256:0622cb893b9fdc012a6443418e37c85f0cfe4d97c4dcb59144bb57c99e3eb4bc"},
+    {file = "orjson-3.3.0-cp36-cp36m-macosx_10_7_x86_64.whl", hash = "sha256:44f7344aa100c43a86716f2cf92163325792ebb8af3542f3ee084f328328207b"},
+    {file = "orjson-3.3.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:e81c14e31b4bb48b2ba6e9a47460e8cd0406f927741491859ab3bec53f447317"},
+    {file = "orjson-3.3.0-cp36-cp36m-manylinux2014_aarch64.whl", hash = "sha256:d33524b1aab1a34b6fdc8ae7bad83e495eea5a02712dd860113223ed6fc82106"},
+    {file = "orjson-3.3.0-cp36-none-win_amd64.whl", hash = "sha256:67136be5a6ce5ad9995f0e178851d4956e8e0175ac1e8bb80987607c6986e970"},
+    {file = "orjson-3.3.0-cp37-cp37m-macosx_10_7_x86_64.whl", hash = "sha256:8649b36460f9ab5d2d3d4bea69cb608b0ebe9f70d7119478a59632cfe6554fd4"},
+    {file = "orjson-3.3.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:d37758bc0351fee5a2b7387f61677b893b02c6b7351370afbf63ce82bd1f25cd"},
+    {file = "orjson-3.3.0-cp37-cp37m-manylinux2014_aarch64.whl", hash = "sha256:64569ad07ae564ebdb712bfb199de521ce5dfa78d9459d70787cac3811f01797"},
+    {file = "orjson-3.3.0-cp37-none-win_amd64.whl", hash = "sha256:657415c522d04427d1ac46ee3bde525deb199bd494c2480db40f991755ee038e"},
+    {file = "orjson-3.3.0-cp38-cp38-macosx_10_7_x86_64.whl", hash = "sha256:262aa8e8b47142d4d51dd7281afa51d2281480eb672183e79f2d90572f535e69"},
+    {file = "orjson-3.3.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:5e80e377979909283a221a3f62add9186b3aaa1028a469d6282a4d3694e04a05"},
+    {file = "orjson-3.3.0-cp38-cp38-manylinux2014_aarch64.whl", hash = "sha256:67b2ed9410b426cbaa4e49a484c67225f58bc57e84a9d593006140bcd70909ae"},
+    {file = "orjson-3.3.0-cp38-none-win_amd64.whl", hash = "sha256:5ec5d1e127fc30addfb6c1d23ecc4b82ac89f0ca808572b553bcee913eb134be"},
+    {file = "orjson-3.3.0-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:28a401039e9a228ca72a0e0a1c43c80df85336ade0bf17e592e386c19ad49f47"},
+    {file = "orjson-3.3.0-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:0d60993e1787d6d4e2bad7aac674a66bed0012251fa45c73dfe8ef9fe0b4433a"},
+    {file = "orjson-3.3.0.tar.gz", hash = "sha256:00fba178d361db5fa12787dae018c8df25207feb7eb79ec52b70259dbeab96d0"},
 ]
 packaging = [
     {file = "packaging-20.4-py2.py3-none-any.whl", hash = "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"},
@@ -1025,12 +1026,12 @@ ujson = [
     {file = "ujson-3.0.0.tar.gz", hash = "sha256:e0199849d61cc6418f94d52a314c6a27524d65e82174d2a043fb718f73d1520d"},
 ]
 urllib3 = [
-    {file = "urllib3-1.25.9-py2.py3-none-any.whl", hash = "sha256:88206b0eb87e6d677d424843ac5209e3fb9d0190d0ee169599165ec25e9d9115"},
-    {file = "urllib3-1.25.9.tar.gz", hash = "sha256:3018294ebefce6572a474f0604c2021e33b3fd8006ecd11d62107a5d2a963527"},
+    {file = "urllib3-1.25.10-py2.py3-none-any.whl", hash = "sha256:e7983572181f5e1522d9c98453462384ee92a0be7fac5f1413a1e35c56cc0461"},
+    {file = "urllib3-1.25.10.tar.gz", hash = "sha256:91056c15fa70756691db97756772bb1eb9678fa585d9184f24534b100dc60f4a"},
 ]
 uvicorn = [
-    {file = "uvicorn-0.11.6-py3-none-any.whl", hash = "sha256:d19a20b17445708fd222e5a7cfc3eacfb31ac269bc8fefa4920833334e199782"},
-    {file = "uvicorn-0.11.6.tar.gz", hash = "sha256:467c333c743ec6a3eb545517a0e3cac603becfa40c73c65ed46c3a4bf1c8e2d0"},
+    {file = "uvicorn-0.11.7-py3-none-any.whl", hash = "sha256:1d46a22cc55a52f5567e0c66f000ae56f26263e44cef59b7c885bf10f487ce6e"},
+    {file = "uvicorn-0.11.7.tar.gz", hash = "sha256:b50f7f4c0c499c9b8d0280924cfbd24b90ba02456e3dc80934b9a786a291f09f"},
 ]
 uvloop = [
     {file = "uvloop-0.14.0-cp35-cp35m-macosx_10_11_x86_64.whl", hash = "sha256:08b109f0213af392150e2fe6f81d33261bb5ce968a288eb698aad4f46eb711bd"},
