@@ -274,22 +274,28 @@ class LightManager:
         for light in self.lights_for(light_id):
             light.start_effect(effect)  # what happens with IO here???
 
-    # EJO not sure this context manager is needed, used in the CLI
-
     @contextmanager
     def operate_on(
         self,
         light_id: Union[int, None] = -1,
-        pre_cleanup: bool = True,
-        post_cleanup: bool = False,
+        off_on_enter: bool = True,
+        off_on_exit: bool = False,
     ) -> object:
-        """
+        """This context manager method sets the lights specified by `light_id`
+        to a known state, 'off', upon entering and exiting the context manager.
+
+        If `off_on_enter` is False, the lights are not turned off on enter.
+        If `off_on_exit` is False, the lights are not turned off on exit.
+
+        :param light_id: Union[int, None]
+        :param off_on_enter: bool
+        :param off_on_exit: bool
         """
 
-        if pre_cleanup:
+        if off_on_enter:
             self.light_off(light_id)
 
         yield self
 
-        if post_cleanup:
+        if off_on_exit:
             self.light_off(light_id)
