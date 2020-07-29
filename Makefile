@@ -63,4 +63,4 @@ minor_release: minor push publish
 release: patch_release
 
 clean:
-	@rm -rf dist $(TARGET).egg-info
+	@rm -rf dist $(TARGET).egg-info *.log

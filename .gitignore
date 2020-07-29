@@ -4,3 +4,4 @@ dist/*
 tst.py
 .DS_Store
 *.mov
+*.log
