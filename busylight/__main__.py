@@ -2,6 +2,7 @@
 """
 
 
+from contextlib import redirect_stderr
 from pathlib import Path
 from sys import stdout
 from typing import Tuple, Union, List
@@ -244,3 +245,26 @@ def udev_rules_subcommand(
         v = hex(vendor_id)[2:]
         print(f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{v}", MODE="0666"', file=output)
         print(f'SUBSYSTEM=="usb", ATTRS{{idVendor}}=="{v}", MODE="0666"', file=output)
+
+
+@cli.command(name="serve")
+def serve_subcommand(
+    host: str = typer.Option("0.0.0.0", "--host", "-H"),
+    port: int = typer.Option(21169, "--port", "-p"),
+    logfile: Path = typer.Option(None, "--log"),
+):
+    """
+    """
+
+    try:
+        import uvicorn
+    except ImportError:
+        typer.secho(
+            "The package 'uvicorn' is  missing, unable to serve the busylight API"
+        )
+        raise typer.Exit(-1)
+
+    logfile = logfile or Path("busylight.log")
+
+    with redirect_stderr(logfile.open("w")):
+        uvicorn.run("busylight.api:server", host=host, port=port)
