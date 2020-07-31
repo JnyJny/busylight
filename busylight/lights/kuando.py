@@ -174,10 +174,6 @@ class BusyLight(USBLight):
         - USBLightInUse
         - USBLightNotFound
         """
-
-        if vendor_id not in self.VENDOR_IDS:
-            raise UnknownUSBLight(vendor_id)
-
         super().__init__(vendor_id, product_id, 0x00FF_FFFF_0000, 512)
 
     step0 = StepField(448, 64)

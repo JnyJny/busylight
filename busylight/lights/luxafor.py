@@ -105,14 +105,10 @@ class Flag(USBLight):
         - USBLightInUse
         - USBLightNotFound
         """
-
-        if vendor_id not in self.VENDOR_IDS:
-            raise UnknownUSBLight(vendor_id)
-
         super().__init__(vendor_id, product_id, 0, 64)
 
     # The Luxafor Flag command buffer isn't regular so there are some fields
-    # that are aliased to make code more straight forward.
+    # that are aliased to make code more straightforward.
 
     cmd = FlagCmdAttribute(56, 8)
 

@@ -111,12 +111,17 @@ class Blink1(USBLight):
     __vendor__ = "ThingM"
 
     def __init__(self, vendor_id: int, product_id: int):
+        """
+        :param vendor_id: 16-bit integer
+        :param product_id: 16-bit integer
 
-        if vendor_id not in self.VENDOR_IDS:
-            raise UnknownUSBLight(vendor_id)
+        Raises:
+        - UnknownUSBLight
+        - USBLightInUse
+        - USBLightNotFound
+        """
 
         super().__init__(vendor_id, product_id, (Blink1Report.ONE << 56), 64)
-
         self.default_fade = 10
 
     report = Blink1ReportField(56, 8)

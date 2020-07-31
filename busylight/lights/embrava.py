@@ -103,10 +103,6 @@ class Blynclight(USBLight):
         - USBLightInUse
         - USBLightNotFound
         """
-
-        if vendor_id not in self.VENDOR_IDS:
-            raise UnknownUSBLight(vendor_id)
-
         super().__init__(vendor_id, product_id, 0x00000000090080FF22, 72)
 
     header = BlynclightCommandHeader(64, 8)
