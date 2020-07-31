@@ -7,7 +7,7 @@ import hid
 from contextlib import contextmanager
 from typing import Callable, Dict, Generator, Tuple, Union
 
-from bitvector import BitVector, BitField
+from bitvector import BitVector, BitField, ReadOnlyBitField
 
 from ..thread import CancellableThread
 
@@ -38,12 +38,9 @@ class USBLightAttribute(BitField):
     """
 
 
-class USBLightReadOnlyAttribute(BitField):
+class USBLightReadOnlyAttribute(ReadOnlyBitField):
     """Read-only USB light attribute.
     """
-
-    def __set__(self, obj, value) -> None:
-        return
 
 
 # EJO investigate ABC?
@@ -135,7 +132,11 @@ class USBLight(BitVector):
         Raises:
         - USBLightInUse
         - USBLightNotFound
+        - UnknownUSBLight
         """
+
+        if vendor_id not in self.VENDOR_IDS:
+            raise UnknownUSBLight(vendor_id)
 
         super().__init__(value=default_state, size=cmd_length)
         self.default_state = default_state
@@ -179,7 +180,7 @@ class USBLight(BitVector):
         return self._info
 
     def __del__(self):
-        """Shutdown helper and effects threads, closes the HID device.
+        """Shutdown helper and effects threads, close the HID device.
         """
         self.close()
 
@@ -190,7 +191,7 @@ class USBLight(BitVector):
 
     @property
     def name(self) -> str:
-        """Concatenation of the light's vendor and class names title cased.."""
+        """Concatenation of the light's vendor and `product_string` names title cased."""
         try:
             return self._name
         except AttributeError:
@@ -212,7 +213,7 @@ class USBLight(BitVector):
     @property
     def helper_thread(self) -> Union[CancellableThread, None]:
         """Start a helper thread if the USBLight subclass implements a
-        generator helper method. 
+        generator `helper` method. 
 
         [see busylight.lights.kuando.BusyLight.helper].
         """
@@ -275,7 +276,7 @@ class USBLight(BitVector):
         :param nbytes: int 
         :return: bytes
         """
-        return bytes(0)
+        raise NotImplementedError("read")
 
     def reset(self, flush: bool = False) -> None:
         """Reset the in-memory state to the default configuration.
