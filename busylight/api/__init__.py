@@ -16,7 +16,7 @@ from ..manager import LightManager, BlinkSpeed
 from ..manager import LightIdRangeError, ColorLookupError
 
 
-api = FastAPI(
+server = FastAPI(
     title="Busylight API Server",
     description="""An API server for USB connected presense lights.
 
@@ -37,15 +37,15 @@ api = FastAPI(
 ##
 
 
-@api.on_event("startup")
+@server.on_event("startup")
 async def startup():
-    api.manager = LightManager()
-    api.manager.light_off()
+    server.manager = LightManager()
+    server.manager.light_off()
 
 
-@api.on_event("shutdown")
+@server.on_event("shutdown")
 async def shutdown():
-    api.manager.light_off()
+    server.manager.light_off()
 
 
 ##
@@ -53,14 +53,14 @@ async def shutdown():
 ##
 
 
-@api.exception_handler(LightIdRangeError)
+@server.exception_handler(LightIdRangeError)
 async def light_id_range_error_handler(request: Request, error: LightIdRangeError):
     """Handle light_id values that are out of bounds.
     """
     return JSONResponse(status_code=404, content={"message": str(error)},)
 
 
-@api.exception_handler(ColorLookupError)
+@server.exception_handler(ColorLookupError)
 async def color_lookup_error_handler(request: Request, error: ColorLookupError):
     """Handle color strings that do not result in a valid color.
     """
@@ -72,11 +72,11 @@ async def color_lookup_error_handler(request: Request, error: ColorLookupError):
 ##
 
 
-@api.middleware("http")
+@server.middleware("http")
 async def light_manager_update(request: Request, call_next):
     """Check for plug/unplug events and update the light manager.
     """
-    api.manager.update()
+    server.manager.update()
     return await call_next(request)
 
 
@@ -85,14 +85,14 @@ async def light_manager_update(request: Request, call_next):
 ##
 
 
-@api.get("/1/light/{light_id}", response_model=LightDescription)
+@server.get("/1/light/{light_id}", response_model=LightDescription)
 async def Light_Description(
     light_id: int = Path(..., title="Light identifier", ge=0)
 ) -> dict:
     """Information about the light selected by `light_id`.
     """
 
-    light = api.manager.lights[light_id]
+    light = server.manager.lights[light_id]
     return {
         "light_id": light_id,
         "name": light.name,
@@ -100,19 +100,19 @@ async def Light_Description(
     }
 
 
-@api.get("/1/lights", response_model=List[LightDescription])
+@server.get("/1/lights", response_model=List[LightDescription])
 async def Lights_Description() -> dict:
     """Information about all available lights.
     """
     result = []
-    for index, light in enumerate(api.manager.lights):
+    for index, light in enumerate(server.manager.lights):
         result.append(
             {"light_id": index, "name": light.name, "info": light.info,}
         )
     return result
 
 
-@api.get(
+@server.get(
     "/1/light/{light_id}/on",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -121,11 +121,11 @@ async def Turn_On_Light(light_id: int = Path(..., title="Light identifier", ge=0
     """Turn on the specified light with the default color, green.
     """
 
-    api.manager.light_on(light_id)
+    server.manager.light_on(light_id)
     return {"action": "on", "light_id": light_id, "color": "green"}
 
 
-@api.get(
+@server.get(
     "/1/light/{light_id}/on/{color}",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -140,23 +140,23 @@ async def Turn_On_Light_With_Color(
     string: red, #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
-    api.manager.light_on(light_id, color)
+    server.manager.light_on(light_id, color)
 
     return {"action": "on", "light_id": light_id, "color": color}
 
 
-@api.get(
+@server.get(
     "/1/lights/on", response_model=LightOperation, response_model_exclude_unset=True,
 )
 async def Turn_On_Lights() -> dict:
     """Turn on all lights with the default color, green.
     """
 
-    api.manager.light_on(-1)
+    server.manager.light_on(-1)
     return {"action": "on", "light_id": "all", "color": "green"}
 
 
-@api.get(
+@server.get(
     "/1/lights/on/{color}",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -170,11 +170,11 @@ async def Turn_On_Lights_With_Color(
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
-    api.manager.light_on(-1, color)
+    server.manager.light_on(-1, color)
     return {"action": "on", "light_id": "all", "color": color}
 
 
-@api.get(
+@server.get(
     "/1/light/{light_id}/off",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -186,22 +186,22 @@ async def Turn_Off_Light(
     """Turn off the specified light.
     """
 
-    api.manager.light_off(light_id)
+    server.manager.light_off(light_id)
     return {"action": "off", "light_id": light_id}
 
 
-@api.get(
+@server.get(
     "/1/lights/off", response_model=LightOperation, response_model_exclude_unset=True,
 )
 async def Turn_Off_Lights() -> dict:
     """Turn off all lights.
     """
 
-    api.manager.light_off(-1)
+    server.manager.light_off(-1)
     return {"action": "off", "light_id": "all"}
 
 
-@api.get(
+@server.get(
     "/1/light/{light_id}/blink",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -212,7 +212,7 @@ async def Blink_Light(
     """Start blinking the specified light: red and off.
     """
 
-    api.manager.light_blink(light_id)
+    server.manager.light_blink(light_id)
     return {
         "action": "blink",
         "light_id": light_id,
@@ -221,7 +221,7 @@ async def Blink_Light(
     }
 
 
-@api.get(
+@server.get(
     "/1/light/{light_id}/blink/{color}",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -236,7 +236,7 @@ async def Blink_Light_With_Color(
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
-    api.manager.light_blink(light_id, color)
+    server.manager.light_blink(light_id, color)
     return {
         "action": "blink",
         "light_id": light_id,
@@ -245,7 +245,7 @@ async def Blink_Light_With_Color(
     }
 
 
-@api.get(
+@server.get(
     "/1/light/{light_id}/blink/{color}/{speed}",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -261,11 +261,11 @@ async def Blink_Light_With_Color_and_Speed(
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
 
-    api.manager.light_blink(light_id, color, speed)
+    server.manager.light_blink(light_id, color, speed)
     return {"action": "blink", "light_id": light_id, "color": color, "speed": speed}
 
 
-@api.get(
+@server.get(
     "/1/lights/blink", response_model=LightOperation, response_model_exclude_unset=True,
 )
 async def Blink_Lights() -> dict:
@@ -273,11 +273,11 @@ async def Blink_Lights() -> dict:
     <p>Note: lights will not be synchronized.</p>
     """
 
-    api.manager.light_blink(-1)
+    server.manager.light_blink(-1)
     return {"action": "blink", "light_id": "all", "color": "red", "speed": "slow"}
 
 
-@api.get(
+@server.get(
     "/1/lights/blink/{color}",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -292,7 +292,7 @@ async def Blink_Lights_With_Color(
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
 
-    api.manager.light_blink(-1, color)
+    server.manager.light_blink(-1, color)
     return {
         "action": "blink",
         "light_id": light_id,
@@ -301,7 +301,7 @@ async def Blink_Lights_With_Color(
     }
 
 
-@api.get(
+@server.get(
     "/1/lights/blink/{color}/{speed}",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -317,11 +317,11 @@ async def Blink_Lights_With_Color_and_Speed(
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
 
-    api.manager.light_blink(-1, color, speed)
+    server.manager.light_blink(-1, color, speed)
     return {"action": "blink", "light_id": "all", "color": color, "speed": speed}
 
 
-@api.get(
+@server.get(
     "/1/light/{light_id}/rainbow",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -332,11 +332,11 @@ async def Rainbow_Light(
     """Start a rainbow animation on the specified light.
     """
 
-    api.manager.apply_effect_to_light(light_id, rainbow)
+    server.manager.apply_effect_to_light(light_id, rainbow)
     return {"action": "effect", "name": "rainbow", "light_id": light_id}
 
 
-@api.get(
+@server.get(
     "/1/lights/rainbow",
     response_model=LightOperation,
     response_model_exclude_unset=True,
@@ -346,5 +346,5 @@ async def Rainbow_Lights():
     <p><em>Note:</em> lights will not be synchronized.</p>
     """
 
-    api.manager.apply_effect_to_light(-1, rainbow)
+    server.manager.apply_effect_to_light(-1, rainbow)
     return {"action": "effect", "name": "rainbow", "light_id": "all"}
