@@ -67,7 +67,7 @@ description = "A simple pure python Bit Vector class for Humans™."
 name = "bitvector-for-humans"
 optional = false
 python-versions = ">=3.7,<4.0"
-version = "0.12.0"
+version = "0.14.0"
 
 [[package]]
 category = "dev"
@@ -684,7 +684,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "483768470b4b1bb399ccebfc125b22cf1b1de2276c81c0d77287349cbbc7b5c2"
+content-hash = "41977ef70654babea1ef729553b10ef7fed9c85d559cdd2a38e30ea5ee5e3458"
 lock-version = "1.0"
 python-versions = "^3.7"
 
@@ -718,8 +718,8 @@ attrs = [
     {file = "attrs-19.3.0.tar.gz", hash = "sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72"},
 ]
 bitvector-for-humans = [
-    {file = "bitvector-for-humans-0.12.0.tar.gz", hash = "sha256:d826a562bb5aeb2361a7065b3793b8ec0f6cf7e28ef985d9e072cb85a260273d"},
-    {file = "bitvector_for_humans-0.12.0-py3-none-any.whl", hash = "sha256:66d60234d69a033a727c7ae083457563f300e9c1ec887571c431a7b2f0ae5799"},
+    {file = "bitvector-for-humans-0.14.0.tar.gz", hash = "sha256:f5ecac0681dfd1302c5c8b463cb4305d3790252ac00e247ba2e23a66664dc4c3"},
+    {file = "bitvector_for_humans-0.14.0-py3-none-any.whl", hash = "sha256:07bc4b67e319e573f4731cd79a99c20176264d8a3144010a51c2573a79120456"},
 ]
 black = [
     {file = "black-19.10b0-py36-none-any.whl", hash = "sha256:1b30e59be925fafc1ee4565e5e08abef6b03fe455102883820fe5ee2e4734e0b"},
