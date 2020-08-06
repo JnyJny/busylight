@@ -20,6 +20,7 @@ import hid
 ## 3. Add the name of the new class to the __all__ list
 
 
+from .agile_innovations import BlinkStick
 from .embrava import Blynclight
 from .kuando import BusyLight
 from .luxafor import Flag
@@ -31,7 +32,7 @@ from .usblight import USBLightInUse
 from .usblight import USBLightIOError
 from .usblight import USBLightNotFound
 
-SUPPORTED_LIGHTS = [Blynclight, Blink1, BusyLight, Flag]
+SUPPORTED_LIGHTS = [BlinkStick, Blynclight, Blink1, BusyLight, Flag]
 
 KNOWN_VENDOR_IDS = sum([l.VENDOR_IDS for l in SUPPORTED_LIGHTS], [])
 
