@@ -59,8 +59,9 @@ def main_callback(
     \b
     ```console
     $ busylight supported
+    Agile Innovations BlinkStick
+    Embrava Blynclight
     ThingM Blink1
-    Embrava BlyncLight
     Kuando BusyLight
     Luxafor Flag
     ```
@@ -184,7 +185,11 @@ def blink_subcommand(
     The light selected will blink with the specified color. The default color is red
     if the user omits the color argument. Colors can be specified with color names and
     hexadecimal values. Both '0x' and '#' are recognized as hexidecimal number prefixes
-    and hexadecimal values may be either three or six digits long. 
+    and hexadecimal values may be either three or six digits long.
+
+    Note: Ironically, BlinkStick products cannot be configured to blink on and off
+          without software constantly updating the devices. If you need your BlinkStick
+          to blink, you will need to use the `busylight serve` web API.
 
     Examples:
 
