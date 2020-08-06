@@ -154,7 +154,7 @@ class USBLight(BitVector):
         class_name = self.__class__.__name__
         vendor_id = f"vendor_id=0x{self.vendor_id:04x}"
         product_id = f"product_id=0x{self.product_id:04x}"
-        default = f"default_state={self.hex}"
+        default = f"default_state=0x{self.default_state:x}"
         cmdlen = f"cmd_length={len(self)}"
 
         return f"{class_name}({vendor_id}, {product_id}, {default}, {cmdlen})"
@@ -191,7 +191,7 @@ class USBLight(BitVector):
 
     @property
     def name(self) -> str:
-        """Concatenation of the light's vendor and `product_string` names title cased."""
+        """Concatenation of the light's vendor and `product_string` names title-cased."""
         try:
             return self._name
         except AttributeError:
