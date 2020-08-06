@@ -2,9 +2,9 @@
 """
 
 
-from contextlib import redirect_stderr
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-from sys import stdout
+from sys import stdout, stderr
 from typing import Tuple, Union, List
 
 import typer
@@ -250,10 +250,31 @@ def udev_rules_subcommand(
 @cli.command(name="serve")
 def serve_subcommand(
     host: str = typer.Option("0.0.0.0", "--host", "-H"),
-    port: int = typer.Option(21169, "--port", "-p"),
-    logfile: Path = typer.Option(None, "--log"),
+    port: int = typer.Option(8888, "--port", "-p"),
 ):
-    """
+    """Start a FastAPI-based service that provides access to
+    all connected lights via HTTP. All connected lights are managed
+    by the service, allowing long-running animations and effects that
+    the native device APIs might not support.
+
+    Once the service is started, the API documentation is available
+    via these two URLs:
+
+    \b
+    `http://<hostname>:<port>/docs`
+    `http://<hostname>:<port>/redoc`
+
+    ## Examples
+
+    \b
+    ```console
+    $ busylight server >& log &
+    $ curl http://localhost:8888/1/lights
+    $ curl http://localhost:8888/1/lights/on
+    $ curl http://localhost:8888/1/lights/off
+    $ curl http://localhost:8888/1/light/0/on/purple
+    $ curl http://localhost:8888/1/light/0/off
+
     """
 
     try:
@@ -264,7 +285,4 @@ def serve_subcommand(
         )
         raise typer.Exit(-1)
 
-    logfile = logfile or Path("busylight.log")
-
-    with redirect_stderr(logfile.open("w")):
-        uvicorn.run("busylight.api:server", host=host, port=port)
+    uvicorn.run("busylight.api:server", host=host, port=port)
