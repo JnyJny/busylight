@@ -103,6 +103,7 @@ class Blynclight(USBLight):
         - USBLightInUse
         - USBLightNotFound
         """
+        # Asserted: _off, speed, mute
         super().__init__(vendor_id, product_id, 0x00000000090080FF22, 72)
 
     header = BlynclightCommandHeader(64, 8)
