@@ -64,6 +64,7 @@ def main_callback(
     ThingM Blink1
     Kuando BusyLight (§)
     Luxafor Flag
+    ```
 
     \b 
     - † Requires software intervention for `blink` mode

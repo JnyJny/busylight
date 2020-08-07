@@ -32,6 +32,7 @@ Embrava Blynclight
 ThingM Blink1
 Kuando BusyLight (§)
 Luxafor Flag
+```
 
  
 - † Requires software intervention for `blink` mode
