@@ -2,7 +2,7 @@
 
 Control USB attached LED lights like a Human™
 
-![Five Lights at Once](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
+![All supported lights](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
 
 Make a supported USB attached LED light turn on, off and blink; all
 from the comfort of your very own command-line. If your platform
@@ -27,11 +27,20 @@ $ busylight off           # all clear.
 
 ```console
 $ busylight supported
-Agile Innovations BlinkStick
+Agile Innovations BlinkStick †
 Embrava Blynclight
 ThingM Blink1
-Kuando BusyLight
+Kuando BusyLight §
 Luxafor Flag
+
+`b 
+- † Requires software intervention for `blink` mode
+- § Requires software intervention for all modes
+
+Lights that "require software intervention" need software to constantly update
+the device instead of a one-time configuration of the light. Those devices will
+cause the `busylight` command to not return immediately and the lights will
+turn off when the user interrupts the command.
 ```
 
 ## Install
