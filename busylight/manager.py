@@ -3,6 +3,7 @@
 
 from contextlib import contextmanager
 from enum import Enum
+from time import sleep
 from typing import Generator, Dict, List, Tuple, Union
 
 import hid
@@ -47,7 +48,12 @@ class ColorLookupError(Exception):
 
 
 class LightManager:
-    """
+    """USB devices manager and proxy.
+
+    The LightManager class is used to open all available lights and send
+    commands to the lights without the caller having to obtain a
+    writable file descriptor. This class also supports long-lived
+    per-light animation via threading. 
     """
 
     @classmethod
@@ -139,7 +145,7 @@ class LightManager:
         Calls the light's close method to shutdown any threads associated
         with the thread and removes it from the list of managed lights.
 
-        Light identfiers of remaining lights will dchange after `update`
+        Light identfiers of remaining lights will change after `update`
         if lights are unplugged. ¯\_(ツ)_/¯
 
         :return: number of new lights added to the managed `lights` list.
@@ -278,6 +284,7 @@ class LightManager:
     def operate_on(
         self,
         light_id: Union[int, None] = -1,
+        wait_on_animation: bool = True,
         off_on_enter: bool = True,
         off_on_exit: bool = False,
     ) -> object:
@@ -289,6 +296,7 @@ class LightManager:
 
         :param light_id: Union[int, None]
         :param off_on_enter: bool
+        :param wait_on_animation: bool
         :param off_on_exit: bool
         """
 
@@ -296,6 +304,18 @@ class LightManager:
             self.light_off(light_id)
 
         yield self
+
+        # EJO this is an ugly hack.
+        if wait_on_animation:
+            lights = list(self.lights_for(light_id))
+            try:
+                while True:
+                    if any([light.animating for light in lights]):
+                        sleep(1.0)
+                    else:
+                        break
+            except KeyboardInterrupt:
+                off_on_exit = True
 
         if off_on_exit:
             self.light_off(light_id)
