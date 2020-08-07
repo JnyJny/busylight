@@ -182,8 +182,8 @@ Once the service is started, the API documentation is available
 via these two URLs:
 
 
-`http://<hostname>:<port>/docs`
-`http://<hostname>:<port>/redoc`
+- `http://<hostname>:<port>/docs`
+- `http://<hostname>:<port>/redoc`
 
 ## Examples
 
