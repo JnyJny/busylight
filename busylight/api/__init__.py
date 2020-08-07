@@ -296,7 +296,7 @@ async def Blink_Lights_With_Color(
     server.manager.light_blink(-1, color)
     return {
         "action": "blink",
-        "light_id": light_id,
+        "light_id": "all",
         "color": color,
         "speed": "slow",
     }
