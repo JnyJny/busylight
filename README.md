@@ -2,7 +2,7 @@
 
 Control USB attached LED lights like a Human™
 
-![Two Lights at Once](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
+![Five Lights at Once](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
 
 Make a supported USB attached LED light turn on, off and blink; all
 from the comfort of your very own command-line. If your platform
@@ -27,8 +27,9 @@ $ busylight off           # all clear.
 
 ```console
 $ busylight supported
+Agile Innovations BlinkStick
+Embrava Blynclight
 ThingM Blink1
-Embrava BlyncLight
 Kuando BusyLight
 Luxafor Flag
 ```
@@ -66,6 +67,7 @@ $ busylight [OPTIONS] COMMAND [ARGS]...
 * `list`: List available lights (currently connected).
 * `off`: Turn selected lights off.
 * `on`: Turn selected lights on.
+* `serve`: Start a FastAPI-based service that provides...
 * `supported`: List supported LED lights.
 * `udev-rules`: Generate a Linux udev rules file.
 
@@ -76,7 +78,11 @@ Activate the selected light in blink mode.
 The light selected will blink with the specified color. The default color is red
 if the user omits the color argument. Colors can be specified with color names and
 hexadecimal values. Both '0x' and '#' are recognized as hexidecimal number prefixes
-and hexadecimal values may be either three or six digits long. 
+and hexadecimal values may be either three or six digits long.
+
+Note: Ironically, BlinkStick products cannot be configured to blink on and off
+      without software constantly updating the devices. If you need your BlinkStick
+      to blink, you will need to use the `busylight serve` web API.
 
 Examples:
 
@@ -92,18 +98,16 @@ $ busylight --all off      # that's enough of that!
 **Usage**:
 
 ```console
-$ busylight blink [OPTIONS] [COLOR]
+$ busylight blink [OPTIONS] [COLOR] [[slow|medium|fast]]
 ```
 
 **Options**:
 
-* `-f, --faster`: Increase blink speed.
 * `--help`: Show this message and exit.
 
 ## `busylight list`
 
 List available lights (currently connected).
-    
     
 
 **Usage**:
@@ -114,6 +118,7 @@ $ busylight list [OPTIONS]
 
 **Options**:
 
+* `-l, --long`
 * `--help`: Show this message and exit.
 
 ## `busylight off`
@@ -164,6 +169,43 @@ $ busylight on [OPTIONS] [COLOR]
 
 **Options**:
 
+* `--help`: Show this message and exit.
+
+## `busylight serve`
+
+Start a FastAPI-based service that provides access to
+all connected lights via HTTP. All connected lights are managed
+by the service, allowing long-running animations and effects that
+the native device APIs might not support.
+
+Once the service is started, the API documentation is available
+via these two URLs:
+
+
+`http://<hostname>:<port>/docs`
+`http://<hostname>:<port>/redoc`
+
+## Examples
+
+
+```console
+$ busylight server >& log &
+$ curl http://localhost:8888/1/lights
+$ curl http://localhost:8888/1/lights/on
+$ curl http://localhost:8888/1/lights/off
+$ curl http://localhost:8888/1/light/0/on/purple
+$ curl http://localhost:8888/1/light/0/off
+
+**Usage**:
+
+```console
+$ busylight serve [OPTIONS]
+```
+
+**Options**:
+
+* `-H, --host TEXT`
+* `-p, --port INTEGER`
 * `--help`: Show this message and exit.
 
 ## `busylight supported`
