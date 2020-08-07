@@ -238,6 +238,12 @@ class USBLight(BitVector):
         """
         return getattr(self, "_effect_thread", None)
 
+    @property
+    def animating(self) -> bool:
+        """Returns True if the light has an active effect or helper thread.
+        """
+        return self.effect_thread or self.helper_thread
+
     def close(self, turn_off: bool = False) -> None:
         """Shutdown any helper or effect threads active for this light,
         optionally turn the light off and close the USB HIDAPI device.
@@ -336,17 +342,34 @@ class USBLight(BitVector):
 
         self.red, self.green, self.blue = new_value
 
-    def on(self, color: Tuple[int, int, int] = None):
-        """Stub on method.
+    def on(self, color: Tuple[int, int, int] = None) -> None:
+        """Turn the light on with the specified color [default=green].
         """
-        raise NotImplementedError("on")
 
-    def off(self):
-        """Stub off method.
-        """
-        raise NotImplementedError("off")
+        if not color or not any(color):
+            color = (0, 255, 0)
+        try:
+            self.impl_on(color)
+        except AttributeError:
+            raise NotImplementedError(f"{self.__class__.__name__}.impl_on") from None
 
-    def blink(self, color: Tuple[int, int, int], speed: int):
-        """Stub blink method
+    def off(self) -> None:
+        """Turn the light off
         """
-        raise NotImplementedError("blink")
+        try:
+            self.impl_off()
+        except AttributeError:
+            raise NotImplementedError(f"{self.__class__.__name__}.impl_off") from None
+
+    def blink(self, color: Tuple[int, int, int], speed: int) -> None:
+        """Turn the light on with specified color [default=red] and begin blinking.
+
+        :param color: Tuple[int, int, int]
+        :param speed: 1 == slow, 2 == medium, 3 == fast
+        """
+        if not color or not any(color):
+            color = (255, 0, 0)
+        try:
+            self.impl_blink(color, speed)
+        except AttributeError:
+            raise NotImplementedError(f"{self.__class__.__name__}.impl_blink") from None
