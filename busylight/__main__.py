@@ -59,13 +59,13 @@ def main_callback(
     \b
     ```console
     $ busylight supported
-    Agile Innovations BlinkStick †
+    Agile Innovations BlinkStick (†)
     Embrava Blynclight
     ThingM Blink1
-    Kuando BusyLight §
+    Kuando BusyLight (§)
     Luxafor Flag
 
-    `b 
+    \b 
     - † Requires software intervention for `blink` mode
     - § Requires software intervention for all modes
 
