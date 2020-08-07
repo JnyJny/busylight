@@ -74,7 +74,6 @@ def main_callback(
     the device instead of a one-time configuration of the light. Those devices will
     cause the `busylight` command to not return immediately and the lights will
     turn off when the user interrupts the command.
-    ```
 
     ## Install
     
