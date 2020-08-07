@@ -121,31 +121,8 @@ class Blynclight(USBLight):
     volume = BlynclightVolume(18, 4)
     footer = BlynclightCommandFooter(0, 16)
 
-    def on(self, color: Tuple[int, int, int] = None) -> None:
-        """Turn the light on with the specified color [default=green].
-        """
-
-        color = color or (0, 255, 0)
-
-        self.bl_on(color)
-
-    def off(self) -> None:
-        """Turn the light off.
-        """
-
-        self.bl_off()
-
-    def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
-        """Turn the light on with specified color [default=red] and begin blinking.
-
-        :param color: Tuple[int, int, int]
-        :param speed: 1 == slow, 2 == medium, 3 == fast
-        """
-
-        self.bl_blink(color or (255, 0, 0), speed)
-
-    def bl_on(self, color: Tuple[int, int, int], dim: bool = False) -> None:
-        """
+    def impl_on(self, color: Tuple[int, int, int], dim: bool = False) -> None:
+        """Device specific on.
         """
 
         with self.batch_update():
@@ -154,15 +131,15 @@ class Blynclight(USBLight):
             self.dim = dim
             self._off = 0
 
-    def bl_off(self) -> None:
-        """
+    def impl_off(self) -> None:
+        """Device specific off
         """
 
         with self.batch_update():
             self._off = 1
 
-    def bl_blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
-        """
+    def impl_blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
+        """Device specific blink
         """
 
         with self.batch_update():

@@ -86,7 +86,7 @@ class FlagCommand(int, Enum):
 
 
 class Flag(USBLight):
-    """A Luxfor Flag presence light.
+    """A Luxafor Flag USB-connected light.
 
     """
 
@@ -95,7 +95,7 @@ class Flag(USBLight):
     __vendor__ = "Luxafor"
 
     def __init__(self, vendor_id: int, product_id: int):
-        """A Luxafor Flag device.
+        """
 
         :param vendor_id: 16-bit integer
         :param product_id: 16-bit integer
@@ -112,28 +112,32 @@ class Flag(USBLight):
 
     cmd = FlagCmdAttribute(56, 8)
 
+    # aliases: led, pattern, wave
     leds = FlagLEDAttribute(48, 8)
     pattern = FlagPatternAttribute(48, 8)
     wave = FlagWaveAttribute(48, 8)
 
+    # aliases: red, pattern_repeat
     red = FlagColorAttribute(40, 8)
     pattern_repeat = FlagRepeatAttribute(40, 8)
 
     green = FlagColorAttribute(32, 8)
     blue = FlagColorAttribute(24, 8)
 
+    # aliases: fade, strobe_speed
     fade = FlagFadeAttribute(16, 8)
     strobe_speed = FlagSpeedAttribute(16, 8)
 
     wave_repeat = FlagRepeatAttribute(8, 8)
 
+    # aliases: wave_speed, strobe_repeat
     strobe_repeat = FlagRepeatAttribute(0, 8)
     wave_speed = FlagSpeedAttribute(0, 8)
 
     @property
     def name(self) -> str:
         """Luxafor products include 'Luxafor' in the product_string
-        so `name` is an alias for `light.info['product_string'.title()`.
+        so `name` is an alias for `light.info['product_string'].title()`.
         """
         try:
             return self._name
@@ -142,41 +146,7 @@ class Flag(USBLight):
         self._name = self.info["product_string"].title()
         return self._name
 
-    def on(self, color: Tuple[int, int, int] = None) -> None:
-        """Turn the light on with specified color [default=green].
-
-        :param color: Tuple[int, int, int]:
-        """
-
-        color = color or self.color
-        if not any(color):
-            color = (0, 255, 0)
-        self.lf_activate(FlagLED.ALL, color, 0)
-
-    def off(self) -> None:
-        """Turn the light off.
-        """
-        self.lf_activate(FlagLED.ALL, (0, 0, 0), 0)
-
-    def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
-        """Turn the light on with specified color [default=red] and begin blinking.
-
-        :param color: Tuple[int, int, int]
-        :param speed: 1 == slow, 2 == medium, 3 == fast
-        """
-
-        if not color:
-            color = (255, 0, 0)
-
-        if speed >= 0:
-            speed = 0xF - speed
-            self.lf_strobe(FlagLED.ALL, color, speed)
-        else:
-            self.off()
-
-    def lf_activate(
-        self, leds: FlagLED, color: Tuple[int, int, int], fade: int = 0,
-    ) -> None:
+    def impl_on(self, color: Tuple[int, int, int]) -> None:
         """Sets the specifed LEDs to the given color with a fade time.
 
         :param leds: luxafor.FlagLED
@@ -186,13 +156,32 @@ class Flag(USBLight):
         with self.batch_update():
             self.reset()
             self.cmd = FlagCommand.COLOR
-            self.leds = leds
+            self.leds = FlagLED.ALL
             self.color = color
-            if fade > 0:
-                self.leds = FlagLED.LED2
-                self.fade = fade
 
-    def lf_strobe(
+            # if fade > 0:
+            #    self.leds = FlagLED.LED2
+            #    self.fade = fade
+
+    def impl_off(self):
+        """
+        """
+        self.impl_on((0, 0, 0))
+
+    def impl_blink(self, color: Tuple[int, int, int], speed: int) -> None:
+        """Turn the light on with specified color [default=red] and begin blinking.
+
+        :param color: Tuple[int, int, int]
+        :param speed: 1 == slow, 2 == medium, 3 == fast
+        """
+
+        if speed >= 0:
+            speed = 0xF - speed
+            self.__strobe(FlagLED.ALL, color, speed)
+        else:
+            self.off()
+
+    def __strobe(
         self, leds: FlagLED, color: Tuple[int, int, int], speed: int, repeat: int = 0,
     ) -> None:
         """Begins strobing the specifed leds with given color at speed for repeat iterations.
@@ -211,7 +200,7 @@ class Flag(USBLight):
             self.strobe_speed = speed
             self.strobe_repeat = repeat
 
-    def lf_wave(
+    def __wave(
         self, wave: FlagWave, color: Tuple[int, int, int], speed: int, repeat: int = 0,
     ) -> None:
         """Begins a wave pattern with the given color at speed for repeat iterations.
@@ -228,7 +217,7 @@ class Flag(USBLight):
             self.wave_repeat = repeat
             self.wave_speed = speed
 
-    def lf_pattern(self, pattern: FlagPattern, repeat: int = 0) -> None:
+    def __pattern(self, pattern: FlagPattern, repeat: int = 0) -> None:
         """Begins a flashing a pattern for repeat iterations.
 
         :param pattern: luxafor.FlagPattern

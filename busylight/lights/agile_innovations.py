@@ -1,4 +1,4 @@
-"""support for BlinkStick products.
+"""support for Agile Innovations' BlinkStick family of products.
 """
 
 
@@ -14,29 +14,30 @@ from .usblight import UnknownUSBLight
 from .usblight import USBLightIOError
 
 
-def _blink(light: USBLight, color: Tuple[int, int, int], speed: int = 1) -> None:
-    """
+def _blink_effect(light: USBLight, color: Tuple[int, int, int], speed: int = 1) -> None:
+    """An effects generator function that blinks a BlinkStick on and off.
+    
+    This generator function is intended to be used as an argument to the
+    `USBLight.start_effect` method. 
+
+    :param light: USBLight
+    :param color: Tuple[int, int, int]
+    :param speed: int
     """
 
-    interval = {1: 0.5, 2: 0.3, 1: 0.1}.get(speed, 0.5)
+    _SLOW = 1.0
+    _MED = 0.5
+    _FAST = 0.25
+
+    interval = {1: _SLOW, 2: _MED, 3: _FAST}.get(speed, _SLOW)
 
     while True:
         light.on(color)
         yield
         sleep(interval)
-
         light.off()
         yield
         sleep(interval)
-
-
-class Report(int, Enum):
-    RGB = 1
-    CHIDX = 5
-    LEDS8 = 6
-    LEDS16 = 7
-    LESD32 = 8
-    LEDS64 = 9
 
 
 class BlinkStickVariant(int, Enum):
@@ -49,11 +50,13 @@ class BlinkStickVariant(int, Enum):
     FLEX = 0x203
 
     @classmethod
-    def identify(cls, blinkstick: object):
-        """
+    def identify(cls, light: USBLight):
+        """Identify the given USBLight's BlinkStick hardware variant.
+
+        :return: BlinkStickVariant
         """
 
-        sequence, _, version = blinkstick.info["serial_number"].strip().partition("-")
+        sequence, _, version = light.info["serial_number"].strip().partition("-")
         major, minor = version.split(".")
 
         try:
@@ -62,16 +65,30 @@ class BlinkStickVariant(int, Enum):
             pass
 
         try:
-            return cls(int(blinkstick.info["release_number"]))
+            return cls(int(light.info["release_number"]))
         except ValueError:
             pass
 
         return cls(0)
 
+    @property
+    def nleds(self) -> int:
+        """Number of LEDs supported by this BlinkStick light variant."""
+
+        try:
+            return self._nleds
+        except AttributeError:
+            pass
+
+        self._nleds = {2: 192, 0x200: 8, 0x201: 8, 0x202: 2, 0x203: 32}.get(
+            self.value, 1
+        )
+        return self._nleds
+
     def __str__(self):
 
         if self.value == 0:
-            return "Unknown BlinkStick"
+            return "Unknown Device"
 
         if self.value == 1:
             return "BlinkStick"
@@ -80,20 +97,20 @@ class BlinkStickVariant(int, Enum):
 
 
 class BlinkStickReportAttribute(USBLightAttribute):
-    """
+    """An 8-bit feature report value.
     """
 
 
 class BlinkStickChannelAttribute(USBLightAttribute):
-    """"""
+    """An 8-bit channel value: 0: red, 1: green, 2: blue."""
 
 
 class BlinkStickIndexAttribute(USBLightAttribute):
-    """"""
+    """An 8-bit index value to specify individual LEDs."""
 
 
 class BlinkStickLEDColorAttribute(USBLightAttribute):
-    """An 24-bit color value."""
+    """A 24-bit color value. Accepts an integer or 3-tuple of ints."""
 
     def __set__(self, obj, value):
         if isinstance(value, tuple):
@@ -106,6 +123,23 @@ class BlinkStickColorAttribute(USBLightAttribute):
 
 
 class BlinkStick(USBLight):
+    """Support for Agile Innovations' BlinkStick family of USB connected lights.
+
+    NOTE: Inital development was tested with a BlinkStick Square and is
+          unlikely to work with other BlinkStick variants currently.
+
+    The BlinkStick family of hardware is another interesting open-source
+    hardware project (see ThingM for another), however it's probably the
+    least capable device compared to the other supported presense lights.
+
+    BlinkSticks variants have a differing number of LEDs available, and
+    are limited to turning LEDs on with a color and turning them off
+    with a color. It's up to software to drive any other desired effects
+    or animations (fades, blinks, etc).  The BlinkStick's LEDs are
+    individually addressable which sort of makes up for the lack of a
+    programmable "blink" mode. 
+
+    """
 
     VENDOR_IDS = [0x20A0]
     __vendor__ = "Agile Innovations"
@@ -121,6 +155,13 @@ class BlinkStick(USBLight):
         - USBLightNotFound
         """
 
+        # Rough command layout
+        #   R,G,B - 8 bit colors
+        #   C - channel
+        #   I - index
+        #   GRBn - green, red, blue
+        #   X - pad
+        #
         # [1, R, G, B]
         # [2, ?]
         # [3, ?]
@@ -174,58 +215,28 @@ class BlinkStick(USBLight):
         self._name = str(self.variant)
         return self._name
 
-    @property
-    def nleds(self) -> int:
-        """Number of LEDs supported by light variant."""
-
-        try:
-            return self._nleds
-        except AttributeError:
-            pass
-
-        self._nleds = {2: 192, 0x200: 8, 0x201: 8, 0x202: 2, 0x203: 32}.get(
-            self.variant.value, 1
-        )
-        return self._nleds
-
-    def write(self):
+    def impl_on(self, color: Tuple[int, int, int]) -> None:
+        """"Turn the light on with the specified color.
         """
-        """
-        nbytes = self.device.write(self.bytes)
-        if nbytes != len(self.bytes):
-            raise USBLightIOError(self, nbytes)
+        self.set_leds(color)
 
-    def on(self, color: Tuple[int, int, int] = None) -> None:
+    def impl_off(self) -> None:
+        """Turn the light off.
         """
+        self.set_leds((0, 0, 0))
+
+    def impl_blink(self, color: Tuple[int, int, int], speed: int) -> None:
+        """Turn the light on with specified color [default=red] and begin blinking.
+
+        :param color: Tuple[int, int, int]
+        :param speed: 1 == slow, 2 == medium, 3 == fast
         """
 
-        if color is None or not any(color):
-            color = (0, 255, 0)
+        self.start_effect(partial(_blink_effect, color=color, speed=speed))
 
-        self.bs_set_leds(color)
-
-    def off(self) -> None:
+    def set_leds(self, color: Tuple[int, int, int]):
         """
         """
-        self.bs_set_leds((0, 0, 0))
-
-    def blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
-        """
-        """
-
-        interval = {1: 1, 2: 0.5, 3: 0.25}.get(speed, 1)
-
-        try:
-            while True:
-                self.on(color)
-                sleep(interval)
-                self.off()
-                sleep(interval)
-        except KeyboardInterrupt:
-            pass
-
-    def bs_set_leds(self, color: Tuple[int, int, int]):
-
         r, g, b = color
         color = g, r, b
 
@@ -241,8 +252,9 @@ class BlinkStick(USBLight):
             self.led6 = color
             self.led7 = color
 
-    def bs_set_led(self, led: int, color: Tuple[int, int, int]):
-
+    def set_led(self, led: int, color: Tuple[int, int, int]):
+        """
+        """
         with self.batch_update():
             self.reset()
             self.report = 5

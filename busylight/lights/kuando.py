@@ -11,6 +11,7 @@ from bitvector import BitVector, BitField
 
 from .usblight import USBLight, UnknownUSBLight
 from .usblight import USBLightAttribute
+from .usblight import USBLightReadOnlyAttribute
 
 
 class RingTones(int, Enum):
@@ -33,83 +34,81 @@ class StepCommand(int, Enum):
 
 
 class StepCmdHiField(BitField):
-    """
+    """High 4-bits of command field. Valid values are:
+
+    \b
+    - StepCommand.KEEP_ALIVE
+    - StepCommand.BOOT_LOADER
+    - StepCommand.RESET
+    - StepCommand.JUMP
     """
 
 
 class StepCmdLoField(BitField):
-    """
+    """Low 4-bits of command field.
+
+    \b
+    Keep alive in XXX seconds for StepCommand.KEEP_ALIVE
+    Target step for StepCommand.JUMP
+    Zero for StepCommand.RESET
+    Zero for StepCommand.BOOT_LOADEER
     """
 
 
 class StepTargetField(BitField):
-    """
-    """
+    """Target step for StepCommand.JUMP."""
 
 
 class StepTimeoutField(BitField):
-    """
-    """
+    """Timeout in XXX seconds for StepCommand.KEEP_ALIVE."""
 
 
 class StepRepeatField(BitField):
-    """
-    """
+    """Repeat step N times."""
 
 
 class StepColorField(BitField):
-    """
-    """
+    """An 8-bit color value."""
 
 
 class StepDutyCycleField(BitField):
-    """
-    """
+    """Duty cycle in XXX seconds."""
 
 
 class StepUpdateField(BitField):
-    """
-    """
+    """Update audio data if asserted, other wise ignore values."""
 
 
 class StepRingtoneField(BitField):
-    """
-    """
+    """Ringtone select value."""
 
 
 class StepVolumeField(BitField):
-    """
-    """
+    """Ringtone volume value."""
 
 
 class StepField(USBLightAttribute):
-    """
-    """
+    """A 64-bit step command."""
 
 
 class BusyLightSensitivityField(USBLightAttribute):
-    """
-    """
+    """Sensitivity, used by Alpha/Omega."""
 
 
 class BusyLightTimeoutField(USBLightAttribute):
-    """
-    """
+    """Timeout, unused by Alpha/Omega."""
 
 
 class BusyLightTriggerField(USBLightAttribute):
-    """
-    """
+    """Trigger, unused by Alpha/Omega."""
 
 
-class BusyLightPadBytes(USBLightAttribute):
-    """
-    """
+class BusyLightPadBytes(USBLightReadOnlyAttribute):
+    """A 24-bit pad value."""
 
 
 class BusyLightChecksumField(USBLightAttribute):
-    """
-    """
+    """A 16-bit checksum value for the collection of steps."""
 
 
 class Step(BitVector):
@@ -136,8 +135,8 @@ class Step(BitVector):
 
     cmd0 = StepCmdHiField(60, 4)
     cmd1 = StepCmdLoField(56, 4)
-    target = StepTargetField(56, 4)
-    timeout = StepTimeoutField(56, 4)
+    target = StepTargetField(56, 4)  # cmd1 alias
+    timeout = StepTimeoutField(56, 4)  # cmd1 alias
 
     repeat = StepRepeatField(48, 8)
     red = StepColorField(40, 8)
@@ -160,6 +159,25 @@ class Step(BitVector):
 
 class BusyLight(USBLight):
 
+    """Kuando BusyLight 
+
+    The BusyLight has a unique command protocol. The device
+    can be programmed with up to eight "steps" which can an
+    encode mode information (color, on/off duty cycle and
+    audio info). Once a comman set has been written to the
+    target device, it will execute that program and then
+    stop in a quiesced (off) state. If the device receives
+    a "keep-alive" message, it will continue executing the
+    original steps until the keep-alive timeout expires.
+
+    The BusyLight class implements a `helper` method that
+    will send the keep-alive message to the light for as
+    long as the initiating thread remains alive.
+
+    
+
+    """
+
     VENDOR_IDS = [0x27BB]
     __vendor__ = "Kuando"
 
@@ -174,6 +192,7 @@ class BusyLight(USBLight):
         - USBLightInUse
         - USBLightNotFound
         """
+        # FF_FFFF are the required values for `padbytes`
         super().__init__(vendor_id, product_id, 0x00FF_FFFF_0000, 512)
 
     step0 = StepField(448, 64)
@@ -185,13 +204,16 @@ class BusyLight(USBLight):
     step6 = StepField(64, 64)
     final = StepField(0, 64)
 
+    # the following fields compose 'final' above.
     sensitivity = BusyLightSensitivityField(56, 8)
     timeout = BusyLightTimeoutField(48, 8)
     trigger = BusyLightTriggerField(40, 8)
-    padbytes = BusyLightPadBytes(16, 24)
+    padbytes = BusyLightPadBytes(16, 24)  # required to be 0xFFFFFF
     chksum = BusyLightChecksumField(0, 16)
 
-    def __debug_str__(self):
+    def _dump_steps(self):
+        """Dump hex values of steps. Debug tool.
+        """
         return "\n".join(
             [
                 "====================",
@@ -228,7 +250,7 @@ class BusyLight(USBLight):
             sleep(interval)
 
     def write(self) -> int:
-        """Write the in-memory state of the device to hardare.
+        """Write the in-memory state of the device to hardware.
 
         The Kuando BusyLight requires a checksum for valid
         control packets, which is computed just prior to the
@@ -239,39 +261,9 @@ class BusyLight(USBLight):
         - USBLightIOError
         """
         self.chksum = sum(self.bytes[:-2])
+        return super().write()
 
-        retval = self.device.write(self.bytes)
-        if retval != len(self.bytes):
-            raise USBLightIOError(self, retval)
-
-    def on(self, color: Tuple[int, int, int] = None, duration: int = 0) -> None:
-        """Turn the light on with the specified color [default=green].
-
-        Raises
-        - USBLightIOError
-        """
-        self.bl_on(color or (0, 255, 0))
-
-    def off(self) -> None:
-        """Turn the light off.
-
-        Raises
-        - USBLightIOError
-        """
-        self.bl_on((0, 0, 0))
-
-    def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
-        """Turn the light on with specified color [default=red] and begin blinking.
-        
-        :param color: Tuple[int, int, int]
-        :param speed: 1 == slow, 2 == medium, 3 == fast
-
-        Raises
-        - USBLightIOError
-        """
-        self.bl_blink(color or (255, 0, 0), speed)
-
-    def bl_on(self, color: Tuple[int, int, int]) -> None:
+    def impl_on(self, color: Tuple[int, int, int]) -> None:
         """Turn the BusyLight on with the specified color. 
         
         :param color: Tuple[int, int, int]
@@ -288,8 +280,17 @@ class BusyLight(USBLight):
             self.reset()
             self.step0 = step.value
 
-    def bl_blink(self, color: Tuple[int, int, int], speed: int):
+    def impl_off(self) -> None:
+        """Turn the light off.
+
+        Raises
+        - USBLightIOError
         """
+        self.impl_on((0, 0, 0))
+
+    def impl_blink(self, color: Tuple[int, int, int], speed: int):
+        """Start the BusyLight blinking on and off with the specified
+        color and speed.
 
         :param color: Tuple[int, int, int]
         :param speed: int

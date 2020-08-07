@@ -47,63 +47,48 @@ class Blink1Report(int, Enum):
 
 
 class Blink1ReportField(USBLightAttribute):
-    """
-    """
+    """An 8-bit report field."""
 
 
 class Blink1ActionField(USBLightAttribute):
-    """
-    """
+    """An 8-bit action."""
 
 
 class Blink1ColorField(USBLightAttribute):
-    """8-bit color value.
-    """
+    """An 8-bit color value."""
 
 
 class Blink1PlayField(USBLightAttribute):
-    """
+    """An 8-bit value.
     """
 
 
 class Blink1StartField(USBLightAttribute):
-    """
-    """
+    """An 8-bit value."""
 
 
 class Blink1StopField(USBLightAttribute):
-    """
-    """
+    """An 8-bit value."""
 
 
 class Blink1CountField(USBLightAttribute):
-    """
-    """
+    """An 8-bit count value."""
 
 
 class Blink1FadeField(USBLightAttribute):
-    """
-    """
+    """An 8-bit fade duty cycle value."""
 
 
 class Blink1LEDSField(USBLightAttribute):
-    """
-    """
+    """An 8-bit field."""
 
 
 class Blink1LineField(USBLightAttribute):
-    """
-    """
-
-
-class Blink1Field(USBLightAttribute):
-    """
-    """
+    """An 8-bit field."""
 
 
 class Blink1(USBLight):
     """ThingM blink(1) USB connnected LED light.
-    
     
     """
 
@@ -142,13 +127,6 @@ class Blink1(USBLight):
     leds = Blink1LEDSField(0, 8)
     line = Blink1LineField(0, 8)
 
-    def read(self, buf: bytes) -> bytes:
-        """ ¯\_(ツ)_/¯ 
-        """
-        rc = self.device.send_feature_report(buf)
-
-        return self.device.get_feature_report(buf[0], 8)
-
     def write(self) -> int:
         """Write the in-memory state of the device to hardware.
 
@@ -165,17 +143,17 @@ class Blink1(USBLight):
 
         return result
 
-    def on(self, color: Tuple[int, int, int] = None) -> None:
-        """Turn the light on with the specified color [default=green].
+    def impl_on(self, color: Tuple[int, int, int]) -> None:
+        """Turn the light on with the specified color.
         """
-        self.b1_fade_to_color(color, self.default_fade)
+        self.fade_to_color(color, self.default_fade)
 
-    def off(self) -> None:
+    def impl_off(self) -> None:
         """Turn the light off.
         """
-        self.b1_fade_to_color((0, 0, 0), self.default_fade)
+        self.fade_to_color((0, 0, 0), self.default_fade)
 
-    def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
+    def impl_blink(self, color: Tuple[int, int, int], speed: int) -> None:
         """Turn the light on with specified color [default=red] and begin blinking.
 
         :param color: Tuple[int, int, int]
@@ -188,15 +166,18 @@ class Blink1(USBLight):
         activate = 10
         decay = 100 // speed
 
-        self.b1_write_pattern_line(color, activate, 0)
-        self.b1_write_pattern_line((0, 0, 0), decay, 1)
-        self.b1_save_patterns()
-        self.b1_play_loop(1, 0, 1)
+        self.write_pattern_line(color, activate, 0)
+        self.write_pattern_line((0, 0, 0), decay, 1)
+        self.save_patterns()
+        self.play_loop(1, 0, 1)
 
-    def b1_fade_to_color(
+    def fade_to_color(
         self, color: Tuple[int, int, int], time_ms: int, leds: Blink1LED = Blink1LED.ALL
     ) -> None:
         """
+        :param color: Tuple[int, int, int]
+        :param time_ms: int
+        :param leds: Blink1Led
         """
         with self.batch_update():
             self.clear()
@@ -206,8 +187,10 @@ class Blink1(USBLight):
             self.fade = time_ms
             self.leds = leds
 
-    def b1_set_color_now(self, color: Tuple[int, int, int]) -> None:
+    def set_color_now(self, color: Tuple[int, int, int]) -> None:
         """Only of devices with fw val 204+
+
+        :param color: Tuple[int, int, int]
         """
 
         with self.batch_update():
@@ -216,10 +199,13 @@ class Blink1(USBLight):
             self.action = Blink1Action.SetColor
             self.color = color
 
-    def b1_write_pattern_line(
+    def write_pattern_line(
         self, color: Tuple[int, int, int], fade_ms: int, pos: int
     ) -> None:
         """
+        :param color: Tuple[int, int, int]
+        :param fade_ms: int
+        :param pos: int
         """
         with self.batch_update():
             self.clear()
@@ -229,7 +215,7 @@ class Blink1(USBLight):
             self.fade = fade_ms
             self.line = pos
 
-    def b1_save_patterns(self):
+    def save_patterns(self):
         """
         """
         with self.batch_update():
@@ -241,8 +227,12 @@ class Blink1(USBLight):
             self.blue = 0xCA
             self.count = 0xFE
 
-    def b1_play_loop(self, play: int, start: int, stop: int, count: int = 0) -> None:
+    def play_loop(self, play: int, start: int, stop: int, count: int = 0) -> None:
         """
+        :param play: int
+        :param start: int
+        :param stop: int
+        :param count: int
         """
         with self.batch_update():
             self.clear()
@@ -253,8 +243,10 @@ class Blink1(USBLight):
             self.stop = stop
             self.count = count
 
-    def b1_clear_patterns(self, start: int = 0, count: int = 16):
+    def clear_patterns(self, start: int = 0, count: int = 16):
         """
+        :param start: int
+        :param count: int
         """
         for n in range(start, start + count):
-            self.b1_write_pattern_line((0, 0, 0), 0, n)
+            self.write_pattern_line((0, 0, 0), 0, n)
