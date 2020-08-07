@@ -167,7 +167,7 @@ def off_subcommand(ctx: typer.Context,):
     light_id = ctx.obj
 
     try:
-        with LightManager().operate_on(light_id) as manager:
+        with LightManager().operate_on(light_id, wait_on_animation=False) as manager:
             manager.light_off(light_id)
     except LightIdRangeError as error:
         typer.secho(str(error), fg="red")
@@ -207,6 +207,7 @@ def blink_subcommand(
     try:
         with LightManager().operate_on(light_id) as manager:
             manager.light_blink(light_id, color, speed)
+
     except (LightIdRangeError, ColorLookupError) as error:
         typer.secho(str(error), fg="red")
         raise typer.Exit(-1) from None
