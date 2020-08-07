@@ -267,8 +267,8 @@ def serve_subcommand(
     via these two URLs:
 
     \b
-    `http://<hostname>:<port>/docs`
-    `http://<hostname>:<port>/redoc`
+    - `http://<hostname>:<port>/docs`
+    - `http://<hostname>:<port>/redoc`
 
     ## Examples
 
