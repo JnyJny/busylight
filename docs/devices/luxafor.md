@@ -11,7 +11,7 @@ USB-connected presence light.
 The Luxafor Flag is small device with six LEDs and a female mini-USB
 port. The main body of the device is rectangular; roughly 1.75 inches
 long, 0.5 inches wide and 0.25 inches deep. The device's transluscent
-defuser sticks out of "top" of the enclosure, roughly 1.25 inches
+flag defuser sticks out of "top" of the enclosure, roughly 1.25 inches
 square and maybe an eighth of an inch in width. There are three
 forward firing LEDs which light the flag and three rear firing LEDs
 which are easily visible through the opaque enclosure. Lastly, there

@@ -1,3 +1,5 @@
+![BusyLight Project Logo][1]
+
 ## Agile Innovations LTD BlinkStick
 
 Agile Innovations LTD offers a variety of BlinkStick branded products:
@@ -31,3 +33,6 @@ printed opaque cube roughly an inch on a side.
 
 ### Functionality Wishlist
 
+[0]: https://blinkstick.com
+[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[H]: https://github.com/libusb/hidapi
