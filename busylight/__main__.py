@@ -1,10 +1,8 @@
 """Control USB attached LED lights like a Human™
 """
 
-
-from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
-from sys import stdout, stderr
+from sys import stdout
 from typing import Tuple, Union, List
 
 import typer
@@ -36,10 +34,10 @@ def main_callback(
 
     ![All supported lights](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
 
-    Make a supported USB attached LED light turn on, off and blink; all
-    from the comfort of your very own command-line. If your platform
-    supports HIDAPI (Linux, MacOS, Windows and probably others), then
-    you can use `busylight`!
+    Make a USB attached LED light turn on, off and blink; all from the
+    comfort of your very own command-line. If your platform supports
+    HIDAPI (Linux, MacOS, Windows and probably others), then you can use
+    `busylight` with supported lights!
 
     ## Usage
 
@@ -62,18 +60,19 @@ def main_callback(
     Agile Innovations BlinkStick (†)
     Embrava Blynclight
     ThingM Blink1
-    Kuando BusyLight (§)
+    Kuando BusyLight (‡)
     Luxafor Flag
     ```
 
     \b 
     - † Requires software intervention for `blink` mode
-    - § Requires software intervention for all modes
+    - ‡ Requires software intervention for all modes
 
     Lights that "require software intervention" need software to constantly update
     the device instead of a one-time configuration of the light. Those devices will
     cause the `busylight` command to not return immediately and the lights will
-    turn off when the user interrupts the command.
+    turn off when the user interrupts the command. The `busylight serve` mode can
+    help in this situation.
 
     ## Install
     
@@ -90,13 +89,6 @@ def main_callback(
     """
 
     ctx.obj = -1 if all_lights else light_id
-
-    #    if not ctx.invoked_subcommand:
-    #        ctx.invoke(list_subcommand, ctx)
-    #        raise typer.Exit()
-
-    if ctx.invoked_subcommand not in ["supported", "udev-rules"]:
-        pass
 
 
 @cli.command(name="list")
@@ -131,7 +123,9 @@ def list_subcommand(
 
 
 @cli.command(name="on")
-def on_subcommand(ctx: typer.Context, color: str = typer.Argument("green")):
+def on_subcommand(
+    ctx: typer.Context, color: str = typer.Argument("green"),
+):
     """Turn selected lights on.
 
     The light selected is turned on with the specified color. The default color is green
@@ -149,13 +143,12 @@ def on_subcommand(ctx: typer.Context, color: str = typer.Argument("green")):
     $ busylight on #ffffff  # now it's white
     $ busylight --all on    # now all available lights are green
     ```
-    
     """
 
     light_id = ctx.obj
 
     try:
-        with LightManager().operate_on(light_id) as manager:
+        with LightManager().operate_on(light_id,) as manager:
             manager.light_on(light_id, color)
     except (LightIdRangeError, ColorLookupError) as error:
         typer.secho(str(error), fg="red")
@@ -171,8 +164,8 @@ def off_subcommand(ctx: typer.Context,):
     ```console
     $ busylight --all off
     ```
-
     """
+
     light_id = ctx.obj
 
     try:
@@ -254,6 +247,8 @@ def udev_rules_subcommand(
     ```
     """
 
+    # EJO mode that only emits rules for lights actually present?
+
     output = filename.open("w") if filename else stdout
 
     for vendor_id in KNOWN_VENDOR_IDS:
@@ -267,10 +262,11 @@ def serve_subcommand(
     host: str = typer.Option("0.0.0.0", "--host", "-H"),
     port: int = typer.Option(8888, "--port", "-p"),
 ):
-    """Start a FastAPI-based service that provides access to
-    all connected lights via HTTP. All connected lights are managed
-    by the service, allowing long-running animations and effects that
-    the native device APIs might not support.
+    """Start a FastAPI-based service to access lights.
+
+    All connected lights are managed by the service, allowing
+    long-running animations and effects that the native device APIs
+    might not support.
 
     Once the service is started, the API documentation is available
     via these two URLs:
@@ -289,14 +285,16 @@ def serve_subcommand(
     $ curl http://localhost:8888/1/lights/off
     $ curl http://localhost:8888/1/light/0/on/purple
     $ curl http://localhost:8888/1/light/0/off
-
+    $ curl http://localhost:8888/1/lights/on
+    $ curl http://localhost:8888/1/lights/off
     """
 
     try:
         import uvicorn
     except ImportError:
         typer.secho(
-            "The package 'uvicorn' is  missing, unable to serve the busylight API"
+            "The package 'uvicorn' is  missing, unable to serve the busylight API.",
+            fg="red",
         )
         raise typer.Exit(-1)
 
