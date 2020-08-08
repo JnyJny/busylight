@@ -7,6 +7,7 @@ several types of USB connected LED lights from multiple vendors:
 - [Kuando][3] BusyLight UC Omega and UC Alpha
 - [Luxafor][4] Flag
 - [ThingM][5] blink(1)
+- [Agile Innovations][9] BlinkStick
 
 The general use case for most these products is integration with a
 communication application via a plugin of some sort: Skype, Teams,
@@ -59,11 +60,11 @@ The devices are roughly 2 inches tall, and 1.5 inches on a side.
 
 ### Basic Human Interface Device Info 
 
-- Vendor Id values: 0x2c0d, 0x03e5
-- I/O Interface: POSIX-style `write`
-- I/O Control: 9 byte word
+- Vendor ID values: 0x2c0d, 0x03e5
+- I/O Interface: HID `write`
+- Command Length: 9 bytes
 
-### Control Word Format
+### Command Format
 
 The Embrava Blynclight is a [USB HID][8] accessible device whose
 attributes are controlled by writing a nine (9) byte packet to the
@@ -110,7 +111,7 @@ typedef struct {
 
 ### Device Operation
 
-The devices requires the inital byte of the control word be zero and
+The device requires the inital byte of the control word to be zero and
 the final two bytes of the word be set to 0xFF22. The device is
 effectively write-only as I have not been able to get the device to
 return anything via the `read` or `get_feature_report` interfaces
@@ -119,9 +120,10 @@ return anything via the `read` or `get_feature_report` interfaces
 #### Activating With a RGB Color
 
 Turning the light on requires the user to supply a control word with
-`off` de-asserted (zero) and one or more red, blue or green values.
-Please note that this device does not follow the RGB convention of
-color ordering; the order of green and blue is swapped, **RBG**.
+`off` de-asserted (zeroed) and one or more non-zero red, blue or green
+values.  Please note that this device does not follow the RGB
+convention of color ordering; the order of green and blue is swapped,
+**RBG**.
 
 **Example: Activate Light with Purple Color.**
 ```C
@@ -200,15 +202,191 @@ for volume values between 1 and 0xf.
 
 ### Observations
 
-The Embrava Blynclight is simple robust device. The only _edge_ case behavior I've
+The Embrava Blynclight is simple, robust device. The only _edge_ case behavior I've
 encountered is the strobe effect achieved when `flash` is set and `speed` is [0,3,5,7].
 The light is very responsive and I have **not** been able to induce an error state in the
 light that required "rebooting" (unplug/plug) the light to recover normal function.
+
+I cannot say for sure that the tone identified by music value 0 on the
+BlyncLight Plus is intended, it is very harsh. 
+
+Oddly, it appears the latency in writes to the BlyncLight and BlyncLight Plus are
+different. If both lights are set to update free running in their own threads, the
+behavior of the lights will rapidly drift. For instance, if both lights are being
+driven with rainbow spectrum colors from seperate threads, they will rapidly drift
+apart with respect to the color being displayed. It may be a thread scheduling
+issue, but I strongly suspect the write latency as the source of the drift.
+
+I used [WireShark][W] to snoop the USB bus while using Embrava's
+software to decode the BlyncLight's command format. Embrava provides
+some support for third-party developers in the form of SDKs (Windows,
+Mac and Linux) however the developer forum is not actively engaged by
+Embrava engineers and the SDKs are updated sporadically.
+
 
 ### Functionality Wishlist 
 
 - Read current state
 - Individual control of the five LEDs
+
+## Kuando BusyLight
+
+The Kuando BusyLight line of products consists of the Busylight UC Alpha and the
+BusyLight US Omega. For development, I tested with the Omega model. I have no
+reason to believe that the Alpha varies in any significant way with respect to
+it's software configuration.
+
+### Physical Description
+
+#### UC Omega
+
+The UC Omega is vaguely cylindrical in shape, with a slightly wider
+base and a narrower top. The device has a permamently attached USB
+cord with a USB-A male connector. There is a small side-firing speaker
+grill on the side opposite of the cable. The entire device is roughly
+1.5 inches in diameter and 1.75 inches tall. The diffuser is secured
+to the base, possibly glued, and I was not able to determine how many
+LED lights the device has. 
+
+### Basic Human Interface Device Info
+
+- Vendor Id values: 0x27bb
+- I/O Interface: HID `write`
+- Command Length: 64 bytes
+
+### Command Format
+
+The Kuando UC Omega is a [USB HID][8] accessible device whose
+attributes are controlled by writing a 64 byte packet to the device.
+
+### Device Operation
+
+#### Activating With a RGB Color
+
+#### Turning the Light Off
+
+### Observations
+
+### Functionality Wishlist
+
+## Luxafor Flag 
+
+The Luxafor line of products includes many devices which are designed
+for office productivity. The Luxafor Flag is the only USB connected
+presense light.
+
+### Physical Description
+
+The Luxafor Flag is small device with six LEDs and a female mini-USB
+port. The main body of the device is rectangular; roughly 1.75 inches
+long, 0.5 inches wide and 0.25 inches deep. The device's transluscent
+defuser sticks out of "top" of the enclosure, roughly 1.25 inches
+square and maybe an eighth of an inch in width. There are three
+forward firing LEDs which light the flag and three rear firing LEDs
+which are easily visible through the opaque enclosure. Lastly, there
+is a relatively strong magnet embedded in the enclosure, near the USB
+port, which can be used with the supplied adhesive-backed magnet to
+"mount" the light.
+
+### Basic Human Interface Device Info
+
+- Vendor ID values:
+- I/O Interface:
+- Command Length
+
+### Command Format
+
+The Luxafor Flag is a [USB HID][8] accessible device whose attributes
+are controlled by writing an 8 byte packet to the device.
+
+### Device Operation
+
+#### Activating with a RGB Color
+
+#### Turning the Light Off
+
+### Observations
+
+### Functionality Wishlist
+
+## ThingM blink(1)
+
+ThingM is a California company thagt describes themselves as a "device
+studio" and offer many different LED based devices; the consumer
+oriented blink(1) product line and for prototyping and hacking they
+offer the BlinkM line of products. I developed with the blink(1) mk3
+device.
+
+### Physical Description
+
+#### blink(1)
+
+The ThingM blink(1) is the smallest USB connected LED light I have
+worked with so far. The device mostly consists of a USB-A male
+connector with a wraparound transluscent diffusor. The device
+dimensions are _roughly_ 1.5 inches long, (excluding USB-A male
+connector), 1.25 inches wide and 0.25 inches deep.  The device has two
+LEDs; one firing up and the other firing down. My ThingM blink(1) mk3
+shipped with an approximately 3 foot long USB cable with a USB-A male
+connector and a USB-A female connector.
+
+### Basic Human Interface Device Info
+
+- Vendor ID values:
+- I/O Interface:
+- Command Length:
+
+### Command Format
+
+### Device Operation
+
+#### Activating with a RGB Color
+
+#### Turning the Light Off
+
+### Observations
+
+The device will briefly flash a white color on both LEDs when first
+plugged in.
+
+### Functionality Wishlist
+
+
+## Agile Innovations LTD BlinkStick
+
+Agile Innovations LTD offers a variety of BlinkStick branded products:
+the Nano, the Flex, the Square, the Strip and Pro. I worked with the
+BlinkStick Square.
+
+### Physical Description
+
+#### BlinkStick Square
+
+The BlinkStick Square is a roughly one inch square device with a
+USB-mini female connector and eight upward firing LEDs, arranged two
+on each side of the square. I purchased the optional diffuser, a 3d
+printed opaque cube roughly an inch on a side. 
+
+### Basic Human Interface Device Info
+
+- Vendor ID values:
+- I/O Interface:
+- Command Length
+
+### Command Format
+
+### Device Operation
+
+#### Activating with a RGB Color
+
+#### Turning the Light Off
+
+### Observations
+
+### Functionality Wishlist
+
+
+
 
 
 [0]: https://github.com/JnyJny/busylight
@@ -220,3 +398,5 @@ light that required "rebooting" (unplug/plug) the light to recover normal functi
 [6]: https://opensource.org
 [7]: https://github.com/trezor/cython-hidapi
 [8]: https://github.com/libusb/hidapi
+[9]: https://blinkstick.com
+[W]: https://wireshark.com
