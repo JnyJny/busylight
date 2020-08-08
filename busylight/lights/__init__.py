@@ -41,6 +41,8 @@ __all__ = [
     "Blynclight",
     "BusyLight",
     "Flag",
+    "KNOWN_VENDOR_IDS",
+    "SUPPORTED_LIGHTS",
     "UnknownUSBLight",
     "USBLight",
     "USBLightInUse",
