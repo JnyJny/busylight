@@ -19,7 +19,7 @@ from ..lights import USBLightIOError
 ## whether it has been stopped or not.
 
 
-def rainbow(light: object, interval: float = 0.05) -> None:
+def rainbow(light: object, interval: float = 0.05, /, **kwds) -> None:
     """Color cycle the light thru a rainbow spectrum.
 
     :param light: USBLight subclass
@@ -36,7 +36,7 @@ def rainbow(light: object, interval: float = 0.05) -> None:
             time.sleep(interval)
 
 
-async def rainbow_async(light: object, interval: float = 0.05) -> None:
+async def rainbow_async(light: object, interval: float = 0.05, /, **kwds) -> None:
     """Color cycle the light thru a rainbow spectrum.
 
     :param light: USBLight subclass
@@ -49,26 +49,52 @@ async def rainbow_async(light: object, interval: float = 0.05) -> None:
                 light.on(color)
             except USBLightIOError:
                 exit()
-            await asyncio.sleep(interval)
             yield
+            await asyncio.sleep(interval)
 
 
-def throbber(
-    light: object, color: Tuple[int, int, int], interval: float = 0.1, sleepf=None
+def pulse(
+    light: object, color: Tuple[int, int, int] = None, interval: float = 0.01,
 ) -> None:
-    pass
+    """
+    """
+    if not color or not any(color):
+        color = (255, 0, 0)
+
+    r, g, b = color
+
+    gradient = Gradient(color, 8, reverse=True)
+
+    while True:
+        for color in cycle(gradient):
+            try:
+                light.on(color)
+            except USBLightIOError:
+                exit()
+            yield
+            time.sleep(interval)
 
 
-async def throbber_async(
-    light: object, color: Tuple[int, int, int], interval: float = 0.1
+async def pulse_async(
+    light: object, color: Tuple[int, int, int], interval: float = 0.1,
 ) -> None:
     pass
 
 
 def flash_lights_impressively(
-    light: object, colors: List[Tuple[int, int, int]], interval: float = 0.1
+    light: object, colors: List[Tuple[int, int, int]] = None, interval: float = 0.05
 ) -> None:
-    pass
+
+    if not colors:
+        colors = [(0xFF, 0, 0), (0, 0xFF, 0), (0, 0, 0xFF)]
+
+    for color in cycle(colors):
+        try:
+            light.on(color)
+        except USBLightIOError:
+            exit()
+        yield
+        time.sleep(interval)
 
 
 async def flash_lights_impressively_async(
@@ -82,8 +108,8 @@ __all__ = [
     "Spectrum",
     "rainbow",
     "rainbow_async",
-    "throbber",
-    "throbber_async",
+    "pulse",
+    "pulse_async",
     "flash_lights_impressively",
     "flash_lights_impressively_async",
 ]

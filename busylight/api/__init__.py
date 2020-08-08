@@ -2,6 +2,7 @@
 """
 
 import asyncio
+
 from typing import List
 
 from fastapi import FastAPI, HTTPException, Path, Request
@@ -11,7 +12,7 @@ from fastapi.responses import JSONResponse
 from .models import LightOperation, LightDescription
 
 from ..__version__ import __version__
-from ..effects import rainbow, throbber, flash_lights_impressively
+from ..effects import rainbow, pulse, flash_lights_impressively
 from ..manager import LightManager, BlinkSpeed
 from ..manager import LightIdRangeError, ColorLookupError
 
@@ -349,3 +350,87 @@ async def Rainbow_Lights():
 
     server.manager.apply_effect_to_light(-1, rainbow)
     return {"action": "effect", "name": "rainbow", "light_id": "all"}
+
+
+@server.get(
+    "/1/light/{light_id}/fli",
+    response_model=LightOperation,
+    response_model_exclude_unset=True,
+)
+async def Flash_Light_Impressively(
+    light_id: int = Path(..., title="Light identifier", ge=0)
+) -> dict:
+    """Flash the specified light imporessively.
+    """
+
+    server.manager.apply_effect_to_light(light_id, flash_lights_impressively)
+    return {"action": "effect", "name": "fli", "light_id": light_id}
+
+
+@server.get(
+    "/1/lights/fli", response_model=LightOperation, response_model_exclude_unset=True
+)
+async def Flash_Lights_Impressively():
+    """Flash all lights impressively.
+    """
+
+    server.manager.apply_effect_to_light(-1, flash_lights_impressively)
+    return {"action": "effect", "name": "fli", "light_id": "all"}
+
+
+@server.get(
+    "/1/light/{light_id}/pulse",
+    response_model=LightOperation,
+    response_model_exclude_unset=True,
+)
+async def Pulse_Light(
+    light_id: int = Path(..., title="Light identifier", ge=0)
+) -> dict:
+    """Pulse a light red.
+    """
+    server.manager.apply_effect_to_light(light_id, pulse)
+    return {"action": "effect", "name": "pulse", "light_id": light_id, "color": "red"}
+
+
+@server.get(
+    "/1/light/{light_id}/pulse/{color}",
+    response_model=LightOperation,
+    response_model_exclude_unset=True,
+)
+async def Pulse_Light_With_Color(
+    light_id: int = Path(..., title="Light identifier", ge=0),
+    color: str = Path(..., title="Color specifier string"),
+) -> dict:
+    """Pulse a light with the specified color.
+    """
+
+    server.manager.apply_effect_to_light(light_id, pulse, color=color)
+    return {"action": "effect", "name": "pulse", "light_id": light_id, "color": color}
+
+
+@server.get(
+    "/1/lights/pulse", response_model=LightOperation, response_model_exclude_unset=True
+)
+async def Pulse_Lights():
+    """Pulse all lights red.
+    """
+
+    server.manager.apply_effect_to_light(-1, pulse)
+
+    return {"action": "effect", "name": "pulse", "light_id": "all", "color": "red"}
+
+
+@server.get(
+    "/1/lights/pulse/{color}",
+    response_model=LightOperation,
+    response_model_exclude_unset=True,
+)
+async def Pulse_Lights_With_Color(
+    color: str = Path(..., title="Color specifier string")
+):
+    """Pulse all lights with the specified color.
+    """
+
+    server.manager.apply_effect_to_light(-1, pulse, color=color)
+
+    return {"action": "effect", "name": "pulse", "light_id": "all", "color": color}

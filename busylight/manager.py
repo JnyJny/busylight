@@ -3,6 +3,7 @@
 
 from contextlib import contextmanager
 from enum import Enum
+from functools import partial
 from time import sleep
 from typing import Generator, Dict, List, Tuple, Union
 
@@ -277,8 +278,17 @@ class LightManager:
 
         self.light_off(light_id)
 
+        try:
+            color = color_to_rgb(kwds["color"])
+        except KeyError:
+            color = (255, 0, 0)
+        except ValueError:
+            raise ColorLookupError(kwds["color"])
+        finally:
+            effect = partial(effect, color=color)
+
         for light in self.lights_for(light_id):
-            light.start_effect(effect)  # what happens with IO here???
+            light.start_effect(effect)
 
     @contextmanager
     def operate_on(
