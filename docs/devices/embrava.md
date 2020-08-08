@@ -12,15 +12,15 @@ secondhand accounts of success with the Blynclight Mini.
 
 #### Blynclight & Blynclight Plus
 
-These two lights are very similar and consist of a "pedastal" topped
-by a cubical transluscent diffuser. The pedastal houses the PCB board
-of the device and features five LEDs exposed on the top. The LEDs are
-arranged in a "checkerboard" configuration and are not individually
-addressable. There is a female USB mini connector which allows
-connecting the device to a host with any in-spec length cable.
+These two lights are very similar and consist of a square pedestal
+topped by a cubical transluscent diffuser. The pedestal houses the PCB
+board of the device and features five LEDs exposed on the top. The
+LEDs are arranged in a "checkerboard" configuration and are not
+individually addressable. There is a female USB-mini connector which
+allows connecting the device to a host with any in-spec length cable.
 
 The Blynclight Plus appears to have a downward firing speaker, however
-covering the bottom "grille" does not seem to attenuate how loud the
+covering the bottom grill does not seem to attenuate how loud the
 device is.
 
 The devices are roughly 2 inches tall, and 1.5 inches on a side. 
@@ -29,7 +29,6 @@ The devices are roughly 2 inches tall, and 1.5 inches on a side.
 
 - Vendor ID values: 0x2c0d, 0x03e5
 - I/O Interface: HID `write`
-- Command Length: 9 bytes
 
 ### Command Format
 
@@ -43,7 +42,7 @@ for configuring the device for different functions will be given
 in C, however they should be very accessible regardless of what
 language the reader may be familiar with. 
 
-A structure bit field in C is declared as a member of a struct,
+A structure bit field in C is declared as a member of a `struct`,
 usually an `unsigned int`, followed by a width specifier. The
 `header` field specified below is an 8-bit (1-byte) field, while
 the `off` field is a single bit field. Fields prefixed with `pad`
@@ -52,7 +51,7 @@ structure for fields that follow.
 
 ```C
 typedef struct {
-   unsigned int header: 8;  /* 64:71 Constant 0x0 */
+   unsigned int header: 8;  /* 64:71 Constant: 0x00 */
    unsigned int red: 8;     /* 56:63 Red color value [-255] */
    unsigned int blue: 8;    /* 48:55 Blue color value [0-255] */
    unsigned int green: 8;   /* 40:47 Green color value [0-255] */
@@ -66,7 +65,7 @@ typedef struct {
    unsigned int music: 4;   /* 28:31 Stored music index: [0-15]
    unsigned int play: 1;    /* 27:27 Set play selected music, zero is stop */
    unsigned int repeat: 1;  /* 26:26 Set repeats playing music, zero is once */
-   unsigned int pad1: 2;    /* 24:25 Unused pits */
+   unsigned int pad1: 2;    /* 24:25 Unused bits */
    
    unsigned int volume: 4;  /* 20:23 Volume of music: [0-15]
    unsigned int mute: 1;    /* 19:19 Set is mute, zero is unmute */
@@ -177,7 +176,8 @@ required "rebooting" (unplug/plug) the light to recover normal
 function.
 
 I cannot say for sure that the tone identified by music value 0 on the
-BlyncLight Plus is intended, it is very harsh.
+BlyncLight Plus is intended, it is very harsh. It's possible that it
+is an unaccounted for state.
 
 Oddly, it appears the latency in writes to the BlyncLight and
 BlyncLight Plus are different. If both lights are set to update free
@@ -192,7 +192,7 @@ I used [WireShark][W] to snoop the USB bus while using Embrava's
 software to decode the BlyncLight's command format. Embrava provides
 some support for third-party developers in the form of SDKs (Windows,
 Mac and Linux) however the developer forum is not actively engaged by
-Embrava engineers and the SDKs are updated sporadically.
+Embrava engineers and the SDKs are not updated regularly.
 
 ### Functionality Wishlist 
 
