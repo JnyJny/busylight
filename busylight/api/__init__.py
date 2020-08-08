@@ -19,7 +19,7 @@ from ..manager import LightIdRangeError, ColorLookupError
 
 server = FastAPI(
     title="Busylight API Server",
-    description="""An API server for USB connected presense lights.
+    description="""An API server for USB connected presence lights.
 
 **Supported USB lights:**
 - Embrava Blynclight, Blynclight +, Blynclight Mini
