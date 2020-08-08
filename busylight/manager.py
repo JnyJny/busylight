@@ -147,7 +147,7 @@ class LightManager:
         with the thread and removes it from the list of managed lights.
 
         Light identfiers of remaining lights will change after `update`
-        if lights are unplugged. ¯\_(ツ)_/¯
+        if lights are unplugged.
 
         :return: number of new lights added to the managed `lights` list.
         """
