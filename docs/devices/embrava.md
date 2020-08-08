@@ -89,7 +89,8 @@ Turning the light on requires the user to supply a control word with
 `off` de-asserted (zeroed) and one or more non-zero red, blue or green
 values.  Please note that this device does not follow the RGB
 convention of color ordering; the order of green and blue is swapped,
-**RBG**.
+**RBG**. This is only an issue if you are updating all three fields
+by writing a 24-bit quantity to the green value offset. 
 
 **Example: Activate Light with Purple Color.**
 ```C
