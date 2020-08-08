@@ -1,4 +1,4 @@
-"""Color Effects
+""" Effects
 
 """
 
@@ -11,18 +11,20 @@ from typing import Callable, Dict, List, Tuple, Union
 from .gradient import Gradient
 from .spectrum import Spectrum
 
-from ..lights import USBLightIOError
+from ..lights import USBLight, USBLightIOError
 
 ## Effects are called from a threading.Thread.run subclass
 ## that can be stopped externally. The effects functions
 ## need to yield ocassionlly to allow the thread to decide
-## whether it has been stopped or not.
+## whether it has been stopped or not. The more often the
+## effect yields, the better the application will respond
+## to user input.
 
 
-def rainbow(light: object, interval: float = 0.05, /, **kwds) -> None:
+def rainbow(light: USBLight, interval: float = 0.05, /, **kwds) -> None:
     """Color cycle the light thru a rainbow spectrum.
 
-    :param light: USBLight subclass
+    :param light: USBLight
     :param interval: float
     """
     colors = [rgb for rgb in Spectrum(steps=255)]
@@ -36,10 +38,10 @@ def rainbow(light: object, interval: float = 0.05, /, **kwds) -> None:
             time.sleep(interval)
 
 
-async def rainbow_async(light: object, interval: float = 0.05, /, **kwds) -> None:
+async def rainbow_async(USBLight: object, interval: float = 0.05, /, **kwds) -> None:
     """Color cycle the light thru a rainbow spectrum.
 
-    :param light: USBLight subclass
+    :param light: USBLight
     :param interval: float
     """
     colors = [rgb for rgb in Spectrum(steps=255)]
@@ -54,9 +56,16 @@ async def rainbow_async(light: object, interval: float = 0.05, /, **kwds) -> Non
 
 
 def pulse(
-    light: object, color: Tuple[int, int, int] = None, interval: float = 0.01,
+    light: USBLight, color: Tuple[int, int, int] = None, interval: float = 0.01,
 ) -> None:
-    """
+    """Pulse the light with scaled values of the supplied `color`.
+
+    If no color is supplied or the color is black (0,0,0), the function defaults
+    to the color red (255, 0, 0).
+
+    :param light: USBLight
+    :param color: Tuple[int, int, int]
+    :param interval: float
     """
     if not color or not any(color):
         color = (255, 0, 0)
@@ -76,15 +85,42 @@ def pulse(
 
 
 async def pulse_async(
-    light: object, color: Tuple[int, int, int], interval: float = 0.1,
+    light: USBLight, color: Tuple[int, int, int], interval: float = 0.1,
 ) -> None:
-    pass
+    """
+    :param light: USBLight
+    :param color: Tuple[int, int, int]
+    :param interval: float
+    """
+
+    if not color or not any(color):
+        color = (255, 0, 0)
+
+    r, g, b = color
+
+    gradient = Gradient(color, 8, reverse=True)
+
+    while True:
+        for color in cycle(gradient):
+            try:
+                light.on(color)
+            except USBLightIOError:
+                exit()
+            yield
+            await asyncio.sleep(interval)
 
 
 def flash_lights_impressively(
-    light: object, colors: List[Tuple[int, int, int]] = None, interval: float = 0.05
+    light: USBLight, colors: List[Tuple[int, int, int]] = None, interval: float = 0.05
 ) -> None:
+    """Alternate between given colors very quickly.
 
+    If no colors are given, defaults to [red, green, blue].
+
+    :param light: USBLight
+    :param colors: List[Tuple[int, int, int]]
+    :param interval: float
+    """
     if not colors:
         colors = [(0xFF, 0, 0), (0, 0xFF, 0), (0, 0, 0xFF)]
 
@@ -98,9 +134,27 @@ def flash_lights_impressively(
 
 
 async def flash_lights_impressively_async(
-    light: object, colors: List[Tuple[int, int, int]], interval: float = 0.1
+    light: USBLight, colors: List[Tuple[int, int, int]], interval: float = 0.1
 ) -> None:
-    pass
+    """Alternate between given colors very quickly.
+
+    If no colors are given, defaults to [red, green, blue].
+
+    :param light: USBLight
+    :param colors: List[Tuple[int, int, int]]
+    :param interval: float
+    """
+
+    if not colors:
+        colors = [(0xFF, 0, 0), (0, 0xFF, 0), (0, 0, 0xFF)]
+
+    for color in cycle(colors):
+        try:
+            light.on(color)
+        except USBLightIOError:
+            exit()
+        yield
+        await asyncio.sleep(interval)
 
 
 __all__ = [
