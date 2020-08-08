@@ -360,7 +360,7 @@ async def Rainbow_Lights():
 async def Flash_Light_Impressively(
     light_id: int = Path(..., title="Light identifier", ge=0)
 ) -> dict:
-    """Flash the specified light imporessively.
+    """Flash the specified light impressively.
     """
 
     server.manager.apply_effect_to_light(light_id, flash_lights_impressively)
