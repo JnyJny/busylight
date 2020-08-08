@@ -1,8 +1,10 @@
+![BusyLight Project Logo][1]
+
 ## Luxafor Flag 
 
-The Luxafor line of products includes many devices which are designed
-for office productivity. The Luxafor Flag is the only USB connected
-presense light.
+The [Luxafor][0] line of products includes many devices which are
+designed for office productivity. The Luxafor Flag is the only
+USB-connected presence light.
 
 ### Physical Description
 
@@ -25,7 +27,7 @@ port, which can be used with the supplied adhesive-backed magnet to
 
 ### Command Format
 
-The Luxafor Flag is a [USB HID][8] accessible device whose attributes
+The Luxafor Flag is a [USB HID][H] accessible device whose attributes
 are controlled by writing an 8 byte packet to the device.
 
 ### Device Operation
@@ -37,3 +39,7 @@ are controlled by writing an 8 byte packet to the device.
 ### Observations
 
 ### Functionality Wishlist
+
+[0]: https://luxafor.com
+[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[H]: https://github.com/libusb/hidapi

@@ -1,6 +1,8 @@
+![BusyLight Project Logo][1]
+
 ## Embrava Blynclight
 
-The Embrava Blynclight family of products is diverse but the physical
+The [Embrava Blynclight][0] family of products is diverse but the physical
 articles I've tested all seem to share a base software
 implementation. Specifically, I've personally tested the BLYNCUSB30
 (Blynclight) and BLYNCUSB40S (Blynclight Plus) models and have
@@ -31,7 +33,7 @@ The devices are roughly 2 inches tall, and 1.5 inches on a side.
 
 ### Command Format
 
-The Embrava Blynclight is a [USB HID][U] accessible device whose
+The Embrava Blynclight is a [USB HID][H] accessible device whose
 attributes are controlled by writing a nine (9) byte packet to the
 device.
 
@@ -197,5 +199,7 @@ Embrava engineers and the SDKs are updated sporadically.
 - Read current state
 - Individual control of the five LEDs
 
-[U]: https://github.com/libusb/hidapi
+[0]: https://embrava.com
+[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[H]: https://github.com/libusb/hidapi
 [W]: https://wireshark.com

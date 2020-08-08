@@ -1,6 +1,8 @@
+![BusyLight Project Logo][1]
+
 ## Kuando BusyLight
 
-The Kuando BusyLight line of products consists of the Busylight UC Alpha and the
+The [Kuando BusyLight][0] line of products consists of the Busylight UC Alpha and the
 BusyLight US Omega. For development, I tested with the Omega model. I have no
 reason to believe that the Alpha varies in any significant way with respect to
 it's software configuration.
@@ -25,7 +27,7 @@ LED lights the device has.
 
 ### Command Format
 
-The Kuando UC Omega is a [USB HID][8] accessible device whose
+The Kuando UC Omega is a [USB HID][H] accessible device whose
 attributes are controlled by writing a 64 byte packet to the device.
 
 ### Device Operation
@@ -37,3 +39,8 @@ attributes are controlled by writing a 64 byte packet to the device.
 ### Observations
 
 ### Functionality Wishlist
+
+
+[0]: https://busylight.com
+[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[H]: https://github.com/libusb/hidapi

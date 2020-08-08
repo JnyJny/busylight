@@ -1,6 +1,6 @@
 ## ThingM blink(1)
 
-ThingM is a California company thagt describes themselves as a "device
+[ThingM][0] is a California company that describes themselves as a "device
 studio" and offer many different LED based devices; the consumer
 oriented blink(1) product line and for prototyping and hacking they
 offer the BlinkM line of products. I developed with the blink(1) mk3
@@ -39,3 +39,7 @@ The device will briefly flash a white color on both LEDs when first
 plugged in.
 
 ### Functionality Wishlist
+
+[0]: https://thingm.com/products
+[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[H]: https://github.com/libusb/hidapi
