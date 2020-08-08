@@ -51,8 +51,8 @@ two projects:
 [7]: https://github.com/libusb/hidapi
 [8]: https://github.com/trezor/cython-hidapi
 
-[9]: https://github.com/JnyJny/busylight/blob/master/docs/embrava.md
-[10]: https://github.com/JnyJny/busylight/blob/master/docs/kuando.md
-[11]: https://github.com/JnyJny/busylight/blob/master/docs/luxafor.md
-[12]: https://github.com/JnyJny/busylight/blob/master/docs/thingm.md
-[13]: https://github.com/JnyJny/busylight/blob/master/docs/agile_innovations.md
+[9]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
+[10]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
+[11]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
+[12]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
+[13]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovations.md
