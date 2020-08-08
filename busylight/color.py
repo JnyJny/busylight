@@ -25,14 +25,17 @@ def normalize_hex_str(value: str) -> str:
 
     """
 
-    if value[0] == "#":
-        return value
+    try:
+        if value[0] == "#":
+            return value.lower()
 
-    if value[0:2] == "0x":
-        return "#" + value[2:]
+        if value[0:2] in ["0x", "0X"]:
+            return "#" + value[2:].lower()
 
-    if all(c in hexdigits for c in value):
-        return "#" + value
+        if all(c in hexdigits for c in value):
+            return "#" + value.lower()
+    except (TypeError, IndexError, KeyError):
+        pass
 
     raise ValueError(f"Unrecognized hex string '{value}'")
 
@@ -66,4 +69,6 @@ def color_to_rgb(value: str) -> Tuple[int, int, int]:
 
 @lru_cache(maxsize=255)
 def gamma_correct(value: int, step: int = 255) -> int:
+    """
+    """
     return round((log(1 + value) / 5.545) * step)
