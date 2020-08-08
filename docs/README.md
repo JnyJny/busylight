@@ -9,13 +9,13 @@ these two projects:
 - [LibUSB HIDAPI][H]
 - [TREZOR Cython HID API][T]
 
-## USB Connected Presense Lights Overview
+## USB Connected Presence Lights Overview
 
 The general use case for most these products is integration with a
 communication application via a plugin of some sort: Skype, Teams,
 Jabber, and Zoom being common. Those plugins detect when a user is
 communicating and changes the color of the light to signal they
-are busy. The general capabilities of the presense lights tend to be
+are busy. The general capabilities of the presence lights tend to be
 similar: turn on with a color, turn off, and blink on and off.
 
 After that, the capabilities of lights begin to diverge. Several
