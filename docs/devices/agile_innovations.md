@@ -2,7 +2,7 @@
 
 ## Agile Innovations LTD BlinkStick
 
-Agile Innovations LTD offers a variety of BlinkStick branded products:
+Agile Innovations LTD offers a variety of [BlinkStick][0] branded products:
 the Nano, the Flex, the Square, the Strip and Pro. I worked with the
 BlinkStick Square.
 
