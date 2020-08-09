@@ -52,24 +52,24 @@ structure for fields that follow.
 ```C
 typedef struct {
    unsigned int header: 8;  /* 64:71 Constant: 0x00 */
-   unsigned int red: 8;     /* 56:63 Red color value [-255] */
-   unsigned int blue: 8;    /* 48:55 Blue color value [0-255] */
-   unsigned int green: 8;   /* 40:47 Green color value [0-255] */
+   unsigned int red:    8;  /* 56:63 Red color value [-255] */
+   unsigned int blue:   8;  /* 48:55 Blue color value [0-255] */
+   unsigned int green:  8;  /* 40:47 Green color value [0-255] */
 
-   unsigned int off: 1;     /* 39:39 Set is off, zero is on */
-   unsigned int dim: 1;     /* 38:38 Set is dim, zero is bright */
-   unsigned int flash: 1;   /* 37:37 Set is flash on/off, zero is steady */
-   unsigned int speed: 3;   /* 34:36 Flash speed mask: 1<<0, 1<<1, 1<<2 */
-   unsigned int pad0: 2;    /* 32:33 Unused bits */
+   unsigned int off:    1;  /* 39:39 Set is off, zero is on */
+   unsigned int dim:    1;  /* 38:38 Set is dim, zero is bright */
+   unsigned int flash:  1;  /* 37:37 Set is flash on/off, zero is steady */
+   unsigned int speed:  3;  /* 34:36 Flash speed mask: 1<<0, 1<<1, 1<<2 */
+   unsigned int pad0:   2;  /* 32:33 Unused bits */
    
-   unsigned int music: 4;   /* 28:31 Stored music index: [0-15]
-   unsigned int play: 1;    /* 27:27 Set play selected music, zero is stop */
+   unsigned int music:  4;  /* 28:31 Stored music index: [0-15]
+   unsigned int play:   1;  /* 27:27 Set play selected music, zero is stop */
    unsigned int repeat: 1;  /* 26:26 Set repeats playing music, zero is once */
-   unsigned int pad1: 2;    /* 24:25 Unused bits */
+   unsigned int pad1:   2;  /* 24:25 Unused bits */
    
    unsigned int volume: 4;  /* 20:23 Volume of music: [0-15]
-   unsigned int mute: 1;    /* 19:19 Set is mute, zero is unmute */
-   unsigned int pad2: 3;    /* 16:18 unused bits */
+   unsigned int mute:   1;  /* 19:19 Set is mute, zero is unmute */
+   unsigned int pad2:   3;  /* 16:18 unused bits */
    
    unsigned int footer: 16; /* 00:15 Constant: 0xFF22 */
 } blynclight_ctrl_t
