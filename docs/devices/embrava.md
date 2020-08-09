@@ -62,12 +62,12 @@ typedef struct {
    unsigned int speed:  3;  /* 34:36 Flash speed mask: 1<<0, 1<<1, 1<<2 */
    unsigned int pad0:   2;  /* 32:33 Unused bits */
    
-   unsigned int music:  4;  /* 28:31 Stored music index: [0-15]
+   unsigned int music:  4;  /* 28:31 Stored music index: [0-15] */
    unsigned int play:   1;  /* 27:27 Set play selected music, zero is stop */
    unsigned int repeat: 1;  /* 26:26 Set repeats playing music, zero is once */
    unsigned int pad1:   2;  /* 24:25 Unused bits */
    
-   unsigned int volume: 4;  /* 20:23 Volume of music: [0-15]
+   unsigned int volume: 4;  /* 20:23 Volume of music: [0-15] */
    unsigned int mute:   1;  /* 19:19 Set is mute, zero is unmute */
    unsigned int pad2:   3;  /* 16:18 unused bits */
    
