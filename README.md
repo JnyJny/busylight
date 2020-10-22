@@ -2,6 +2,8 @@
 
 Control USB attached LED lights like a Human™
 
+![Python 3.7 Test](https://github.com/JnyJny/busylight/workflows/Python%3.7/badge.svg)
+
 ![All supported lights](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
 
 Make a USB attached LED light turn on, off and blink; all from the
