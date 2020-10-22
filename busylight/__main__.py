@@ -80,8 +80,9 @@ def main_callback(
     ```console
     $ pip install -U busylight-for-humans
     $ busylight --help
+    ```
 
-    ### Install with webapi support
+    ### Install with web API support using FastAPI & Uvicorn
     
     \b
     ```console

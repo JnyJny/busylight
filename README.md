@@ -50,8 +50,9 @@ help in this situation.
 ```console
 $ pip install -U busylight-for-humans
 $ busylight --help
+```
 
-### Install with webapi support
+### Install with web API support using FastAPI & Uvicorn
 
 
 ```console
