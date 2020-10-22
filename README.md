@@ -2,7 +2,7 @@
 
 Control USB attached LED lights like a Human™
 
-![Python 3.7 Test](https://github.com/JnyJny/busylight/workflows/Python%3.7/badge.svg)
+![Python 3.7](https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg)
 
 ![All supported lights](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
 
