@@ -16,7 +16,7 @@ from .lights import KNOWN_VENDOR_IDS
 cli = typer.Typer()
 
 
-@cli.callback(invoke_without_command=True)
+@cli.callback(invoke_without_command=False)
 def main_callback(
     ctx: typer.Context,
     light_id: int = typer.Option(
