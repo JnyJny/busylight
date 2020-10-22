@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "busylight-for-humans"
-version = "0.5.2"
+version = "0.5.3"
 description = "Control USB connected LED lights, like a human."
 authors = ["JnyJny <erik.oshaughnessy@gmail.com>"]
 license = "Apache-2.0"
@@ -14,11 +14,9 @@ typer = "^0"
 hidapi = "^0.9.0"
 bitvector-for-humans = "^0.14.0"
 webcolors = "^1.11.1"
-fastapi = {version = "^0.59.0", extras = ["fastapi"]}
-uvicorn = {version = "^0.12.2", extras = ["fastapi"]}
+fastapi = {version = "^0.61.1", extras = ["web"]}
+uvicorn = {version = "^0.12.2", extras = ["web"]}
 
-[tool.poetry.extras]
-fastapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6"
