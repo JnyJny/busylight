@@ -21,7 +21,7 @@ from ..lights import USBLight, USBLightIOError
 ## to user input.
 
 
-def rainbow(light: USBLight, interval: float = 0.05, /, **kwds) -> None:
+def rainbow(light: USBLight, interval: float = 0.05, **kwds) -> None:
     """Color cycle the light thru a rainbow spectrum.
 
     :param light: USBLight
@@ -38,7 +38,7 @@ def rainbow(light: USBLight, interval: float = 0.05, /, **kwds) -> None:
             time.sleep(interval)
 
 
-async def rainbow_async(USBLight: object, interval: float = 0.05, /, **kwds) -> None:
+async def rainbow_async(USBLight: object, interval: float = 0.05, **kwds) -> None:
     """Color cycle the light thru a rainbow spectrum.
 
     :param light: USBLight
