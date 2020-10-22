@@ -20,7 +20,7 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
-        apt-get install -y libusb
+        sudo apt-get install -y libusb
         python -m pip install --upgrade pip
         pip install poetry pytest
         poetry install
