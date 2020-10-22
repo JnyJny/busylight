@@ -77,7 +77,7 @@ name = "fastapi"
 version = "0.61.1"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -95,7 +95,7 @@ name = "h11"
 version = "0.11.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -176,7 +176,7 @@ name = "pydantic"
 version = "1.6.1"
 description = "Data validation and settings management using python 3.6 type hinting"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.extras]
@@ -244,7 +244,7 @@ name = "starlette"
 version = "0.13.6"
 description = "The little ASGI library that shines."
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 
 [package.extras]
@@ -302,7 +302,7 @@ name = "typing-extensions"
 version = "3.7.4.3"
 description = "Backported and Experimental Type Hints for Python 3.5+"
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [[package]]
@@ -310,7 +310,7 @@ name = "uvicorn"
 version = "0.12.2"
 description = "The lightning-fast ASGI server."
 category = "main"
-optional = true
+optional = false
 python-versions = "*"
 
 [package.dependencies]
@@ -347,7 +347,7 @@ webapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "84e14d53b5de0521a7e511684aa1292b584fc32cc352add0e0637880abe6d66a"
+content-hash = "ae19cda995b41cacf989b608640809d9acb942eb3284e6a8ee3a96002feafc4e"
 
 [metadata.files]
 appdirs = [
