@@ -154,6 +154,10 @@ typedef struct {
 
 ### Observations
 
+When first plugged in, the UC Omega will cycle thru red, green and blue twice with
+a duty cycle of approximately a second. 
+
+
 ### Functionality Wishlist
 
 
