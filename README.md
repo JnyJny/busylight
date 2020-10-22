@@ -4,10 +4,10 @@ Control USB attached LED lights like a Human™
 
 ![All supported lights](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
 
-Make a supported USB attached LED light turn on, off and blink; all
-from the comfort of your very own command-line. If your platform
-supports HIDAPI (Linux, MacOS, Windows and probably others), then
-you can use `busylight`!
+Make a USB attached LED light turn on, off and blink; all from the
+comfort of your very own command-line. If your platform supports
+HIDAPI (Linux, MacOS, Windows and probably others), then you can use
+`busylight` with supported lights!
 
 ## Usage
 
@@ -30,18 +30,19 @@ $ busylight supported
 Agile Innovations BlinkStick (†)
 Embrava Blynclight
 ThingM Blink1
-Kuando BusyLight (§)
+Kuando BusyLight (‡)
 Luxafor Flag
 ```
 
  
 - † Requires software intervention for `blink` mode
-- § Requires software intervention for all modes
+- ‡ Requires software intervention for all modes
 
 Lights that "require software intervention" need software to constantly update
 the device instead of a one-time configuration of the light. Those devices will
 cause the `busylight` command to not return immediately and the lights will
-turn off when the user interrupts the command.
+turn off when the user interrupts the command. The `busylight serve` mode can
+help in this situation.
 
 ## Install
 
@@ -49,6 +50,12 @@ turn off when the user interrupts the command.
 ```console
 $ pip install -U busylight-for-humans
 $ busylight --help
+
+### Install with webapi support
+
+
+```console
+$ pip install -U busylight-for-humans[webapi]
 ```
 
 ## Source
@@ -76,7 +83,7 @@ $ busylight [OPTIONS] COMMAND [ARGS]...
 * `list`: List available lights (currently connected).
 * `off`: Turn selected lights off.
 * `on`: Turn selected lights on.
-* `serve`: Start a FastAPI-based service that provides...
+* `serve`: Start a FastAPI-based service to access...
 * `supported`: List supported LED lights.
 * `udev-rules`: Generate a Linux udev rules file.
 
@@ -182,10 +189,11 @@ $ busylight on [OPTIONS] [COLOR]
 
 ## `busylight serve`
 
-Start a FastAPI-based service that provides access to
-all connected lights via HTTP. All connected lights are managed
-by the service, allowing long-running animations and effects that
-the native device APIs might not support.
+Start a FastAPI-based service to access lights.
+
+All connected lights are managed by the service, allowing
+long-running animations and effects that the native device APIs
+might not support.
 
 Once the service is started, the API documentation is available
 via these two URLs:
@@ -204,6 +212,8 @@ $ curl http://localhost:8888/1/lights/on
 $ curl http://localhost:8888/1/lights/off
 $ curl http://localhost:8888/1/light/0/on/purple
 $ curl http://localhost:8888/1/light/0/off
+$ curl http://localhost:8888/1/lights/on
+$ curl http://localhost:8888/1/lights/off
 
 **Usage**:
 
