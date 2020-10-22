@@ -150,11 +150,15 @@ class Step(BitVector):
 
     @property
     def color(self) -> Tuple[int, int, int]:
+
+        return map(lambda v: int((v / 100) * 255))
         return (self.red, self.green, self.blue)
 
     @color.setter
     def color(self, new_value: Tuple[int, int, int]) -> None:
+
         self.red, self.green, self.blue = new_value
+        # self.red, self.green, self.blue = map(lambda v: v // 255 * 100, new_value)
 
 
 class BusyLight(USBLight):
