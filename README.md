@@ -11,6 +11,8 @@ the command-line, using a HTTP API or incorporated into your own
 python projects. 
 
 ![All Supported Lights][DemoGif]
+| Backrow: BlyncLight Plus, BlyncLight, Busylight
+| Frontrow: Blink(1), Flag, BlinkStick
 
 ## Features
 - Control Lights via Command-Line:
