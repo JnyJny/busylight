@@ -86,7 +86,7 @@ Now you can use the web API endpoints which return JSON payloads:
 [0]: https://pypi.org/project/busylight-for-humans/
 [1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
 [BUSYLIGHT.1]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
-[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/webapi.pdf
+[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
 
 [37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
 [38]: https://github.com/JnyJny/busylight/workflows/Python%203.8/badge.svg
