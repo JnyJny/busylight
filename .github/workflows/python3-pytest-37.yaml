@@ -21,7 +21,7 @@ jobs:
         sudo apt-get install -y libusb-1.0-0-dev libudev-dev
         python -m pip install --upgrade pip
         pip install poetry pytest
-        poetry install
+        poetry install -E webapi
     - name: Test with pytest
       run: |
         poetry run pytest 
