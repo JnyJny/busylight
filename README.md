@@ -17,8 +17,8 @@ The possibilities are _literally_ endless.
 <b>Blink(1), Flag, BlinkStick</b>
 
 ## Features
-- Control Lights via [Command-Line][BUSYLIGHT.1]:
-- Control Lights via [Web API][WEBAPI]:
+- Control Lights via [Command-Line][BUSYLIGHT.1]
+- Control Lights via [Web API][WEBAPI]
 - Supports Lights from Five Vendors
   * Agile Innovations BlinkStick 
   * Embrava Blynclight
