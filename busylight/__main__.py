@@ -9,6 +9,7 @@ import typer
 
 from .manager import LightManager, BlinkSpeed
 from .manager import LightIdRangeError, ColorLookupError
+from .manager import ALL_LIGHTS
 
 from .lights import KNOWN_VENDOR_IDS
 
@@ -32,76 +33,25 @@ def main_callback(
 ):
     """Control USB attached LED lights like a Human™
 
-    ![All supported lights](https://github.com/JnyJny/busylight/raw/master/demo/demo.gif)
-
     Make a USB attached LED light turn on, off and blink; all from the
     comfort of your very own command-line. If your platform supports
     HIDAPI (Linux, MacOS, Windows and probably others), then you can use
-    `busylight` with supported lights!
-
-    ## Usage
-
-    \b
-    ```console
-    $ busylight on
-    $ busylight off
-    $ busylight on purple
-    $ busylight on 0xff00ff   # still purple.
-    $ busylight blink yellow  # all hands man your stations.
-    $ busylight blink red     # RED ALERT!
-    $ busylight off           # all clear.
-    ```
-
-    ## Supported Lights
-    
-    \b
-    ```console
-    $ busylight supported
-    Agile Innovations BlinkStick (†)
-    Embrava Blynclight
-    ThingM Blink1
-    Kuando BusyLight (‡)
-    Luxafor Flag
-    ```
-
-    \b 
-    - † Requires software intervention for `blink` mode
-    - ‡ Requires software intervention for all modes
-
-    Lights that "require software intervention" need software to constantly update
-    the device instead of a one-time configuration of the light. Those devices will
-    cause the `busylight` command to not return immediately and the lights will
-    turn off when the user interrupts the command. The `busylight serve` mode can
-    help in this situation.
-
-    ## Install
-    
-    \b
-    ```console
-    $ pip install -U busylight-for-humans
-    $ busylight --help
-    ```
-
-    ### Install with web API support using FastAPI & Uvicorn
-    
-    \b
-    ```console
-    $ pip install -U busylight-for-humans[webapi]
-    ```
-
-    ## Source
-
-    \b
-    [busylight](https://github.com/JnyJny/busylight.git)
+    busylight with supported lights!
     """
 
-    ctx.obj = -1 if all_lights else light_id
+    ctx.obj = ALL_LIGHTS if all_lights else light_id
 
 
 @cli.command(name="list")
 def list_subcommand(
     ctx: typer.Context,
-    detail: bool = typer.Option(False, "--long", "-l", is_flag=True),
+    detail: bool = typer.Option(
+        False,
+        "--long",
+        "-l",
+        is_flag=True,
+        help="Display more information about each light.",
+    ),
 ):
     """List available lights (currently connected).
     """
@@ -135,21 +85,21 @@ def on_subcommand(
 ):
     """Turn selected lights on.
 
-    The light selected is turned on with the specified color. The default color is green
-    if the user omits the color argument. Colors can be specified with color names and
-    hexadecimal values. Both '0x' and '#' are recognized as hexidecimal number prefixes
-    and hexadecimal values may be either three or six digits long. 
+    The light selected is turned on with the specified color. The
+    default color is green if the user does not supply the color
+    argument. Colors can be specified with color names and hexadecimal
+    values. Both '0x' and '#' are recognized as hexadecimal number
+    prefixes and hexadecimal values may be either three or six digits
+    long.
 
     Examples:
 
     \b
-    ```console
     $ busylight on          # light activated with the color green
     $ busylight on red      # now it's red
     $ busylight on 0x00f    # now it's blue
     $ busylight on #ffffff  # now it's white
     $ busylight --all on    # now all available lights are green
-    ```
     """
 
     light_id = ctx.obj
@@ -162,15 +112,19 @@ def on_subcommand(
         raise typer.Exit(-1) from None
 
 
+# EJO FEATURE list valid color names?
+
+
 @cli.command(name="off")
 def off_subcommand(ctx: typer.Context,):
     """Turn selected lights off.
 
-    To turn off all lights, specify --all:
-
-    ```console
-    $ busylight --all off
-    ```
+    Examples:
+    
+    \b
+    $ busylight off         # turn off light zero
+    $ busylight -l 0 off    # also turns off light zero
+    $ busylight --all off   # turns off all connected lights
     """
 
     light_id = ctx.obj
@@ -191,25 +145,26 @@ def blink_subcommand(
 ):
     """Activate the selected light in blink mode.
 
-    The light selected will blink with the specified color. The default color is red
-    if the user omits the color argument. Colors can be specified with color names and
-    hexadecimal values. Both '0x' and '#' are recognized as hexidecimal number prefixes
-    and hexadecimal values may be either three or six digits long.
+    The light selected will blink with the specified color. The default
+    color is red if the user does not supply the color argument. Colors
+    can be specified with color names and hexadecimal values. Both '0x'
+    and '#' are recognized as hexidecimal number prefixes and
+    hexadecimal values may be either three or six digits long.
 
-    Note: Ironically, BlinkStick products cannot be configured to blink on and off
-          without software constantly updating the devices. If you need your BlinkStick
-          to blink, you will need to use the `busylight serve` web API.
+    Note: Ironically, BlinkStick products cannot be configured to blink
+          on and off without software constantly updating the
+          devices. If you need your BlinkStick to blink, you will need
+          to use the `busylight serve` web API.
 
     Examples:
-
-    ```console
+    
+    \b
     $ busylight blink          # light is blinking with the color red
     $ busylight blink green    # now it's blinking green
     $ busylight blink 0x00f    # now it's blinking blue
     $ busylight blink #ffffff  # now it's blinking white
     $ busylight --all blink    # now all available lights are blinking red
     $ busylight --all off      # that's enough of that!
-    ```
     """
     light_id = ctx.obj
 
@@ -234,7 +189,7 @@ def supported_subcommand(ctx: typer.Context):
 @cli.command(name="udev-rules")
 def udev_rules_subcommand(
     filename: Path = typer.Option(
-        None, "--output", "-o", help="Save rules to this file."
+        None, "--output", "-o", help="Save udev rules to this file."
     )
 ):
     """Generate a Linux udev rules file.
@@ -245,16 +200,16 @@ def udev_rules_subcommand(
     for all known USB lights by vendor id. Modify the rules to suit your
     particular environment.
 
-    ### Example
+    Example:
     
     \b
-    ```console
     $ busylight udev-rules -o 99-busylight.rules
     $ sudo cp 99-busylight.rules /etc/udev/rules.d
-    ```
+    $ sudo udevadm control -R
+    # unplug/plug USB devices
     """
 
-    # EJO mode that only emits rules for lights actually present?
+    # EJO FEATURE mode that only emits rules for lights actually present?
 
     output = filename.open("w") if filename else stdout
 
@@ -271,8 +226,16 @@ def udev_rules_subcommand(
 
 @cli.command(name="serve")
 def serve_subcommand(
-    host: str = typer.Option("0.0.0.0", "--host", "-H"),
-    port: int = typer.Option(8888, "--port", "-p"),
+    host: str = typer.Option(
+        "0.0.0.0",
+        "--host",
+        "-H",
+        show_default=True,
+        help="Hostname to bind the server to.",
+    ),
+    port: int = typer.Option(
+        8888, "--port", "-p", show_default=True, help="Network port number to listen on"
+    ),
 ):
     """Start a FastAPI-based service to access lights.
 
@@ -287,10 +250,9 @@ def serve_subcommand(
     - `http://<hostname>:<port>/docs`
     - `http://<hostname>:<port>/redoc`
 
-    ## Examples
+    Examples:
 
     \b
-    ```console
     $ busylight server >& log &
     $ curl http://localhost:8888/1/lights
     $ curl http://localhost:8888/1/lights/on
@@ -308,6 +270,13 @@ def serve_subcommand(
             "The package 'uvicorn' is  missing, unable to serve the busylight API.",
             fg="red",
         )
-        raise typer.Exit(-1)
+        raise typer.Exit(-1) from None
 
-    uvicorn.run("busylight.api:server", host=host, port=port)
+    try:
+        uvicorn.run("busylight.api:server", host=host, port=port)
+    except ModuleNotFoundError:
+        typer.secho(
+            "The package `fastapi` is missing, unable to serve the busylight API",
+            fg="red",
+        )
+        raise typer.Exit(-1) from None
