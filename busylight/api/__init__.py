@@ -95,10 +95,12 @@ async def Light_Description(
     """
 
     light = server.manager.lights[light_id]
+
     return {
         "light_id": light_id,
         "name": light.name,
         "info": light.info,
+        "status": light.is_on,
     }
 
 
@@ -109,7 +111,12 @@ async def Lights_Description() -> dict:
     result = []
     for index, light in enumerate(server.manager.lights):
         result.append(
-            {"light_id": index, "name": light.name, "info": light.info,}
+            {
+                "light_id": index,
+                "name": light.name,
+                "info": light.info,
+                "status": light.is_on,
+            }
         )
     return result
 
