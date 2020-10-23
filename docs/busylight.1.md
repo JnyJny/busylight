@@ -49,12 +49,14 @@ Note: Ironically, BlinkStick products cannot be configured to blink
 Examples:
 
 
+```
 $ busylight blink          # light is blinking with the color red
 $ busylight blink green    # now it's blinking green
 $ busylight blink 0x00f    # now it's blinking blue
 $ busylight blink #ffffff  # now it's blinking white
 $ busylight --all blink    # now all available lights are blinking red
 $ busylight --all off      # that's enough of that!
+```
 
 **Usage**:
 
@@ -89,9 +91,11 @@ Turn selected lights off.
 Examples:
 
 
+```
 $ busylight off         # turn off light zero
 $ busylight -l 0 off    # also turns off light zero
 $ busylight --all off   # turns off all connected lights
+```
 
 **Usage**:
 
@@ -117,11 +121,13 @@ long.
 Examples:
 
 
+```
 $ busylight on          # light activated with the color green
 $ busylight on red      # now it's red
 $ busylight on 0x00f    # now it's blue
 $ busylight on #ffffff  # now it's white
 $ busylight --all on    # now all available lights are green
+```
 
 **Usage**:
 
@@ -145,12 +151,15 @@ Once the service is started, the API documentation is available
 via these two URLs:
 
 
+```
 - `http://<hostname>:<port>/docs`
 - `http://<hostname>:<port>/redoc`
+```
 
 Examples:
 
 
+```
 $ busylight server >& log &
 $ curl http://localhost:8888/1/lights
 $ curl http://localhost:8888/1/lights/on
@@ -159,6 +168,7 @@ $ curl http://localhost:8888/1/light/0/on/purple
 $ curl http://localhost:8888/1/light/0/off
 $ curl http://localhost:8888/1/lights/on
 $ curl http://localhost:8888/1/lights/off
+```
 
 **Usage**:
 
@@ -200,10 +210,12 @@ particular environment.
 Example:
 
 
+```
 $ busylight udev-rules -o 99-busylight.rules
 $ sudo cp 99-busylight.rules /etc/udev/rules.d
 $ sudo udevadm control -R
 # unplug/plug USB devices
+```
 
 **Usage**:
 
