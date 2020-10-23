@@ -17,17 +17,8 @@ The possibilities are _literally_ endless.
 <b>Blink(1), Flag, BlinkStick</b>
 
 ## Features
-- Control Lights via Command-Line:
-  * Turn lights on with a color
-  * Turn lights off
-  * Blink lights with a color
-  * Control multiple lights collectively or individually
-  
-- Control Lights via HTTP:
-  * Turn lights on/off and blink
-  * Light animations: rainbow, flash and pulse.
-  * Self-documenting API
-
+- Control Lights via [Command-Line][BUSYLIGHT.1]:
+- Control Lights via [Web API][WEBAPI]:
 - Supports Lights from Five Vendors
   * Agile Innovations BlinkStick 
   * Embrava Blynclight
@@ -36,14 +27,17 @@ The possibilities are _literally_ endless.
   * Luxafor Flag
 - Supported on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
-- Easy to Install with `pip`
 
 ## Basic Install 
+
 ```console
 $ python3 -m pip install busylight-for-humans 
 ```
 
 ## Web API Install
+
+Install `uvicorn` and `FastAPI` in addition to `busylight`:
+
 ```console
 $ python3 -m pip install busylight-for-humans[webapi]
 ```
@@ -91,6 +85,8 @@ Now you can use the web API endpoints which return JSON payloads:
 
 [0]: https://pypi.org/project/busylight-for-humans/
 [1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[BUSYLIGHT.1]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
+[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/webapi.pdf
 
 [37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
 [38]: https://github.com/JnyJny/busylight/workflows/Python%203.8/badge.svg
