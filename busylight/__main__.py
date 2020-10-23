@@ -259,9 +259,14 @@ def udev_rules_subcommand(
     output = filename.open("w") if filename else stdout
 
     for vendor_id in KNOWN_VENDOR_IDS:
-        v = hex(vendor_id)[2:]
-        print(f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{v}", MODE="0666"', file=output)
-        print(f'SUBSYSTEM=="usb", ATTRS{{idVendor}}=="{v}", MODE="0666"', file=output)
+        print(
+            f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
+            file=output,
+        )
+        print(
+            f'SUBSYSTEM=="usb", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
+            file=output,
+        )
 
 
 @cli.command(name="serve")
