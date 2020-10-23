@@ -1,9 +1,8 @@
 ![BusyLight Project Logo][1]
 
-![Python 3.7 Test][37]
-![Python 3.8 Test][38]
-![Python 3.9 Test][39]
+![Python 3.7 Test][37] ![Python 3.8 Test][38] ![Python 3.9 Test][39]
 
+                                                                  
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
@@ -11,8 +10,10 @@ the command-line, using a HTTP API or incorporated into your own
 python projects. 
 
 ![All Supported Lights][DemoGif]
-| Backrow: BlyncLight Plus, BlyncLight, Busylight
-| Frontrow: Blink(1), Flag, BlinkStick
+
+> <em>Back to Front, Left to Right</em> <br>
+> <b>BlyncLight, BlyncLight Plus, Busylight</b> <br>
+> <b>Blink(1), Flag, BlinkStick</b>
 
 ## Features
 - Control Lights via Command-Line:
