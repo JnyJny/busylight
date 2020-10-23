@@ -6,10 +6,41 @@
 
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
-lights from a variety of vendors.
+lights from a variety of vendors. Lights can be controlled via
+the command-line, using a HTTP API or incorporated into your own
+python projects. 
 
 ![All Supported Lights][DemoGif]
 
+## Features
+- Control Lights via Command-Line:
+  * Turn lights on with a color
+  * Turn lights off
+  * Blink lights with a color
+  * Control multiple lights collectively or individually
+- Control Lights via HTTP:
+  * Turn lights on/off and blink
+  * Light animations: rainbow, flash and pulse.
+  * Self-documenting API
+
+- Supports Lights from Five Vendors
+  * Agile Innovations BlinkStick 
+  * Embrava Blynclight
+  * ThingM Blink1
+  * Kuando BusyLight
+  * Luxafor Flag
+- Tested on MacOS and Linux (Windows and BSD reports welcome!)
+- Tested on Raspberry Pi 3b+, Zero and 4
+
+- Easy to Install
+  * `python3 -m pip install busylight-for-humans`
+  * `python3 -m pip install busylight-for-humans[webapi]`
+
+
+## Examples
+
+```console
+$ 
 
 
 
