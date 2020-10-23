@@ -7,7 +7,8 @@ lights from a variety of vendors. Lights can be controlled via
 the command-line, using a HTTP API or imported directly into your own
 python projects. Need a light to let you know when a host is down, or
 when the dog wants out? How about a light that indicates "do not disturb"?
-The possibilities are literally endless.
+
+The possibilities are _literally_ endless.
 
 ![All Supported Lights][DemoGif]
 
@@ -35,9 +36,15 @@ The possibilities are literally endless.
   * Luxafor Flag
 - Supported on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
-- Easy to Install
+- Easy to Install with `pip`
+
+## Basic Install 
 ```console
 $ python3 -m pip install busylight-for-humans 
+```
+
+## Web API Install
+```console
 $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
@@ -65,6 +72,9 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8888 (Press CTRL+C to quit)
 ```
+
+The API is fully documented and available @ `https://localhost:8888/redoc`
+
 
 Now you can use the web API endpoints which return JSON payloads:
 
