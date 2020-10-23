@@ -89,7 +89,7 @@ Now you can use the web API endpoints which return JSON payloads:
   $ curl http://localhost:8888/1/lights/rainbow
 ```
 
-[0]: https://github.com/JnyJny/busylight
+[0]: https://pypi.org/project/busylight-for-humans/
 [1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
 
 [37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
