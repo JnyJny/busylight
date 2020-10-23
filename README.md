@@ -2,18 +2,18 @@
 
 ![Python 3.7 Test][37] ![Python 3.8 Test][38] ![Python 3.9 Test][39]
 
-                                                                  
-
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
-the command-line, using a HTTP API or incorporated into your own
-python projects. 
+the command-line, using a HTTP API or imported directly into your own
+python projects. Need a light to let you know when a host is down, or
+when the dog wants out? How about a light that indicates "do not disturb"?
+The possibilities are literally endless.
 
 ![All Supported Lights][DemoGif]
 
-> <em>Back to Front, Left to Right</em> <br>
-> <b>BlyncLight, BlyncLight Plus, Busylight</b> <br>
-> <b>Blink(1), Flag, BlinkStick</b>
+<em>Back to Front, Left to Right</em> <br>
+<b>BlyncLight, BlyncLight Plus, Busylight</b> <br>
+<b>Blink(1), Flag, BlinkStick</b>
 
 ## Features
 - Control Lights via Command-Line:
@@ -21,6 +21,7 @@ python projects.
   * Turn lights off
   * Blink lights with a color
   * Control multiple lights collectively or individually
+  
 - Control Lights via HTTP:
   * Turn lights on/off and blink
   * Light animations: rainbow, flash and pulse.
@@ -32,27 +33,54 @@ python projects.
   * ThingM Blink1
   * Kuando BusyLight
   * Luxafor Flag
-- Tested on MacOS and Linux (Windows and BSD reports welcome!)
-- Tested on Raspberry Pi 3b+, Zero and 4
-
+- Supported on MacOS, Linux, probably Windows and BSD too!
+- Tested extensively on Raspberry Pi 3b+, Zero W and 4
 - Easy to Install
-  * `python3 -m pip install busylight-for-humans`
-  * `python3 -m pip install busylight-for-humans[webapi]`
-
-
-## Examples
-
 ```console
-$ 
+$ python3 -m pip install busylight-for-humans 
+$ python3 -m pip install busylight-for-humans[webapi]
 ```
 
 
+## Command-Line Examples
+
+```console
+$ busylight on               # light turns on green
+$ busylight on red           # now it's shining a friendly red
+$ busylight on 0xff0000      # still red
+$ busylight on #00ff00       # now it's blue!
+$ busylight blink            # it's slowly blinking on and off with a red color
+$ busylight blink green fast # blinking faster green and off
+$ busylight --all on         # turn all lights on green
+$ busylight --all off        # turn all lights off
+```
+
+## HTTP API Examples
+
+First start the `busylight` API server:
+```console
+$ busylight serve
+INFO:     Started server process [20189]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8888 (Press CTRL+C to quit)
+```
+
+Now you can use the web API endpoints which return JSON payloads:
+
+```console
+  $ curl http://localhost:8888/1/lights
+  $ curl http://localhost:8888/1/lights/on
+  $ curl http://localhost:8888/1/lights/off
+  $ curl http://localhost:8888/1/light/0/on/purple
+  $ curl http://localhost:8888/1/light/0/off
+  $ curl http://localhost:8888/1/lights/on
+  $ curl http://localhost:8888/1/lights/off
+  $ curl http://localhost:8888/1/lights/rainbow
+```
+
 [0]: https://github.com/JnyJny/busylight
 [1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
-
-[H]: https://github.com/libusb/hidapi
-[T]: https://github.com/trezor/cython-hidapi
-
 
 [37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
 [38]: https://github.com/JnyJny/busylight/workflows/Python%203.8/badge.svg
