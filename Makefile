@@ -4,7 +4,7 @@ TARGET=busylight
 VERSION_FILE= $(TARGET)/__version__.py
 PYPROJECT= pyproject.toml
 
-.PHONY: $(VERSION_FILE) busylight.md \
+.PHONY: $(VERSION_FILE) docs/busylight.1.md \
         MAJOR MINOR PATCH \
         major minor patch \
         push publish\
