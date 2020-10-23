@@ -142,6 +142,7 @@ class USBLight(BitVector):
         self.default_state = default_state
         self.vendor_id = vendor_id
         self.product_id = product_id
+        self.is_on = False
 
         try:
             self.device.open(self.vendor_id, self.product_id)
@@ -350,6 +351,7 @@ class USBLight(BitVector):
             color = (0, 255, 0)
         try:
             self.impl_on(color)
+            self.is_on = True
         except AttributeError:
             raise NotImplementedError(f"{self.__class__.__name__}.impl_on") from None
 
@@ -358,6 +360,7 @@ class USBLight(BitVector):
         """
         try:
             self.impl_off()
+            self.is_on = False
         except AttributeError:
             raise NotImplementedError(f"{self.__class__.__name__}.impl_off") from None
 
