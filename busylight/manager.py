@@ -15,6 +15,8 @@ from .lights import USBLight
 
 from .color import color_to_rgb
 
+ALL_LIGHTS: int = -1
+
 
 class BlinkSpeed(str, Enum):
     SLOW = "slow"
@@ -103,7 +105,7 @@ class LightManager:
     # EJO __get_item__ implementation here to allow slice notation?
     #     maybe make LightManager an iterator?
 
-    def lights_for(self, light_id: Union[int, None] = -1) -> List[USBLight]:
+    def lights_for(self, light_id: Union[int, None] = ALL_LIGHTS) -> List[USBLight]:
         """Returns a list of USBLights that match `light_id`, which can be
         None, -1 or a positive integer.
 
@@ -129,11 +131,11 @@ class LightManager:
         if light_id is None:
             return []
 
-        if light_id < -1:
+        if light_id < ALL_LIGHTS:
             raise LightIdRangeError(light_id, len(self.lights) - 1)
 
         try:
-            return self.lights if light_id == -1 else [self.lights[light_id]]
+            return self.lights if light_id == ALL_LIGHTS else [self.lights[light_id]]
         except IndexError:
             raise LightIdRangeError(light_id, len(self.lights) - 1) from None
 
@@ -193,7 +195,9 @@ class LightManager:
 
         self.lights.clear()
 
-    def light_on(self, light_id: Union[int, None] = -1, color: str = "green") -> None:
+    def light_on(
+        self, light_id: Union[int, None] = ALL_LIGHTS, color: str = "green"
+    ) -> None:
         """Turn on a light or all lights with supplied color value.
         
         If light_id is -1 the operation is applied to all lights.
@@ -218,7 +222,7 @@ class LightManager:
             except USBLightIOError as error:
                 light.is_open = False
 
-    def light_off(self, light_id: Union[int, None] = -1) -> None:
+    def light_off(self, light_id: Union[int, None] = ALL_LIGHTS) -> None:
         """Turn off a light or all lights.
         
         If light_id is -1 the operation is applied to all lights.
@@ -238,7 +242,7 @@ class LightManager:
 
     def light_blink(
         self,
-        light_id: Union[int, None] = -1,
+        light_id: Union[int, None] = ALL_LIGHTS,
         color: str = "red",
         speed: BlinkSpeed = BlinkSpeed.SLOW,
     ) -> None:
@@ -293,7 +297,7 @@ class LightManager:
     @contextmanager
     def operate_on(
         self,
-        light_id: Union[int, None] = -1,
+        light_id: Union[int, None] = ALL_LIGHTS,
         wait_on_animation: bool = True,
         off_on_enter: bool = True,
         off_on_exit: bool = False,
