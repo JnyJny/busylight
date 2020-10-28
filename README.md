@@ -22,9 +22,9 @@ The possibilities are _literally_ endless.
 - Supports Lights from Five Vendors
   * Agile Innovations BlinkStick 
   * Embrava Blynclight
-  * ThingM Blink1
   * Kuando BusyLight
   * Luxafor Flag
+  * ThingM Blink1
 - Supported on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
 
