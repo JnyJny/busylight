@@ -56,7 +56,9 @@ async def rainbow_async(USBLight: object, interval: float = 0.05, **kwds) -> Non
 
 
 def pulse(
-    light: USBLight, color: Tuple[int, int, int] = None, interval: float = 0.01,
+    light: USBLight,
+    color: Tuple[int, int, int] = None,
+    interval: float = 0.01,
 ) -> None:
     """Pulse the light with scaled values of the supplied `color`.
 
@@ -85,7 +87,9 @@ def pulse(
 
 
 async def pulse_async(
-    light: USBLight, color: Tuple[int, int, int], interval: float = 0.1,
+    light: USBLight,
+    color: Tuple[int, int, int],
+    interval: float = 0.1,
 ) -> None:
     """
     :param light: USBLight
@@ -111,7 +115,10 @@ async def pulse_async(
 
 
 def flash_lights_impressively(
-    light: USBLight, colors: List[Tuple[int, int, int]] = None, interval: float = 0.05
+    light: USBLight,
+    colors: List[Tuple[int, int, int]] = None,
+    interval: float = 0.05,
+    **kwds
 ) -> None:
     """Alternate between given colors very quickly.
 
