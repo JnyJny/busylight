@@ -42,6 +42,17 @@ Install `uvicorn` and `FastAPI` in addition to `busylight`:
 $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
+## Linux Post-Install Activities
+Linux controls access to USB devices via the udev subsystem and by default denies non-root users access to devices it doesn't recognize. I've got you covered!
+
+You'll need root access to configure the udev rules:
+
+```console
+$ sudo busylight udev-rules -o /etc/udev/rules.d/99-busylights.rules
+$ sudo udevadm control -R
+$ # unplug/plug your light
+$ busylight on
+```
 
 ## Command-Line Examples
 
