@@ -53,8 +53,7 @@ def list_subcommand(
         help="Display more information about each light.",
     ),
 ):
-    """List available lights (currently connected).
-    """
+    """List available lights (currently connected)."""
 
     available = LightManager.available()
 
@@ -81,7 +80,8 @@ def list_subcommand(
 
 @cli.command(name="on")
 def on_subcommand(
-    ctx: typer.Context, color: str = typer.Argument("green"),
+    ctx: typer.Context,
+    color: str = typer.Argument("green"),
 ):
     """Turn selected lights on.
 
@@ -95,17 +95,21 @@ def on_subcommand(
     Examples:
 
     \b
+    ```
     $ busylight on          # light activated with the color green
     $ busylight on red      # now it's red
     $ busylight on 0x00f    # now it's blue
     $ busylight on #ffffff  # now it's white
     $ busylight --all on    # now all available lights are green
+    ```
     """
 
     light_id = ctx.obj
 
     try:
-        with LightManager().operate_on(light_id,) as manager:
+        with LightManager().operate_on(
+            light_id,
+        ) as manager:
             manager.light_on(light_id, color)
     except (LightIdRangeError, ColorLookupError) as error:
         typer.secho(str(error), fg="red")
@@ -116,15 +120,19 @@ def on_subcommand(
 
 
 @cli.command(name="off")
-def off_subcommand(ctx: typer.Context,):
+def off_subcommand(
+    ctx: typer.Context,
+):
     """Turn selected lights off.
 
     Examples:
-    
+
     \b
+    ```
     $ busylight off         # turn off light zero
     $ busylight -l 0 off    # also turns off light zero
     $ busylight --all off   # turns off all connected lights
+    ```
     """
 
     light_id = ctx.obj
@@ -157,14 +165,16 @@ def blink_subcommand(
           to use the `busylight serve` web API.
 
     Examples:
-    
+
     \b
+    ```
     $ busylight blink          # light is blinking with the color red
     $ busylight blink green    # now it's blinking green
     $ busylight blink 0x00f    # now it's blinking blue
     $ busylight blink #ffffff  # now it's blinking white
     $ busylight --all blink    # now all available lights are blinking red
     $ busylight --all off      # that's enough of that!
+    ```
     """
     light_id = ctx.obj
 
@@ -179,8 +189,7 @@ def blink_subcommand(
 
 @cli.command(name="supported")
 def supported_subcommand(ctx: typer.Context):
-    """List supported LED lights.
-    """
+    """List supported LED lights."""
     with LightManager().operate_on(None) as manager:
         for supported_light in manager.supported:
             typer.secho(supported_light, fg="green")
@@ -201,12 +210,14 @@ def udev_rules_subcommand(
     particular environment.
 
     Example:
-    
+
     \b
+    ```
     $ busylight udev-rules -o 99-busylight.rules
     $ sudo cp 99-busylight.rules /etc/udev/rules.d
     $ sudo udevadm control -R
     # unplug/plug USB devices
+    ```
     """
 
     # EJO FEATURE mode that only emits rules for lights actually present?
@@ -247,12 +258,15 @@ def serve_subcommand(
     via these two URLs:
 
     \b
+    ```
     - `http://<hostname>:<port>/docs`
     - `http://<hostname>:<port>/redoc`
+    ```
 
     Examples:
 
     \b
+    ```
     $ busylight server >& log &
     $ curl http://localhost:8888/1/lights
     $ curl http://localhost:8888/1/lights/on
@@ -261,6 +275,7 @@ def serve_subcommand(
     $ curl http://localhost:8888/1/light/0/off
     $ curl http://localhost:8888/1/lights/on
     $ curl http://localhost:8888/1/lights/off
+    ```
     """
 
     try:
