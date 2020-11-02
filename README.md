@@ -22,9 +22,9 @@ The possibilities are _literally_ endless.
 - Supports Lights from Five Vendors
   * Agile Innovations BlinkStick 
   * Embrava Blynclight
-  * ThingM Blink1
   * Kuando BusyLight
   * Luxafor Flag
+  * ThingM Blink1
 - Supported on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
 
@@ -42,6 +42,18 @@ Install `uvicorn` and `FastAPI` in addition to `busylight`:
 $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
+## Linux Post-Install Activities
+Linux controls access to USB devices via the udev subsystem and by default denies non-root users access to devices it doesn't recognize. I've got you covered!
+
+You'll need root access to configure the udev rules:
+
+```console
+$ busylight udev-rules -o 99-busylights.rules
+$ sudo cp 99-busylights.rules /etc/udev/rules.d
+$ sudo udevadm control -R
+$ # unplug/plug your light
+$ busylight on
+```
 
 ## Command-Line Examples
 
