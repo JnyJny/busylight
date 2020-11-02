@@ -48,7 +48,8 @@ Linux controls access to USB devices via the udev subsystem and by default denie
 You'll need root access to configure the udev rules:
 
 ```console
-$ sudo busylight udev-rules -o /etc/udev/rules.d/99-busylights.rules
+$ busylight udev-rules -o 99-busylights.rules
+$ sudo cp 99-busylights.rules /etc/udev/rules.d
 $ sudo udevadm control -R
 $ # unplug/plug your light
 $ busylight on
