@@ -54,6 +54,9 @@ publish:
 	@poetry build
 	@poetry publish
 
+requirements.txt: poetry.lock
+	@poetry export -o requirements.txt
+
 patch_release: patch push publish
 
 major_release: major push publish
