@@ -18,5 +18,5 @@ class LightDescription(BaseModel):
     light_id: int
     name: str
     info: Dict[str, Union[int, str]]
-    status: bool
+    is_on: bool
     color: str

@@ -15,10 +15,10 @@ def normalize_hex_str(value: str) -> str:
     The function checks for known hexadecimal string prefixes; 0x
     and # and normalizes the string to the # notation used by
     webcolors. Also checks for a bare hexadecimal value, checking
-    that all characters are valid hex digits. 
+    that all characters are valid hex digits.
 
     :param str: possible hexadecimal string
-    :return: normalized hexadecimal string 
+    :return: normalized hexadecimal string
 
     Raises:
     - ValueError Unrecognized hex string
@@ -45,7 +45,7 @@ def color_to_rgb(value: str) -> Tuple[int, int, int]:
 
     The input string string can be a hexadecimal string that
     optionally starts with 0x or # or a color name.
-    
+
     Examples of 'red':
     - 0xf00
     - #f00
@@ -67,8 +67,12 @@ def color_to_rgb(value: str) -> Tuple[int, int, int]:
     return tuple(webcolors.name_to_rgb(value))
 
 
+def rgb_to_hex(red: int, green: int, blue: int, prefix: str = "#") -> str:
+    """"""
+    return f"{prefix}{red:02x}{green:02x}{blue:02x}"
+
+
 @lru_cache(maxsize=255)
 def gamma_correct(value: int, step: int = 255) -> int:
-    """
-    """
+    """"""
     return round((log(1 + value) / 5.545) * step)
