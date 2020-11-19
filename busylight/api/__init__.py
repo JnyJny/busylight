@@ -128,7 +128,7 @@ async def Lights_Status() -> Dict[str, Any]:
 
     return {
         "number_of_lights": len(server.manager.lights),
-        "lights_on": len([l for l in server.manager.lights if l.is_on]),
+        "lights_on": len([l for l in server.manager.lights if l.is_on or l.animating]),
     }
 
 
