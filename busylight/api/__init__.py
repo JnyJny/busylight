@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException, Path, Request
 from fastapi.responses import JSONResponse
 
 
-from .models import LightOperation, LightDescription
+from .models import LightOperation, LightDescription, LightsStatus
 
 from ..__version__ import __version__
 from ..effects import rainbow, pulse, flash_lights_impressively
@@ -106,7 +106,7 @@ async def Light_Description(
 
 
 @server.get("/1/lights", response_model=List[LightDescription])
-async def Lights_Description() -> Dict[str, Any]:
+async def Lights_Description() -> List[Dict[str, Any]]:
     """Information about all available lights."""
     result = []
     for index, light in enumerate(server.manager.lights):
@@ -120,6 +120,16 @@ async def Lights_Description() -> Dict[str, Any]:
             }
         )
     return result
+
+
+@server.get("/1/lights/status", response_model=LightsStatus)
+async def Lights_Status() -> Dict[str, Any]:
+    """"""
+
+    return {
+        "number_of_lights": len(server.manager.lights),
+        "lights_on": len([l for l in server.manager.lights if l.is_on]),
+    }
 
 
 @server.get(

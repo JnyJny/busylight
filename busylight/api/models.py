@@ -20,3 +20,8 @@ class LightDescription(BaseModel):
     info: Dict[str, Union[int, str]]
     is_on: bool
     color: str
+
+
+class LightsStatus(BaseModel):
+    number_of_lights: int
+    lights_on: int
