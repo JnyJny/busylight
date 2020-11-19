@@ -56,7 +56,7 @@ class LightManager:
     The LightManager class is used to open all available lights and send
     commands to the lights without the caller having to obtain a
     writable file descriptor. This class also supports long-lived
-    per-light animation via threading. 
+    per-light animation via threading.
     """
 
     @classmethod
@@ -76,10 +76,20 @@ class LightManager:
     def __init__(self):
         self.update()
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}()"
+
+    def __str__(self):
+
+        result = []
+        for i, light in enumerate(self.lights):
+            result.append(f"{i:2d}: {light.name}")
+
+        return "\n".join(result)
+
     @property
     def supported(self) -> List[str]:
-        """A list of supported lights (not necessarily available).
-        """
+        """A list of supported lights (not necessarily available)."""
         try:
             return self._supported
         except AttributeError:
@@ -113,10 +123,10 @@ class LightManager:
         returned.
 
         A `light_id` value of -1 signals "all lights" and the entire list
-        of managed lights is returned. 
+        of managed lights is returned.
 
         A zero or positive `light_id` will return a list containing the
-        matching light. 
+        matching light.
 
         Indices less than -1 or that trigger a IndexError raise a
         LightIdRangeError exception.
@@ -199,7 +209,7 @@ class LightManager:
         self, light_id: Union[int, None] = ALL_LIGHTS, color: str = "green"
     ) -> None:
         """Turn on a light or all lights with supplied color value.
-        
+
         If light_id is -1 the operation is applied to all lights.
 
         :param light_id: int
@@ -224,7 +234,7 @@ class LightManager:
 
     def light_off(self, light_id: Union[int, None] = ALL_LIGHTS) -> None:
         """Turn off a light or all lights.
-        
+
         If light_id is -1 the operation is applied to all lights.
 
         :param light_id: Union[int, None]
