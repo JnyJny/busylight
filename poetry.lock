@@ -102,7 +102,7 @@ python-versions = "*"
 
 [[package]]
 name = "hidapi"
-version = "0.10.0.post1"
+version = "0.10.1"
 description = "A Cython interface to the hidapi from https://github.com/libusb/hidapi"
 category = "main"
 optional = false
@@ -396,15 +396,15 @@ h11 = [
     {file = "h11-0.11.0.tar.gz", hash = "sha256:3c6c61d69c6f13d41f1b80ab0322f1872702a3ba26e12aa864c928f6a43fbaab"},
 ]
 hidapi = [
-    {file = "hidapi-0.10.0.post1-cp35-cp35m-win32.whl", hash = "sha256:56e0c75ed965125387f215d2929876e48b12477bfac698af7070bfaea118cf70"},
-    {file = "hidapi-0.10.0.post1-cp35-cp35m-win_amd64.whl", hash = "sha256:1c601d9a229ea1f3b20bb39b215e55d71fd5e59a9a8a54cb7c841f79c0cb205b"},
-    {file = "hidapi-0.10.0.post1-cp36-cp36m-win32.whl", hash = "sha256:7964314fc5888ad5068740943241f656f9e528c0eda665f99318f503439073ba"},
-    {file = "hidapi-0.10.0.post1-cp36-cp36m-win_amd64.whl", hash = "sha256:ba7beb4064b882553c98b5d75de33679828e4df3d105973ce4150dacd8c0c3ad"},
-    {file = "hidapi-0.10.0.post1-cp37-cp37m-win32.whl", hash = "sha256:6bc618393d0efa4ce3257df09e2aa526a607552713e006ab7eb2c19e7775369d"},
-    {file = "hidapi-0.10.0.post1-cp37-cp37m-win_amd64.whl", hash = "sha256:f3e154ca3742093835955df36bfcf6881fb513844379d7273c056b8e81932b65"},
-    {file = "hidapi-0.10.0.post1-cp38-cp38-win32.whl", hash = "sha256:e65df6b3adf474ed351470fba5748c2a332f30a5358b5454a08859d884e544fa"},
-    {file = "hidapi-0.10.0.post1-cp38-cp38-win_amd64.whl", hash = "sha256:bbe9ad7d3badae97510dd887d281bf86b8429f3df3d6915b5174d6d580b7e40e"},
-    {file = "hidapi-0.10.0.post1.tar.gz", hash = "sha256:27c04d42a7187becf7a8309d4846aa4f235ac8b7dafd758335b109f5cbd3b962"},
+    {file = "hidapi-0.10.1-cp35-cp35m-win32.whl", hash = "sha256:310c53aa81697bf16b5f0c127afda36e5e9ea37794147afe1461422623263ef7"},
+    {file = "hidapi-0.10.1-cp35-cp35m-win_amd64.whl", hash = "sha256:59f5205928dbe92513038c50dfb4f939395f8f781e176259a40f37d7a291313f"},
+    {file = "hidapi-0.10.1-cp36-cp36m-win32.whl", hash = "sha256:0c92b398f6907654b07f7dbd7e06661abe9ad6119b403eb5fd3c2af4ce66a3b7"},
+    {file = "hidapi-0.10.1-cp36-cp36m-win_amd64.whl", hash = "sha256:4bab0e8ab066527e09856a6a345e2e0c10061f2640e9281323da9a04b94bdec1"},
+    {file = "hidapi-0.10.1-cp37-cp37m-win32.whl", hash = "sha256:b1becc9f09c85c473e91cf869b592d5d87fb8b89672988de33776b20b4c53ce1"},
+    {file = "hidapi-0.10.1-cp37-cp37m-win_amd64.whl", hash = "sha256:b686b2b547890c8ed17ebeabded0050ce377180a56daefa20822b4d66d3a5dea"},
+    {file = "hidapi-0.10.1-cp38-cp38-win32.whl", hash = "sha256:3b93d3f9bae38a3459491194ba1abf5c292b59dbd8738c3ac66f01b593cf3724"},
+    {file = "hidapi-0.10.1-cp38-cp38-win_amd64.whl", hash = "sha256:f49a0de45217366b85597c2edb4be8bd61c9f26f533b854b058dded4352dd89d"},
+    {file = "hidapi-0.10.1.tar.gz", hash = "sha256:a1170b18050bc57fae3840a51084e8252fd319c0fc6043d68c8501deb0e25846"},
 ]
 importlib-metadata = [
     {file = "importlib_metadata-1.7.0-py2.py3-none-any.whl", hash = "sha256:dc15b2969b4ce36305c51eebe62d418ac7791e9a157911d58bfb1f9ccd8e2070"},
