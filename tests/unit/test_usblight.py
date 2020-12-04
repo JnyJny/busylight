@@ -17,7 +17,13 @@ def test_usblight_classmethod_first_light():
 
 
 @pytest.mark.parametrize(
-    "given", [{}, {"vendor_id": 0}, {"product_id": 0}, {"foo": 0, "baz": 1},],
+    "given",
+    [
+        {},
+        {"vendor_id": 0},
+        {"product_id": 0},
+        {"foo": 0, "baz": 1},
+    ],
 )
 def test_usblight_classmethod_from_dict_invalid(given):
 
@@ -28,19 +34,20 @@ def test_usblight_classmethod_from_dict_invalid(given):
 def test_usblight_classmethod_from_dict():
 
     with pytest.raises(UnknownUSBLight):
-        USBLight.from_dict({"vendor_id": 0, "product_id": 0})
+        USBLight.from_dict({"vendor_id": 0, "product_id": 0, "path": b""})
 
 
 def test_usblight_init():
 
     with pytest.raises(UnknownUSBLight):
-        USBLight(0, 0)
+        USBLight(0, 0, b"")
 
 
 def test_usblight_attributes(generic_usblight):
 
     assert generic_usblight.vendor_id == 0xFFFF
     assert generic_usblight.product_id == 0xFFFF
+    assert generic_usblight.path == b"bogus_path"
     assert generic_usblight.value == 0xDEADBEEF
     assert generic_usblight.default_state == 0xDEADBEEF
     assert len(generic_usblight) == 128

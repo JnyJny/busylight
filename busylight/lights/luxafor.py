@@ -9,8 +9,7 @@ from .usblight import UnknownUSBLight
 
 
 class FlagAttribute(USBLightAttribute):
-    """Base Luxafor Flag attribute.
-    """
+    """Base Luxafor Flag attribute."""
 
 
 class FlagCmdAttribute(FlagAttribute):
@@ -86,15 +85,13 @@ class FlagCommand(int, Enum):
 
 
 class Flag(USBLight):
-    """A Luxafor Flag USB-connected light.
-
-    """
+    """A Luxafor Flag USB-connected light."""
 
     VENDOR_IDS = [0x04D8]
 
     __vendor__ = "Luxafor"
 
-    def __init__(self, vendor_id: int, product_id: int):
+    def __init__(self, vendor_id: int, product_id: int, path: bytes):
         """
 
         :param vendor_id: 16-bit integer
@@ -105,7 +102,7 @@ class Flag(USBLight):
         - USBLightInUse
         - USBLightNotFound
         """
-        super().__init__(vendor_id, product_id, 0, 64)
+        super().__init__(vendor_id, product_id, path, 0, 64)
 
     # The Luxafor Flag command buffer isn't regular so there are some fields
     # that are aliased to make code more straightforward.
@@ -164,8 +161,7 @@ class Flag(USBLight):
             #    self.fade = fade
 
     def impl_off(self):
-        """
-        """
+        """"""
         self.impl_on((0, 0, 0))
 
     def impl_blink(self, color: Tuple[int, int, int], speed: int) -> None:
@@ -182,10 +178,14 @@ class Flag(USBLight):
             self.off()
 
     def __strobe(
-        self, leds: FlagLED, color: Tuple[int, int, int], speed: int, repeat: int = 0,
+        self,
+        leds: FlagLED,
+        color: Tuple[int, int, int],
+        speed: int,
+        repeat: int = 0,
     ) -> None:
         """Begins strobing the specifed leds with given color at speed for repeat iterations.
-        
+
         :param leds: luxfor.FlagLED
         :param color: Tuple[int, int, int]
         :param speed: int
@@ -201,7 +201,11 @@ class Flag(USBLight):
             self.strobe_repeat = repeat
 
     def __wave(
-        self, wave: FlagWave, color: Tuple[int, int, int], speed: int, repeat: int = 0,
+        self,
+        wave: FlagWave,
+        color: Tuple[int, int, int],
+        speed: int,
+        repeat: int = 0,
     ) -> None:
         """Begins a wave pattern with the given color at speed for repeat iterations.
 

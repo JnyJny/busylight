@@ -1,7 +1,6 @@
 """A generic USB attached LED light.
 """
 
-
 import hid
 
 from contextlib import contextmanager
@@ -34,13 +33,11 @@ class USBLightIOError(Exception):
 
 
 class USBLightAttribute(BitField):
-    """Read-write USB light attribute.
-    """
+    """Read-write USB light attribute."""
 
 
 class USBLightReadOnlyAttribute(ReadOnlyBitField):
-    """Read-only USB light attribute.
-    """
+    """Read-only USB light attribute."""
 
 
 # EJO investigate ABC?
@@ -48,20 +45,20 @@ class USBLightReadOnlyAttribute(ReadOnlyBitField):
 
 class USBLight(BitVector):
     """A generic USB light that uses HIDAPI to control devices.
-    
+
     The assumption is most hardware devices have a control word
     of N-bits that describes the capabilities of the device. Since
     the capabilities of lights varies widely, the generic device
     only supports these features:
-    
+
     - on
     - off
     - blink
-    
+
     This class only provides stub methods for those features which
     all raise NotImplementedError. It is up to concrete subclasses
     to fill in the blanks.
-    
+
     The USBLight models the state of the light in-memory and changes to
     the physical device are not made until the write method is
     invoked. The `batch_update` context manager is a handy way to
@@ -91,21 +88,20 @@ class USBLight(BitVector):
             raise USBLightNotFound()
 
     @classmethod
-    def from_dict(cls, info: Dict[str, Union[int, str]]):
-        """Returns a configured USBLight for the device described in 
+    def from_dict(cls, info: Dict[str, Union[int, str, bytes]]):
+        """Returns a configured USBLight for the device described in
         the input dictionary.
 
         :param info: Dict[str, Union[int, str]]
-        
+
         Raises:
         - USBLightInUse
         - UnknownUSBLight
         - USBLightNotFound
         - ValueError
         """
-
         try:
-            return cls(info["vendor_id"], info["product_id"])
+            return cls(info["vendor_id"], info["product_id"], info["path"])
         except KeyError:
             raise ValueError("Dictionary is missing vendor_id or product_id keys.")
 
@@ -113,6 +109,7 @@ class USBLight(BitVector):
         self,
         vendor_id: int,
         product_id: int,
+        path: bytes,
         default_state: int = 0,
         cmd_length: int = 128,
     ):
@@ -126,6 +123,7 @@ class USBLight(BitVector):
 
         :param vendor_id: 16-bit integer
         :param product_id: 16-bit integer
+        :param path: bytes
         :param default_state: integer
         :param cmd_length: USB command length in bits
 
@@ -139,10 +137,20 @@ class USBLight(BitVector):
             raise UnknownUSBLight(vendor_id)
 
         super().__init__(value=default_state, size=cmd_length)
+
         self.default_state = default_state
         self.vendor_id = vendor_id
         self.product_id = product_id
+        self.path = path
         self.is_on = False
+
+        try:
+            self.device.open_path(self.path)
+            return
+        except OSError:
+            raise USBLightInUse(self) from None
+        except ValueError:
+            pass
 
         try:
             self.device.open(self.vendor_id, self.product_id)
@@ -165,8 +173,7 @@ class USBLight(BitVector):
 
     @property
     def info(self) -> Dict[str, Union[int, str]]:
-        """A dictionary of HIDAPI attributes for this light.
-        """
+        """A dictionary of HIDAPI attributes for this light."""
 
         ## BUG: if multiple devices sharing vid/pid exist, this method
         ##      will return erroneous information for all but the first
@@ -181,8 +188,7 @@ class USBLight(BitVector):
         return self._info
 
     def __del__(self):
-        """Shutdown helper and effects threads, close the HID device.
-        """
+        """Shutdown helper and effects threads, close the HID device."""
         self.close()
 
     @property
@@ -202,8 +208,7 @@ class USBLight(BitVector):
 
     @property
     def device(self) -> hid.device:
-        """A hid.device instance.
-        """
+        """A hid.device instance."""
         try:
             return self._device
         except AttributeError:
@@ -214,7 +219,7 @@ class USBLight(BitVector):
     @property
     def helper_thread(self) -> Union[CancellableThread, None]:
         """Start a helper thread if the USBLight subclass implements a
-        generator `helper` method. 
+        generator `helper` method.
 
         [see busylight.lights.kuando.BusyLight.helper].
         """
@@ -241,15 +246,14 @@ class USBLight(BitVector):
 
     @property
     def animating(self) -> bool:
-        """Returns True if the light has an active effect or helper thread.
-        """
+        """Returns True if the light has an active effect or helper thread."""
         return self.effect_thread or self.helper_thread
 
     def close(self, turn_off: bool = False) -> None:
         """Shutdown any helper or effect threads active for this light,
         optionally turn the light off and close the USB HIDAPI device.
 
-        The light cannot be re-used after it's closed. 
+        The light cannot be re-used after it's closed.
 
         :param turn_off: bool
         """
@@ -280,7 +284,7 @@ class USBLight(BitVector):
     def read(self, nbytes: int) -> bytes:
         """Reads `nbytes` from the device (if supported) and returns the data.
 
-        :param nbytes: int 
+        :param nbytes: int
         :return: bytes
         """
         raise NotImplementedError("read")
@@ -299,7 +303,7 @@ class USBLight(BitVector):
     @contextmanager
     def batch_update(self) -> None:
         """This method is a convenience context manager that will call
-        the `write` method on exit. 
+        the `write` method on exit.
         """
         yield
         self.write()
@@ -334,8 +338,7 @@ class USBLight(BitVector):
 
     @property
     def color(self) -> Tuple[int, int, int]:
-        """A tuple of red, green and blue integer values. 
-        """
+        """A tuple of red, green and blue integer values."""
         return tuple([self.red, self.green, self.blue])
 
     @color.setter
@@ -344,8 +347,7 @@ class USBLight(BitVector):
         self.red, self.green, self.blue = new_value
 
     def on(self, color: Tuple[int, int, int] = None) -> None:
-        """Turn the light on with the specified color [default=green].
-        """
+        """Turn the light on with the specified color [default=green]."""
 
         if not color or not any(color):
             color = (0, 255, 0)
@@ -356,8 +358,7 @@ class USBLight(BitVector):
             raise NotImplementedError(f"{self.__class__.__name__}.impl_on") from None
 
     def off(self) -> None:
-        """Turn the light off
-        """
+        """Turn the light off"""
         try:
             self.impl_off()
             self.is_on = False

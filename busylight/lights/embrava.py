@@ -85,7 +85,7 @@ class Blynclight(USBLight):
     Tested Devices:
     - BLYNCUSB30   Blynclight
     - BLYNCUSB40S  Blynclight Plus
-    
+
     Reported Working:
     - BLMINI40     Blynclight Mini
     """
@@ -93,18 +93,19 @@ class Blynclight(USBLight):
     VENDOR_IDS = [0x2C0D, 0x03E5]
     __vendor__ = "Embrava"
 
-    def __init__(self, vendor_id: int, product_id: int):
+    def __init__(self, vendor_id: int, product_id: int, path: bytes):
         """
         :param vendor_id: 16-bit int
         :param product_id: 16-bit int
-        
+        :param path: bytes
+
         Raises:
         - UnknownUSBLight
         - USBLightInUse
         - USBLightNotFound
         """
         # Asserted: _off, speed, mute
-        super().__init__(vendor_id, product_id, 0x00000000090080FF22, 72)
+        super().__init__(vendor_id, product_id, path, 0x00000000090080FF22, 72)
 
     header = BlynclightCommandHeader(64, 8)
     red = BlynclightColor(56, 8)
@@ -122,8 +123,7 @@ class Blynclight(USBLight):
     footer = BlynclightCommandFooter(0, 16)
 
     def impl_on(self, color: Tuple[int, int, int], dim: bool = False) -> None:
-        """Device specific on.
-        """
+        """Device specific on."""
 
         with self.batch_update():
             self.reset()
@@ -132,15 +132,13 @@ class Blynclight(USBLight):
             self._off = 0
 
     def impl_off(self) -> None:
-        """Device specific off
-        """
+        """Device specific off"""
 
         with self.batch_update():
             self._off = 1
 
     def impl_blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
-        """Device specific blink
-        """
+        """Device specific blink"""
 
         with self.batch_update():
             self.color = color

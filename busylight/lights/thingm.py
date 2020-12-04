@@ -59,8 +59,7 @@ class Blink1ColorField(USBLightAttribute):
 
 
 class Blink1PlayField(USBLightAttribute):
-    """An 8-bit value.
-    """
+    """An 8-bit value."""
 
 
 class Blink1StartField(USBLightAttribute):
@@ -88,14 +87,12 @@ class Blink1LineField(USBLightAttribute):
 
 
 class Blink1(USBLight):
-    """ThingM blink(1) USB connnected LED light.
-    
-    """
+    """ThingM blink(1) USB connnected LED light."""
 
     VENDOR_IDS = [0x27B8]
     __vendor__ = "ThingM"
 
-    def __init__(self, vendor_id: int, product_id: int):
+    def __init__(self, vendor_id: int, product_id: int, path: bytes):
         """
         :param vendor_id: 16-bit integer
         :param product_id: 16-bit integer
@@ -106,7 +103,7 @@ class Blink1(USBLight):
         - USBLightNotFound
         """
 
-        super().__init__(vendor_id, product_id, (Blink1Report.ONE << 56), 64)
+        super().__init__(vendor_id, product_id, path, (Blink1Report.ONE << 56), 64)
         self.default_fade = 10
 
     report = Blink1ReportField(56, 8)
@@ -131,10 +128,10 @@ class Blink1(USBLight):
         """Write the in-memory state of the device to hardware.
 
         The ThingM blink(1) uses the `send_feature_report` interface
-        instead of the `write` interface. 
-        
+        instead of the `write` interface.
+
         :return: int number of bytes written.
-        
+
         """
         result = self.device.send_feature_report(self.bytes)
 
@@ -144,13 +141,11 @@ class Blink1(USBLight):
         return result
 
     def impl_on(self, color: Tuple[int, int, int]) -> None:
-        """Turn the light on with the specified color.
-        """
+        """Turn the light on with the specified color."""
         self.fade_to_color(color, self.default_fade)
 
     def impl_off(self) -> None:
-        """Turn the light off.
-        """
+        """Turn the light off."""
         self.fade_to_color((0, 0, 0), self.default_fade)
 
     def impl_blink(self, color: Tuple[int, int, int], speed: int) -> None:
@@ -216,8 +211,7 @@ class Blink1(USBLight):
             self.line = pos
 
     def save_patterns(self):
-        """
-        """
+        """"""
         with self.batch_update():
             self.clear()
             self.report = Blink1Report.ONE

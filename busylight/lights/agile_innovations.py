@@ -16,9 +16,9 @@ from .usblight import USBLightIOError
 
 def _blink_effect(light: USBLight, color: Tuple[int, int, int], speed: int = 1) -> None:
     """An effects generator function that blinks a BlinkStick on and off.
-    
+
     This generator function is intended to be used as an argument to the
-    `USBLight.start_effect` method. 
+    `USBLight.start_effect` method.
 
     :param light: USBLight
     :param color: Tuple[int, int, int]
@@ -97,8 +97,7 @@ class BlinkStickVariant(int, Enum):
 
 
 class BlinkStickReportAttribute(USBLightAttribute):
-    """An 8-bit feature report value.
-    """
+    """An 8-bit feature report value."""
 
 
 class BlinkStickChannelAttribute(USBLightAttribute):
@@ -137,18 +136,18 @@ class BlinkStick(USBLight):
     with a color. It's up to software to drive any other desired effects
     or animations (fades, blinks, etc).  The BlinkStick's LEDs are
     individually addressable which sort of makes up for the lack of a
-    programmable "blink" mode. 
+    programmable "blink" mode.
 
     """
 
     VENDOR_IDS = [0x20A0]
     __vendor__ = "Agile Innovations"
 
-    def __init__(self, vendor_id: int, product_id: int):
+    def __init__(self, vendor_id: int, product_id: int, path: bytes):
         """
         :param vendor_id: 16-bit int
         :param product_id: 16-bit int
-        
+
         Raises:
         - UnknownUSBLight
         - USBLightInUse
@@ -175,7 +174,7 @@ class BlinkStick(USBLight):
         if vendor_id not in self.VENDOR_IDS:
             raise UnknownUSBLight(vendor_id)
 
-        super().__init__(vendor_id, product_id, 0, 208)
+        super().__init__(vendor_id, product_id, path, 0, 208)
 
     report = BlinkStickReportAttribute(200, 8)
     channel = BlinkStickChannelAttribute(192, 8)
@@ -206,8 +205,7 @@ class BlinkStick(USBLight):
 
     @property
     def name(self) -> str:
-        """Concatenation of the light's vendor and product name, title-cased.
-        """
+        """Concatenation of the light's vendor and product name, title-cased."""
         try:
             return self._name
         except AttributeError:
@@ -216,13 +214,11 @@ class BlinkStick(USBLight):
         return self._name
 
     def impl_on(self, color: Tuple[int, int, int]) -> None:
-        """"Turn the light on with the specified color.
-        """
+        """ "Turn the light on with the specified color."""
         self.set_leds(color)
 
     def impl_off(self) -> None:
-        """Turn the light off.
-        """
+        """Turn the light off."""
         self.set_leds((0, 0, 0))
 
     def impl_blink(self, color: Tuple[int, int, int], speed: int) -> None:
@@ -235,8 +231,7 @@ class BlinkStick(USBLight):
         self.start_effect(partial(_blink_effect, color=color, speed=speed))
 
     def set_leds(self, color: Tuple[int, int, int]):
-        """
-        """
+        """"""
         r, g, b = color
         color = g, r, b
 
@@ -253,8 +248,7 @@ class BlinkStick(USBLight):
             self.led7 = color
 
     def set_led(self, led: int, color: Tuple[int, int, int]):
-        """
-        """
+        """"""
         with self.batch_update():
             self.reset()
             self.report = 5

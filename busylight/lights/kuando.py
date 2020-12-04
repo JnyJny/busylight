@@ -163,7 +163,7 @@ class Step(BitVector):
 
 class BusyLight(USBLight):
 
-    """Kuando BusyLight 
+    """Kuando BusyLight
 
     The BusyLight has a unique command protocol. The device
     can be programmed with up to eight "steps" which can an
@@ -178,14 +178,14 @@ class BusyLight(USBLight):
     will send the keep-alive message to the light for as
     long as the initiating thread remains alive.
 
-    
+
 
     """
 
     VENDOR_IDS = [0x27BB]
     __vendor__ = "Kuando"
 
-    def __init__(self, vendor_id: int, product_id: int):
+    def __init__(self, vendor_id: int, product_id: int, path: bytes):
         """A Kuando BusyLight device.
 
         :param vendor_id: 16-bit int
@@ -197,7 +197,7 @@ class BusyLight(USBLight):
         - USBLightNotFound
         """
         # FF_FFFF are the required values for `padbytes`
-        super().__init__(vendor_id, product_id, 0x00FF_FFFF_0000, 512)
+        super().__init__(vendor_id, product_id, path, 0x00FF_FFFF_0000, 512)
 
     step0 = StepField(448, 64)
     step1 = StepField(384, 64)
@@ -216,8 +216,7 @@ class BusyLight(USBLight):
     chksum = BusyLightChecksumField(0, 16)
 
     def _dump_steps(self):
-        """Dump hex values of steps. Debug tool.
-        """
+        """Dump hex values of steps. Debug tool."""
         return "\n".join(
             [
                 "====================",
@@ -239,7 +238,7 @@ class BusyLight(USBLight):
         """A loop that sends a keepalive message.
 
         This generator function is intended to be used in
-        a busylight.effects.thread.EffectThread. 
+        a busylight.effects.thread.EffectThread.
         """
         timeout = 0xF
         keepalive = Step.keep_alive(timeout).value
@@ -268,8 +267,8 @@ class BusyLight(USBLight):
         return super().write()
 
     def impl_on(self, color: Tuple[int, int, int]) -> None:
-        """Turn the BusyLight on with the specified color. 
-        
+        """Turn the BusyLight on with the specified color.
+
         :param color: Tuple[int, int, int]
 
         Raises
