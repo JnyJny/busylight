@@ -19,7 +19,7 @@ The possibilities are _literally_ endless.
 ## Features
 - Control Lights via [Command-Line][BUSYLIGHT.1]
 - Control Lights via [Web API][WEBAPI]
-- Supports Lights from Five (5!) Vendors:
+- Five (5!) Supported Vendors:
   * [**Agile Innovations** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
   * [**Kuando** BusyLight][4]
