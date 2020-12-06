@@ -103,7 +103,7 @@ Now you can use the web API endpoints which return JSON payloads:
 [3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
 [4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
 [5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
-[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingmw.md
+[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
 
 [37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
 [38]: https://github.com/JnyJny/busylight/workflows/Python%203.8/badge.svg
