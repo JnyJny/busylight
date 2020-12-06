@@ -1,3 +1,5 @@
+![BusyLight Project Logo][1]
+
 ## ThingM blink(1)
 
 [ThingM][0] is a California company that describes themselves as a "device
