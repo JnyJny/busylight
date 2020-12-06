@@ -19,12 +19,12 @@ The possibilities are _literally_ endless.
 ## Features
 - Control Lights via [Command-Line][BUSYLIGHT.1]
 - Control Lights via [Web API][WEBAPI]
-- Supports Lights from Five Vendors
-  * Agile Innovations BlinkStick 
-  * Embrava Blynclight
-  * Kuando BusyLight
-  * Luxafor Flag
-  * ThingM Blink1
+- Supports Lights from Five (5!) Vendors:
+  * [**Agile Innovations** BlinkStick ][2]
+  * [**Embrava** Blynclight][3]
+  * [**Kuando** BusyLight][4]
+  * [**Luxafor** Flag][5]
+  * [**ThingM** Blink1][6]
 - Supported on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
 
@@ -99,6 +99,11 @@ Now you can use the web API endpoints which return JSON payloads:
 [1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
 [BUSYLIGHT.1]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
 [WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
+[2]: https://github.com/JnyJny/busylight/blob/master/docs/agile_innovations.md
+[3]: https://github.com/JnyJny/busylight/blob/master/docs/embrava.md
+[4]: https://github.com/JnyJny/busylight/blob/master/docs/kuando.md
+[5]: https://github.com/JnyJny/busylight/blob/master/docs/luxafor.md
+[6]: https://github.com/JnyJny/busylight/blob/master/docs/thingmw.md
 
 [37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
 [38]: https://github.com/JnyJny/busylight/workflows/Python%203.8/badge.svg
