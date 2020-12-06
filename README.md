@@ -99,11 +99,11 @@ Now you can use the web API endpoints which return JSON payloads:
 [1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
 [BUSYLIGHT.1]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
 [WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
-[2]: https://github.com/JnyJny/busylight/blob/master/docs/agile_innovations.md
-[3]: https://github.com/JnyJny/busylight/blob/master/docs/embrava.md
-[4]: https://github.com/JnyJny/busylight/blob/master/docs/kuando.md
-[5]: https://github.com/JnyJny/busylight/blob/master/docs/luxafor.md
-[6]: https://github.com/JnyJny/busylight/blob/master/docs/thingmw.md
+[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovations.md
+[3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
+[4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
+[5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
+[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingmw.md
 
 [37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
 [38]: https://github.com/JnyJny/busylight/workflows/Python%203.8/badge.svg
