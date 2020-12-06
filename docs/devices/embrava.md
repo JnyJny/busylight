@@ -90,7 +90,7 @@ Turning the light on requires the user to supply a control word with
 values.  Please note that this device does not follow the RGB
 convention of color ordering; the order of green and blue is swapped,
 **RBG**. This is only an issue if you are updating all three fields
-by writing a 24-bit quantity to the green value offset. 
+by writing a 24-bit quantity to the red value offset. 
 
 **Example: Activate Light with Purple Color.**
 ```C
@@ -105,7 +105,7 @@ by writing a 24-bit quantity to the green value offset.
 
 Please note that clearing the `off` field is not enough to provoke a
 visible effect form the device; a color must also be given otherwise
-the light is "on" with a black color. This can be frustrating.
+the light is "on" with a black color. This can be _frustrating_.
 
 #### Turning Light Off
 
