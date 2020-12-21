@@ -238,7 +238,7 @@ class USBLight(abc.ABC):
         """
         # EJO what happens if we start an animation on a released light?
         self.stop_animation()
-        self._animation_thread = AnimationThread(animation, self.identifier)
+        self._animation_thread = AnimationThread(animation(self), self.identifier)
         self._animation_thread.start()
 
     def stop_animation(self) -> None:
