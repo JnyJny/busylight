@@ -30,7 +30,7 @@ from .exceptions import USBLightIOError
 from .embrava import Blynclight
 from .luxafor import Flag
 
-SUPPORTED_LIGHTS = USBLight.__subclasses__()
+SUPPORTED_LIGHTS = USBLight.supported_lights()
 
 KNOWN_VENDOR_IDS = sum([l.VENDOR_IDS for l in SUPPORTED_LIGHTS], [])
 
