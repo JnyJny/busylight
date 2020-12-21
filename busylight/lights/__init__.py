@@ -20,32 +20,27 @@ import hid
 ## 3. Add the name of the new class to the __all__ list
 
 
-from .agile_innovations import BlinkStick
-from .embrava import Blynclight
-from .kuando import BusyLight
-from .luxafor import Flag
-from .thingm import Blink1
-
 from .usblight import USBLight
-from .usblight import UnknownUSBLight
-from .usblight import USBLightInUse
-from .usblight import USBLightIOError
-from .usblight import USBLightNotFound
+from .exceptions import USBLightNotFound
+from .exceptions import USBLightUnknownVendor
+from .exceptions import USBLightUnknownProduct
+from .exceptions import USBLightInUse
+from .exceptions import USBLightIOError
 
-SUPPORTED_LIGHTS = [BlinkStick, Blynclight, Blink1, BusyLight, Flag]
+from .embrava import Blynclight
+from .luxafor import Flag
+
+SUPPORTED_LIGHTS = USBLight.__subclasses__()
 
 KNOWN_VENDOR_IDS = sum([l.VENDOR_IDS for l in SUPPORTED_LIGHTS], [])
 
 __all__ = [
-    "Blink1",
-    "Blynclight",
-    "BusyLight",
-    "Flag",
     "KNOWN_VENDOR_IDS",
     "SUPPORTED_LIGHTS",
-    "UnknownUSBLight",
     "USBLight",
+    "USBLightNotFound",
+    "USBLightUnknownVendor",
+    "USBLightUnknownProduct",
     "USBLightInUse",
     "USBLightIOError",
-    "USBLightNotFound",
 ]
