@@ -1,48 +1,42 @@
-"""Support for the Luxafor Flag
+"""Support for the Luxafor Flag USB light
 """
 
-
-from bitvector import BitField, ReadOnlyBitField
 from enum import Enum
 from typing import Tuple
 
 from .usblight import USBLight
-from .state import State
+from .statevector import StateVector, StateField
 
 
-class FlagAttribute(BitField):
-    """Base Luxafor Flag attribute."""
-
-
-class FlagCmdAttribute(FlagAttribute):
+class FlagCmdAttribute(StateField):
     """Luxafor Flag mode command."""
 
 
-class FlagLEDAttribute(FlagAttribute):
+class FlagLEDAttribute(StateField):
     """Luxafor Flag LED selector."""
 
 
-class FlagPatternAttribute(FlagAttribute):
+class FlagPatternAttribute(StateField):
     """Luxafor Flag pattern value."""
 
 
-class FlagWaveAttribute(FlagAttribute):
+class FlagWaveAttribute(StateField):
     """Luxafor Flag wave value."""
 
 
-class FlagColorAttribute(FlagAttribute):
+class FlagColorAttribute(StateField):
     """An 8-bit color value."""
 
 
-class FlagRepeatAttribute(FlagAttribute):
+class FlagRepeatAttribute(StateField):
     """Luxafor Flag repeat value."""
 
 
-class FlagFadeAttribute(FlagAttribute):
+class FlagFadeAttribute(StateField):
     """Luxafor Flag fade speed value."""
 
 
-class FlagSpeedAttribute(FlagAttribute):
+class FlagSpeedAttribute(StateField):
     """Luxafor Flag speed value."""
 
 
@@ -86,7 +80,9 @@ class FlagCommand(int, Enum):
     PATTERN = 6
 
 
-class FlagState(State):
+class FlagState(StateVector):
+    """Luxafor Flag State Vector"""
+
     def __init__(self):
         super().__init__(0x1FF000000000000, 64)
 
@@ -117,8 +113,17 @@ class FlagState(State):
     strobe_repeat = FlagRepeatAttribute(0, 8)
     wave_speed = FlagSpeedAttribute(0, 8)
 
+    @property
+    def color(self):
+        return (self.red, self.green, self.blue)
+
+    @color.setter
+    def color(self, values: Tuple[int, int, int]):
+        self.red, self.green, self.blue = values
+
 
 class Flag(USBLight):
+    """Support for the Luxafor Flag USB light."""
 
     VENDOR_IDS = [0x04D8]
     PRODUCT_IDS = []
@@ -126,7 +131,7 @@ class Flag(USBLight):
     __family__ = "Flag"
 
     @property
-    def state(self):
+    def state(self) -> FlagState:
         try:
             return self._state
         except AttributeError:
@@ -135,7 +140,20 @@ class Flag(USBLight):
         return self._state
 
     @property
-    def name(self):
+    def cmdbuf(self) -> FlagState:
+        """A scratch state vector whose value doesn't always track the
+        current state.
+        """
+
+        try:
+            return self._cmdbuf
+        except AttributeError:
+            pass
+        self._cmdbuf = FlagState()
+        return self._cmdbuf
+
+    @property
+    def name(self) -> str:
         try:
             return self._name
         except AttributeError:
@@ -155,13 +173,18 @@ class Flag(USBLight):
     def is_on(self) -> bool:
         return any(self.color)
 
+    def reset(self):
+        self.state.reset()
+
     def on(self, color: Tuple[int, int, int]) -> None:
 
+        self.color = color
+
         with self.batch_update():
-            self.state.reset()
-            self.state.cmd = FlagCommand.COLOR
-            self.state.leds = FlagLED.ALL
-            self.color = color
+            self.cmdbuf.reset()
+            self.cmdbuf.cmd = FlagCommand.COLOR
+            self.cmdbuf.leds = FlagLED.ALL
+            self.cmdbuf.color = color
 
     def off(self):
 
@@ -169,10 +192,12 @@ class Flag(USBLight):
 
     def blink(self, color: Tuple[int, int, int], speed: int = 0):
 
+        self.color = color
+
         with self.batch_update():
-            self.state.reset()
-            self.state.cmd = FlagCommand.STROBE
-            self.leds = FlagLED.ALL
-            self.color = color
-            self.state.strobe_speed = 0xF - speed
-            self.state.strobe_repeat = 0
+            self.cmdbuf.reset()
+            self.cmdbuf.cmd = FlagCommand.STROBE
+            self.cmdbuf.leds = FlagLED.ALL
+            self.cmdbuf.color = color
+            self.cmdbuf.strobe_speed = 0xF - speed
+            self.cmdbuf.strobe_repeat = 0
