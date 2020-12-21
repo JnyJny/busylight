@@ -1,62 +1,102 @@
 """Support for Embrava Blynclights
 """
 
-from bitvector import BitField, ReadOnlyBitField
+
 from typing import Tuple
 
 from .usblight import USBLight
-from .state import State
+from .statevector import StateVector, StateField, ReadOnlyStateField
 
 
-class BlynclightStateHeader(ReadOnlyBitField):
-    """A constant 16-bit field with zero value."""
+class BlynclightStateHeader(ReadOnlyStateField):
+    """A 16-bit constant field whose value is zero."""
 
 
-class BlynclightColor(BitField):
-    """An 8-bit color."""
+class BlynclightColor(StateField):
+    """An 8-bit color value."""
 
 
-class BlynclightOff(BitField):
-    """Toggle the light off and on: 1 == off, 0 == on."""
+class BlynclightOff(StateField):
+    """A 1-bit field that toggles the light off."""
 
 
-class BlynclightDim(BitField):
-    """Toggle the light from bright to dim. bright == 0, dim == 1."""
+class BlynclightDim(StateField):
+    """A 1-bit field that toggles dim mode on."""
 
 
-class BlynclightFlash(BitField):
-    """Toggle the light from steady to flash mode."""
+class BlynclightFlash(StateField):
+    """A 1-bit field that toggles flash mode on."""
 
 
-class BlynclightSpeed(BitField):
-    """A four bit field that specifies the flash speed."""
+class BlynclightSpeed(StateField):
+    """A 3-bit field that specifies the flash speed.
+
+    b000 : invalid
+    b001 : slow
+    b010 : medium
+    b100 : fast
+    """
 
 
-class BlynclightRepeat(BitField):
-    """Toggle tune repeat: 0 once, 1 repeat"""
+class BlynclightRepeat(StateField):
+    """A 1 bit field that toggles tune repeat mode on."""
 
 
-class BlynclightPlay(BitField):
-    """Toggle playing selected tune."""
+class BlynclightPlay(StateField):
+    """A 1-bit field that toggles playing the selected tune."""
 
 
-class BlynclightMusic(BitField):
-    """Select a tune in firmware: 0 - 10"""
+class BlynclightMusic(StateField):
+    """A 4-bit field that selects a firmware tune to play.
+
+    Valid values range from 1 to 10.
+    """
 
 
-class BlynclightMute(BitField):
-    """Toggle muting the tune being played. 0 == play, 1 == mute."""
+class BlynclightMute(StateField):
+    """A 1-bit field that toggles muting the tune being played."""
 
 
-class BlynclightVolume(BitField):
-    """Volume of the tune when played: 0 - 10"""
+class BlynclightVolume(StateField):
+    """A 4-bit field controlling the volume of the tune when played.
+
+    Valid values range from 0 to 10, corresponding to percentage of
+    maximum volume. I think.
+    """
 
 
-class BlynclightStateFooter(ReadOnlyBitField):
+class BlynclightStateFooter(ReadOnlyStateField):
     """A 16-bit constant field with value 0xFF22."""
 
 
-class BlynclightState(State):
+class BlynclightState(StateVector):
+    """Blynclight State
+
+    A bit-wise representation of the command format
+    expected by the Blynclight family of devices.
+
+    The command format is nine bytes in length;
+    the first byte is constant zero and the final
+    two bytes are constant 0xff22. The intervening
+    bits control various functionality of the light.
+
+    The field bit length and names are:
+    8 : constant 0
+    8 : red
+    8 : blue
+    8 : green
+    1 : off
+    1 : dim
+    1 : flash
+    3 : speed
+    1 : repeat
+    1 : play
+    4 : music
+    1 : mute
+    4 : volume
+    16: constant 0xff22
+    """
+
     def __init__(self):
         super().__init__(0x00000000090080FF22, 72)
 
@@ -104,6 +144,9 @@ class Blynclight(USBLight):
     @property
     def is_on(self) -> bool:
         return not self.state.off
+
+    def reset(self):
+        self.state.reset()
 
     def on(self, color: Tuple[int, int, int]) -> None:
 
