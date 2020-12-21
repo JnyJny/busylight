@@ -10,8 +10,11 @@ from typing import Generator, Dict, List, Tuple, Union
 import hid
 
 from .lights import SUPPORTED_LIGHTS, KNOWN_VENDOR_IDS
-from .lights import UnknownUSBLight, USBLightInUse, USBLightIOError
 from .lights import USBLight
+from .lights import USBLightUnknownVendor
+from .lights import USBLightUnknownProduct
+from .lights import USBLightInUse
+from .lights import USBLightIOError
 
 from .color import color_to_rgb
 
@@ -172,7 +175,7 @@ class LightManager:
                 try:
                     new_lights.append(LightClass.from_dict(info))
                     new_lights[-1].is_open = True
-                except UnknownUSBLight:
+                except (USBLightUnknownVendor, USBLightUnknownProduct):
                     pass
                 except USBLightInUse:
                     pass
@@ -226,7 +229,7 @@ class LightManager:
             raise ColorLookupError(color) from None
 
         for light in self.lights_for(light_id):
-            light.stop_effect()
+            light.stop_animation()
             try:
                 light.on(rgb)
             except USBLightIOError as error:
@@ -244,7 +247,7 @@ class LightManager:
         """
 
         for light in self.lights_for(light_id):
-            light.stop_effect()
+            light.stop_animation()
             try:
                 light.off()
             except USBLightIOError as error:
@@ -302,7 +305,7 @@ class LightManager:
             effect = partial(effect, color=color)
 
         for light in self.lights_for(light_id):
-            light.start_effect(effect)
+            light.start_animation(effect)
 
     @contextmanager
     def operate_on(
