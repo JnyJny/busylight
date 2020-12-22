@@ -128,7 +128,6 @@ class Flag(USBLight):
     VENDOR_IDS = [0x04D8]
     PRODUCT_IDS = []
     __vendor__ = "Luxafor"
-    __family__ = "Flag"
 
     @property
     def state(self) -> FlagState:

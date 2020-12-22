@@ -17,7 +17,6 @@ class BusyLight(USBLight):
     VENDOR_IDS = [0x27BB]
     PRODUCT_IDS = []
     __vendor__ = "Kuando"
-    __family__ = "BusyLight"
 
     @property
     def state(self):

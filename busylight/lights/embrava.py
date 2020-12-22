@@ -122,7 +122,6 @@ class Blynclight(USBLight):
     VENDOR_IDS = [0x2C0D, 0x03E5]
     PRODUCT_IDS = []
     __vendor__ = "Embrava"
-    __family__ = "Blynclight"
 
     @property
     def state(self):
@@ -145,7 +144,7 @@ class Blynclight(USBLight):
     def is_on(self) -> bool:
         return not self.state.off
 
-    def reset(self):
+    def reset(self) -> None:
         self.state.reset()
 
     def on(self, color: Tuple[int, int, int]) -> None:

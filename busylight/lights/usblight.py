@@ -36,7 +36,6 @@ class USBLight(abc.ABC):
     - VENDOR_IDS : List[int]
     - PRODUCT_IDS : List[int]
     - __vendor__ : str
-    - __family__ : str
     - state : Any (not really)
     - color : Tuple[int, int, int]
     - is_on : bool
@@ -305,11 +304,6 @@ class USBLight(abc.ABC):
     @abc.abstractmethod
     def __vendor__(self) -> str:
         """Vendor name supported by this class."""
-
-    @property
-    @abc.abstractmethod
-    def __family__(self) -> str:
-        """Family name of devices supported by this class."""
 
     @property
     @abc.abstractmethod

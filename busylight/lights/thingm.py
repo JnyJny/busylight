@@ -122,7 +122,6 @@ class Blink1(USBLight):
     VENDOR_IDS = [0x27B8]
     PRODUCT_IDS = []
     __vendor__ = "ThingM"
-    __family__ = "Blink1"
 
     @property
     def state(self):
