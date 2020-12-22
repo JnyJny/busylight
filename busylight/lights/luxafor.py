@@ -140,19 +140,6 @@ class Flag(USBLight):
         return self._state
 
     @property
-    def cmdbuf(self) -> FlagState:
-        """A scratch state vector whose value doesn't always track the
-        current state.
-        """
-
-        try:
-            return self._cmdbuf
-        except AttributeError:
-            pass
-        self._cmdbuf = FlagState()
-        return self._cmdbuf
-
-    @property
     def name(self) -> str:
         try:
             return self._name
@@ -163,11 +150,11 @@ class Flag(USBLight):
 
     @property
     def color(self) -> Tuple[int, int, int]:
-        return (self.state.red, self.state.green, self.state.blue)
+        return getattr(self, "_color", (0, 0, 0))
 
     @color.setter
     def color(self, values: Tuple[int, int, int]):
-        self.state.red, self.state.green, self.state.blue = values
+        self._color = tuple(values)
 
     @property
     def is_on(self) -> bool:
@@ -181,10 +168,10 @@ class Flag(USBLight):
         self.color = color
 
         with self.batch_update():
-            self.cmdbuf.reset()
-            self.cmdbuf.cmd = FlagCommand.COLOR
-            self.cmdbuf.leds = FlagLED.ALL
-            self.cmdbuf.color = color
+            self.state.reset()
+            self.state.cmd = FlagCommand.COLOR
+            self.state.leds = FlagLED.ALL
+            self.state.color = color
 
     def off(self):
 
@@ -195,9 +182,9 @@ class Flag(USBLight):
         self.color = color
 
         with self.batch_update():
-            self.cmdbuf.reset()
-            self.cmdbuf.cmd = FlagCommand.STROBE
-            self.cmdbuf.leds = FlagLED.ALL
-            self.cmdbuf.color = color
-            self.cmdbuf.strobe_speed = 0xF - speed
-            self.cmdbuf.strobe_repeat = 0
+            self.state.reset()
+            self.state.cmd = FlagCommand.STROBE
+            self.state.leds = FlagLED.ALL
+            self.state.color = color
+            self.state.strobe_speed = 0xF - speed
+            self.state.strobe_repeat = 0
