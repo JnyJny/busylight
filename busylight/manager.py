@@ -1,7 +1,7 @@
 """A USBLight Manager
 """
 
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from enum import Enum
 from functools import partial
 from time import sleep
@@ -54,12 +54,12 @@ class ColorLookupError(Exception):
 
 
 class LightManager:
-    """USB devices manager and proxy.
+    """USB device manager and proxy.
 
-    The LightManager class is used to open all available lights and send
+    The LightManager class is opens all available lights and sends
     commands to the lights without the caller having to obtain a
     writable file descriptor. This class also supports long-lived
-    per-light animation via threading.
+    per-light animations via threading.
     """
 
     @classmethod
@@ -80,7 +80,7 @@ class LightManager:
         self.update()
 
     def __repr__(self):
-        return f"{self.__class__.__name__}()"
+        return f"{type(self).__name__}()"
 
     def __str__(self):
 
@@ -99,7 +99,7 @@ class LightManager:
             pass
         self._supported = []
         for light in SUPPORTED_LIGHTS:
-            self._supported.append(f"{light.__vendor__} {light.__name__}")
+            self._supported.append(f"{light.vendor} {light.__name__}")
         return self._supported
 
     @property
@@ -152,14 +152,8 @@ class LightManager:
         except IndexError:
             raise LightIdRangeError(light_id, len(self.lights) - 1) from None
 
-    def update(self) -> int:
-        """Checks for available lights that are not managed and adds them
-
-        to the list of lights. Optionally starts a helper thread for
-        lights that require one. Checks for lights whose is_open attribute
-        is False, indicating that the last IO operation to that light failed.
-        Calls the light's close method to shutdown any threads associated
-        with the thread and removes it from the list of managed lights.
+    def update(self):
+        """Acquires new lights and purges unplugged lights.
 
         Light identfiers of remaining lights will change after `update`
         if lights are unplugged.
@@ -167,33 +161,17 @@ class LightManager:
         :return: number of new lights added to the managed `lights` list.
         """
 
-        new_lights = []
-
         for light_id, info in enumerate(self.available()):
-
             for LightClass in SUPPORTED_LIGHTS:
-                try:
-                    new_lights.append(LightClass.from_dict(info))
-                    new_lights[-1].is_open = True
-                except (USBLightUnknownVendor, USBLightUnknownProduct):
-                    pass
-                except USBLightInUse:
-                    pass
+                with suppress(
+                    USBLightUnknownVendor,
+                    USBLightUnknownProduct,
+                    USBLightInUse,
+                ):
+                    self.lights.append(LightClass.from_dict(info))
 
-        if new_lights:
-            self.lights.extend(new_lights)
-            for light in new_lights:
-                try:
-                    light.helper_thread.start()
-                except AttributeError:
-                    pass
-
-        dead_lights = [l for l in self.lights if not l.is_open]
-        for dead_light in dead_lights:
-            dead_light.close()
+        for dead_light in [l for l in self.lights if not l.is_acquired]:
             self.lights.remove(dead_light)
-
-        return len(new_lights)
 
     def release(self) -> None:
         """Stops all helper and effects threads, closes all lights and empties
@@ -204,7 +182,7 @@ class LightManager:
         """
 
         for light in self.lights:
-            light.close()
+            light.release()
 
         self.lights.clear()
 
@@ -233,7 +211,7 @@ class LightManager:
             try:
                 light.on(rgb)
             except USBLightIOError as error:
-                light.is_open = False
+                pass
 
     def light_off(self, light_id: Union[int, None] = ALL_LIGHTS) -> None:
         """Turn off a light or all lights.
@@ -251,7 +229,7 @@ class LightManager:
             try:
                 light.off()
             except USBLightIOError as error:
-                light.is_open = False
+                pass
 
     def light_blink(
         self,
@@ -280,7 +258,7 @@ class LightManager:
             try:
                 light.blink(rgb, speed.to_numeric_value())
             except USBLightIOError as error:
-                light.is_open = False
+                pass
 
     def apply_effect_to_light(
         self, light_id: Union[int, None], effect: Generator, *args, **kwds
@@ -337,10 +315,10 @@ class LightManager:
             lights = list(self.lights_for(light_id))
             try:
                 while True:
-                    if any([light.animating for light in lights]):
+                    if any([light.is_animating for light in lights]):
                         sleep(1.0)
-                    else:
-                        break
+                        continue
+                    break
             except KeyboardInterrupt:
                 off_on_exit = True
 
