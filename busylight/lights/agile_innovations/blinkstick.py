@@ -3,6 +3,8 @@
 
 from contextlib import suppress
 from enum import Enum
+from functools import partial
+from time import sleep
 from typing import Tuple
 
 from .usblight import USBLight
@@ -109,7 +111,7 @@ class BlinkStickState(StateVector):
     led7 = BlinkStickLEDColorAttribute(0, 24)
 
 
-def _blink_effect(
+def _blink_animation(
     light: USBLight,
     color: Tuple[int, int, int],
     speed: int = 1,
