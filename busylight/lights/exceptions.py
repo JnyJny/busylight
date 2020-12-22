@@ -1,22 +1,22 @@
-"""
+"""USB Light Exceptional Events
 """
 
 
 class USBLightNotFound(Exception):
-    pass
+    """Requested light was not found."""
 
 
 class USBLightUnknownVendor(Exception):
-    pass
+    """Requested device vendor_id not supported by this class."""
 
 
 class USBLightUnknownProduct(Exception):
-    pass
+    """Requested device product_id not supported by this class."""
 
 
 class USBLightInUse(Exception):
-    pass
+    """Device open failed, already open."""
 
 
 class USBLightIOError(Exception):
-    pass
+    """Error occurred writing to device."""

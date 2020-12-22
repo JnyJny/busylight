@@ -35,7 +35,7 @@ class USBLight(abc.ABC):
     Abstract Properties
     - VENDOR_IDS : List[int]
     - PRODUCT_IDS : List[int]
-    - __vendor__ : str
+    - vendor : str
     - state : Any (not really)
     - color : Tuple[int, int, int]
     - is_on : bool
@@ -46,15 +46,16 @@ class USBLight(abc.ABC):
     - blink
     - reset
 
-    While the `state` abstract property is typed with Any,
-    in reality it is expected to be some sort of byte buffer.
-    If this is not the case, the concrete implementation should
-    override the `USBLight.update` method.
+    While the `state` abstract property is typed with Any, in reality it
+    is expected to be some sort of byte buffer (like a bitvector ;).  If
+    this is not the case, the concrete implementation should override
+    the `USBLight.update` method to take whatever actions are appropriate
+    to operate their specific hardware.
     """
 
     @classmethod
     def supported_lights(cls) -> List[object]:
-        """Returns a list of concrete class objects that support specific lights."""
+        """Returns a list of classes supporting specific lights."""
 
         return cls.__subclasses__()
 
@@ -86,7 +87,10 @@ class USBLight(abc.ABC):
 
     @classmethod
     def from_dict(cls, info: Dict[str, Union[int, str]]):
-        """Returns a configured USBLight subclass identified by the supplied dictionary.
+        """Returns a configured USBLight subclass using a dictionary.
+
+        In most cases, the info dictionary is constructed by a
+        call to hid.enumerate.
 
         :param info: Dict[str, Union[int, str]]
         :return: configured USBLight subclass instance.
@@ -100,7 +104,7 @@ class USBLight(abc.ABC):
         return cls(info["vendor_id"], info["product_id"], info["path"])
 
     def __init__(
-        self, vendor_id: int, product_id: int, path: bytes, reset: bool = True
+        self, vendor_id: int, product_id: int, path: bytes, reset: bool = False
     ) -> None:
         """Given the vendor_id, product_id and path for a USB device,
         configure and acquire the device.
@@ -117,7 +121,6 @@ class USBLight(abc.ABC):
         self.vendor_id = vendor_id
         self.product_id = product_id
         self.path = path
-
         self.acquire(reset=reset)
 
     def __del__(self):
@@ -193,7 +196,7 @@ class USBLight(abc.ABC):
             return self._name
         except AttributeError:
             pass
-        self._name = f"{self.__vendor__} {self.info['product_string'].title()}"
+        self._name = f"{self.vendor} {self.info['product_string'].title()}"
         return self._name
 
     @property
@@ -207,20 +210,39 @@ class USBLight(abc.ABC):
         return getattr(self, "_animation_thread", None)
 
     @property
-    def animating(self) -> bool:
+    def color(self) -> Tuple[int, int, int]:
+        """A 3-tuple of integers representing red, green and blue."""
+        return getattr(self, "_color", (0, 0, 0))
+
+    @color.setter
+    def color(self, values: Tuple[int, int, int]) -> None:
+        self._color = tuple(values)
+
+    @property
+    def is_acquired(self) -> bool:
+        """Is the light hardware acquired?"""
+        return bool(getattr(self, "_device", False))
+
+    @property
+    def is_animating(self) -> bool:
         """Is this light currently being animated?"""
         return self.animation_thread is not None
 
+    @property
+    def is_on(self) -> bool:
+        """Is the light currently on?"""
+        return any(self.color)
+
     @contextmanager
     def batch_update(self) -> None:
-        """Context manager that flushes changes to the device when the manager exits.
-        Raises:
-        - USBLightIOError
+        """Context manager to group updates to a device.
+
+        Raises: - USBLightIOError
         """
         yield
         self.update()
 
-    def acquire(self, reset: bool = False) -> None:
+    def acquire(self, reset: bool) -> None:
         """Open a HID USB light for writing.
 
         This method opens the device for I/O and optionally
@@ -245,8 +267,12 @@ class USBLight(abc.ABC):
 
     def release(self) -> None:
         """Shutdown the animation thread and close the device."""
+
         self.stop_animation()
-        self.device.close()
+        try:
+            self.device.close()
+        except:
+            pass
         del self._device
 
     def start_animation(self, animation: Generator) -> None:
@@ -302,29 +328,13 @@ class USBLight(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def __vendor__(self) -> str:
+    def vendor(self) -> str:
         """Vendor name supported by this class."""
 
     @property
     @abc.abstractmethod
     def state(self) -> Any:
         """Internal light state with a bytes representation."""
-
-    @property
-    @abc.abstractmethod
-    def color(self) -> Tuple[int, int, int]:
-        """A 3-tuple of 16-bit integers representing red, green and blue."""
-        pass
-
-    @color.setter
-    @abc.abstractmethod
-    def color(self, values: Tuple[int, int, int]) -> None:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def is_on(self) -> bool:
-        """Is the light on right now?"""
 
     @abc.abstractmethod
     def on(self, color: Tuple[int, int, int]) -> None:
@@ -351,4 +361,9 @@ class USBLight(abc.ABC):
 
     @abc.abstractmethod
     def reset(self) -> None:
-        """Reset the light to it's initial configuration."""
+        """Reset the light to it's initial configuration.
+
+        Only effects the in-memory representation of the hardware
+        state. The physical light is not effected until a call to the
+        update method.
+        """

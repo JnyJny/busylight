@@ -3,20 +3,16 @@
 
 from typing import Tuple
 
-from .usblight import USBLight
-from .statevector import StateVector, StateField
+from .hardware import BusyLightState
 
-
-class BusyLightState(StateVector):
-    def __init__(self):
-        super().__init__(0, 0)
+from ..usblight import USBLight
 
 
 class BusyLight(USBLight):
 
     VENDOR_IDS = [0x27BB]
     PRODUCT_IDS = []
-    __vendor__ = "Kuando"
+    vendor = "Kuando"
 
     @property
     def state(self):
