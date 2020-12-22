@@ -30,6 +30,27 @@ class USBLight(abc.ABC):
     Concrete implementations may expose more capabilities than required
     by USBLight, however it is up to the user to discover them.
 
+    Concrete implementations of USBLight will need to provide:
+
+    Abstract Properties
+    - VENDOR_IDS : List[int]
+    - PRODUCT_IDS : List[int]
+    - __vendor__ : str
+    - __family__ : str
+    - state : Any (not really)
+    - color : Tuple[int, int, int]
+    - is_on : bool
+
+    Abstract Methods
+    - on
+    - off
+    - blink
+    - reset
+
+    While the `state` abstract property is typed with Any,
+    in reality it is expected to be some sort of byte buffer.
+    If this is not the case, the concrete implementation should
+    override the `USBLight.update` method.
     """
 
     @classmethod
