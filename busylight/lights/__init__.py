@@ -27,8 +27,11 @@ from .exceptions import USBLightUnknownProduct
 from .exceptions import USBLightInUse
 from .exceptions import USBLightIOError
 
+from .agile_innovations import BlinkStick
 from .embrava import Blynclight
+from .kuando import BusyLight
 from .luxafor import Flag
+from .thingm import Blink1
 
 SUPPORTED_LIGHTS = USBLight.supported_lights()
 
