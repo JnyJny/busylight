@@ -23,18 +23,6 @@ class BusyLight(USBLight):
         self._state = BusyLightState()
         return self._state
 
-    @property
-    def color(self) -> Tuple[int, int, int]:
-        pass
-
-    @color.setter
-    def color(self, values: Tuple[int, int, int]) -> None:
-        pass
-
-    @property
-    def is_on(self) -> bool:
-        pass
-
     def reset(self) -> None:
         pass
 
