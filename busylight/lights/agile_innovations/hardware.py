@@ -1,7 +1,9 @@
 """
 """
 
+from contextlib import suppress
 from enum import Enum
+
 
 from ..usblight import USBLight
 from ..statevector import StateField, StateVector
@@ -27,11 +29,9 @@ class BlinkStickVariant(int, Enum):
         major, minor = version.split(".")
 
         with suppress(ValueError):
-            print("major", major)
             return cls(int(major))
 
         with suppress(ValueError):
-            print("rele", light.info["release_number"])
             return cls(int(light.info["release_number"]))
 
         return cls(0)
