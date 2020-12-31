@@ -11,7 +11,7 @@ from .manager import LightManager, BlinkSpeed
 from .manager import LightIdRangeError, ColorLookupError
 from .manager import ALL_LIGHTS
 
-from .lights import KNOWN_VENDOR_IDS
+from .lights import USBLight
 
 
 cli = typer.Typer()
@@ -224,7 +224,7 @@ def udev_rules_subcommand(
 
     output = filename.open("w") if filename else stdout
 
-    for vendor_id in KNOWN_VENDOR_IDS:
+    for vendor_id in USBLight.known_vendor_ids():
         print(
             f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
             file=output,
