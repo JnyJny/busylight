@@ -5,7 +5,7 @@ import abc
 import hid
 
 
-from contextlib import contextmanager, suppress
+from contextlib import contextmanager
 from threading import RLock
 from typing import Any, Dict, Generator, List, Tuple, Union
 
@@ -18,6 +18,16 @@ from .exceptions import USBLightIOError
 from .thread import CancellableThread
 
 
+class USBLightState(abc.ABC):
+    """This abstract base class enforces that a light's internal
+    state can be accessed via the `bytes()` builtin in a format
+    that can be written to the target USB device.
+    """
+
+    def __bytes__(self) -> bytes:
+        """The USB light command payload to write to the device."""
+
+
 class USBLight(abc.ABC):
     """A generic USB light that uses HIDAPI to control devices.
 
@@ -27,7 +37,7 @@ class USBLight(abc.ABC):
 
     - on with a color
     - off
-    - blink on and off with a color (some lights need help)
+    - blink on and off with a color
 
     Concrete implementations may expose more capabilities than required
     by USBLight, however it is up to the user to discover them.
@@ -38,8 +48,7 @@ class USBLight(abc.ABC):
     - VENDOR_IDS : List[int]
     - PRODUCT_IDS : List[int]
     - vendor : str
-    - state : Any (not really)
-    - color : Tuple[int, int, int]
+    - state : USBLightState
     - is_on : bool
 
     Abstract Methods
@@ -57,7 +66,7 @@ class USBLight(abc.ABC):
 
     @classmethod
     def supported_lights(cls) -> List[object]:
-        """Returns a list of classes supporting specific lights."""
+        """Returns a list of USBLight subclasses supporting specific lights."""
 
         return cls.__subclasses__()
 
@@ -72,7 +81,7 @@ class USBLight(abc.ABC):
         """Returns the first supported and unused USB light found.
 
         If a suitable light is not found, USBLightNotFound is
-        raised.
+        raised. Can be called from USBLight or any of it's subclasses.
 
         :return: configured USBLight subclass instance.
 
@@ -80,16 +89,26 @@ class USBLight(abc.ABC):
         - USBLightNotFound
         """
 
-        ignored_exceptions = [
-            USBLightUnknownVendor,
-            USBLightUnknownProduct,
-            USBLightInUse,
-        ]
+        if cls.__name__ != "USBLight":
 
-        for vendor_id in cls.VENDOR_IDS:
-            for light_entry in hid.enumerate(vendor_id):
-                with suppress(ignored_exceptions):
-                    return cls.from_dict(light_entry)
+            for vendor_id in cls.VENDOR_IDS:
+                for light_entry in hid.enumerate(vendor_id):
+                    try:
+                        return cls.from_dict(light_entry)
+                    except (
+                        USBLightUnknownVendor,
+                        USBLightUnknownProduct,
+                        USBLightInUse,
+                    ):
+                        pass
+            else:
+                raise USBLightNotFound()
+
+        for supported_light in cls.supported_lights():
+            try:
+                return supported_light.first_light()
+            except USBLightNotFound:
+                pass
         else:
             raise USBLightNotFound()
 
@@ -98,7 +117,9 @@ class USBLight(abc.ABC):
         """Returns a configured USBLight subclass using a dictionary.
 
         In most cases, the info dictionary is constructed by a
-        call to hid.enumerate.
+        call to hid.enumerate. The dictionary must contain keys
+        for 'vendor_id', 'product_id' and 'path' at a bare minimum.
+        If one or more of these keys are missing, KeyError is raised.
 
         :param info: Dict[str, Union[int, str]]
         :return: configured USBLight subclass instance.
@@ -107,19 +128,21 @@ class USBLight(abc.ABC):
         - USBLightUnknownVendor
         - USBLightUnknownProduct
         - USBLightInUse
+        - KeyError
         """
-
         return cls(info["vendor_id"], info["product_id"], info["path"])
 
     def __init__(
         self, vendor_id: int, product_id: int, path: bytes, reset: bool = False
     ) -> None:
         """Given the vendor_id, product_id and path for a USB device,
-        configure and acquire the device.
+        configure and acquire the device. The device can be optionally
+        "reset" to a known state (typically quiesced).
 
         :param vendor_id: int 16-bit value
         :param product_id: int 16-bit value
         :param path: bytes
+        :param reset: bool
 
         Raises:
         - USBLightUnknownVendor
@@ -136,8 +159,8 @@ class USBLight(abc.ABC):
         self.release()
 
     def __repr__(self):
-        return "{}(vendor_id=0x{:04x}, product_id=0x{:04x}, path={})".format(
-            self.__class__.__name__, self.vendor_id, self.product_id, self.path
+        return "{}(vendor_id=0x{:04x}, product_id=0x{:04x}, path={}, ...)".format(
+            type(self).__name__, self.vendor_id, self.product_id, self.path
         )
 
     def __str__(self):
@@ -155,7 +178,11 @@ class USBLight(abc.ABC):
 
     @property
     def vendor_id(self) -> int:
-        """16-bit USB vendor identifier."""
+        """16-bit USB vendor identifier.
+
+        Setting vendor_id with a value not supported by this
+        class will raise USBLightUnknownVendor.
+        """
         return getattr(self, "_vendor_id", None)
 
     @vendor_id.setter
@@ -166,7 +193,11 @@ class USBLight(abc.ABC):
 
     @property
     def product_id(self) -> int:
-        """16-bit USB product identifier."""
+        """16-bit USB product identifier.
+
+        Setting product_id with a value not supported by this
+        class will raise USBLightUnknownProduct.
+        """
         return getattr(self, "_product_id", None)
 
     @product_id.setter
@@ -209,7 +240,7 @@ class USBLight(abc.ABC):
 
     @property
     def identifier(self) -> str:
-        """Concatenation of hex vendor and product identifiers."""
+        """Concatenation of hexadecimal vendor and product identifiers."""
         return f"0x{self.vendor_id:04x}:0x{self.product_id:04x}"
 
     @property
@@ -253,9 +284,10 @@ class USBLight(abc.ABC):
 
     @contextmanager
     def batch_update(self) -> None:
-        """Context manager to group updates to a device.
+        """Context manager useful for grouping updates to a device.
 
-        Raises: - USBLightIOError
+        Raises:
+        - USBLightIOError
         """
         with self.lock:
             yield
@@ -265,7 +297,7 @@ class USBLight(abc.ABC):
         """Open a HID USB light for writing.
 
         This method opens the device for I/O and optionally
-        resets the device with a known state.
+        resets the device with a known (implementation dependent) state.
 
         :param reset: bool
 
@@ -313,7 +345,10 @@ class USBLight(abc.ABC):
         self._animation_thread.start()
 
     def stop_animation(self) -> None:
-        """Cancel the animation thread (if running)."""
+        """Cancel the animation thread (if running).
+
+        Call this method from the main thread to stop the animation thread.
+        """
         try:
             self._animation_thread.cancel()
             del self._animation_thread
@@ -336,6 +371,7 @@ class USBLight(abc.ABC):
                 nbytes = self.device.write(data)
         except ValueError as error:
             raise USBLightIOError(str(error)) from None
+
         if nbytes != len(data):
             raise USBLightIOError(f"write returned {nbytes}") from None
 
@@ -359,7 +395,7 @@ class USBLight(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def state(self) -> Any:
+    def state(self) -> USBLightState:
         """Internal light state with a bytes representation."""
 
     @abc.abstractmethod
