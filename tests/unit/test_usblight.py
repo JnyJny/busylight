@@ -33,7 +33,9 @@ def test_known_vendor_ids():
     """
     known_vendor_ids = USBLight.known_vendor_ids()
 
+    assert len(known_vendor_ids) != 0
     assert isinstance(known_vendor_ids, list)
+
     for vendor_id in known_vendor_ids:
         assert isinstance(vendor_id, int)
         assert vendor_id in range(0, 65536)
