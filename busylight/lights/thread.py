@@ -59,17 +59,3 @@ class CancellableThread(Thread):
         if join:
             while self.is_alive():
                 self.join(timeout)
-
-
-class AnimationThread(CancellableThread):
-    """A cancellable thread whose name is prefixed with 'animation'."""
-
-    def __init__(self, target: Generator, name: str):
-        super().__init__(target, f"animation-{name}")
-
-
-class HelperThread(CancellableThread):
-    """A cancellable thread whose name is prefixed with 'helper'."""
-
-    def __init__(self, target: Generator, name: str):
-        super().__init__(target, f"helper-{name}")
