@@ -33,6 +33,8 @@ class BusyLight(USBLight):
 
     def on(self, color: Tuple[int, int, int]) -> None:
 
+        self.color = color
+
         instruction = JumpTo(0)
         instruction.color = color
         instruction.repeat = 0xFF
