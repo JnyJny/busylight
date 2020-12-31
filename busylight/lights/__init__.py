@@ -1,22 +1,6 @@
 """USB Connected Presence Lights
 """
 
-
-from typing import Dict, List, Union
-
-import hid
-
-## Developer: How To Add Support for a New Light
-##
-## 0. Create a new light class subclassed from busylight.light.USBLIght
-##    - implement 'on', 'off', 'blink' methods at a minimum
-##    - define class attribute list VENDOR_IDS
-##    - define class attribute list PRODUCT_IDS
-##    - define class asttribute string vendor
-##
-## 1. Import the module for the new light here in this file.
-
-
 from .usblight import USBLight
 from .exceptions import USBLightNotFound
 from .exceptions import USBLightUnknownVendor
