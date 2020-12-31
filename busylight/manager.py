@@ -9,7 +9,6 @@ from typing import Generator, Dict, List, Tuple, Union
 
 import hid
 
-from .lights import SUPPORTED_LIGHTS, KNOWN_VENDOR_IDS
 from .lights import USBLight
 from .lights import USBLightUnknownVendor
 from .lights import USBLightUnknownProduct
@@ -71,7 +70,7 @@ class LightManager:
         :return: List[Dict[str, Union[str, int]]]
         """
         lights = []
-        for vendor_id in KNOWN_VENDOR_IDS:
+        for vendor_id in USBLight.known_vendor_ids():
             lights.extend(hid.enumerate(vendor_id))
 
         return sorted(lights, key=lambda v: v["path"])
@@ -98,7 +97,7 @@ class LightManager:
         except AttributeError:
             pass
         self._supported = []
-        for light in SUPPORTED_LIGHTS:
+        for light in USBLight.supported_lights():
             self._supported.append(f"{light.vendor} {light.__name__}")
         return self._supported
 
@@ -162,7 +161,7 @@ class LightManager:
         """
 
         for light_id, info in enumerate(self.available()):
-            for LightClass in SUPPORTED_LIGHTS:
+            for LightClass in USBLight.supported_lights():
                 with suppress(
                     USBLightUnknownVendor,
                     USBLightUnknownProduct,
@@ -174,11 +173,9 @@ class LightManager:
             self.lights.remove(dead_light)
 
     def release(self) -> None:
-        """Stops all helper and effects threads, closes all lights and empties
-        the `lights` property.
+        """Releases all the lights and empties the `lights` property.
 
-        Call `update` to repopulate the `lights` property and restart
-        helper threads.
+        Call `update` to repopulate the `lights` property.
         """
 
         for light in self.lights:
