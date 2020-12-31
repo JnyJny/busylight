@@ -3,33 +3,33 @@
 
 import pytest
 
-from busylight.lights.usblight import USBLight
+from busylight.lights import USBLight
+from busylight.lights.usblight import USBLightState
 
-from busylight.lights import SUPPORTED_LIGHTS
-from busylight.lights import KNOWN_VENDOR_IDS
-
-
-def test_busylight_lights_imported_supported_lights():
-    assert isinstance(SUPPORTED_LIGHTS, list)
+from busylight.lights import USBLightNotFound
+from busylight.lights import USBLightUnknownVendor
+from busylight.lights import USBLightUnknownProduct
 
 
-def test_busylight_lights_imported_known_vendor_ids():
-    assert isinstance(KNOWN_VENDOR_IDS, list)
+def test_supported_light_instance_type(supported_lights):
+
+    for supported_light in supported_lights:
+
+        assert issubclass(supported_light, USBLight)
+
+        with pytest.raises(USBLightNotFound):
+            acquired_lights = []
+            while True:
+                acquired_lights.append(supported_light.first_light())
 
 
-@pytest.mark.parametrize("light", SUPPORTED_LIGHTS)
-def test_busylight_lights_check_supported_lights(light):
+def test_light_instances(lights):
 
-    assert issubclass(light, USBLight)
-    assert hasattr(light, "__vendor__")
-    assert hasattr(light, "VENDOR_IDS")
-    assert hasattr(light, "impl_on")
-    assert hasattr(light, "impl_off")
-    assert hasattr(light, "impl_blink")
+    for light in lights:
+        assert light and light.is_acquired
+        assert issubclass(type(light.state), USBLightState)
 
-
-@pytest.mark.parametrize("vendor_id", KNOWN_VENDOR_IDS)
-def test_busylight_lights_known_vendor_ids(vendor_id):
-
-    assert isinstance(vendor_id, int)
-    assert vendor_id in range(1, 65534)
+        light.on((255, 0, 0))
+        assert light.is_on
+        light.off()
+        assert not light.is_on

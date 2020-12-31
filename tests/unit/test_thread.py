@@ -3,5 +3,4 @@
 
 import pytest
 
-
-from busylight.thread import CancellableThread
+from busylight.lights.thread import CancellableThread
