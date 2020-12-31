@@ -74,7 +74,14 @@ class USBLight(abc.ABC):
     def known_vendor_ids(cls) -> List[int]:
         """Returns a list of known 16-bit vendor identifiers."""
 
-        return sum([light.VENDOR_IDS for light in set(cls.supported_lights())], [])
+        known_ids = set()
+        for supported_light in cls.supported_lights():
+            try:
+                known_ids.intersection_update(supported_light.VENDOR_IDS)
+            except TypeError:
+                # protects the caller from incomplete subclasses
+                pass
+        return list(known_ids)
 
     @classmethod
     def first_light(cls):
