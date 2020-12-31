@@ -5,7 +5,7 @@ from functools import partial
 from time import sleep
 from typing import Tuple
 
-from .hardware import BlinkStickState
+from .hardware import BlinkStickState, BlinkStickVariant
 
 from ..usblight import USBLight
 
