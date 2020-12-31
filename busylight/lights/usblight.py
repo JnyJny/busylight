@@ -77,7 +77,7 @@ class USBLight(abc.ABC):
         known_ids = set()
         for supported_light in cls.supported_lights():
             try:
-                known_ids.intersection_update(supported_light.VENDOR_IDS)
+                known_ids.update(supported_light.VENDOR_IDS)
             except TypeError:
                 # protects the caller from incomplete subclasses
                 pass
