@@ -4,7 +4,9 @@
 import abc
 import hid
 
+
 from contextlib import contextmanager, suppress
+from threading import RLock
 from typing import Any, Dict, Generator, List, Tuple, Union
 
 from .exceptions import USBLightNotFound
@@ -13,7 +15,7 @@ from .exceptions import USBLightUnknownProduct
 from .exceptions import USBLightInUse
 from .exceptions import USBLightIOError
 
-from ..thread import AnimationThread
+from .thread import CancellableThread
 
 
 class USBLight(abc.ABC):
@@ -58,6 +60,12 @@ class USBLight(abc.ABC):
         """Returns a list of classes supporting specific lights."""
 
         return cls.__subclasses__()
+
+    @classmethod
+    def known_vendor_ids(cls) -> List[int]:
+        """Returns a list of known 16-bit vendor identifiers."""
+
+        return sum([light.VENDOR_IDS for light in set(cls.supported_lights())], [])
 
     @classmethod
     def first_light(cls):
@@ -205,8 +213,18 @@ class USBLight(abc.ABC):
         return f"0x{self.vendor_id:04x}:0x{self.product_id:04x}"
 
     @property
-    def animation_thread(self) -> Union[AnimationThread, None]:
-        """"A busylight.thread.CancellableThread animating this light."""
+    def lock(self) -> RLock:
+        """A threading.RLock used to serialize access to the USB device."""
+        try:
+            return self._lock
+        except AttributeError:
+            pass
+        self._lock = RLock()
+        return self._lock
+
+    @property
+    def animation_thread(self) -> Union[CancellableThread, None]:
+        """"A busylight.lights.thread.CancellableThread animating this light."""
         return getattr(self, "_animation_thread", None)
 
     @property
@@ -239,8 +257,9 @@ class USBLight(abc.ABC):
 
         Raises: - USBLightIOError
         """
-        yield
-        self.update()
+        with self.lock:
+            yield
+            self.update()
 
     def acquire(self, reset: bool) -> None:
         """Open a HID USB light for writing.
@@ -254,37 +273,43 @@ class USBLight(abc.ABC):
         - USBLightInUse
         - USBLightIOError
         """
-        try:
-            self.device.open_path(self.path)
-        except IOError:
-            raise USBLightInUse(self.vendor_id, self.product_id, self.path) from None
-        except Exception as error:
-            raise USBLightIOError(f"error opening {self.path}: {error}") from None
+        with self.lock:
+            try:
+                self.device.open_path(self.path)
+            except IOError:
+                raise USBLightInUse(
+                    self.vendor_id, self.product_id, self.path
+                ) from None
+            except Exception as error:
+                raise USBLightIOError(f"error opening {self.path}: {error}") from None
 
-        if reset:
-            self.reset()
-            self.update()
+            if reset:
+                self.reset()
+                self.update()
 
     def release(self) -> None:
         """Shutdown the animation thread and close the device."""
 
-        self.stop_animation()
-        try:
-            self.device.close()
-        except:
-            pass
-        del self._device
+        with self.lock:
+            self.stop_animation()
+            try:
+                self.device.close()
+            except:
+                pass
+            del self._device
 
     def start_animation(self, animation: Generator) -> None:
         """Start an animation thread running the given `animation`.
 
-        See busylight.thread.CancellableThread for more details.
+        See busylight.lights.thread.CancellableThread for more details.
 
         :param animation: Generator
         """
         # EJO what happens if we start an animation on a released light?
         self.stop_animation()
-        self._animation_thread = AnimationThread(animation(self), self.identifier)
+        self._animation_thread = CancellableThread(
+            animation(self), f"animation-{self.identifier}"
+        )
         self._animation_thread.start()
 
     def stop_animation(self) -> None:
@@ -304,13 +329,14 @@ class USBLight(abc.ABC):
           The light may have been released.
         """
 
-        buf = bytes(self.state)
+        data = bytes(self.state)
+
         try:
-            nbytes = self.device.write(buf)
+            with self.lock:
+                nbytes = self.device.write(data)
         except ValueError as error:
             raise USBLightIOError(str(error)) from None
-
-        if nbytes != len(buf):
+        if nbytes != len(data):
             raise USBLightIOError(f"write returned {nbytes}") from None
 
     @property
