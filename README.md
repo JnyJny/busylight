@@ -122,7 +122,7 @@ manager = LightManager()
 for light in manager.lights:
    print(light.name)
 
-manager.apply_effect_light(ALL_LIGHTS, rainbow)
+manager.apply_effect_to_light(ALL_LIGHTS, rainbow)
 ...
 manager.lights_off(ALL_LIGHTS)
 ```
