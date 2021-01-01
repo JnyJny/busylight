@@ -1,4 +1,4 @@
-<!-- embrava blynclight agile innovations blinkstick kuando busylight luxafor flag thingM blink(1) -->
+<!-- USB HID API embrava blynclight agile innovations blinkstick kuando busylight luxafor flag thingM blink(1) -->
 ![BusyLight Project Logo][1]
 
 ![Python 3.7 Test][37] ![Python 3.8 Test][38] ![Python 3.9 Test][39]
