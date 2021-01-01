@@ -15,8 +15,8 @@ def supported_lights() -> list:
     return USBLight.supported_lights()
 
 
-@pytest.fixture
-def lights() -> list:
+@pytest.fixture(scope="session")
+def lights(supported_lights) -> list:
     """A list of instances for each supported USBLight.
 
     Each USBLight subclass instance has it's hid.device patched
@@ -25,7 +25,7 @@ def lights() -> list:
     """
 
     lights = []
-    for usblight in USBLight.supported_lights():
+    for usblight in supported_lights:
         for vendor_id in usblight.VENDOR_IDS:
             try:
                 product_id = usblight.PRODUCT_IDS[0]
