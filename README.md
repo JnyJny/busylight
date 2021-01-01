@@ -1,3 +1,4 @@
+<!-- embrava blynclight agile innovations blinkstick kuando busylight luxafor flag thingM blink(1) -->
 ![BusyLight Project Logo][1]
 
 ![Python 3.7 Test][37] ![Python 3.8 Test][38] ![Python 3.9 Test][39]
@@ -5,10 +6,7 @@
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
 the command-line, using a HTTP API or imported directly into your own
-python projects. Need a light to let you know when a host is down, or
-when the dog wants out? How about a light that indicates "do not disturb"?
-
-The possibilities are _literally_ endless.
+python project.
 
 ![All Supported Lights][DemoGif]
 
@@ -93,6 +91,40 @@ Now you can use the web API endpoints which return JSON payloads:
   $ curl http://localhost:8888/1/lights/on
   $ curl http://localhost:8888/1/lights/off
   $ curl http://localhost:8888/1/lights/rainbow
+```
+
+## Code Examples
+
+
+### Simple Case: Turn On a Single Light
+
+In this example, we pick an Embrava Blynclight to activate with
+the color white. 
+
+```python
+from busylight.lights.embrava import Blynclight
+
+light = Blynclight.first_light()
+
+light.on((255, 255, 255))
+```
+
+### Slightly More Complicated
+
+The `busylight` package includes a manager class that great for managing
+multiple lights or lights that are currently being animated:
+
+```python
+from busylight.manager import LightManager, ALL_LIGHTS
+from busylight.effects import rainbow
+
+manager = LightManager()
+for light in manager.lights:
+   print(light.name)
+
+manager.apply_effect_light(ALL_LIGHTS, rainbow)
+...
+manager.lights_off(ALL_LIGHTS)
 ```
 
 [0]: https://pypi.org/project/busylight-for-humans/
