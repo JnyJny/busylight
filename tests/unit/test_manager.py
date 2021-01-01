@@ -3,6 +3,8 @@
 
 import pytest
 
+from busylight.lights import USBLight
+
 from busylight.manager import BlinkSpeed
 from busylight.manager import LightManager
 from busylight.manager import LightIdRangeError
@@ -20,7 +22,7 @@ def test_lightmanager_available_classmethod():
     result = LightManager.available()
     assert isinstance(result, list)
     for item in result:
-        assert isinstance(item, dict)
+        assert isinstance(item, USBLight)
 
 
 @pytest.fixture(scope="session")
