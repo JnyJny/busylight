@@ -19,9 +19,11 @@ def test_lightmanager_available_classmethod():
 
     result = LightManager.available()
     assert isinstance(result, list)
+    for item in result:
+        assert isinstance(item, dict)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def manager():
     return LightManager()
 
