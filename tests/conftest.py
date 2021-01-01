@@ -7,12 +7,6 @@ from unittest import mock
 
 from busylight.lights import USBLight
 
-from busylight.lights import BlinkStick
-from busylight.lights import Blynclight
-from busylight.lights import BusyLight
-from busylight.lights import Flag
-from busylight.lights import Blink1
-
 
 @pytest.fixture(scope="session")
 def supported_lights() -> list:
