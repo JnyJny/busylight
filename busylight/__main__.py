@@ -65,9 +65,9 @@ def list_subcommand(
     for index, light in enumerate(available):
         typer.secho(f"{index:2d}", fg="red", nl=False)
         typer.secho(": ", nl=False)
-        typer.secho(f"{light['product_string'].title()}", fg="green")
+        typer.secho(f"{light.info['product_string'].title()}", fg="green")
         if detail:
-            for key, value in light.items():
+            for key, value in light.info.items():
                 typer.secho(f"\t{index:2d}", fg="red", nl=False)
                 typer.secho(": ", nl=False)
                 typer.secho(f"{key!s}", fg="blue", nl=False)
@@ -224,15 +224,16 @@ def udev_rules_subcommand(
 
     output = filename.open("w") if filename else stdout
 
-    for vendor_id in USBLight.known_vendor_ids():
-        print(
-            f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
-            file=output,
-        )
-        print(
-            f'SUBSYSTEM=="usb", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
-            file=output,
-        )
+    for supported_light in USBLight.supported_lights():
+        for vendor_id in supported_light.VENDOR_IDS:
+            print(
+                f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
+                file=output,
+            )
+            print(
+                f'SUBSYSTEM=="usb", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
+                file=output,
+            )
 
 
 @cli.command(name="serve")

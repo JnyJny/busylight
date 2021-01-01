@@ -55,33 +55,30 @@ class ColorLookupError(Exception):
 class LightManager:
     """USB device manager and proxy.
 
-    The LightManager class is opens all available lights and sends
-    commands to the lights without the caller having to obtain a
-    writable file descriptor. This class also supports long-lived
-    per-light animations via threading.
+    The LightManager class opens all available lights and sends commands
+    to the lights without the caller having to maintain a USBLight
+    object. This class also supports long-lived per-light animations via
+    threading.
     """
 
     @classmethod
-    def available(cls) -> List[Dict[str, Union[str, int]]]:
-        """A list of dictionaries describing currently available lights.
+    def available(cls) -> List[USBLight]:
+        """A list of currently available lights.
 
         The list is returned in sorted order, by filesystem path.
 
-        :return: List[Dict[str, Union[str, int]]]
+        :return: List[USBLight]
         """
-        lights = []
-        for vendor_id in USBLight.known_vendor_ids():
-            lights.extend(hid.enumerate(vendor_id))
 
-        return sorted(lights, key=lambda v: v["path"])
+        return sorted(USBLight.all_lights(), key=lambda v: v.path)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.update()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{type(self).__name__}()"
 
-    def __str__(self):
+    def __str__(self) -> str:
 
         result = []
         for i, light in enumerate(self.lights):
@@ -91,7 +88,7 @@ class LightManager:
 
     @property
     def supported(self) -> List[str]:
-        """A list of supported lights (not necessarily available)."""
+        """A list of supported light names."""
         try:
             return self._supported
         except AttributeError:
@@ -103,9 +100,9 @@ class LightManager:
 
     @property
     def lights(self) -> List[USBLight]:
-        """List of USBLight subclasses that the manager is currently
-        controlling (the devices are open and cannot be used by another
-        process).
+        """List of manged USBLight devices
+
+        The devices are open for use exclusively by the manager.
         """
         try:
             return self._lights
@@ -160,14 +157,8 @@ class LightManager:
         :return: number of new lights added to the managed `lights` list.
         """
 
-        for light_id, info in enumerate(self.available()):
-            for LightClass in USBLight.supported_lights():
-                with suppress(
-                    USBLightUnknownVendor,
-                    USBLightUnknownProduct,
-                    USBLightInUse,
-                ):
-                    self.lights.append(LightClass.from_dict(info))
+        self.lights.extend(USBLight.all_lights())
+        self.lights.sort(key=lambda v: v.path)
 
         for dead_light in [l for l in self.lights if not l.is_acquired]:
             self.lights.remove(dead_light)
@@ -312,7 +303,7 @@ class LightManager:
             lights = list(self.lights_for(light_id))
             try:
                 while True:
-                    if any([light.is_animating for light in lights]):
+                    if any(light.is_animating for light in lights):
                         sleep(1.0)
                         continue
                     break
