@@ -8,25 +8,7 @@ from typing import Tuple
 from .hardware import BlinkStickState, BlinkStickVariant
 
 from ..usblight import USBLight
-
-from ..statevector import StateVector, StateField
-
-
-def _blink_animation(
-    light: USBLight,
-    color: Tuple[int, int, int],
-    speed: int = 1,
-) -> None:
-
-    interval = {1: 1.0, 2: 0.5, 3: 0.25}.get(speed, 1.0)
-
-    while True:
-        light.on(color)
-        yield
-        sleep(interval)
-        light.off()
-        yield
-        sleep(interval)
+from ...effects import blink as blink_effect
 
 
 class BlinkStick(USBLight):
@@ -37,7 +19,6 @@ class BlinkStick(USBLight):
 
     @property
     def name(self) -> str:
-
         try:
             return self._name
         except AttributeError:
@@ -47,6 +28,7 @@ class BlinkStick(USBLight):
 
     @property
     def state(self):
+        """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
@@ -62,10 +44,9 @@ class BlinkStick(USBLight):
 
     def on(self, color: Tuple[int, int, int]) -> None:
 
-        self.color = color
+        super().on(color)
 
-        r, g, b = color
-        color = g, r, b
+        color = color[1], color[0], color[2]
 
         with self.batch_update():
             self.state.report = 6
@@ -79,10 +60,8 @@ class BlinkStick(USBLight):
             self.state.led6 = color
             self.state.led7 = color
 
-    def off(self):
+    def blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
 
-        self.on((0, 0, 0))
+        super().blink(color, speed)
 
-    def blink(self, color: Tuple[int, int, int], speed: int = 0) -> None:
-
-        self.start_animation(partial(_blink_animation, color=color, speed=speed))
+        self.start_animation(partial(blink_effect, color=color, speed=speed))
