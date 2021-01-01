@@ -2,11 +2,11 @@
 """
 
 from time import sleep
-from typing import Tuple
+from typing import Tuple, Union
 
 from .hardware import BusyLightState
-from .hardware import InstructionJump as JumpTo
-from .hardware import InstructionKeepAlive as KeepAlive
+from .hardware import Jump
+from .hardware import KeepAlive
 
 from ..thread import CancellableThread
 from ..usblight import USBLight
@@ -21,6 +21,7 @@ class BusyLight(USBLight):
 
     @property
     def state(self):
+        """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
@@ -36,9 +37,9 @@ class BusyLight(USBLight):
 
     def on(self, color: Tuple[int, int, int]) -> None:
 
-        self.color = color
+        super().on(color)
 
-        instruction = JumpTo(0)
+        instruction = Jump(0)
         instruction.color = color
         instruction.repeat = 0xFF
 
@@ -46,13 +47,11 @@ class BusyLight(USBLight):
             self.reset()
             self.state.line0 = instruction.value
 
-    def off(self):
+    def blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
 
-        self.on((0, 0, 0))
+        super().blink(color, speed)
 
-    def blink(self, color: Tuple[int, int, int], speed: int = 0) -> None:
-
-        instruction = JumpTo(0)
+        instruction = Jump(0)
         instruction.color = color
         instruction.repeat = 1
         instruction.dc_on = 10 // speed
@@ -62,43 +61,47 @@ class BusyLight(USBLight):
             self.reset()
             self.state.line0 = instruction.value
 
-    def helper(self) -> None:
+    def keepalive(self) -> None:
+        """Sends a keep alive command to the device periodically.
 
+        This device requires constant reassurance and encouragement.
+        """
         timeout = 0xF
         interval = timeout // 2
-        keepalive = KeepAlive(timeout).value
-
+        ka = KeepAlive(timeout).value
         while True:
             try:
                 with self.batch_update():
-                    self.state.line0 = keepalive
+                    self.state.reset()
+                    self.state.line0 = ka
             except USBLightIOError:
                 break
             yield
             sleep(interval)
 
     @property
-    def helper_thread(self) -> CancellableThread:
+    def keepalive_thread(self) -> CancellableThread:
+        """A CancellableThread running the `keepalive` method."""
         try:
-            return self._helper_thread
+            return self._keepalive_thread
         except AttributeError:
             pass
-        self._helper_thread = CancellableThread(
-            self.helper(), f"helper-{self.identifier}"
+        self._keepalive_thread = CancellableThread(
+            self.keepalive(), f"keepalive-{self.identifier}"
         )
-        return self._helper_thread
+        return self._keepalive_thread
 
     def acquire(self, reset: bool) -> None:
 
         with self.lock:
             super().acquire(reset)
-            self.helper_thread.start()
+            self.keepalive_thread.start()
 
     def release(self) -> None:
         with self.lock:
             try:
-                self.helper_thread.cancel()
-                del self._helper_thread
+                self.keepalive_thread.cancel()
+                del self._keepalive_thread
             except:
                 pass
             super().release()
