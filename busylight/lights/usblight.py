@@ -45,6 +45,17 @@ class USBLight(abc.ABC):
     - blink
     - reset
 
+    In addition to providing USB infrastructre to subclasses, USBLight
+    provides several classmethods:
+    - supported_lights : list of subclasses
+    - first_light : returns the first available light
+    - all_lights : returns all available lights
+
+    The `first_light` and `all_lights` classmethods have different
+    behaviors depending on the invoking class. If the methods are
+    called by a subclass of USBLight, the method only returns lights
+    supported by the subclass. If invoked via `USBlight`, returned
+    available lights will be of all supported subclasses.
     """
 
     @classmethod
@@ -52,19 +63,6 @@ class USBLight(abc.ABC):
         """Returns a list of USBLight subclasses supporting specific lights."""
 
         return cls.__subclasses__()
-
-    @classmethod
-    def known_vendor_ids(cls) -> List[int]:
-        """Returns a list of known 16-bit vendor identifiers."""
-
-        known_ids = set()
-        for supported_light in cls.supported_lights():
-            try:
-                known_ids.update(supported_light.VENDOR_IDS)
-            except TypeError:
-                # protect the caller from incomplete subclasses
-                pass
-        return list(known_ids)
 
     @classmethod
     def first_light(cls):
