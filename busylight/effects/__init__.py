@@ -39,7 +39,7 @@ def rainbow(light: USBLight, interval: float = 0.05, **kwds) -> None:
 
 
 async def rainbow_async(USBLight: object, interval: float = 0.05, **kwds) -> None:
-    """Color cycle the light thru a rainbow spectrum.
+    """Color cycle the light thru a rainbow spectrum. (async aware)
 
     :param light: USBLight
     :param interval: float
@@ -53,6 +53,44 @@ async def rainbow_async(USBLight: object, interval: float = 0.05, **kwds) -> Non
                 exit()
             yield
             await asyncio.sleep(interval)
+
+
+def blink(light: USBLight, color: Tuple[int, int, int], speed: int) -> None:
+    """The the light off and on with the specified color.
+
+    :param light: USBLight
+    :param color: Tuple[int, int, int]
+    :param speed: int
+    """
+
+    interval = {1: 1.0, 2: 0.5, 3: 0.25}.get(speed, 1.0)
+
+    while True:
+        light.on(color)
+        yield
+        time.sleep(interval)
+        light.off()
+        yield
+        time.sleep(interval)
+
+
+async def blink_async(light: USBLight, color: Tuple[int, int, int], speed: int) -> None:
+    """The the light off and on with the specified color. (async aware)
+
+    :param light: USBLight
+    :param color: Tuple[int, int, int]
+    :param speed: int
+    """
+
+    interval = {1: 1.0, 2: 0.5, 3: 0.25}.get(speed, 1.0)
+
+    while True:
+        light.on(color)
+        yield
+        await asyncio.sleep(interval)
+        light.off()
+        yield
+        await asyncio.sleep(interval)
 
 
 def pulse(
@@ -91,7 +129,11 @@ async def pulse_async(
     color: Tuple[int, int, int],
     interval: float = 0.1,
 ) -> None:
-    """
+    """Pulse the light with scaled values of the supplied `color`. (async aware)
+
+    If no color is supplied or the color is black (0,0,0), the function defaults
+    to the color red (255, 0, 0).
+
     :param light: USBLight
     :param color: Tuple[int, int, int]
     :param interval: float
@@ -143,7 +185,7 @@ def flash_lights_impressively(
 async def flash_lights_impressively_async(
     light: USBLight, colors: List[Tuple[int, int, int]], interval: float = 0.1
 ) -> None:
-    """Alternate between given colors very quickly.
+    """Alternate between given colors very quickly. (async aware)
 
     If no colors are given, defaults to [red, green, blue].
 
@@ -173,4 +215,6 @@ __all__ = [
     "pulse_async",
     "flash_lights_impressively",
     "flash_lights_impressively_async",
+    "blink",
+    "blink_async",
 ]
