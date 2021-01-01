@@ -27,7 +27,7 @@ class USBLight(abc.ABC):
 
     - on with a color
     - off
-    - blink on and off with a color
+    - blink off and on with a color
 
     Concrete implementations may expose more capabilities than required
     by USBLight, however it is up to the user to discover them.
@@ -40,9 +40,11 @@ class USBLight(abc.ABC):
     - vendor : str
 
     Abstract Methods
+    - __bytes__
     - on
     - blink
     - reset
+
     """
 
     @classmethod
@@ -109,8 +111,17 @@ class USBLight(abc.ABC):
         If called by a subclass of USBLight, the list will
         consist of initialized lights supported by the subclass.
 
+        eg.
+        >>> lights = FooLight.all_lights()
+        >>> all(isinstance(light, FooLight) for light in lights)
+        True
+
         If called by USBLight, the list will consist of
         initialized lights supported by all subclasses.
+
+        >>> lights = USBLight.all_lights()
+        >>> all(isinstance(light, FooLight) for light in lights)
+        False
 
         If the list is empty, no supported lights were found or
         all the lights are currently in use.
@@ -202,6 +213,20 @@ class USBLight(abc.ABC):
             pass
         self._device = hid.device()
         return self._device
+
+    @property
+    def strategy(self) -> Callable:
+        """The write function used to communicate with the device.
+
+        The default write strategy is `hid.device.write`, however
+        some devices may require `hid.device.send_feature_report`
+        instead.
+
+        The strategy function is expected to take `bytes` as it's
+        sole argument and return the number of bytes written. A
+        return value of -1 indicates error.
+        """
+        return self.device.write
 
     @property
     def vendor_id(self) -> int:
@@ -327,25 +352,12 @@ class USBLight(abc.ABC):
         """Is the light currently on?"""
         return any(self.color)
 
-    @property
-    def strategy(self) -> Callable:
-        """The write function used to communicate with the device.
-
-        The default write strategy is `hid.device.write`, however
-        some devices may require `hid.device.send_feature_report`
-        instead.
-
-        The strategy function is expected to take `bytes` as it's
-        sole argument and return the number of bytes written. A
-        return value of -1 indicates error.
-        """
-        return self.device.write
-
     @contextmanager
     def batch_update(self) -> None:
         """Context manager useful for grouping updates to a device.
 
         Manipulations to the light's in-memory representation of the
+
         hardware state are serialized on entry to the context manager
         and the hardware state is flushed to the hardware on exit.
 
@@ -361,7 +373,7 @@ class USBLight(abc.ABC):
 
         This method opens the device for I/O and optionally
         triggers a device reset to a known state. Concrete
-        implementations provide `reset`.
+        implementations provide a `reset` method.
 
         :param reset: bool
 
@@ -387,9 +399,9 @@ class USBLight(abc.ABC):
         """Shutdown the animation thread and close the device.
 
         Releasing the light will cancel any active animation threads and
-        close the hid.device property. The light must be re-acquired
-        with the `acquire` method if the caller wishes to continue using
-        this instance.
+        call `hid.device.close`. The light must be re-acquired with the
+        `acquire` method if the caller wishes to continue using this
+        instance.
         """
 
         with self.lock:
