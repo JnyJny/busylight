@@ -91,6 +91,10 @@ class BusyLight(USBLight):
         )
         return self._keepalive_thread
 
+    @property
+    def is_animating(self):
+        return True
+
     def acquire(self, reset: bool) -> None:
 
         with self.lock:
