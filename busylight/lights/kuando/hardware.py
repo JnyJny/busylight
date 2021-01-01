@@ -1,8 +1,7 @@
-"""
+"""Kuando BusyLight Hardware Details
 """
 
 from enum import Enum
-from threading import Lock
 from typing import List, Tuple
 
 from ..statevector import StateField, StateVector
@@ -63,10 +62,9 @@ class TargetField(StateField):
     """A 4-bit jump target value."""
 
 
-class BaseInstruction(StateVector):
+class Instruction(StateVector):
     def __init__(self, value):
         super().__init__(value, 64)
-        self.lock = Lock()
 
     cmd0 = CommandField(60, 4)
     cmd1 = CommandField(56, 4)
@@ -80,13 +78,16 @@ class BaseInstruction(StateVector):
     ringtone = RingtoneField(3, 4)
     volume = VolumeField(0, 3)
 
+    def __repr__(self):
+        return f"{type(self).__name__}(value={self.value:016x})"
+
     def __str__(self):
         return "\n".join(
             [
                 "-------------------------",
-                f" value: {self.value:016x}",
-                f"  cmd0: {self.cmd0:02x}",
-                f"  cmd1: {self.cmd1:02x}",
+                f" value: {self.hex}",
+                f"  cmd0: {self.cmd0:01x}",
+                f"  cmd1: {self.cmd1:01x}",
                 f"repeat: {self.repeat:02x}",
                 f"   red: {self.red:02x}",
                 f" green: {self.green:02x}",
@@ -94,8 +95,8 @@ class BaseInstruction(StateVector):
                 f" dc on: {self.dc_on:02x}",
                 f"dc off: {self.dc_off:02x}",
                 f"update: {bool(self.update)}",
-                f"  ring: {self.ringtone:02x}",
-                f"volume: {self.volume:02x}",
+                f"  ring: {self.ringtone:01x}",
+                f"volume: {self.volume:01x}",
             ]
         )
 
@@ -108,28 +109,23 @@ class BaseInstruction(StateVector):
         self.red, self.green, self.blue = values
 
 
-class InstructionJump(BaseInstruction):
+class Jump(Instruction):
     def __init__(self, target: int):
-        super().__init__(0)
-        self.cmd0 = OpCode.JUMP
-        self.cmd1 = target
+        super().__init__((OpCode.JUMP << 60) | ((target & 0x7) << 56))
 
     target = TargetField(56, 4)
 
 
-class InstructionKeepAlive(BaseInstruction):
-    def _init__(self, timeout: int):
-        super().__init__(0)
-        self.cmd0 = OpCode.KEEP_ALIVE
-        self.cmd1 = timeout & 0xf
+class KeepAlive(Instruction):
+    def __init__(self, timeout: int):
+        super().__init__((OpCode.KEEP_ALIVE.value << 60) | ((timeout & 0xF) << 56))
 
     timeout = TimeoutField(56, 4)
 
 
-class InstructionHardReset(BaseInstruction):
-    def _init__(self):
-        super().__init__(0)
-        self.cmd0 = OpCode.RESET
+class HardReset(Instruction):
+    def __init__(self):
+        super().__init__(OpCode.RESET << 60)
 
 
 class InstructionField(StateField):
@@ -141,6 +137,22 @@ class CheckSumField(StateField):
 
 
 class BusyLightState(StateVector):
+
+    """The Kuando BusyLight state vector consists of
+    seven 64-bit instructions and a final 64-bit field
+    terminated with a checksum value.
+
+    The line7 property is a 64-bit alias for:
+    - sensitivity
+    - timeout
+    - trigger
+    - padbytes
+    - checksum
+
+    The checksum is calculated whenever the __bytes__
+    method is called.
+    """
+
     def __init__(self):
         super().__init__(0x00FF_FFFF_0000, 512)
         self.line7_mask = 0x00FF_FFFF_0000
@@ -158,7 +170,7 @@ class BusyLightState(StateVector):
     timeout = StateField(48, 8)
     trigger = StateField(40, 8)
     padbytes = StateField(16, 24)
-    chksum = CheckSumField(0, 16)
+    checksum = CheckSumField(0, 16)
 
     def dump(self):
         return "\n".join([f"{n}: {i:016x}" for n, i in enumerate(self.instructions)])
@@ -177,5 +189,5 @@ class BusyLightState(StateVector):
         ]
 
     def __bytes__(self):
-        self.chksum = sum(self.bytes[:-2])
+        self.checksum = sum(self.bytes[:-2])
         return self.bytes
