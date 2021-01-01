@@ -10,14 +10,19 @@ from busylight.lights import USBLight
 
 @pytest.fixture(scope="session")
 def supported_lights() -> list:
-    """A list of support USBLight subclasses."""
+    """A list of supported USBLight subclasses."""
 
     return USBLight.supported_lights()
 
 
 @pytest.fixture
 def lights() -> list:
-    """A list of instances of each supported USBLight with it's hid.device patched."""
+    """A list of instances for each supported USBLight.
+
+    Each USBLight subclass instance has it's hid.device patched
+    to simulate successful IO to the device without requiring an
+    actual connected USB device.
+    """
 
     lights = []
     for usblight in USBLight.supported_lights():
