@@ -2,7 +2,7 @@
 """
 
 from enum import Enum
-from typing import Tuple
+from typing import Callable, Tuple
 
 from .hardware import Blink1Report, Blink1Action, Blink1LED, Blink1State
 
@@ -17,6 +17,7 @@ class Blink1(USBLight):
 
     @property
     def state(self):
+        """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
@@ -25,12 +26,9 @@ class Blink1(USBLight):
         return self._state
 
     @property
-    def color(self) -> Tuple[int, int, int]:
-        return getattr(self, "_color", (0, 0, 0))
-
-    @color.setter
-    def color(self, values: Tuple[int, int, int]) -> None:
-        self._color = tuple(values)
+    def strategy(self) -> Callable:
+        """Returns the write function used for IO to the device."""
+        return self.device.send_feature_report
 
     def __bytes__(self):
         return bytes(self.state)
@@ -38,33 +36,17 @@ class Blink1(USBLight):
     def reset(self) -> None:
         self.state.reset()
 
-    def update(self) -> None:
-        """Updates the hardware with the current software state.
-
-        Raises:
-        - USBLightIOError
-          The light may have been unplugged.
-          The light may have been released.
-        """
-        try:
-            nbytes = self.device.send_feature_report(self.state.bytes)
-        except ValueError as error:
-            raise USBLightIOError(str(error)) from None
-        if nbytes != len(self.state.bytes):
-            raise USBLightIOError(f"send_feature_report returned {nbytes}") from None
-
     def on(self, color: Tuple[int, int, int]) -> None:
-        self.fade(color)
 
-    def off(self):
-        self.fade((0, 0, 0))
+        super().on(color)
+        self.fade(color, time_ms=0)
 
-    def blink(self, color: Tuple[int, int, int], speed: int = 0) -> None:
+    def blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
+
+        super().blink(color, speed)
 
         activate = 10
         decay = 100 // (speed + 1)
-
-        self.color = color
 
         self.write_pattern_line(color, activate, 0)
         self.write_pattern_line((0, 0, 0), decay, 1)
@@ -77,7 +59,11 @@ class Blink1(USBLight):
         time_ms: int = 10,
         leds: Blink1LED = Blink1LED.ALL,
     ) -> None:
-        self.color = color
+        """
+        :param color: Tuple[int, int, int]
+        :param time_ms: int = 10
+        :param leds: Blink1LED = Blink1LED.ALL
+        """
         with self.batch_update():
             self.state.reset()
             self.state.report = Blink1Report.ONE
@@ -89,6 +75,11 @@ class Blink1(USBLight):
     def write_pattern_line(
         self, color: Tuple[int, int, int], fade_ms: int, index: int
     ) -> None:
+        """
+        :param color: Tuple[int, int, int]
+        :param fade_ms: int
+        :param index: int
+        """
 
         with self.batch_update():
             self.state.reset()
@@ -99,7 +90,7 @@ class Blink1(USBLight):
             self.state.line = index
 
     def save_patterns(self):
-
+        """"""
         with self.batch_update():
             self.state.reset()
             self.state.report = Blink1Report.ONE
@@ -108,7 +99,12 @@ class Blink1(USBLight):
             self.state.count = 0xFE
 
     def play_loop(self, play: int, start: int, stop: int, count: int = 0) -> None:
-
+        """
+        :param play: int
+        :param start: int
+        :param stop: int
+        :param count: int = 0
+        """
         with self.batch_update():
             self.state.reset()
             self.state.report = Blink1Report.ONE
@@ -119,6 +115,9 @@ class Blink1(USBLight):
             self.state.count = count
 
     def clear_patterns(self, start: int = 0, count: int = 16) -> None:
-
+        """
+        :param start: int = 0
+        :param count: int = 16
+        """
         for index in range(start, start + count):
             self.write_pattern_line((0, 0, 0), 0, index)
