@@ -4,61 +4,63 @@
 import pytest
 
 from busylight.lights import USBLight
-from busylight.lights import USBLightInUse
 from busylight.lights import USBLightNotFound
-from busylight.lights import USBLightIOError
-from busylight.lights import UnknownUSBLight
 
 
-def test_usblight_classmethod_first_light():
+def test_usblight_create_fails():
+    """USBLight is an abstract base class which may not be
+    instantiated directly.
+    """
 
+    with pytest.raises(TypeError, match="abstract methods"):
+        u = USBLight(0, 0, b"path", False)
+
+
+def test_supported_lights():
+    """The supported_lights() classmethod returns a list of
+    USBLight concrete subclasses.
+    """
+    supported_lights = USBLight.supported_lights()
+
+    assert isinstance(supported_lights, list)
+    for light in supported_lights:
+        assert issubclass(light, USBLight)
+
+
+def test_known_vendor_ids():
+    """An aggregate of all the vendor ids supported by
+    all USBLight subclasses.
+    """
+    known_vendor_ids = USBLight.known_vendor_ids()
+
+    assert len(known_vendor_ids) != 0
+    assert isinstance(known_vendor_ids, list)
+
+    for vendor_id in known_vendor_ids:
+        assert isinstance(vendor_id, int)
+        assert vendor_id in range(0, 65536)
+
+
+def test_usblight_first_light():
+    """The first_light() classmethod returns a configured
+    light or raises USBLightNotFound when no more lights
+    can be located.
+    """
     with pytest.raises(USBLightNotFound):
-        USBLight.first_light()
+        lights = []
+        while True:
+            lights.append(USBLight.first_light())
 
 
-@pytest.mark.parametrize(
-    "given",
-    [
-        {},
-        {"vendor_id": 0},
-        {"product_id": 0},
-        {"foo": 0, "baz": 1},
-    ],
-)
-def test_usblight_classmethod_from_dict_invalid(given):
+def test_incomplete_usblight_subclass():
 
-    with pytest.raises(ValueError):
-        USBLight.from_dict(given)
+    # EJO this test is last since it "pollutes" the USBLight subclasses
+    #     with an incomplete instance. Calls to USBLight.supported_lights()
+    #     or USBLight.known_vendor_ids() will fail. Might point to a
+    #     bug in known_vendor_ids.
 
+    class incomplete(USBLight):
+        pass
 
-def test_usblight_classmethod_from_dict():
-
-    with pytest.raises(UnknownUSBLight):
-        USBLight.from_dict({"vendor_id": 0, "product_id": 0, "path": b""})
-
-
-def test_usblight_init():
-
-    with pytest.raises(UnknownUSBLight):
-        USBLight(0, 0, b"")
-
-
-def test_usblight_attributes(generic_usblight):
-
-    assert generic_usblight.vendor_id == 0xFFFF
-    assert generic_usblight.product_id == 0xFFFF
-    assert generic_usblight.path == b"bogus_path"
-    assert generic_usblight.value == 0xDEADBEEF
-    assert generic_usblight.default_state == 0xDEADBEEF
-    assert len(generic_usblight) == 128
-
-    assert hasattr(generic_usblight, "VENDOR_IDS")
-    assert len(generic_usblight.VENDOR_IDS) == 0
-    assert generic_usblight.__vendor__ == "generic"
-
-    assert not hasattr(generic_usblight, "impl_on")
-    assert not hasattr(generic_usblight, "impl_off")
-    assert not hasattr(generic_usblight, "impl_blink")
-
-
-#    assert generic_usblight.
+    with pytest.raises(TypeError, match="abstract methods"):
+        instance = incomplete()

@@ -7,6 +7,15 @@ from typing import Generator
 
 
 class CancellableThread(Thread):
+    """A threading.Thread that can be cancelled
+
+    A CancellableThread can be stopped asynchronously by the main thread
+    if the supplied generator cooperates. The function executed in the
+    `run` method must call `yield` periodically. The thread will be more
+    responsive to cancelling if generator yields often. A thread should
+    not be re-used after it has been cancelled.
+    """
+
     def __init__(self, target: Generator, name: str = None):
         """
         :param target: generator
@@ -26,21 +35,22 @@ class CancellableThread(Thread):
         it has been cancelled.
 
         ```python
-        def long_running(interval:int = 1) -> None:
+        def long_running(interval:float = 1.0) -> None:
             while True:
                   # some operation here
                   yield
                   time.sleep(interval)
         ```
-        
+
         """
-        while True:
-            for _ in self._target:
-                if self._is_cancelled:
-                    return
+        for _ in self._target:
+            if self._is_cancelled:
+                return
 
     def cancel(self, join: bool = True, timeout: float = 0.05) -> None:
-        """Signals to the `run` method that the thread should terminate.
+        """Signals that the thread should terminate as soon as possible.
+
+        Call this method from the main thread on the running thread.
 
         :param join: bool
         :param timeout: float
