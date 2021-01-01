@@ -54,6 +54,9 @@ class BlinkStick(USBLight):
         self._state = BlinkStickState()
         return self._state
 
+    def __bytes__(self):
+        return bytes(self.state)
+
     def reset(self) -> None:
         self.state.reset()
 

@@ -18,16 +18,6 @@ from .exceptions import USBLightIOError
 from .thread import CancellableThread
 
 
-class USBLightState(abc.ABC):
-    """This abstract base class enforces that a light's internal
-    state can be accessed via the `bytes()` builtin in a format
-    that can be written to the target USB device.
-    """
-
-    def __bytes__(self) -> bytes:
-        """The USB light command payload to write to the device."""
-
-
 class USBLight(abc.ABC):
     """A generic USB light that uses HIDAPI to control devices.
 
@@ -48,8 +38,6 @@ class USBLight(abc.ABC):
     - VENDOR_IDS : List[int]
     - PRODUCT_IDS : List[int]
     - vendor : str
-    - state : USBLightState
-    - is_on : bool
 
     Abstract Methods
     - on
@@ -57,11 +45,6 @@ class USBLight(abc.ABC):
     - blink
     - reset
 
-    While the `state` abstract property is typed with Any, in reality it
-    is expected to be some sort of byte buffer (like a bitvector ;).  If
-    this is not the case, the concrete implementation should override
-    the `USBLight.update` method to take whatever actions are appropriate
-    to operate their specific hardware.
     """
 
     @classmethod
@@ -88,7 +71,8 @@ class USBLight(abc.ABC):
         """Returns the first supported and unused USB light found.
 
         If a suitable light is not found, USBLightNotFound is
-        raised. Can be called from USBLight or any of it's subclasses.
+        raised. This method can be called from USBLight or any of it's
+        subclasses.
 
         :return: configured USBLight subclass instance.
 
@@ -371,7 +355,7 @@ class USBLight(abc.ABC):
           The light may have been released.
         """
 
-        data = bytes(self.state)
+        data = bytes(self)
 
         try:
             with self.lock:
@@ -400,10 +384,9 @@ class USBLight(abc.ABC):
     def vendor(self) -> str:
         """Vendor name supported by this class."""
 
-    @property
     @abc.abstractmethod
-    def state(self) -> USBLightState:
-        """Internal light state with a bytes representation."""
+    def __bytes__(self):
+        """The command buffer to write to the USB device."""
 
     @abc.abstractmethod
     def on(self, color: Tuple[int, int, int]) -> None:

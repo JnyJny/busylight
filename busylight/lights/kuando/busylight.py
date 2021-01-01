@@ -28,6 +28,9 @@ class BusyLight(USBLight):
         self._state = BusyLightState()
         return self._state
 
+    def __bytes__(self):
+        return bytes(self.state)
+
     def reset(self) -> None:
         self.state.reset()
 

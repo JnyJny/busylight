@@ -32,9 +32,8 @@ class Blink1(USBLight):
     def color(self, values: Tuple[int, int, int]) -> None:
         self._color = tuple(values)
 
-    @property
-    def is_on(self) -> bool:
-        return any(self.color)
+    def __bytes__(self):
+        return bytes(self.state)
 
     def reset(self) -> None:
         self.state.reset()

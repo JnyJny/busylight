@@ -4,7 +4,6 @@
 import pytest
 
 from busylight.lights import USBLight
-from busylight.lights.usblight import USBLightState
 
 from busylight.lights import USBLightNotFound
 from busylight.lights import USBLightUnknownVendor
@@ -27,7 +26,6 @@ def test_light_instances(lights):
 
     for light in lights:
         assert light and light.is_acquired
-        assert issubclass(type(light.state), USBLightState)
 
         light.on((255, 0, 0))
         assert light.is_on

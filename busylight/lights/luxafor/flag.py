@@ -39,9 +39,8 @@ class Flag(USBLight):
         self._name = self.info["product_string"].title()
         return self._name
 
-    @property
-    def is_on(self) -> bool:
-        return any(self.color)
+    def __bytes__(self):
+        return bytes(self.state)
 
     def reset(self):
         self.state.reset()

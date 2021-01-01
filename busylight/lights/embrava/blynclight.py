@@ -33,9 +33,11 @@ class Blynclight(USBLight):
     def color(self, values: Tuple[int, int, int]) -> None:
         self.state.red, self.state.green, self.state.blue = values
 
-    @property
     def is_on(self) -> bool:
         return not self.state.off
+
+    def __bytes__(self):
+        return bytes(self.state)
 
     def reset(self) -> None:
         self.state.reset()

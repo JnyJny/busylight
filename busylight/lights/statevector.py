@@ -4,8 +4,6 @@
 
 from bitvector import BitVector, BitField, ReadOnlyBitField
 
-from .usblight import USBLightState
-
 
 class StateField(BitField):
     """A bit field in a state vector."""
@@ -15,7 +13,7 @@ class ReadOnlyStateField(ReadOnlyBitField):
     """A read-only bit field in a state vector."""
 
 
-class StateVector(USBLightState, BitVector):
+class StateVector(BitVector):
     """A State Vector composed of bit fields.
 
     The StateVector class is designed to represent a hardware device's
