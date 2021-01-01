@@ -23,6 +23,7 @@ class Flag(USBLight):
 
     @property
     def state(self) -> FlagState:
+        """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
@@ -47,7 +48,7 @@ class Flag(USBLight):
 
     def on(self, color: Tuple[int, int, int]) -> None:
 
-        self.color = color
+        super().on(color)
 
         with self.batch_update():
             self.state.reset()
@@ -55,13 +56,9 @@ class Flag(USBLight):
             self.state.leds = FlagLED.ALL
             self.state.color = color
 
-    def off(self):
+    def blink(self, color: Tuple[int, int, int], speed: int = 1):
 
-        self.on((0, 0, 0))
-
-    def blink(self, color: Tuple[int, int, int], speed: int = 0):
-
-        self.color = color
+        super().blink(color, speed)
 
         with self.batch_update():
             self.state.reset()
