@@ -17,7 +17,8 @@ class Blynclight(USBLight):
     vendor = "Embrava"
 
     @property
-    def state(self):
+    def state(self) -> BlynclightState:
+        """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
@@ -58,11 +59,13 @@ class Blynclight(USBLight):
             self.state.flash = False
             self.state.speed = 1
 
-    def blink(self, color: Tuple[int, int, int] = None, speed: int = 0) -> None:
+    def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
+
+        super().blink(color, speed)
 
         with self.batch_update():
             if color:
                 self.color = color
             self.state.off = False
             self.state.flash = True
-            self.state.speed = 1 << speed
+            self.state.speed = 1 << (speed - 1)
