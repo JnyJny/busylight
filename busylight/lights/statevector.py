@@ -1,4 +1,4 @@
-"""a compact device state representation.
+"""a Compact Device State Representation.
 """
 
 
