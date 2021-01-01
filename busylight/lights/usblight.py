@@ -7,7 +7,7 @@ import hid
 
 from contextlib import contextmanager
 from threading import RLock
-from typing import Any, Dict, Generator, List, Tuple, Union
+from typing import Any, Callable, Dict, Generator, List, Tuple, Union
 
 from .exceptions import USBLightNotFound
 from .exceptions import USBLightUnknownVendor
@@ -32,7 +32,7 @@ class USBLight(abc.ABC):
     Concrete implementations may expose more capabilities than required
     by USBLight, however it is up to the user to discover them.
 
-    Concrete implementations of USBLight will need to provide:
+    Concrete implementations of USBLight will provide:
 
     Abstract Properties
     - VENDOR_IDS : List[int]
@@ -41,10 +41,8 @@ class USBLight(abc.ABC):
 
     Abstract Methods
     - on
-    - off
     - blink
     - reset
-
     """
 
     @classmethod
@@ -62,7 +60,7 @@ class USBLight(abc.ABC):
             try:
                 known_ids.update(supported_light.VENDOR_IDS)
             except TypeError:
-                # protects the caller from incomplete subclasses
+                # protect the caller from incomplete subclasses
                 pass
         return list(known_ids)
 
@@ -72,7 +70,8 @@ class USBLight(abc.ABC):
 
         If a suitable light is not found, USBLightNotFound is
         raised. This method can be called from USBLight or any of it's
-        subclasses.
+        subclasses. If called from a subclass, only lights supported
+        by the subclass are returned.
 
         :return: configured USBLight subclass instance.
 
@@ -104,15 +103,45 @@ class USBLight(abc.ABC):
             raise USBLightNotFound()
 
     @classmethod
-    def from_dict(cls, info: Dict[str, Union[int, str]]):
-        """Returns a configured USBLight subclass using a dictionary.
+    def all_lights(cls) -> List[object]:
+        """Returns a list of configured lights.
+
+        If called by a subclass of USBLight, the list will
+        consist of initialized lights supported by the subclass.
+
+        If called by USBLight, the list will consist of
+        initialized lights supported by all subclasses.
+
+        If the list is empty, no supported lights were found or
+        all the lights are currently in use.
+
+        :return: List[object]
+        """
+
+        lights = []
+        if cls.__name__ != "USBLight":
+
+            while True:
+                try:
+                    lights.append(cls.first_light())
+                except USBLightNotFound:
+                    break
+            return lights
+
+        for supported_light in cls.supported_lights():
+            lights.extend(supported_light.all_lights())
+        return lights
+
+    @classmethod
+    def from_dict(cls, info: Dict[str, Union[int, str, bytes]]):
+        """Returns a USBLight subclass instance configured using a dictionary.
 
         In most cases, the info dictionary is constructed by a
-        call to hid.enumerate. The dictionary must contain keys
+        call to `hid.enumerate`. The dictionary must contain keys
         for 'vendor_id', 'product_id' and 'path' at a bare minimum.
         If one or more of these keys are missing, KeyError is raised.
 
-        :param info: Dict[str, Union[int, str]]
+        :param info: Dict[str, Union[int, str, bytes]]
         :return: configured USBLight subclass instance.
 
         Raises:
@@ -126,9 +155,12 @@ class USBLight(abc.ABC):
     def __init__(
         self, vendor_id: int, product_id: int, path: bytes, reset: bool = False
     ) -> None:
-        """Given the vendor_id, product_id and path for a USB device,
+        """Configure and acquire a USBLight instance
+
+        Given the vendor_id, product_id and path for a USB device,
         configure and acquire the device. The device can be optionally
-        "reset" to a known state (typically quiesced).
+        "reset" to a known state or left in it's current (unknown)
+        state.
 
         :param vendor_id: int 16-bit value
         :param product_id: int 16-bit value
@@ -159,7 +191,11 @@ class USBLight(abc.ABC):
 
     @property
     def device(self) -> hid.device:
-        """HID API handle used to perform IO on USB devices."""
+        """HID API handle used to perform IO on USB devices.
+
+        The device is not ready for use until the `acquire`
+        method is called.
+        """
         try:
             return self._device
         except AttributeError:
@@ -179,7 +215,7 @@ class USBLight(abc.ABC):
     @vendor_id.setter
     def vendor_id(self, value: int) -> None:
         if value not in self.VENDOR_IDS:
-            raise USBLightUnknownVendor(value)
+            raise USBLightUnknownVendor(hex(value))
         self._vendor_id = value
 
     @property
@@ -194,11 +230,11 @@ class USBLight(abc.ABC):
     @product_id.setter
     def product_id(self, value: int) -> None:
         if self.PRODUCT_IDS and value not in self.PRODUCT_IDS:
-            raise USBLightUnknownProduct(value)
+            raise USBLightUnknownProduct(hex(value))
         self._product_id = value
 
     @property
-    def info(self) -> Dict[str, Union[int, str]]:
+    def info(self) -> Dict[str, Union[int, str, bytes]]:
         """USB Human Interface Device dictionary for this device.
 
         Raises:
@@ -215,13 +251,13 @@ class USBLight(abc.ABC):
                 self._info = dict(info)
                 break
         else:
-            raise USBLightIOError("Device information missing")
+            raise USBLightIOError(f"Device information missing: {self.path}")
 
         return self._info
 
     @property
     def name(self) -> str:
-        """Concatenation of vendor and title-cased product_string."""
+        """String concatenation of vendor and title-cased product_string."""
         try:
             return self._name
         except AttributeError:
@@ -231,12 +267,22 @@ class USBLight(abc.ABC):
 
     @property
     def identifier(self) -> str:
-        """Concatenation of hexadecimal vendor and product identifiers."""
+        """String concatenation of hexadecimal vendor and product identifiers."""
         return f"0x{self.vendor_id:04x}:0x{self.product_id:04x}"
 
     @property
     def lock(self) -> RLock:
-        """A threading.RLock used to serialize access to the USB device."""
+        """A threading.RLock used to serialize access to the USB device.
+
+        The lock is used to serialize access to the device property and
+        when updating the in-memory representation of the hardware
+        state.  This is only important when multiple threads are
+        attempting to access the these resources at the same time. In
+        practice, concrete implementations of USBLight are not expected
+        to need direct access to lock.
+
+        See `acquire`, `update`, `batch_update` and `release` for usage.
+        """
         try:
             return self._lock
         except AttributeError:
@@ -246,7 +292,12 @@ class USBLight(abc.ABC):
 
     @property
     def animation_thread(self) -> Union[CancellableThread, None]:
-        """"A busylight.lights.thread.CancellableThread animating this light."""
+        """A busylight.lights.thread.CancellableThread animating this light.
+
+        The animation thread runs a generator function that takes this light
+        as an argument and calls yield at frequent intervals. If animation_thread
+        is None, the light is not being animated.
+        """
         return getattr(self, "_animation_thread", None)
 
     @property
@@ -260,7 +311,10 @@ class USBLight(abc.ABC):
 
     @property
     def is_acquired(self) -> bool:
-        """Is the light hardware acquired?"""
+        """Is the light hardware acquired?
+
+        If True, this light has been sucessfully opened and is ready for use.
+        """
         return bool(getattr(self, "_device", False))
 
     @property
@@ -273,9 +327,27 @@ class USBLight(abc.ABC):
         """Is the light currently on?"""
         return any(self.color)
 
+    @property
+    def strategy(self) -> Callable:
+        """The write function used to communicate with the device.
+
+        The default write strategy is `hid.device.write`, however
+        some devices may require `hid.device.send_feature_report`
+        instead.
+
+        The strategy function is expected to take `bytes` as it's
+        sole argument and return the number of bytes written. A
+        return value of -1 indicates error.
+        """
+        return self.device.write
+
     @contextmanager
     def batch_update(self) -> None:
         """Context manager useful for grouping updates to a device.
+
+        Manipulations to the light's in-memory representation of the
+        hardware state are serialized on entry to the context manager
+        and the hardware state is flushed to the hardware on exit.
 
         Raises:
         - USBLightIOError
@@ -288,7 +360,8 @@ class USBLight(abc.ABC):
         """Open a HID USB light for writing.
 
         This method opens the device for I/O and optionally
-        resets the device with a known (implementation dependent) state.
+        triggers a device reset to a known state. Concrete
+        implementations provide `reset`.
 
         :param reset: bool
 
@@ -311,7 +384,13 @@ class USBLight(abc.ABC):
                 self.update()
 
     def release(self) -> None:
-        """Shutdown the animation thread and close the device."""
+        """Shutdown the animation thread and close the device.
+
+        Releasing the light will cancel any active animation threads and
+        close the hid.device property. The light must be re-acquired
+        with the `acquire` method if the caller wishes to continue using
+        this instance.
+        """
 
         with self.lock:
             self.stop_animation()
@@ -327,9 +406,15 @@ class USBLight(abc.ABC):
         See busylight.lights.thread.CancellableThread for more details.
 
         :param animation: Generator
+
+        Raises:
+        - USBLightIOError
         """
-        # EJO what happens if we start an animation on a released light?
+        if not self.is_acquired:
+            raise USBLightIOError(f"light is not acquired: {self.identifier}")
+
         self.stop_animation()
+
         self._animation_thread = CancellableThread(
             animation(self), f"animation-{self.identifier}"
         )
@@ -359,12 +444,12 @@ class USBLight(abc.ABC):
 
         try:
             with self.lock:
-                nbytes = self.device.write(data)
+                nbytes = self.strategy(data)
         except ValueError as error:
             raise USBLightIOError(str(error)) from None
 
         if nbytes != len(data):
-            raise USBLightIOError(f"write returned {nbytes}") from None
+            raise USBLightIOError(f"write returned {nbytes}")
 
     @property
     @abc.abstractmethod
@@ -386,7 +471,7 @@ class USBLight(abc.ABC):
 
     @abc.abstractmethod
     def __bytes__(self):
-        """The command buffer to write to the USB device."""
+        """The hardware control data to write to the USB device."""
 
     @abc.abstractmethod
     def on(self, color: Tuple[int, int, int]) -> None:
@@ -394,28 +479,44 @@ class USBLight(abc.ABC):
 
         :param color: Tuple[int, int, int]
         """
+        self.color = color
 
-    @abc.abstractmethod
     def off(self) -> None:
         """Turns the light off."""
+        self.on((0, 0, 0))
 
     @abc.abstractmethod
     def blink(
         self,
         color: Tuple[int, int, int],
-        speed: int = 0,
+        speed: int = 1,
     ) -> None:
-        """Light blinks on and off with the specified color.
+        """Light blinks on and off with the specified color and speed.
+
+        When queried, the light is "on" with the specified color even
+        though it is blinking.  Speed should be an integer in the
+        range of 0 thru 2 inclusive:
+
+        - 1 : slow
+        - 2 : medium
+        - 3 : fast
 
         :param color: Tuple[int, int, int]
         :param speed: int
+
+        Raises:
+        - ValueError for speed out of range.
+
         """
+        self.color = color
+        if speed not in [1, 2, 3]:
+            raise ValueError(f"Speed is out of range: {speed}")
 
     @abc.abstractmethod
     def reset(self) -> None:
         """Reset the light to it's initial configuration.
 
         Only effects the in-memory representation of the hardware
-        state. The physical light is not effected until a call to the
-        update method.
+        state. The physical light is not changed until a call to the
+        `update` method.
         """
