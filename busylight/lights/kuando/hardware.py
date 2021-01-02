@@ -102,11 +102,11 @@ class Instruction(StateVector):
 
     @property
     def color(self) -> Tuple[int, int, int]:
-        return (self.red, self.green, self.blue)
+        return map(lambda v: int((v / 100) * 0xFF), [self.red, self.green, self.blue])
 
     @color.setter
     def color(self, values: Tuple[int, int, int]) -> None:
-        self.red, self.green, self.blue = values
+        self.red, self.green, self.blue = map(lambda v: int((v / 255) * 100), values)
 
 
 class Jump(Instruction):
