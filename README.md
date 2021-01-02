@@ -10,7 +10,7 @@ python project.
 
 ![All Supported Lights][DemoGif]
 
-**Five Lights Attached to One Host**<br>
+**Six Lights Attached to One Host**<br>
 <em>Back to Front, Left to Right</em> <br>
 <b>BlyncLight, BlyncLight Plus, Busylight</b> <br>
 <b>Blink(1), Flag, BlinkStick</b>
@@ -18,7 +18,7 @@ python project.
 ## Features
 - Control lights from the [command-line][BUSYLIGHT.1].
 - Control lights via a [Web API][WEBAPI].
-- Incorporate lights into your own python applications.
+- Individually addresable lights.
 - Supports Five Vendors & Multiple Models:
   * [**Agile Innovations** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
@@ -27,6 +27,9 @@ python project.
   * [**ThingM** Blink1][6]
 - Works on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
+
+If you have a USB light that's not on this list, please start
+an issue with the make and model you want supported.
 
 ## Basic Install 
 
@@ -148,8 +151,9 @@ light.on((255, 255, 255))
 
 ### Slightly More Complicated
 
-The `busylight` package includes a manager class that great for managing
-multiple lights or lights that are currently being animated:
+The `busylight` package includes a manager class that great for
+working with multiple lights or lights that require a little
+more direct intervention like the Kuando Busylight series.
 
 ```python
 from busylight.manager import LightManager, ALL_LIGHTS
