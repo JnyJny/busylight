@@ -90,42 +90,42 @@ The API is fully documented and available @ `https://localhost:8888/redoc`
 Now you can use the web API endpoints which return JSON payloads:
 
 ```console
-  $ curl http://localhost:8888/1/lights
+  $ curl -s http://localhost:8888/1/lights
   ...
-  $ curl http://localhost:8888/1/lights/on | jq
+  $ curl -s http://localhost:8888/1/lights/on | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "green"
   }
-  $ curl http://localhost:8888/1/lights/off | jq
+  $ curl -s http://localhost:8888/1/lights/off | jq
   {
     "light_id": 0,
     "action": "off"
   }
-  $ curl http://localhost:8888/1/light/0/on/purple | jq
+  $ curl -s http://localhost:8888/1/light/0/on/purple | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "purple"
   }
-  $ curl http://localhost:8888/1/light/0/off | jq
+  $ curl -s http://localhost:8888/1/light/0/off | jq
   {
     "light_id": 0,
     "action": "off"
   }
-  $ curl http://localhost:8888/1/lights/on | jq
+  $ curl -s http://localhost:8888/1/lights/on | jq
   {
     "light_id": "all",
     "action": "on",
     "color": "green"
   }
-  $ curl http://localhost:8888/1/lights/off | jq
+  $ curl -s http://localhost:8888/1/lights/off | jq
   {
     "light_id": "all",
     "action": "off"
   }
-  $ curl http://localhost:8888/1/lights/rainbow | jq
+  $ curl -s http://localhost:8888/1/lights/rainbow | jq
   {
     "light_id": "all",
     "action": "effect",
