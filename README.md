@@ -10,20 +10,21 @@ python project.
 
 ![All Supported Lights][DemoGif]
 
+**Five Lights Attached to One Host**<br>
 <em>Back to Front, Left to Right</em> <br>
 <b>BlyncLight, BlyncLight Plus, Busylight</b> <br>
 <b>Blink(1), Flag, BlinkStick</b>
 
 ## Features
-- Control Lights from the [Command-Line][BUSYLIGHT.1]
-- Control Lights via a [Web API][WEBAPI]
-- Five Supported Vendors:
+- Control lights from the [command-line][BUSYLIGHT.1].
+- Control lights via a [Web API][WEBAPI].
+- Incorporate lights into your own python applications.
+- Supports Five Vendors & Multiple Models:
   * [**Agile Innovations** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
   * [**Kuando** BusyLight][4]
   * [**Luxafor** Flag][5]
   * [**ThingM** Blink1][6]
-- Supports working with multiple lights simultaneously.
 - Works on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
 
@@ -42,7 +43,7 @@ $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
 ## Linux Post-Install Activities
-Linux controls access to USB devices via the udev subsystem. By
+Linux controls access to USB devices via the [udev subsystem][UDEV]. By
 default it denies non-root users access to devices it doesn't
 recognize. I've got you covered!
 
@@ -178,3 +179,4 @@ manager.lights_off(ALL_LIGHTS)
 [39]: https://github.com/JnyJny/busylight/workflows/Python%203.9/badge.svg
 
 [DemoGif]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
+[UDEV]: https://en.wikipedia.org/wiki/Udev
