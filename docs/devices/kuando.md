@@ -176,7 +176,7 @@ a keep alive packet is not received by the device.
 
 ##### Constructing a Keep Alive
 
-Building the keep alive packet is straight-forward:
+Building the keep alive packet is very simple:
 
 ```C
     busylight_buf_t packet;
@@ -194,8 +194,8 @@ Building the keep alive packet is straight-forward:
 The `timeout` field of the keep alive step is 8-bits wide and is the
 interval in seconds that the light will remain active (unless another
 keep alive packet is received). In practice, I send a keep alive
-configured for fifteen seconds and send the keepalive packet every 7
-seconds.
+configured for fifteen seconds and send a new keep alive packet every
+7 seconds.
 
 #### Turning the Light Off
 
@@ -226,6 +226,13 @@ cycle values are given in tenths of a second increments:
 	/* calculate checksum */
 	/* write packet to the device */
 ```
+
+#### More Advanced Usage
+
+The seven steps of the command packet can be thought of as a very
+simple computer program. There are no conditial statements,
+only JUMP instructions. So it's possible to write a sequence of
+up to seven different behaviors. 
 
 
 ### Observations
