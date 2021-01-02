@@ -39,7 +39,7 @@ class ColorField(StateField):
 
 
 class DutyCycleField(StateField):
-    """An 8-bit duty cycle value."""
+    """An 8-bit duty cycle value, tenth's of a second"""
 
 
 class UpdateField(StateField):
