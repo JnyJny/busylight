@@ -41,7 +41,6 @@ class BusyLight(USBLight):
 
         instruction = Jump(0)
         instruction.color = color
-        instruction.repeat = 0xFF
 
         with self.batch_update():
             self.reset()
@@ -53,7 +52,7 @@ class BusyLight(USBLight):
 
         instruction = Jump(0)
         instruction.color = color
-        instruction.repeat = 1
+        instruction.repeat = 0
         instruction.dc_on = 10 // speed
         instruction.dc_off = 10 // speed
 
