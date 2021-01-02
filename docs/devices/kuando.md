@@ -205,9 +205,9 @@ blue values are zero and writing it to the device.
 
 #### Blinking the Light On and Off
 
-The packet required to make the light blink is very similar to packet
-for turning it on, with the addition of specifying the on and off duty
-cycle values in tenths of a second increments:
+The packet required to make the light blink is very similar to the packet
+used to turn it on. In addition to specifying a color, the on and off duty
+cycle values are given in tenths of a second increments:
 
 ```C
     busylight_buf_t packet;
