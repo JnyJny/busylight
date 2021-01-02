@@ -15,15 +15,16 @@ python project.
 <b>Blink(1), Flag, BlinkStick</b>
 
 ## Features
-- Control Lights via [Command-Line][BUSYLIGHT.1]
-- Control Lights via [Web API][WEBAPI]
-- Five (5!) Supported Vendors:
+- Control Lights from the [Command-Line][BUSYLIGHT.1]
+- Control Lights via a [Web API][WEBAPI]
+- Five Supported Vendors:
   * [**Agile Innovations** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
   * [**Kuando** BusyLight][4]
   * [**Luxafor** Flag][5]
   * [**ThingM** Blink1][6]
-- Supported on MacOS, Linux, probably Windows and BSD too!
+- Supports working with multiple lights simultaneously.
+- Works on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
 
 ## Basic Install 
@@ -34,14 +35,16 @@ $ python3 -m pip install busylight-for-humans
 
 ## Web API Install
 
-Install `uvicorn` and `FastAPI` in addition to `busylight`:
+Installs `uvicorn` and `FastAPI` in addition to `busylight`:
 
 ```console
 $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
 ## Linux Post-Install Activities
-Linux controls access to USB devices via the udev subsystem and by default denies non-root users access to devices it doesn't recognize. I've got you covered!
+Linux controls access to USB devices via the udev subsystem. By
+default it denies non-root users access to devices it doesn't
+recognize. I've got you covered!
 
 You'll need root access to configure the udev rules:
 
@@ -84,13 +87,46 @@ Now you can use the web API endpoints which return JSON payloads:
 
 ```console
   $ curl http://localhost:8888/1/lights
-  $ curl http://localhost:8888/1/lights/on
-  $ curl http://localhost:8888/1/lights/off
-  $ curl http://localhost:8888/1/light/0/on/purple
-  $ curl http://localhost:8888/1/light/0/off
-  $ curl http://localhost:8888/1/lights/on
-  $ curl http://localhost:8888/1/lights/off
-  $ curl http://localhost:8888/1/lights/rainbow
+  ...
+  $ curl http://localhost:8888/1/lights/on | jq
+  {
+    "light_id": 0,
+    "action": "on",
+    "color": "green"
+  }
+  $ curl http://localhost:8888/1/lights/off | jq
+  {
+    "light_id": 0,
+    "action": "off"
+  }
+  $ curl http://localhost:8888/1/light/0/on/purple | jq
+  {
+    "light_id": 0,
+    "action": "on",
+    "color": "purple"
+  }
+  $ curl http://localhost:8888/1/light/0/off | jq
+  {
+    "light_id": 0,
+    "action": "off"
+  }
+  $ curl http://localhost:8888/1/lights/on | jq
+  {
+    "light_id": "all",
+    "action": "on",
+    "color": "green"
+  }
+  $ curl http://localhost:8888/1/lights/off | jq
+  {
+    "light_id": "all",
+    "action": "off"
+  }
+  $ curl http://localhost:8888/1/lights/rainbow | jq
+  {
+    "light_id": "all",
+    "action": "effect",
+    "name": "rainbow"
+  }
 ```
 
 ## Code Examples
