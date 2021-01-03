@@ -6,36 +6,40 @@ from typing import Tuple
 from ..statevector import StateVector, StateField
 
 
-class FlagCmdAttribute(StateField):
-    """Luxafor Flag mode command."""
+class CommandField(StateField):
+    """An 8-bit command format selector."""
 
 
-class FlagLEDAttribute(StateField):
-    """Luxafor Flag LED selector."""
+class LEDField(StateField):
+    """An 8-bit LED selector."""
 
 
-class FlagPatternAttribute(StateField):
-    """Luxafor Flag pattern value."""
+class PatternField(StateField):
+    """An 8-bit pattern value."""
 
 
-class FlagWaveAttribute(StateField):
-    """Luxafor Flag wave value."""
+class WaveField(StateField):
+    """An 8-bit wave value."""
 
 
-class FlagColorAttribute(StateField):
+class ColorField(StateField):
     """An 8-bit color value."""
 
 
-class FlagRepeatAttribute(StateField):
-    """Luxafor Flag repeat value."""
+class RepeatField(StateField):
+    """An 8-bit repeat value."""
 
 
-class FlagFadeAttribute(StateField):
-    """Luxafor Flag fade speed value."""
+class FadeField(StateField):
+    """An 8-bit fade speed value."""
 
 
-class FlagSpeedAttribute(StateField):
-    """Luxafor Flag speed value."""
+class SpeedField(StateField):
+    """An 8-bit speed value."""
+
+
+class PadField(StateField):
+    """Pad bits, unused."""
 
 
 class FlagLED(int, Enum):
@@ -73,9 +77,73 @@ class FlagPattern(int, Enum):
 
 class FlagCommand(int, Enum):
     COLOR = 1
+    FADE = 2
     STROBE = 3
     WAVE = 4
     PATTERN = 6
+
+
+class FlagColorCommand(StateVector):
+    def __init__(self):
+        super().__init__(0x1FF000000000000, 64)
+
+    command = CommandField(56, 8)
+    leds = LEDField(48, 8)
+    red = ColorField(40, 8)
+    green = ColorField(32, 8)
+    blue = ColorField(24, 8)
+    pad = PadField(0, 24)
+
+
+class FlagFadeCommand(StateVector):
+    def __init__(self):
+        super().__init__(0x2FF000000000000, 64)
+
+    command = CommandField(56, 8)
+    leds = LEDField(48, 8)
+    red = ColorField(40, 8)
+    green = ColorField(32, 8)
+    blue = ColorField(24, 8)
+    fade = FadeField(16, 8)
+    pad = PadField(0, 16)
+
+
+class FlagStrobeCommand(StateVector):
+    def __init__(self):
+        super().__init__(0x3FF000000000000, 64)
+
+    command = CommandField(56, 8)
+    leds = LEDField(48, 8)
+    red = ColorField(40, 8)
+    green = ColorField(32, 8)
+    blue = ColorField(24, 8)
+    speed = SpeedField(16, 8)
+    pad = PadField(8, 16)
+    repeat = RepeatField(0, 8)
+
+
+class FlagWaveCommand(StateVector):
+    def __init__(self):
+        super().__init__(0x400000000000000, 64)
+
+    command = CommandField(56, 8)
+    wave = WaveField(48, 8)
+    red = ColorField(40, 8)
+    green = ColorField(32, 8)
+    blue = ColorField(24, 8)
+    pad = PadField(16, 8)
+    repeat = RepeatField(8, 8)
+    speed = SpeedField(0, 8)
+
+
+class FlagPatternCommand(StateVector):
+    def __init__(self):
+        super().__init__(0x600000000000000, 64)
+
+    command = CommandField(56, 8)
+    pattern = PatternField(48, 8)
+    repeat = RepeatField(40, 8)
+    pad = PadField(0, 40)
 
 
 class FlagState(StateVector):
@@ -87,29 +155,29 @@ class FlagState(StateVector):
     # The Luxafor Flag command buffer isn't regular so there are some fields
     # that are aliased to make code more straightforward.
 
-    cmd = FlagCmdAttribute(56, 8)
+    cmd = CommandField(56, 8)
 
     # aliases: led, pattern, wave
-    leds = FlagLEDAttribute(48, 8)
-    pattern = FlagPatternAttribute(48, 8)
-    wave = FlagWaveAttribute(48, 8)
+    leds = LEDField(48, 8)
+    pattern = PatternField(48, 8)
+    wave = WaveField(48, 8)
 
     # aliases: red, pattern_repeat
-    red = FlagColorAttribute(40, 8)
-    pattern_repeat = FlagRepeatAttribute(40, 8)
+    red = ColorField(40, 8)
+    pattern_repeat = RepeatField(40, 8)
 
-    green = FlagColorAttribute(32, 8)
-    blue = FlagColorAttribute(24, 8)
+    green = ColorField(32, 8)
+    blue = ColorField(24, 8)
 
     # aliases: fade, strobe_speed
-    fade = FlagFadeAttribute(16, 8)
-    strobe_speed = FlagSpeedAttribute(16, 8)
+    fade = FadeField(16, 8)
+    strobe_speed = SpeedField(16, 8)
 
-    wave_repeat = FlagRepeatAttribute(8, 8)
+    wave_repeat = RepeatField(8, 8)
 
     # aliases: wave_speed, strobe_repeat
-    strobe_repeat = FlagRepeatAttribute(0, 8)
-    wave_speed = FlagSpeedAttribute(0, 8)
+    strobe_repeat = RepeatField(0, 8)
+    wave_speed = SpeedField(0, 8)
 
     @property
     def color(self):
