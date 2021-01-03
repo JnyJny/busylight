@@ -5,7 +5,8 @@ from functools import partial
 from time import sleep
 from typing import Tuple
 
-from .hardware import BlinkStickState, BlinkStickVariant
+from .hardware import BlinkStickVariant
+from .hardware import BlinkStickUnknownVariant
 
 from ..usblight import USBLight
 from ...effects import blink as blink_effect
@@ -23,18 +24,22 @@ class BlinkStick(USBLight):
             return self._name
         except AttributeError:
             pass
-        self._name = str(BlinkStickVariant.identify(self))
+        self._name = self.variant.name
         return self._name
+
+    @property
+    def variant(self) -> BlinkStickVariant:
+        try:
+            return self._variant
+        except AttributeError:
+            pass
+        self._variant = BlinkStickVariant.identify(self.info)
+        return self._variant
 
     @property
     def state(self):
         """Implementation dependent hardware state."""
-        try:
-            return self._state
-        except AttributeError:
-            pass
-        self._state = BlinkStickState()
-        return self._state
+        return self.variant.state
 
     def __bytes__(self):
         return bytes(self.state)
@@ -49,16 +54,8 @@ class BlinkStick(USBLight):
         color = color[1], color[0], color[2]
 
         with self.batch_update():
-            self.state.report = 6
-            self.state.channel = 0
-            self.state.led0 = color
-            self.state.led1 = color
-            self.state.led2 = color
-            self.state.led3 = color
-            self.state.led4 = color
-            self.state.led5 = color
-            self.state.led6 = color
-            self.state.led7 = color
+            self.state.reset()
+            self.state.color(color)
 
     def blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
 

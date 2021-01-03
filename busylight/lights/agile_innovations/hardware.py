@@ -3,14 +3,42 @@
 
 from contextlib import suppress
 from enum import Enum
+from typing import Dict, Union
+
+from .dataframe import BlinkStickDataframe8
+from .dataframe import BlinkStickDataframe16
+from .dataframe import BlinkStickDataframe32
+from .dataframe import BlinkStickDataframe64
+from .dataframe import BlinkStickDataframe192
+
+from .dataframe import ReportField
+from .dataframe import ChannelField
+from .dataframe import IndexField
+from .dataframe import Color8Field
 
 
 from ..usblight import USBLight
-from ..statevector import StateField, StateVector
+from ..statevector import StateVector
+
+
+class BlinkStickIndexedLEDCommand(StateVector):
+    def __init__(self):
+        super().__init__(5 << 40, 48)
+
+    report = ReportField(40, 8)
+    channel = ChannelField(32, 8)
+    index = IndexField(24, 8)
+    red = Color8Field(16, 8)
+    green = Color8Field(8, 8)
+    blue = Color8Field(0, 8)
+
+
+class BlinkStickUnknownVariant(Exception):
+    pass
 
 
 class BlinkStickVariant(int, Enum):
-    UNKNOWN = 0
+
     BLINKSTICK = 1
     PRO = 2
     SQUARE = 0x200
@@ -19,22 +47,36 @@ class BlinkStickVariant(int, Enum):
     FLEX = 0x203
 
     @classmethod
-    def identify(cls, light: USBLight):
+    def identify(cls, info: Dict[str, Union[str, int, bytes]]):
         """Identify the given USBLight's BlinkStick hardware variant.
 
         :return: BlinkStickVariant
+
+        Raises:
+        - BlinkStickUnknownVariant
         """
 
-        sequence, _, version = light.info["serial_number"].strip().partition("-")
+        try:
+            sequence, _, version = info["serial_number"].strip().partition("-")
+        except KeyError:
+            raise BlinkStickUnknownVariant(info) from None
+
         major, minor = version.split(".")
 
         with suppress(ValueError):
             return cls(int(major))
 
         with suppress(ValueError):
-            return cls(int(light.info["release_number"]))
+            return cls(int(info["release_number"]))
 
-        return cls(0)
+        raise BlinkStickUnknownVariant(info)
+
+    def __str__(self):
+
+        if self.value == 1:
+            return "BlinkStick"
+
+        return f"BlinkStick {self.name.title()}"
 
     @property
     def nleds(self) -> int:
@@ -50,58 +92,20 @@ class BlinkStickVariant(int, Enum):
         )
         return self._nleds
 
-    def __str__(self):
+    @property
+    def state(self):
+        try:
+            return self._state
+        except AttributeError:
+            pass
 
-        if self.value == 0:
-            return "Unknown Device"
+        if self.value in [0x200, 0x201, 0x202]:
+            self._state = BlinkStickDataframe8()
 
-        if self.value == 1:
-            return "BlinkStick"
+        if self.value == 0x203:
+            self._state = BlinkStickDataframe32()
 
-        return f"BlinkStick {self.name.title()}"
+        if self.value == 2:
+            self._state = BlinkStickDataframe192()
 
-
-class BlinkStickReportAttribute(StateField):
-    """An 8-bit feature report value."""
-
-
-class BlinkStickChannelAttribute(StateField):
-    """An 8-bit channel value: 0: red, 1: green, 2: blue."""
-
-
-class BlinkStickIndexAttribute(StateField):
-    """An 8-bit index value to specify individual LEDs."""
-
-
-class BlinkStickLEDColorAttribute(StateField):
-    """A 24-bit color value. Accepts an integer or 3-tuple of ints."""
-
-    def __set__(self, obj, value):
-        if isinstance(value, tuple):
-            value = int.from_bytes(bytes(value), "big")
-        super().__set__(obj, value)
-
-
-class BlinkStickColorAttribute(StateField):
-    """An 8-bit color value."""
-
-
-class BlinkStickState(StateVector):
-    def __init__(self):
-        super().__init__(0, 208)
-
-    report = BlinkStickReportAttribute(200, 8)
-    channel = BlinkStickChannelAttribute(192, 8)
-    index = BlinkStickIndexAttribute(184, 8)
-    red = BlinkStickColorAttribute(176, 8)
-    green = BlinkStickColorAttribute(168, 8)
-    blue = BlinkStickColorAttribute(160, 8)
-
-    led0 = BlinkStickLEDColorAttribute(168, 24)
-    led1 = BlinkStickLEDColorAttribute(144, 24)
-    led2 = BlinkStickLEDColorAttribute(120, 24)
-    led3 = BlinkStickLEDColorAttribute(96, 24)
-    led4 = BlinkStickLEDColorAttribute(72, 24)
-    led5 = BlinkStickLEDColorAttribute(48, 24)
-    led6 = BlinkStickLEDColorAttribute(24, 24)
-    led7 = BlinkStickLEDColorAttribute(0, 24)
+        return self._state
