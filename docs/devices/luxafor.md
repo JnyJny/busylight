@@ -21,14 +21,78 @@ port, which can be used with the supplied adhesive-backed magnet to
 
 ### Basic Human Interface Device Info
 
-- Vendor ID values:
-- I/O Interface:
-- Command Length
+- Vendor ID values: 0x04D8
+- I/O Interface: `HID` write
+- Command Length: 8-bytes
 
 ### Command Format
 
 The Luxafor Flag is a [USB HID][H] accessible device whose attributes
 are controlled by writing an 8 byte packet to the device.
+
+#### Steady Color Command
+```C
+typedef struct {
+  unsigned int command: 8; /* 56:63 */
+  unsigned int leds:    8; /* 48:55 */
+  unsigned int red:     8; /* 40:47 */
+  unsigned int green:   8; /* 32:39 */
+  unsigned int blue:    8; /* 24:31 */
+  unsigned int pad:    24; /* 00:23 */
+} flag_color_cmd_t;
+```
+
+#### Fade Color Command
+```C
+typedef struct {
+  unsigned int command: 8; /* 56:63 */
+  unsigned int leds:    8; /* 48:55 */
+  unsigned int red:     8; /* 40:47 */
+  unsigned int green:   8; /* 32:39 */
+  unsigned int blue:    8; /* 24:31 */
+  unsigned int fade:    8; /* 16:23 */
+  unsigned int pad:    16; /* 00:15 */
+} flag_fade_cmd_t;
+```
+
+#### Strobe Color Command
+```C
+typedef struct {
+  unsigned int command: 8; /* 56:63 */
+  unsigned int leds:    8; /* 48:55 */
+  unsigned int red:     8; /* 40:47 */
+  unsigned int green:   8; /* 32:39 */
+  unsigned int blue:    8; /* 24:31 */
+  unsigned int speed:   8; /* 16:23 */
+  unsigned int pad:     8; /* 08:15 */
+  unsigned int repeat   8; /* 00:07
+} flag_strobe_cmd_t;
+```
+
+#### Wave Color Command
+```C
+typedef struct {
+  unsigned int command: 8; /* 56:63 */
+  unsigned int leds:    8; /* 48:55 */
+  unsigned int red:     8; /* 40:47 */
+  unsigned int green:   8; /* 32:39 */
+  unsigned int blue:    8; /* 24:31 */
+  unsigned int pad:     8; /* 16:23 */
+  unsigned int repeat   8; /* 08:15 */
+  unsigned int speed:   8; /* 00:07 */
+} flag_wave_cmd_t;
+```
+
+#### Pattern Color Command
+```C
+typedef struct {
+  unsigned int command: 8; /* 56:63 */
+  unsigned int pattern: 8; /* 48:55 */
+  unsigned int repeat:  8; /* 40:47 */
+  unsigned int pad  :   8; /* 00:39 */
+} flag_pattern_cmd_t;
+```
+
 
 ### Device Operation
 
