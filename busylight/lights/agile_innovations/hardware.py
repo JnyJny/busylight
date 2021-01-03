@@ -66,7 +66,7 @@ class BlinkStickVariant(int, Enum):
         with suppress(ValueError):
             return cls(int(major))
 
-        with suppress(ValueError):
+        with suppress(ValueError, KeyError):
             return cls(int(info["release_number"]))
 
         raise BlinkStickUnknownVariant(info)
