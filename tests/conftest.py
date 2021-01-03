@@ -44,4 +44,11 @@ def lights(supported_lights) -> list:
 
             with mock.patch("hid.device", new=FakeHIDDevice):
                 lights.append(usblight(vendor_id, product_id, b"bogus_path"))
+                lights[-1]._info = {
+                    "vendor_id": vendor_id,
+                    "product_id": product_id,
+                    "path": b"bogus_path",
+                    "serial_number": "BS032974-3.0",
+                    "release_number": 0x200,
+                }
     return lights
