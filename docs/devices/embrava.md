@@ -29,6 +29,7 @@ The devices are roughly 2 inches tall, and 1.5 inches on a side.
 
 - Vendor ID values: 0x2c0d, 0x03e5
 - I/O Interface: HID `write`
+- Command Length: 9-bytes
 
 ### Command Format
 
@@ -61,16 +62,16 @@ typedef struct {
    unsigned int flash:  1;  /* 37:37 Set is flash on/off, zero is steady */
    unsigned int speed:  3;  /* 34:36 Flash speed mask: 1<<0, 1<<1, 1<<2 */
    unsigned int pad0:   2;  /* 32:33 Unused bits */
-   
+
    unsigned int music:  4;  /* 28:31 Stored music index: [0-15] */
    unsigned int play:   1;  /* 27:27 Set play selected music, zero is stop */
    unsigned int repeat: 1;  /* 26:26 Set repeats playing music, zero is once */
    unsigned int pad1:   2;  /* 24:25 Unused bits */
-   
+
    unsigned int volume: 4;  /* 20:23 Volume of music: [0-15] */
    unsigned int mute:   1;  /* 19:19 Set is mute, zero is unmute */
    unsigned int pad2:   3;  /* 16:18 unused bits */
-   
+
    unsigned int footer: 16; /* 00:15 Constant: 0xFF22 */
 } blynclight_ctrl_t
 ```
@@ -94,14 +95,14 @@ by writing a 24-bit quantity to the red value offset.
 
 **Example: Activate Light with Purple Color.**
 ```C
-	blynclight_ctrl_t cword;
-	
-	cword.red = 0xff;
-	cword.blue = 0xff;
-	cword.green = 0x00;
-	cword.off = 0;
-	/* write control word to device */
-```	
+    blynclight_ctrl_t cword;
+
+    cword.red = 0xff;
+    cword.blue = 0xff;
+    cword.green = 0x00;
+    cword.off = 0;
+    /* write control word to device */
+``` 
 
 Please note that clearing the `off` field is not enough to provoke a
 visible effect form the device; a color must also be given otherwise
@@ -127,12 +128,12 @@ and fast.
 
 **Example: Configuring Flash Mode**
 ```C
-	blynclight_ctl_t cword;
-	
-	cword.flash = 1
-	cword.speed = 1 << 0; /* slow speed */
-	cword.speed = 1 << 1; /* medium speed */
-	cword.speed = 1 << 2; /* fast speed */
+    blynclight_ctl_t cword;
+
+    cword.flash = 1
+    cword.speed = 1 << 0; /* slow speed */
+    cword.speed = 1 << 1; /* medium speed */
+    cword.speed = 1 << 2; /* fast speed */
 ```
 
 When `flash` is set and `speed` is set to any value other than (1, 2, 4),
@@ -159,12 +160,12 @@ for volume values between 1 and 0xf.
 **Example: Playing the First Sound One Time**
 ```C
     blynclight_ctl_t cword;
-	
-	cword.play = 1
-	cword.music = 1
-	cword.volume = 1
-	cword.mute = 0
-	cword.repeat = 0
+
+    cword.play = 1
+    cword.music = 1
+    cword.volume = 1
+    cword.mute = 0
+    cword.repeat = 0
 ```
 
 ### Observations
