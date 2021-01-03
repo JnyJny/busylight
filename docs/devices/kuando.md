@@ -23,6 +23,7 @@ LED lights the device has.
 
 - Vendor Id values: 0x27bb
 - I/O Interface: HID `write`
+- Command Length: 64-bytes
 
 ### Command Format
 
@@ -33,29 +34,29 @@ final 8-byte segment containing house-keeping values and a terminating
 16-bit [checksum][CHKSUM] field.
 
 The following is a C language structure type definition using bit
-fields to illustrate the gross structure of the 64-byte packet.
+fields to describe the structure of the 64-byte packet.
 
 ```C
 typedef struct {
-	unsigned int step0:       64; /* 448:511 Step command 0 */
-	unsigned int step1:       64; /* 384:447 Step command 1 */
-	unsigned int step2:       64; /* 320:383 Step command 2 */
-	unsigned int step3:       64; /* 256:319 Step command 3 */
-	unsigned int step4:       64; /* 192:255 Step command 4 */
-	unsigned int step5:       64; /* 128:191 Step command 5 */
-	unsigned int step6:       64; /* 064:127 Step command 6 */
-	unsigned int sensitivity:  8; /* 056:063 Kuando Box sensitivity 0=hi, 31=low [0,31] */
-	unsigned int timeout:      8; /* 048:055 Kuando Box timeout in seconds [1,30] */
-	unsigned int trigger;      8; /* 040:047 Kuando Box trigger time in ms [1, 250] */
-	unsigned int pad0;        24; /* 016:039 Three byte pad, required to be 0xffffff */	
-	unsigned int checksum;    16; /* 000:015 Checksum of 64-byte packet */
+    unsigned int step0:       64; /* 448:511 Step command 0 */
+    unsigned int step1:       64; /* 384:447 Step command 1 */
+    unsigned int step2:       64; /* 320:383 Step command 2 */
+    unsigned int step3:       64; /* 256:319 Step command 3 */
+    unsigned int step4:       64; /* 192:255 Step command 4 */
+    unsigned int step5:       64; /* 128:191 Step command 5 */
+    unsigned int step6:       64; /* 064:127 Step command 6 */
+    unsigned int sensitivity:  8; /* 056:063 Kuando Box sensitivity 0=hi, 31=low [0,31] */
+    unsigned int timeout:      8; /* 048:055 Kuando Box timeout in seconds [1,30] */
+    unsigned int trigger;      8; /* 040:047 Kuando Box trigger time in ms [1, 250] */
+    unsigned int pad0;        24; /* 016:039 Three byte pad, required to be 0xffffff */ 
+    unsigned int checksum;    16; /* 000:015 Checksum of 64-byte packet */
 } busylight_buf_t;
 ```
 
-Compared to the [Embrava Blynclight][Embrava] this device is somewhat more
+Compared to the [Embrava Blynclight][Embrava] this device is more
 sophisticated in operation. In practice, a single step is sufficient
 to carry out simple operations and additional steps allow for more
-complicated effects. Of signifcant note, the device **requires** a regular
+complicated effects. Of note, the device **requires** a regular
 'keep alive' write, otherwise the device stops executing the current
 program and quiesces (turns off the light, stops ringtone).
 
@@ -87,16 +88,15 @@ Each 8-byte step has the following general format with four
 variations; keep alive, boot loader, reset, and jump.
 
 ```C
-
 #define KEEP_ALIVE_OP       (1 << 3)   /* 0x8 */
 #define START_BOOTLOADER_OP (1 << 2)   /* 0x4 */
 #define RESET_DEVICE_OP     (1 << 1)   /* 0x2 */
 #define JUMP_OP             (1 << 0)   /* 0x1 */
 
 typedef struct {
-	unsigned int cmd_hi:  4;  /* 60:63 Step type [Keep alive|Boot|Reset|Jump] */
-	unsigned int cmd_lo:  4;  /* 56:59 */
-	unsigned int body:   56:  /* 00:55 */
+    unsigned int cmd_hi:  4;  /* 60:63 Step type [Keep alive|Boot|Reset|Jump] */
+    unsigned int cmd_lo:  4;  /* 56:59 */
+    unsigned int body:   56:  /* 00:55 */
 } busylight_base_t;
 ```
 
@@ -105,9 +105,9 @@ typedef struct {
 ```C
 typedef struct {
     unsigned int keepalive: 4; /* 60:63 KEEP_ALIVE_OP */
-	unsigned int timeout:   4; /* 56:59 In seconds, [0, 15] */
-	unsigned int pad0:     56; /* 00:55 zeros */
-} busylight_keepalive_step_t;	
+    unsigned int timeout:   4; /* 56:59 In seconds, [0, 15] */
+    unsigned int pad0:     56; /* 00:55 zeros */
+} busylight_keepalive_step_t;   
 ```
 
 ##### Boot Loader Step Format
@@ -115,7 +115,7 @@ typedef struct {
 ```C
 typedef struct {
     unsigned int boot:      4; /* 60:63 BOOTLOADER_OP */
-	unsigned int pad0:     60; /* 00:59 zeros */
+    unsigned int pad0:     60; /* 00:59 zeros */
 } busylight_bootloader_step_t;
 ```
 
@@ -123,7 +123,7 @@ typedef struct {
 ```C
 typedef struct {
     unsigned int reset:     4; /* 60:63 RESET_DEVICE_OP */
-	unsigned int pad0:     60; /* 00:59 zeros */
+    unsigned int pad0:     60; /* 00:59 zeros */
 } busylight_reset_step_t;
 ```
 
@@ -131,18 +131,17 @@ typedef struct {
 ```C
 typedef struct {
     unsigned int jump:     4;  /* 60:63 JUMP_OP */
-	unsigned int pad0      1;  /* 59:59 zero */
-	unsigned int target:   3;  /* 56:58 Jump target: [0,7] */
-	unsigned int repeat:   8;  /* 48:55 Execute this step N times [1,255] */
-	unsigned int red:      8;  /* 40:47 8-bit PWM on time [0,100] */
-	unsigned int green:    8;  /* 32:39 8-bit PWM on time [0,100] */
-	unsigned int blue:     8;  /* 24:31 8-bit PWM on time [0,100] */
-	unsigned int on_time:  8;  /* 16:23 time in 0.1 sec steps [0,255] */
-	unsigned int off_time: 8;  /* 08:15 time in 0.1 sec steps [0,255] */
-	unsigned int update:   1;  /* 07:07 if clear, following audio is ignored*/
-	unsigned int ringtone: 4;  /* 03:06 */
-	unsigned int volume:   3;  /* 00:02 000 stops ringtone*/	
-
+    unsigned int pad0      1;  /* 59:59 zero */
+    unsigned int target:   3;  /* 56:58 Jump target: [0,7] */
+    unsigned int repeat:   8;  /* 48:55 Execute this step N times [1,255] */
+    unsigned int red:      8;  /* 40:47 8-bit PWM on time [0,100] */
+    unsigned int green:    8;  /* 32:39 8-bit PWM on time [0,100] */
+    unsigned int blue:     8;  /* 24:31 8-bit PWM on time [0,100] */
+    unsigned int on_time:  8;  /* 16:23 time in 0.1 sec steps [0,255] */
+    unsigned int off_time: 8;  /* 08:15 time in 0.1 sec steps [0,255] */
+    unsigned int update:   1;  /* 07:07 if clear, following audio is ignored*/
+    unsigned int ringtone: 4;  /* 03:06 */
+    unsigned int volume:   3;  /* 00:02 000 stops ringtone*/ 
 } busylight_jump_step_t;
 ```
 
@@ -158,17 +157,17 @@ be a jump instruction configured with three 2-byte color values:
 ```C
     busylight_buf_t packet;
     busylight_jump_step_t word;
-    
+
     word.jump = JUMP_OP
     word.target = 0
     word.repeat = 0
     word.red = red_value;
     word.green = green_value;
     word.blue = blue_value;
-    
+
     packet.step0 = word;
-	/* calculate checksum */
-	/* write packet to the device */
+    /* calculate checksum */
+    /* write packet to the device */
 ```
 
 Once written, the light will be active for XXX seconds and then quiesce if
@@ -182,13 +181,13 @@ Building the keep alive packet is very simple:
     busylight_buf_t packet;
     busylight_keepalive_step_t word;
 
-	word.keepalive = KEEP_ALIVE_OP;
-	word.timeout = timeout_in_seconds;
+    word.keepalive = KEEP_ALIVE_OP;
+    word.timeout = timeout_in_seconds;
 
-	packet.step0 = word;
-	
-	/* calculate checksum */
-	/* write packet to the device */
+    packet.step0 = word;
+
+    /* calculate checksum */
+    /* write packet to the device */
 ```
 
 The `timeout` field of the keep alive step is 8-bits wide and is the
@@ -212,7 +211,7 @@ cycle values are given in tenths of a second increments:
 ```C
     busylight_buf_t packet;
     busylight_jump_step_t word;
-    
+
     word.jump = JUMP_OP
     word.target = 0
     word.repeat = 0
@@ -220,11 +219,12 @@ cycle values are given in tenths of a second increments:
     word.green = green_value;
     word.blue = blue_value;
     word.dc_on = on_duration;
-	word.dc_off = off_duration;
-    
+    word.dc_off = off_duration;
+
     packet.step0 = word;
-	/* calculate checksum */
-	/* write packet to the device */
+
+    /* calculate checksum */
+    /* write packet to the device */
 ```
 
 #### More Advanced Usage
