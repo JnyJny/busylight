@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         python-version: [ '3.6', '3.7', '3.8', '3.9' ]
-    name: BusyLight For Humans ${{ matrix.python-version }} PyTest
+    name: Test BusyLight For Humans ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python ${{ matrix.python-version }}
