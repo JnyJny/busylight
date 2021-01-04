@@ -1,7 +1,10 @@
 <!-- USB HID API embrava blynclight agile innovations blinkstick kuando busylight luxafor flag thingM blink(1) -->
 ![BusyLight Project Logo][1]
 
+![version][pypi-version]
 ![pytest][pytest-action]
+![license][license]
+![dm][dm]
 ![Code style: black][black-badge]
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
@@ -188,3 +191,6 @@ manager.lights_off(ALL_LIGHTS)
 [UDEV]: https://en.wikipedia.org/wiki/Udev
 [black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
 [black]: https://github.com/psf/black
+[pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
+[license]: https://img.shields.io/pypi/l/busylight-for-humans
+[dm]: https://img.shields.io/pypi/dm/busylight-for-humans
