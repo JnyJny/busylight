@@ -2,6 +2,7 @@
 ![BusyLight Project Logo][1]
 
 ![version][pypi-version]
+![dependencies][dependencies]
 ![pytest][pytest-action]
 ![license][license]
 ![dm][dm]
@@ -189,8 +190,10 @@ manager.lights_off(ALL_LIGHTS)
 
 [DemoGif]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
 [UDEV]: https://en.wikipedia.org/wiki/Udev
+
+<!-- badges -->
 [black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
-[black]: https://github.com/psf/black
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
+[dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [dm]: https://img.shields.io/pypi/dm/busylight-for-humans
