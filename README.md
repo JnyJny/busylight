@@ -2,6 +2,7 @@
 ![BusyLight Project Logo][1]
 
 ![pytest][pytest-action]
+![[Code style: black][black-badge]][black]
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
@@ -185,3 +186,5 @@ manager.lights_off(ALL_LIGHTS)
 
 [DemoGif]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
 [UDEV]: https://en.wikipedia.org/wiki/Udev
+[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
+[black]: https://github.com/psf/black
