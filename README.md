@@ -2,7 +2,7 @@
 ![BusyLight Project Logo][1]
 
 ![pytest][pytest-action]
-![[Code style: black][black-badge]][black]
+![Code style: black][black-badge]
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
