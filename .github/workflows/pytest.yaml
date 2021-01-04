@@ -1,0 +1,26 @@
+name: PyTest
+
+on:
+  push:
+    tags:
+      - "*"
+      
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [ '3.6', '3.7', '3.8', '3.9' ]
+    name: BusyLight For Humans ${{ matrix.python-version }} PyTest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: |
+        sudo apt-get install -y libusb-1.0-0-dev libudev-dev
+        python -m pip install --upgrade pip
+        pip install poetry pytest
+        poetry install -E webapi
