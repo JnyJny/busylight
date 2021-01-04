@@ -1,4 +1,4 @@
-name: Pytest BusyLight For Humans
+name: pytest
 
 on:
   push:
