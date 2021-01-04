@@ -33,8 +33,8 @@ python project.
 - Works on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
 
-If you have a USB light that's not on this list, please start
-an issue with the make and model you want supported.
+If you have a USB light that's not on this list, please open
+an issue with the make and model device you want supported.
 
 ## Basic Install 
 
