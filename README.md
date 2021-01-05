@@ -1,19 +1,19 @@
 <!-- USB HID API embrava blynclight agile innovations blinkstick kuando busylight luxafor flag thingM blink(1) -->
-![BusyLight Project Logo][1]
+![BusyLight Project Logo][LOGO]
 
 ![version][pypi-version]
 ![dependencies][dependencies]
 ![pytest][pytest-action]
 ![license][license]
-![dm][dm]
-![Code style: black][black-badge]
+![monthly-downloads][monthly-downloads]
+![Code style: black][code-style-black]
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
 the command-line, using a HTTP API or imported directly into your own
 python project.
 
-![All Supported Lights][DemoGif]
+![All Supported Lights][DEMO]
 
 **Six Lights Attached to One Host**<br>
 <em>Back to Front, Left to Right</em> <br>
@@ -21,7 +21,7 @@ python project.
 <b>Blink(1), Flag, BlinkStick</b>
 
 ## Features
-- Control lights from the [command-line][BUSYLIGHT.1].
+- Control lights from the [command-line][HELP].
 - Control lights via a [Web API][WEBAPI].
 - Individually addresable lights.
 - Supports Five Vendors & Multiple Models:
@@ -174,26 +174,25 @@ manager.lights_off(ALL_LIGHTS)
 ```
 
 [0]: https://pypi.org/project/busylight-for-humans/
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
-[BUSYLIGHT.1]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
-[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
+
+<!-- doc links -->
 [2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovations.md
 [3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
 [4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
 [5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
 [6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
 
-[37]: https://github.com/JnyJny/busylight/workflows/Python%203.7/badge.svg
-[38]: https://github.com/JnyJny/busylight/workflows/Python%203.8/badge.svg
-[39]: https://github.com/JnyJny/busylight/workflows/Python%203.9/badge.svg
-[pytest-action]: https://github.com/JnyJny/busylight/workflows/pytest/badge.svg
+[LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[HELP]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
+[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
+[DEMO]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
 
-[DemoGif]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
 [UDEV]: https://en.wikipedia.org/wiki/Udev
 
 <!-- badges -->
-[black-badge]: https://img.shields.io/badge/code%20style-black-000000.svg
+[pytest-action]: https://github.com/JnyJny/busylight/workflows/pytest/badge.svg
+[code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
-[dm]: https://img.shields.io/pypi/dm/busylight-for-humans
+[monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
