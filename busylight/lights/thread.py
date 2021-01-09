@@ -16,15 +16,19 @@ class CancellableThread(Thread):
     not be re-used after it has been cancelled.
     """
 
-    def __init__(self, target: Generator, name: str = None):
+    def __init__(self, target: Generator[None, None, None], name: str = None):
         """
         :param target: generator
         :param name: str
         """
         if not isinstance(target, Generator):
-            raise ValueError("Target must be a generator.")
+            raise ValueError(f"Target must be a generator, not: {type(target)}")
 
-        super().__init__(target=target, name=name, daemon=True)
+        super().__init__(
+            target=target,  # type:ignore
+            name=name,
+            daemon=True,
+        )
         self._is_cancelled = False
 
     def run(self) -> None:
@@ -43,7 +47,7 @@ class CancellableThread(Thread):
         ```
 
         """
-        for _ in self._target:
+        for _ in self._target:  # type: ignore
             if self._is_cancelled:
                 return
 

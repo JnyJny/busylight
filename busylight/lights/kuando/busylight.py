@@ -2,7 +2,7 @@
 """
 
 from time import sleep
-from typing import Tuple, Union
+from typing import Generator, List, Tuple, Union
 
 from .hardware import BusyLightState
 from .hardware import Jump
@@ -15,21 +15,21 @@ from ..usblight import USBLightIOError
 
 class BusyLight(USBLight):
 
-    VENDOR_IDS = [0x27BB]
-    PRODUCT_IDS = []
+    VENDOR_IDS: List[int] = [0x27BB]
+    PRODUCT_IDS: List[int] = []
     vendor = "Kuando"
 
     @property
-    def state(self):
+    def state(self) -> BusyLightState:
         """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
             pass
-        self._state = BusyLightState()
+        self._state: BusyLightState = BusyLightState()
         return self._state
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return bytes(self.state)
 
     def reset(self) -> None:
@@ -51,16 +51,16 @@ class BusyLight(USBLight):
         super().blink(color, speed)
 
         instruction = Jump(0)
-        instruction.color = color
-        instruction.repeat = 0
-        instruction.dc_on = 10 // speed
-        instruction.dc_off = 10 // speed
+        instruction.color = color  # type: ignore
+        instruction.repeat = 0  # type: ignore
+        instruction.dc_on = 10 // speed  # type: ignore
+        instruction.dc_off = 10 // speed  # type: ignore
 
         with self.batch_update():
             self.reset()
             self.state.line0 = instruction.value
 
-    def keepalive(self) -> None:
+    def keepalive(self) -> Generator[None, None, None]:
         """Sends a keep alive command to the device periodically.
 
         This device requires constant reassurance and encouragement.
@@ -85,7 +85,7 @@ class BusyLight(USBLight):
             return self._keepalive_thread
         except AttributeError:
             pass
-        self._keepalive_thread = CancellableThread(
+        self._keepalive_thread: CancellableThread = CancellableThread(
             self.keepalive(), f"keepalive-{self.identifier}"
         )
         return self._keepalive_thread

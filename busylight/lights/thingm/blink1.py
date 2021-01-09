@@ -2,27 +2,27 @@
 """
 
 from enum import Enum
-from typing import Callable, Tuple
+from typing import Callable, Iterable, List, Tuple
 
-from .hardware import Blink1Report, Blink1Action, Blink1LED, Blink1State
+from .hardware import Blink1Report, Blink1Action, Blink1LED, BlinkCommand
 
 from ..usblight import USBLight
 
 
 class Blink1(USBLight):
 
-    VENDOR_IDS = [0x27B8]
-    PRODUCT_IDS = []
+    VENDOR_IDS: List[int] = [0x27B8]
+    PRODUCT_IDS: List[int] = []
     vendor = "ThingM"
 
     @property
-    def state(self):
+    def state(self) -> BlinkCommand:
         """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
             pass
-        self._state = Blink1State()
+        self._state: BlinkCommand = BlinkCommand()
         return self._state
 
     @property
@@ -66,11 +66,11 @@ class Blink1(USBLight):
         """
         with self.batch_update():
             self.state.reset()
-            self.state.report = Blink1Report.ONE
-            self.state.action = Blink1Action.FadeColor
-            self.state.color = color
-            self.state.fade = time_ms
-            self.state.leds = leds
+            self.state.report = Blink1Report.ONE  # type:ignore
+            self.state.action = Blink1Action.FadeColor  # type:ignore
+            self.state.color = color  # type:ignore
+            self.state.fade = time_ms  # type:ignore
+            self.state.leds = leds  # type:ignore
 
     def write_pattern_line(
         self, color: Tuple[int, int, int], fade_ms: int, index: int
@@ -83,20 +83,20 @@ class Blink1(USBLight):
 
         with self.batch_update():
             self.state.reset()
-            self.state.report = Blink1Report.ONE
-            self.state.action = Blink1Action.SetColorPattern
-            self.state.color = color
-            self.state.fade = fade_ms
-            self.state.line = index
+            self.state.report = Blink1Report.ONE  # type: ignore
+            self.state.action = Blink1Action.SetColorPattern  # type: ignore
+            self.state.color = color  # type: ignore
+            self.state.fade = fade_ms  # type: ignore
+            self.state.line = index  # type: ignore
 
     def save_patterns(self):
         """"""
         with self.batch_update():
             self.state.reset()
-            self.state.report = Blink1Report.ONE
-            self.state.action = Blink1Action.SaveColorPatterns
-            self.state.color = (0xBE, 0xEF, 0xCA)
-            self.state.count = 0xFE
+            self.state.report = Blink1Report.ONE  # type: ignore
+            self.state.action = Blink1Action.SaveColorPatterns  # type: ignore
+            self.state.color = (0xBE, 0xEF, 0xCA)  # type: ignore
+            self.state.count = 0xFE  # type: ignore
 
     def play_loop(self, play: int, start: int, stop: int, count: int = 0) -> None:
         """
@@ -107,12 +107,12 @@ class Blink1(USBLight):
         """
         with self.batch_update():
             self.state.reset()
-            self.state.report = Blink1Report.ONE
-            self.state.action = Blink1Action.PlayLoop
-            self.state.play = play
-            self.state.start = start
-            self.state.stop = stop
-            self.state.count = count
+            self.state.report = Blink1Report.ONE  # type: ignore
+            self.state.action = Blink1Action.PlayLoop  # type: ignore
+            self.state.play = play  # type: ignore
+            self.state.start = start  # type: ignore
+            self.state.stop = stop  # type: ignore
+            self.state.count = count  # type: ignore
 
     def clear_patterns(self, start: int = 0, count: int = 16) -> None:
         """

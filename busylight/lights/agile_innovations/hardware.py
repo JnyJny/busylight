@@ -56,10 +56,8 @@ class BlinkStickVariant(int, Enum):
         - BlinkStickUnknownVariant
         """
 
-        try:
-            sequence, _, version = info["serial_number"].strip().partition("-")
-        except KeyError:
-            raise BlinkStickUnknownVariant(info) from None
+        serial_number = str(info.get("serial_number", "0.0-unknown"))
+        sequence, _, version = serial_number.strip().partition("-")
 
         major, minor = version.split(".")
 
@@ -87,7 +85,7 @@ class BlinkStickVariant(int, Enum):
         except AttributeError:
             pass
 
-        self._nleds = {0x002: 192, 0x200: 8, 0x201: 8, 0x202: 2, 0x203: 32}.get(
+        self._nleds: int = {0x002: 192, 0x200: 8, 0x201: 8, 0x202: 2, 0x203: 32}.get(
             self.value, 1
         )
         return self._nleds

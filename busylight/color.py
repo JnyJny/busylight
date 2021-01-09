@@ -4,9 +4,11 @@
 from functools import lru_cache
 from math import log
 from string import hexdigits
-from typing import Tuple
+from typing import Iterable, Tuple
 
 import webcolors
+
+ColorTuple = Tuple[int, int, int]
 
 
 def normalize_hex_str(value: str) -> str:
@@ -60,11 +62,13 @@ def color_to_rgb(value: str) -> Tuple[int, int, int]:
     """
 
     try:
-        return tuple(webcolors.hex_to_rgb(normalize_hex_str(value)))
+        r, g, b = webcolors.hex_to_rgb(normalize_hex_str(value))
+        return (int(r), int(g), int(b))
     except ValueError:
         pass
 
-    return tuple(webcolors.name_to_rgb(value))
+    r, g, b = webcolors.name_to_rgb(value)
+    return (int(r), int(g), int(b))
 
 
 def rgb_to_hex(red: int, green: int, blue: int, prefix: str = "#") -> str:
@@ -72,7 +76,42 @@ def rgb_to_hex(red: int, green: int, blue: int, prefix: str = "#") -> str:
     return f"{prefix}{red:02x}{green:02x}{blue:02x}"
 
 
+class ColorCorrect:
+    def __init__(
+        self,
+        gamma: Tuple[float, float, float] = None,
+        white: Tuple[int, int, int] = None,
+    ) -> None:
+        self.gamma = gamma or (2.0, 2.0, 2.0)
+        self.white = white or (255, 255, 255)
+
+    @lru_cache(maxsize=256)
+    def correct_value(self, value: int, gamma: float, white: int) -> int:
+        """
+        :param value: int
+        :param gamma: float
+        :param white: int
+        """
+        return int(white * (value / 255) ** gamma)
+
+    def correct(
+        self, color: Tuple[int, int, int], gamma: Tuple[float, float, float] = None
+    ) -> Tuple[int, int, int]:
+        """
+        :param color: Tuple[int, int, int]
+        :param gamma: Tuple[float, float, float] optional
+        :return: Tuple[int, int, int]
+        """
+        gamma = gamma or self.gamma
+        corrected = []
+        for v, g, w in zip(color, gamma, self.white):
+            corrected.append(self.correct_value(v, g, w))
+        r, g, b = corrected
+        return (r, g, b)
+
+
 @lru_cache(maxsize=255)
 def gamma_correct(value: int, step: int = 255) -> int:
     """"""
-    return round((log(1 + value) / 5.545) * step)
+    gamma = 5.545
+    return round((log(1 + value) / gamma) * step)

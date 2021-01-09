@@ -2,7 +2,7 @@
 """
 
 
-from typing import Tuple
+from typing import List, Tuple
 
 from .hardware import BlynclightState
 
@@ -12,8 +12,8 @@ from ..usblight import USBLight
 class Blynclight(USBLight):
     """Embrava Blynclight family of USB-connected presence lights."""
 
-    VENDOR_IDS = [0x2C0D, 0x03E5]
-    PRODUCT_IDS = []
+    VENDOR_IDS: List[int] = [0x2C0D, 0x03E5]
+    PRODUCT_IDS: List[int] = []
     vendor = "Embrava"
 
     @property
@@ -23,7 +23,7 @@ class Blynclight(USBLight):
             return self._state
         except AttributeError:
             pass
-        self._state = BlynclightState()
+        self._state: BlynclightState = BlynclightState()
         return self._state
 
     @property
@@ -32,7 +32,7 @@ class Blynclight(USBLight):
 
     @color.setter
     def color(self, values: Tuple[int, int, int]) -> None:
-        self.state.red, self.state.green, self.state.blue = values
+        self.state.red, self.state.green, self.state.blue = values  # type: ignore
 
     @property
     def is_on(self) -> bool:
@@ -48,24 +48,24 @@ class Blynclight(USBLight):
 
         with self.batch_update():
             self.color = color
-            self.state.flash = False
-            self.state.speed = 1
-            self.state.off = False
+            self.state.flash = 0  # type: ignore
+            self.state.speed = 1  # type: ignore
+            self.state.off = 0  # type: ignore
 
     def off(self) -> None:
 
         with self.batch_update():
-            self.state.off = True
-            self.state.flash = False
-            self.state.speed = 1
+            self.state.off = 1  # type: ignore
+            self.state.flash = 0  # type: ignore
+            self.state.speed = 1  # type: ignore
 
-    def blink(self, color: Tuple[int, int, int] = None, speed: int = 1) -> None:
+    def blink(self, color: Tuple[int, int, int], speed: int = 1) -> None:
 
         super().blink(color, speed)
 
         with self.batch_update():
             if color:
                 self.color = color
-            self.state.off = False
-            self.state.flash = True
-            self.state.speed = 1 << (speed - 1)
+            self.state.off = 0  # type: ignore
+            self.state.flash = 1  # type: ignore
+            self.state.speed = 1 << (speed - 1)  # type: ignore

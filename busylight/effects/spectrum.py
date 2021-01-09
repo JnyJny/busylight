@@ -1,7 +1,7 @@
 """Spectrum Effect
 
 """
-from typing import List, Tuple
+from typing import Generator, Tuple
 import math
 
 
@@ -11,7 +11,7 @@ def Spectrum(
     phase: Tuple[int, int, int] = None,
     center: int = 128,
     width: int = 127,
-) -> Tuple[float, float, float]:
+) -> Generator[Tuple[int, int, int], None, None]:
     """Generator function that returns 'steps' (red, blue, green) tuples.
 
         steps: optional integer, default=64

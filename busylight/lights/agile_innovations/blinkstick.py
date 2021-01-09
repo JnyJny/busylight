@@ -3,7 +3,7 @@
 
 from functools import partial
 from time import sleep
-from typing import Tuple
+from typing import List, Tuple
 
 from .hardware import BlinkStickVariant
 from .hardware import BlinkStickUnknownVariant
@@ -14,8 +14,8 @@ from ...effects import blink as blink_effect
 
 class BlinkStick(USBLight):
 
-    VENDOR_IDS = [0x20A0]
-    PRODUCT_IDS = []
+    VENDOR_IDS: List[int] = [0x20A0]
+    PRODUCT_IDS: List[int] = []
     vendor = "Agile Innovations"
 
     @property
@@ -24,7 +24,7 @@ class BlinkStick(USBLight):
             return self._name
         except AttributeError:
             pass
-        self._name = self.variant.name
+        self._name: str = self.variant.name
         return self._name
 
     @property
@@ -33,7 +33,7 @@ class BlinkStick(USBLight):
             return self._variant
         except AttributeError:
             pass
-        self._variant = BlinkStickVariant.identify(self.info)
+        self._variant: BlinkStickVariant = BlinkStickVariant.identify(self.info)
         return self._variant
 
     @property

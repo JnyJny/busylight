@@ -84,20 +84,15 @@ class FlagCommand(int, Enum):
 
 
 class FlagColorCommand(StateVector):
-    def __init__(self):
-        super().__init__(0x1FF000000000000, 64)
+    def __init__(
+        self, color: Tuple[int, int, int], fade: int = 0, leds: FlagLED = FlagLED.ALL
+    ):
 
-    command = CommandField(56, 8)
-    leds = LEDField(48, 8)
-    red = ColorField(40, 8)
-    green = ColorField(32, 8)
-    blue = ColorField(24, 8)
-    pad = PadField(0, 24)
-
-
-class FlagFadeCommand(StateVector):
-    def __init__(self):
-        super().__init__(0x2FF000000000000, 64)
+        value = (FlagCommand.FADE if fade else FlagCommand.COLOR) << 56
+        super().__init__(value, 64)
+        self.leds = leds  # type: ignore
+        self.color = color
+        self.fade = fade  # type:ignore
 
     command = CommandField(56, 8)
     leds = LEDField(48, 8)
@@ -107,10 +102,28 @@ class FlagFadeCommand(StateVector):
     fade = FadeField(16, 8)
     pad = PadField(0, 16)
 
+    @property
+    def color(self):
+        return (self.red, self.green, self.blue)
+
+    @color.setter
+    def color(self, values: Tuple[int, int, int]):
+        self.red, self.green, self.blue = values  # type: ignore
+
 
 class FlagStrobeCommand(StateVector):
-    def __init__(self):
-        super().__init__(0x3FF000000000000, 64)
+    def __init__(
+        self,
+        color: Tuple[int, int, int],
+        speed: int,
+        repeat: int,
+        leds: FlagLED = FlagLED.ALL,
+    ):
+        super().__init__(0x300000000000000, 64)
+        self.leds = leds  # type: ignore
+        self.color = color
+        self.speed = speed  # type: ignore
+        self.repeat = repeat  # type: ignore
 
     command = CommandField(56, 8)
     leds = LEDField(48, 8)
@@ -185,4 +198,4 @@ class FlagState(StateVector):
 
     @color.setter
     def color(self, values: Tuple[int, int, int]):
-        self.red, self.green, self.blue = values
+        self.red, self.green, self.blue = values  # type: ignore

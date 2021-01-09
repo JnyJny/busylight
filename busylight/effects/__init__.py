@@ -6,7 +6,7 @@ import asyncio
 import time
 
 from itertools import cycle
-from typing import Callable, Dict, List, Tuple, Union
+from typing import AsyncGenerator, Generator, Dict, List, Tuple, Union
 
 from .gradient import Gradient
 from .spectrum import Spectrum
@@ -21,7 +21,9 @@ from ..lights import USBLight, USBLightIOError
 ## to user input.
 
 
-def rainbow(light: USBLight, interval: float = 0.05, **kwds) -> None:
+def rainbow(
+    light: USBLight, interval: float = 0.05, **kwds
+) -> Generator[None, None, None]:
     """Color cycle the light thru a rainbow spectrum.
 
     :param light: USBLight
@@ -38,7 +40,9 @@ def rainbow(light: USBLight, interval: float = 0.05, **kwds) -> None:
             time.sleep(interval)
 
 
-async def rainbow_async(USBLight: object, interval: float = 0.05, **kwds) -> None:
+async def rainbow_async(
+    light: USBLight, interval: float = 0.05, **kwds
+) -> AsyncGenerator[None, None]:
     """Color cycle the light thru a rainbow spectrum. (async aware)
 
     :param light: USBLight
@@ -55,7 +59,9 @@ async def rainbow_async(USBLight: object, interval: float = 0.05, **kwds) -> Non
             await asyncio.sleep(interval)
 
 
-def blink(light: USBLight, color: Tuple[int, int, int], speed: int) -> None:
+def blink(
+    light: USBLight, color: Tuple[int, int, int], speed: int
+) -> Generator[None, None, None]:
     """The the light off and on with the specified color.
 
     :param light: USBLight
@@ -74,7 +80,9 @@ def blink(light: USBLight, color: Tuple[int, int, int], speed: int) -> None:
         time.sleep(interval)
 
 
-async def blink_async(light: USBLight, color: Tuple[int, int, int], speed: int) -> None:
+async def blink_async(
+    light: USBLight, color: Tuple[int, int, int], speed: int
+) -> AsyncGenerator[None, None]:
     """The the light off and on with the specified color. (async aware)
 
     :param light: USBLight
@@ -97,7 +105,7 @@ def pulse(
     light: USBLight,
     color: Tuple[int, int, int] = None,
     interval: float = 0.01,
-) -> None:
+) -> Generator[None, None, None]:
     """Pulse the light with scaled values of the supplied `color`.
 
     If no color is supplied or the color is black (0,0,0), the function defaults
@@ -128,7 +136,7 @@ async def pulse_async(
     light: USBLight,
     color: Tuple[int, int, int],
     interval: float = 0.1,
-) -> None:
+) -> AsyncGenerator[None, None]:
     """Pulse the light with scaled values of the supplied `color`. (async aware)
 
     If no color is supplied or the color is black (0,0,0), the function defaults
@@ -161,7 +169,7 @@ def flash_lights_impressively(
     colors: List[Tuple[int, int, int]] = None,
     interval: float = 0.05,
     **kwds
-) -> None:
+) -> Generator[None, None, None]:
     """Alternate between given colors very quickly.
 
     If no colors are given, defaults to [red, green, blue].
@@ -183,8 +191,8 @@ def flash_lights_impressively(
 
 
 async def flash_lights_impressively_async(
-    light: USBLight, colors: List[Tuple[int, int, int]], interval: float = 0.1
-) -> None:
+    light: USBLight, colors: List[Tuple[int, int, int]] = None, interval: float = 0.1
+) -> AsyncGenerator[None, None]:
     """Alternate between given colors very quickly. (async aware)
 
     If no colors are given, defaults to [red, green, blue].
@@ -194,8 +202,7 @@ async def flash_lights_impressively_async(
     :param interval: float
     """
 
-    if not colors:
-        colors = [(0xFF, 0, 0), (0, 0xFF, 0), (0, 0, 0xFF)]
+    colors = colors or [(0xFF, 0, 0), (0, 0xFF, 0), (0, 0, 0xFF)]
 
     for color in cycle(colors):
         try:

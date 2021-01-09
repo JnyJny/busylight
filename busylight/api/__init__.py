@@ -18,10 +18,11 @@ from ..manager import LightIdRangeError, ColorLookupError
 from ..color import rgb_to_hex
 
 
-server = FastAPI(
-    title="Busylight API Server",
-    description="""An API server for USB connected presence lights.
-
+class BusylightAPI(FastAPI):
+    def __init__(self):
+        super().__init__(
+            title="Busylight API Server",
+            description="""An API server for USB connected presence lights.
 **Supported USB lights:**
 - Embrava Blynclight, Blynclight +, Blynclight Mini
 - ThingM blink(1)
@@ -31,9 +32,12 @@ server = FastAPI(
 
 [Source](https://github.com/JnyJny/busylight.git)
 """,
-    version=__version__,
-)
+            version=__version__,
+        )
+        self.manager: LightManager = None
 
+
+server = BusylightAPI()
 
 ##
 ## Startup & Shutdown
@@ -128,7 +132,9 @@ async def Lights_Status() -> Dict[str, Any]:
 
     return {
         "number_of_lights": len(server.manager.lights),
-        "lights_on": len([l for l in server.manager.lights if l.is_on or l.animating]),
+        "lights_on": len(
+            [l for l in server.manager.lights if l.is_on or l.is_animating]
+        ),
     }
 
 

@@ -65,7 +65,11 @@ def list_subcommand(
     for index, light in enumerate(available):
         typer.secho(f"{index:2d}", fg="red", nl=False)
         typer.secho(": ", nl=False)
-        typer.secho(f"{light.info['product_string'].title()}", fg="green")
+        try:
+            product = str(light.info["product_string"]).title()
+            typer.secho(f"{product}", fg="green")
+        except KeyError:
+            typer.secho(f"Product String missing from HID data.", fg="red")
         if detail:
             for key, value in light.info.items():
                 typer.secho(f"\t{index:2d}", fg="red", nl=False)
@@ -106,10 +110,10 @@ def on_subcommand(
 
     light_id = ctx.obj
 
+    manager = LightManager()
+
     try:
-        with LightManager().operate_on(
-            light_id,
-        ) as manager:
+        with manager.operate_on(light_id):
             manager.light_on(light_id, color)
     except (LightIdRangeError, ColorLookupError) as error:
         typer.secho(str(error), fg="red")
@@ -137,8 +141,9 @@ def off_subcommand(
 
     light_id = ctx.obj
 
+    manager = LightManager()
     try:
-        with LightManager().operate_on(light_id, wait_on_animation=False) as manager:
+        with manager.operate_on(light_id, wait_on_animation=False):
             manager.light_off(light_id)
     except LightIdRangeError as error:
         typer.secho(str(error), fg="red")
@@ -178,10 +183,10 @@ def blink_subcommand(
     """
     light_id = ctx.obj
 
+    manager = LightManager()
     try:
-        with LightManager().operate_on(light_id) as manager:
+        with manager.operate_on(light_id):
             manager.light_blink(light_id, color, speed)
-
     except (LightIdRangeError, ColorLookupError) as error:
         typer.secho(str(error), fg="red")
         raise typer.Exit(-1) from None
@@ -190,7 +195,9 @@ def blink_subcommand(
 @cli.command(name="supported")
 def supported_subcommand(ctx: typer.Context):
     """List supported LED lights."""
-    with LightManager().operate_on(None) as manager:
+
+    manager = LightManager()
+    with manager.operate_on(None):
         for supported_light in manager.supported:
             typer.secho(supported_light, fg="green")
 
@@ -225,7 +232,7 @@ def udev_rules_subcommand(
     output = filename.open("w") if filename else stdout
 
     for supported_light in USBLight.supported_lights():
-        for vendor_id in supported_light.VENDOR_IDS:
+        for vendor_id in supported_light.vendor_ids():
             print(
                 f'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{vendor_id:04x}", MODE="0666"',
                 file=output,

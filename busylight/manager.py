@@ -5,9 +5,7 @@ from contextlib import contextmanager, suppress
 from enum import Enum
 from functools import partial
 from time import sleep
-from typing import Generator, Dict, List, Tuple, Union
-
-import hid
+from typing import ContextManager, Generator, Dict, List, Tuple, Union
 
 from .lights import USBLight
 from .lights import USBLightUnknownVendor
@@ -93,7 +91,7 @@ class LightManager:
             return self._supported
         except AttributeError:
             pass
-        self._supported = []
+        self._supported: List[str] = []
         for light in USBLight.supported_lights():
             self._supported.append(f"{light.vendor} {light.__name__}")
         return self._supported
@@ -108,7 +106,7 @@ class LightManager:
             return self._lights
         except AttributeError:
             pass
-        self._lights = []
+        self._lights: List[USBLight] = []
         return self._lights
 
     # EJO __get_item__ implementation here to allow slice notation?
@@ -280,7 +278,7 @@ class LightManager:
         wait_on_animation: bool = True,
         off_on_enter: bool = True,
         off_on_exit: bool = False,
-    ) -> object:
+    ) -> "LightManager":
         """This context manager method sets the lights specified by `light_id`
         to a known state, 'off', upon entering and exiting the context manager.
 

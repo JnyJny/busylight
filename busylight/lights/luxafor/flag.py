@@ -2,14 +2,15 @@
 """
 
 from enum import Enum
-from typing import Tuple
+from typing import cast, List, Tuple
 
 
 from .hardware import FlagState
 from .hardware import FlagLED
 from .hardware import FlagWave
 from .hardware import FlagPattern
-from .hardware import FlagCommand
+from .hardware import FlagColorCommand
+from .hardware import FlagStrobeCommand
 
 from ..usblight import USBLight
 
@@ -17,8 +18,8 @@ from ..usblight import USBLight
 class Flag(USBLight):
     """Support for the Luxafor Flag USB light."""
 
-    VENDOR_IDS = [0x04D8]
-    PRODUCT_IDS = []
+    VENDOR_IDS: List[int] = [0x04D8]
+    PRODUCT_IDS: List[int] = []
     vendor = "Luxafor"
 
     @property
@@ -28,7 +29,7 @@ class Flag(USBLight):
             return self._state
         except AttributeError:
             pass
-        self._state = FlagState()
+        self._state: FlagState = FlagState()
         return self._state
 
     @property
@@ -37,7 +38,8 @@ class Flag(USBLight):
             return self._name
         except AttributeError:
             pass
-        self._name = self.info["product_string"].title()
+
+        self._name: str = str(self.info.get("product_string", "Luxafor Flag (maybe)"))
         return self._name
 
     def __bytes__(self):
@@ -50,20 +52,16 @@ class Flag(USBLight):
 
         super().on(color)
 
+        command = FlagColorCommand(color)
         with self.batch_update():
             self.state.reset()
-            self.state.cmd = FlagCommand.COLOR
-            self.state.leds = FlagLED.ALL
-            self.state.color = color
+            self.state.value = command.value
 
     def blink(self, color: Tuple[int, int, int], speed: int = 1):
 
         super().blink(color, speed)
 
+        command = FlagStrobeCommand(color, 0xF - speed, 0)
         with self.batch_update():
             self.state.reset()
-            self.state.cmd = FlagCommand.STROBE
-            self.state.leds = FlagLED.ALL
-            self.state.color = color
-            self.state.strobe_speed = 0xF - speed
-            self.state.strobe_repeat = 0
+            self.state.value = command.value

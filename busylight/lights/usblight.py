@@ -2,12 +2,22 @@
 """
 
 import abc
-import hid
-
+import hid  # type: ignore
 
 from contextlib import contextmanager
 from threading import RLock
-from typing import Any, Callable, Dict, Generator, List, Tuple, Union
+from typing import (
+    Any,
+    Callable,
+    cast,
+    Dict,
+    Generator,
+    Iterator,
+    List,
+    Tuple,
+    Type,
+    Union,
+)
 
 from .exceptions import USBLightNotFound
 from .exceptions import USBLightUnknownVendor
@@ -48,6 +58,7 @@ class USBLight(abc.ABC):
     In addition to providing USB infrastructre to subclasses, USBLight
     provides several classmethods:
     - supported_lights : list of subclasses
+    - vendor_ids : list of integer vendor identifiers
     - first_light : returns the first available light
     - all_lights : returns all available lights
 
@@ -59,13 +70,25 @@ class USBLight(abc.ABC):
     """
 
     @classmethod
-    def supported_lights(cls) -> List[object]:
+    def supported_lights(cls) -> List[Type["USBLight"]]:
         """Returns a list of USBLight subclasses supporting specific lights."""
 
         return cls.__subclasses__()
 
     @classmethod
-    def first_light(cls):
+    def vendor_ids(cls) -> List[int]:
+        """Returns a list of supported integer vendor identifiers."""
+
+        if cls.__name__ == "USBLight":
+            vendor_ids: List[List[int]] = []
+            for subclass in cls.supported_lights():
+                vendor_ids.append(subclass.vendor_ids())
+            return sum(vendor_ids, [])
+
+        return cls.VENDOR_IDS  # type: ignore
+
+    @classmethod
+    def first_light(cls) -> "USBLight":
         """Returns the first supported and unused USB light found.
 
         If a suitable light is not found, USBLightNotFound is
@@ -81,7 +104,7 @@ class USBLight(abc.ABC):
 
         if cls.__name__ != "USBLight":
 
-            for vendor_id in cls.VENDOR_IDS:
+            for vendor_id in cls.vendor_ids():
                 for light_entry in hid.enumerate(vendor_id):
                     try:
                         return cls.from_dict(light_entry)
@@ -103,7 +126,7 @@ class USBLight(abc.ABC):
             raise USBLightNotFound()
 
     @classmethod
-    def all_lights(cls) -> List[object]:
+    def all_lights(cls) -> List["USBLight"]:
         """Returns a list of configured lights.
 
         If called by a subclass of USBLight, the list will
@@ -159,7 +182,12 @@ class USBLight(abc.ABC):
         - USBLightInUse
         - KeyError
         """
-        return cls(info["vendor_id"], info["product_id"], info["path"])
+
+        return cls(
+            cast(int, info["vendor_id"]),
+            cast(int, info["product_id"]),
+            cast(bytes, info["path"]),
+        )
 
     def __init__(
         self, vendor_id: int, product_id: int, path: bytes, reset: bool = False
@@ -209,7 +237,7 @@ class USBLight(abc.ABC):
             return self._device
         except AttributeError:
             pass
-        self._device = hid.device()
+        self._device: hid.device = hid.device()
         return self._device
 
     @property
@@ -271,10 +299,10 @@ class USBLight(abc.ABC):
 
         for info in hid.enumerate(self.vendor_id, self.product_id):
             if info["path"] == self.path:
-                self._info = dict(info)
+                self._info: Dict[str, Union[int, str, bytes]] = dict(info)
                 break
         else:
-            raise USBLightIOError(f"Device information missing: {self.path}")
+            raise USBLightIOError(f"Device information missing: {self.path!s}")
 
         return self._info
 
@@ -285,7 +313,8 @@ class USBLight(abc.ABC):
             return self._name
         except AttributeError:
             pass
-        self._name = f"{self.vendor} {self.info['product_string'].title()}"
+        product = str(self.info.get("product_string", "unknown product name"))
+        self._name: str = f"{self.vendor} {product.title()}"
         return self._name
 
     @property
@@ -310,7 +339,7 @@ class USBLight(abc.ABC):
             return self._lock
         except AttributeError:
             pass
-        self._lock = RLock()
+        self._lock: RLock = RLock()
         return self._lock
 
     @property
@@ -325,7 +354,7 @@ class USBLight(abc.ABC):
 
     @property
     def color(self) -> Tuple[int, int, int]:
-        """A 3-tuple of integers representing red, green and blue."""
+        """A 3-tuple of integers representing red, green and blue color intensities."""
         return getattr(self, "_color", (0, 0, 0))
 
     @color.setter
@@ -351,7 +380,7 @@ class USBLight(abc.ABC):
         return any(self.color)
 
     @contextmanager
-    def batch_update(self) -> None:
+    def batch_update(self) -> Iterator[None]:
         """Context manager useful for grouping updates to a device.
 
         Manipulations to the light's in-memory representation of the
@@ -387,7 +416,7 @@ class USBLight(abc.ABC):
                     self.vendor_id, self.product_id, self.path
                 ) from None
             except Exception as error:
-                raise USBLightIOError(f"error opening {self.path}: {error}") from None
+                raise USBLightIOError(f"error opening {self.path!s}: {error}") from None
 
             if reset:
                 self.reset()
@@ -410,12 +439,12 @@ class USBLight(abc.ABC):
                 pass
             del self._device
 
-    def start_animation(self, animation: Generator) -> None:
+    def start_animation(self, animation: Callable) -> None:
         """Start an animation thread running the given `animation`.
 
         See busylight.lights.thread.CancellableThread for more details.
 
-        :param animation: Generator
+        :param animation: Callable
 
         Raises:
         - USBLightIOError

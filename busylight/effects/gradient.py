@@ -1,10 +1,12 @@
 """Color Gradient Effect
 """
-from typing import List, Tuple
+from typing import Generator, List, Tuple
 
 
 def Gradient(
-    color: Tuple[int, int, int], step: int = 1, reverse: bool = False,
+    color: Tuple[int, int, int],
+    step: int = 1,
+    reverse: bool = False,
 ) -> List[Tuple[int, int, int]]:
     """Returns a list of RGB tuples that describe a color gradient.
 

@@ -49,7 +49,7 @@ class BlinkStickDataframe(StateVector):
             return self._nleds
         except AttributeError:
             pass
-        self._nleds = int((len(self) - 16) // 24)
+        self._nleds: int = int((len(self) - 16) // 24)
         return self._nleds
 
     def leds(self) -> List[int]:
