@@ -65,5 +65,8 @@ minor_release: minor push publish
 
 release: patch_release
 
+mypy: MYPY= mypy
+mypy:
+	$(MYPY) --config-file $(PYPROJECT) $(TARGET)
 clean:
 	@rm -rf dist $(TARGET).egg-info *.log
