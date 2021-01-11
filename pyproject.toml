@@ -36,8 +36,6 @@ requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
 
 [mypy]
-[mypy-bitvector]
-ignore_missing_imports = true
 [mypy-webcolors]
 ignore_missing_imports = true
 [mypy-hid]
