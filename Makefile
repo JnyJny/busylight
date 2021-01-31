@@ -65,8 +65,12 @@ minor_release: minor push publish
 
 release: patch_release
 
+report:
+	pytest --cov=./busylight --cov-report=html
+
 mypy: MYPY= mypy
 mypy:
 	$(MYPY) --config-file $(PYPROJECT) $(TARGET)
 clean:
 	@rm -rf dist $(TARGET).egg-info *.log
+
