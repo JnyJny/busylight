@@ -349,7 +349,7 @@ python-versions = "*"
 
 [[package]]
 name = "uvicorn"
-version = "0.13.3"
+version = "0.13.4"
 description = "The lightning-fast ASGI server."
 category = "main"
 optional = true
@@ -361,7 +361,7 @@ h11 = ">=0.8"
 typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 
 [package.extras]
-standard = ["websockets (>=8.0.0,<9.0.0)", "watchgod (>=0.6,<0.7)", "python-dotenv (>=0.13)", "PyYAML (>=5.1)", "httptools (>=0.1.0,<0.2.0)", "uvloop (>=0.14.0)", "colorama (>=0.4)"]
+standard = ["websockets (>=8.0.0,<9.0.0)", "watchgod (>=0.6)", "python-dotenv (>=0.13)", "PyYAML (>=5.1)", "httptools (>=0.1.0,<0.2.0)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "colorama (>=0.4)"]
 
 [[package]]
 name = "webcolors"
@@ -479,14 +479,26 @@ h11 = [
     {file = "h11-0.12.0.tar.gz", hash = "sha256:47222cb6067e4a307d535814917cd98fd0a57b6788ce715755fa2b6c28b56042"},
 ]
 hidapi = [
+    {file = "hidapi-0.10.1-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:4a081c3775a7ac850743dd345a1a4fb1175af3954c4c7a1f7508ab645f72dcb5"},
+    {file = "hidapi-0.10.1-cp35-cp35m-manylinux2014_x86_64.whl", hash = "sha256:9ac04c6dc3d792d92b1d6ff461511853fa166a0e22f4475fe60ad647555d1caf"},
     {file = "hidapi-0.10.1-cp35-cp35m-win32.whl", hash = "sha256:310c53aa81697bf16b5f0c127afda36e5e9ea37794147afe1461422623263ef7"},
     {file = "hidapi-0.10.1-cp35-cp35m-win_amd64.whl", hash = "sha256:59f5205928dbe92513038c50dfb4f939395f8f781e176259a40f37d7a291313f"},
+    {file = "hidapi-0.10.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:5cc5f15b1b68bcb04fa290abc87070d57a8c0d2cb3a01bafeba6a7df52cd8641"},
+    {file = "hidapi-0.10.1-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:83d8aab01afd397a0fee0017df4397fff96bef639d6176f94b747305324732aa"},
     {file = "hidapi-0.10.1-cp36-cp36m-win32.whl", hash = "sha256:0c92b398f6907654b07f7dbd7e06661abe9ad6119b403eb5fd3c2af4ce66a3b7"},
     {file = "hidapi-0.10.1-cp36-cp36m-win_amd64.whl", hash = "sha256:4bab0e8ab066527e09856a6a345e2e0c10061f2640e9281323da9a04b94bdec1"},
+    {file = "hidapi-0.10.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:0f558430c086e9e0028022f4fdfaed5044e6af50cb4f12b79c498da59fc84d51"},
+    {file = "hidapi-0.10.1-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:1e25317ac577e837154f90bc9b6da0451242211beea7a34b9bb117eec17c2e26"},
     {file = "hidapi-0.10.1-cp37-cp37m-win32.whl", hash = "sha256:b1becc9f09c85c473e91cf869b592d5d87fb8b89672988de33776b20b4c53ce1"},
     {file = "hidapi-0.10.1-cp37-cp37m-win_amd64.whl", hash = "sha256:b686b2b547890c8ed17ebeabded0050ce377180a56daefa20822b4d66d3a5dea"},
+    {file = "hidapi-0.10.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:39191d3e34e9a79e3dbb37898ab2ca4b84495e0815801cf84d185936e97bc6ee"},
+    {file = "hidapi-0.10.1-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:4a1f4c54d71f748ee6c9ee86565ca0eba2ab9c5d88f9adacc1fe7c3b09a3f299"},
     {file = "hidapi-0.10.1-cp38-cp38-win32.whl", hash = "sha256:3b93d3f9bae38a3459491194ba1abf5c292b59dbd8738c3ac66f01b593cf3724"},
     {file = "hidapi-0.10.1-cp38-cp38-win_amd64.whl", hash = "sha256:f49a0de45217366b85597c2edb4be8bd61c9f26f533b854b058dded4352dd89d"},
+    {file = "hidapi-0.10.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:74e968631537f52579c19c2b93e428b634dc385eb7808071bd9ff759d837fb39"},
+    {file = "hidapi-0.10.1-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:46de7d852e10a83187da6af88d6e2cd51ba5ab336bf2ce1659bc879141570de3"},
+    {file = "hidapi-0.10.1-cp39-cp39-win32.whl", hash = "sha256:095798ae1b3d6892fb0eb7ba1ab06054f6fafe6d09bc3714d80fdbf227c98f87"},
+    {file = "hidapi-0.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:df4a23cd03f00d5cdc603252650df82cdd1923ceef6811cb029cc9d11a9a7a61"},
     {file = "hidapi-0.10.1.tar.gz", hash = "sha256:a1170b18050bc57fae3840a51084e8252fd319c0fc6043d68c8501deb0e25846"},
 ]
 importlib-metadata = [
@@ -678,8 +690,8 @@ typing-extensions = [
     {file = "typing_extensions-3.7.4.3.tar.gz", hash = "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c"},
 ]
 uvicorn = [
-    {file = "uvicorn-0.13.3-py3-none-any.whl", hash = "sha256:1079c50a06f6338095b4f203e7861dbff318dde5f22f3a324fc6e94c7654164c"},
-    {file = "uvicorn-0.13.3.tar.gz", hash = "sha256:ef1e0bb5f7941c6fe324e06443ddac0331e1632a776175f87891c7bd02694355"},
+    {file = "uvicorn-0.13.4-py3-none-any.whl", hash = "sha256:7587f7b08bd1efd2b9bad809a3d333e972f1d11af8a5e52a9371ee3a5de71524"},
+    {file = "uvicorn-0.13.4.tar.gz", hash = "sha256:3292251b3c7978e8e4a7868f4baf7f7f7bb7e40c759ecc125c37e99cdea34202"},
 ]
 webcolors = [
     {file = "webcolors-1.11.1-py3-none-any.whl", hash = "sha256:b8cd5d865a25c51ff1218f0c90d0c0781fc64312a49b746b320cf50de1648f6e"},
