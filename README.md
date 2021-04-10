@@ -23,20 +23,25 @@ python project.
 ## Features
 - Control lights from the [command-line][HELP].
 - Control lights via a [Web API][WEBAPI].
-- Individually addresable lights.
-- Supports Five Vendors & Multiple Models:
+- Import `busylight` into your own project.
+- Supports Six Vendors & Multiple Models:
   * [**Agile Innovations** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
   * [**Kuando** BusyLight][4]
   * [**Luxafor** Flag][5]
+  * [**Plantronics** Status Indicator][3]
   * [**ThingM** Blink1][6]
 - Works on MacOS, Linux, probably Windows and BSD too!
 - Tested extensively on Raspberry Pi 3b+, Zero W and 4
 
-If you have a USB light that's not on this list, please open
-an issue with the make and model device you want supported.
+If you have a USB light that's not on this list open an issue
+with the make and model device you want supported, where I can get
+one, and any public hardware documentation you are aware of.
 
-## Basic Install 
+## Basic Install
+
+Installs only the command-line `busylight` tool and associated
+modules.
 
 ```console
 $ python3 -m pip install busylight-for-humans 
@@ -51,6 +56,7 @@ $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
 ## Linux Post-Install Activities
+
 Linux controls access to USB devices via the [udev subsystem][UDEV]. By
 default it denies non-root users access to devices it doesn't
 recognize. I've got you covered!
@@ -140,6 +146,7 @@ Now you can use the web API endpoints which return JSON payloads:
 
 ## Code Examples
 
+Adding light support to your own python applications is easy!
 
 ### Simple Case: Turn On a Single Light
 
