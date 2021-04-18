@@ -21,6 +21,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install libusb
         run: |
+            sudo apt-get update
             sudo apt-get install -y libusb-1.0-0-dev libudev-dev
       - name: Install pip/poetry/pytest
         run: |
