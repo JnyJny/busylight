@@ -23,7 +23,7 @@ webapi = ["fastapi", "uvicorn"]
 [tool.poetry.dev-dependencies]
 pytest = "^6"
 typer-cli = "^0.0.9"
-black = "^21.4b2"
+black = "^21.5b0"
 pytest-cov = "^2.11.1"
 mypy = "^0.812"
 
