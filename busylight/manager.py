@@ -93,7 +93,7 @@ class LightManager:
             pass
         self._supported: List[str] = []
         for light in USBLight.supported_lights():
-            self._supported.append(f"{light.vendor} {light.__name__}")
+            self._supported.append(f"{light.vendor} {light.__name__.replace('_',' ')}")
         return self._supported
 
     @property
