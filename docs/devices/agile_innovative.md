@@ -1,8 +1,8 @@
 ![BusyLight Project Logo][1]
 
-## Agile Innovations LTD BlinkStick
+## Agile Innovative LTD BlinkStick
 
-Agile Innovations LTD offers a variety of [BlinkStick][0] branded
+Agile Innovative LTD offers a variety of [BlinkStick][0] branded
 products: the BlinkStick, the Nano, the Flex, the Square, the Strip
 and the Pro. I worked with the BlinkStick Square.
 

@@ -10,7 +10,7 @@ from .exceptions import USBLightIOError
 
 # EJO some kind of cool dynamic import would be sweet right here
 
-from .agile_innovations import BlinkStick
+from .agile_innovative import BlinkStick
 from .embrava import Blynclight, Status_Indicator
 from .kuando import BusyLight
 from .luxafor import Flag
