@@ -3,13 +3,13 @@
 
 from typing import List, Tuple
 
-from .hardware import BlynclightState
+from ..embrava.hardware import BlynclightState
 
 from ..usblight import USBLight
 
 ## XXX I really wanted to just subclass Blynclight here and call it a day.
 ##     Unfortunately, the Status_Indicator class didn't show up in the output
-##     ofUSBLight.__subclasses__(). The lazy solution is a cut-n-paste of the
+##     of USBLight.__subclasses__(). The lazy solution is a cut-n-paste of the
 ##     Blynclight USBLight abc implementation and share the BlynclightState
 ##     class.  I'll keep hacking at this.
 
