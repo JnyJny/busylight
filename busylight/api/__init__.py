@@ -1,11 +1,9 @@
 """BusyLight API
 """
 
-import asyncio
-
 from typing import List, Dict, Any
 
-from fastapi import FastAPI, HTTPException, Path, Request
+from fastapi import FastAPI, Path, Request
 from fastapi.responses import JSONResponse
 
 
@@ -23,21 +21,28 @@ class BusylightAPI(FastAPI):
         super().__init__(
             title="Busylight API Server",
             description="""An API server for USB connected presence lights.
-**Supported USB lights:**
-- Embrava Blynclight, Blynclight +, Blynclight Mini
-- ThingM blink(1)
-- Luxafor Flag
-- Kuando BusyLight UC Omega
-- Agile Innovative BlinkStick family of devices.
-
-[Source](https://github.com/JnyJny/busylight.git)
-""",
+                        **Supported USB lights:**
+                        - Agile Innovative BlinkStick family of devices
+                        - Embrava Blynclight, Blynclight +, Blynclight Mini
+                        - ThingM blink(1)
+                        - Luxafor Flag
+                        - Kuando BusyLight UC Omega
+                        
+                        [Source](https://github.com/JnyJny/busylight.git)
+                        """,
             version=__version__,
         )
         self.manager: LightManager = None
 
 
 server = BusylightAPI()
+endpoint_list = []
+
+
+def add_endpoint(endpoint) -> str:
+    endpoint_list.extend(endpoint)
+    return endpoint
+
 
 ##
 ## Startup & Shutdown
@@ -91,15 +96,24 @@ async def light_manager_update(request: Request, call_next):
 ## API Routes
 ##
 
+@server.get(
+    "/",
+    response_model=LightDescription,
+)
+async def Light_Description() -> List[str]:
+    """API endpoint listing."""
+    return endpoint_list
 
-@server.get("/1/light/{light_id}", response_model=LightDescription)
+
+@server.get(
+    add_endpoint("/lights/{light_id}"),
+    response_model=LightDescription,
+)
 async def Light_Description(
     light_id: int = Path(..., title="Light identifier", ge=0)
 ) -> Dict[str, Any]:
     """Information about the light selected by `light_id`."""
-
     light = server.manager.lights[light_id]
-
     return {
         "light_id": light_id,
         "name": light.name,
@@ -109,7 +123,10 @@ async def Light_Description(
     }
 
 
-@server.get("/1/lights", response_model=List[LightDescription])
+@server.get(
+    add_endpoint("/lights"),
+    response_model=List[LightDescription],
+)
 async def Lights_Description() -> List[Dict[str, Any]]:
     """Information about all available lights."""
     result = []
@@ -126,12 +143,14 @@ async def Lights_Description() -> List[Dict[str, Any]]:
     return result
 
 
-@server.get("/1/lights/status", response_model=LightsStatus)
+@server.get(
+    add_endpoint("/lights/all/status"),
+    response_model=LightsStatus,
+)
 async def Lights_Status() -> Dict[str, Any]:
-    """"""
-
+    """Get status of all lights"""
     return {
-        "number_of_lights": len(server.manager.lights),
+        "lights_count": len(server.manager.lights),
         "lights_on": len(
             [l for l in server.manager.lights if l.is_on or l.is_animating]
         ),
@@ -139,21 +158,22 @@ async def Lights_Status() -> Dict[str, Any]:
 
 
 @server.get(
-    "/1/light/{light_id}/on",
+    add_endpoint("/lights/{light_id}/on"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
-async def Turn_On_Light(
-    light_id: int = Path(..., title="Light identifier", ge=0)
-) -> Dict[str, Any]:
+async def Turn_On_Light(light_id: int = Path(..., title="Light identifier", ge=0)) -> Dict[str, Any]:
     """Turn on the specified light with the default color, green."""
-
     server.manager.light_on(light_id)
-    return {"action": "on", "light_id": light_id, "color": "green"}
+    return {
+        "action": "on",
+        "light_id": light_id,
+        "color": "green"
+    }
 
 
 @server.get(
-    "/1/light/{light_id}/on/{color}",
+    add_endpoint("/lights/{light_id}/on/{color}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -166,26 +186,31 @@ async def Turn_On_Light_With_Color(
     The `color` can be a color name or a hexadecimal
     string: red, #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
-
     server.manager.light_on(light_id, color)
-
-    return {"action": "on", "light_id": light_id, "color": color}
+    return {
+        "action": "on",
+        "light_id": light_id,
+        "color": color
+    }
 
 
 @server.get(
-    "/1/lights/on",
+    add_endpoint("/lights/all/on"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
 async def Turn_On_Lights() -> Dict[str, Any]:
     """Turn on all lights with the default color, green."""
-
     server.manager.light_on(-1)
-    return {"action": "on", "light_id": "all", "color": "green"}
+    return {
+        "action": "on",
+        "light_id": "all",
+        "color": "green"
+    }
 
 
 @server.get(
-    "/1/lights/on/{color}",
+    add_endpoint("/lights/all/on/{color}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -197,40 +222,46 @@ async def Turn_On_Lights_With_Color(
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
-
     server.manager.light_on(-1, color)
-    return {"action": "on", "light_id": "all", "color": color}
+    return {
+        "action": "on",
+        "light_id": "all",
+        "color": color
+    }
 
 
 @server.get(
-    "/1/light/{light_id}/off",
+    add_endpoint("/lights/{light_id}/off"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
 async def Turn_Off_Light(
     light_id: int = Path(..., title="Light identifier", ge=0)
 ) -> Dict[str, Any]:
-
     """Turn off the specified light."""
-
     server.manager.light_off(light_id)
-    return {"action": "off", "light_id": light_id}
+    return {
+        "action": "off",
+        "light_id": light_id
+    }
 
 
 @server.get(
-    "/1/lights/off",
+    add_endpoint("/lights/all/off"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
 async def Turn_Off_Lights() -> Dict[str, Any]:
     """Turn off all lights."""
-
     server.manager.light_off(-1)
-    return {"action": "off", "light_id": "all"}
+    return {
+        "action": "off",
+        "light_id": "all"
+    }
 
 
 @server.get(
-    "/1/light/{light_id}/blink",
+    add_endpoint("/lights/{light_id}/blink"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -238,7 +269,6 @@ async def Blink_Light(
     light_id: int = Path(..., title="Light identifier", ge=0)
 ) -> Dict[str, Any]:
     """Start blinking the specified light: red and off."""
-
     server.manager.light_blink(light_id)
     return {
         "action": "blink",
@@ -249,7 +279,7 @@ async def Blink_Light(
 
 
 @server.get(
-    "/1/light/{light_id}/blink/{color}",
+    add_endpoint("/lights/{light_id}/blink/{color}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -262,7 +292,6 @@ async def Blink_Light_With_Color(
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
-
     server.manager.light_blink(light_id, color)
     return {
         "action": "blink",
@@ -273,7 +302,7 @@ async def Blink_Light_With_Color(
 
 
 @server.get(
-    "/1/light/{light_id}/blink/{color}/{speed}",
+    add_endpoint("/lights/{light_id}/blink/{color}/{speed}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -287,13 +316,17 @@ async def Blink_Light_With_Color_and_Speed(
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
-
     server.manager.light_blink(light_id, color, speed)
-    return {"action": "blink", "light_id": light_id, "color": color, "speed": speed}
+    return {
+        "action": "blink",
+        "light_id": light_id,
+        "color": color,
+        "speed": speed
+    }
 
 
 @server.get(
-    "/1/lights/blink",
+    add_endpoint("/lights/all/blink"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -301,13 +334,17 @@ async def Blink_Lights() -> Dict[str, Any]:
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
     """
-
     server.manager.light_blink(-1)
-    return {"action": "blink", "light_id": "all", "color": "red", "speed": "slow"}
+    return {
+        "action": "blink",
+        "light_id": "all",
+        "color": "red",
+        "speed": "slow"
+    }
 
 
 @server.get(
-    "/1/lights/blink/{color}",
+    add_endpoint("/lights/all/blink/{color}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -320,7 +357,6 @@ async def Blink_Lights_With_Color(
     string: red, #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000</p>
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
-
     server.manager.light_blink(-1, color)
     return {
         "action": "blink",
@@ -331,7 +367,7 @@ async def Blink_Lights_With_Color(
 
 
 @server.get(
-    "/1/lights/blink/{color}/{speed}",
+    add_endpoint("/lights/all/blink/{color}/{speed}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -345,13 +381,17 @@ async def Blink_Lights_With_Color_and_Speed(
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000 </p>
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
-
     server.manager.light_blink(-1, color, speed)
-    return {"action": "blink", "light_id": "all", "color": color, "speed": speed}
+    return {
+        "action": "blink",
+        "light_id": "all",
+        "color": color,
+        "speed": speed
+    }
 
 
 @server.get(
-    "/1/light/{light_id}/rainbow",
+    add_endpoint("/lights/{light_id}/rainbow"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -359,13 +399,16 @@ async def Rainbow_Light(
     light_id: int = Path(..., title="Light identifier", ge=0)
 ) -> Dict[str, Any]:
     """Start a rainbow animation on the specified light."""
-
     server.manager.apply_effect_to_light(light_id, rainbow)
-    return {"action": "effect", "name": "rainbow", "light_id": light_id}
+    return {
+        "action": "effect",
+        "name": "rainbow",
+        "light_id": light_id
+    }
 
 
 @server.get(
-    "/1/lights/rainbow",
+    add_endpoint("/lights/all/rainbow"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -373,13 +416,16 @@ async def Rainbow_Lights():
     """Start a rainbow animation on all lights.
     <p><em>Note:</em> lights will not be synchronized.</p>
     """
-
     server.manager.apply_effect_to_light(-1, rainbow)
-    return {"action": "effect", "name": "rainbow", "light_id": "all"}
+    return {
+        "action": "effect",
+        "name": "rainbow",
+        "light_id": "all"
+    }
 
 
 @server.get(
-    "/1/light/{light_id}/fli",
+    add_endpoint("/lights/{light_id}/fli"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -387,23 +433,31 @@ async def Flash_Light_Impressively(
     light_id: int = Path(..., title="Light identifier", ge=0)
 ) -> Dict[str, Any]:
     """Flash the specified light impressively."""
-
     server.manager.apply_effect_to_light(light_id, flash_lights_impressively)
-    return {"action": "effect", "name": "fli", "light_id": light_id}
+    return {
+        "action": "effect",
+        "name": "fli",
+        "light_id": light_id
+    }
 
 
 @server.get(
-    "/1/lights/fli", response_model=LightOperation, response_model_exclude_unset=True
+    add_endpoint("/lights/all/fli"),
+    response_model=LightOperation,
+    response_model_exclude_unset=True,
 )
 async def Flash_Lights_Impressively():
     """Flash all lights impressively."""
-
     server.manager.apply_effect_to_light(-1, flash_lights_impressively)
-    return {"action": "effect", "name": "fli", "light_id": "all"}
+    return {
+        "action": "effect",
+        "name": "fli",
+        "light_id": "all"
+    }
 
 
 @server.get(
-    "/1/light/{light_id}/pulse",
+    add_endpoint("/lights/{light_id}/pulse"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -412,11 +466,16 @@ async def Pulse_Light(
 ) -> Dict[str, Any]:
     """Pulse a light red."""
     server.manager.apply_effect_to_light(light_id, pulse)
-    return {"action": "effect", "name": "pulse", "light_id": light_id, "color": "red"}
+    return {
+        "action": "effect",
+        "name": "pulse",
+        "light_id": light_id,
+        "color": "red"
+    }
 
 
 @server.get(
-    "/1/light/{light_id}/pulse/{color}",
+    add_endpoint("/lights/{light_id}/pulse/{color}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -425,24 +484,33 @@ async def Pulse_Light_With_Color(
     color: str = Path(..., title="Color specifier string"),
 ) -> Dict[str, Any]:
     """Pulse a light with the specified color."""
-
     server.manager.apply_effect_to_light(light_id, pulse, color=color)
-    return {"action": "effect", "name": "pulse", "light_id": light_id, "color": color}
+    return {
+        "action": "effect",
+        "name": "pulse",
+        "light_id": light_id,
+        "color": color
+    }
 
 
 @server.get(
-    "/1/lights/pulse", response_model=LightOperation, response_model_exclude_unset=True
+    add_endpoint("/lights/all/pulse"),
+    response_model=LightOperation,
+    response_model_exclude_unset=True,
 )
 async def Pulse_Lights():
     """Pulse all lights red."""
-
     server.manager.apply_effect_to_light(-1, pulse)
-
-    return {"action": "effect", "name": "pulse", "light_id": "all", "color": "red"}
+    return {
+        "action": "effect",
+        "name": "pulse",
+        "light_id": "all",
+        "color": "red"
+    }
 
 
 @server.get(
-    "/1/lights/pulse/{color}",
+    add_endpoint("/lights/pulse/{color}"),
     response_model=LightOperation,
     response_model_exclude_unset=True,
 )
@@ -450,7 +518,10 @@ async def Pulse_Lights_With_Color(
     color: str = Path(..., title="Color specifier string")
 ):
     """Pulse all lights with the specified color."""
-
     server.manager.apply_effect_to_light(-1, pulse, color=color)
-
-    return {"action": "effect", "name": "pulse", "light_id": "all", "color": color}
+    return {
+        "action": "effect",
+        "name": "pulse",
+        "light_id": "all",
+        "color": color
+    }

@@ -161,13 +161,11 @@ Examples:
 
 ```
 $ busylight server >& log &
-$ curl http://localhost:8888/1/lights
-$ curl http://localhost:8888/1/lights/on
-$ curl http://localhost:8888/1/lights/off
-$ curl http://localhost:8888/1/light/0/on/purple
-$ curl http://localhost:8888/1/light/0/off
-$ curl http://localhost:8888/1/lights/on
-$ curl http://localhost:8888/1/lights/off
+$ curl http://localhost:8888/lights
+$ curl http://localhost:8888/lights/all/on
+$ curl http://localhost:8888/lights/all/off
+$ curl http://localhost:8888/light/0/on/purple
+$ curl http://localhost:8888/light/0/off
 ```
 
 **Usage**:
