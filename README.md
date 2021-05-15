@@ -1,4 +1,4 @@
-<!-- USB HID API embrava blynclight agile innovations blinkstick kuando busylight luxafor flag thingM blink(1) -->
+<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight luxafor flag thingM blink(1) -->
 ![BusyLight Project Logo][LOGO]
 
 ![version][pypi-version]
@@ -25,7 +25,7 @@ python project.
 - Control lights via a [Web API][WEBAPI].
 - Import `busylight` into your own project.
 - Supports Six Vendors & Multiple Models:
-  * [**Agile Innovations** BlinkStick ][2]
+  * [**Agile Innovative** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
   * [**Kuando** BusyLight][4]
   * [**Luxafor** Flag][5]
@@ -183,7 +183,7 @@ manager.lights_off(ALL_LIGHTS)
 [0]: https://pypi.org/project/busylight-for-humans/
 
 <!-- doc links -->
-[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovations.md
+[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
 [3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
 [4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
 [5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md

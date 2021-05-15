@@ -28,7 +28,7 @@ class BusylightAPI(FastAPI):
 - ThingM blink(1)
 - Luxafor Flag
 - Kuando BusyLight UC Omega
-- Agile Innovations BlinkStick family of devices.
+- Agile Innovative BlinkStick family of devices.
 
 [Source](https://github.com/JnyJny/busylight.git)
 """,
