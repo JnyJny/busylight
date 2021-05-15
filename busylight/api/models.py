@@ -23,5 +23,5 @@ class LightDescription(BaseModel):
 
 
 class LightsStatus(BaseModel):
-    number_of_lights: int
+    lights_count: int
     lights_on: int
