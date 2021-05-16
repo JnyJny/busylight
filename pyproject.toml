@@ -28,7 +28,7 @@ pytest-cov = "^2.11.1"
 mypy = "^0.812"
 
 [tool.poetry.scripts]
-busylight="busylight.__main__:cli"
+busylight="busylight.main:cli"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
