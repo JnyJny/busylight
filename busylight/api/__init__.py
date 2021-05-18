@@ -39,7 +39,7 @@ An API server for USB connected presence lights.
         self.manager: LightManager = None
         self.endpoints: List[str] = []
 
-    def get(self, path: str, /, **kwargs) -> Callable:
+    def get(self, path: str, **kwargs) -> Callable:
         self.endpoints.append(path)
         kwargs.setdefault("response_model_exclude_unset", True)
         return super().get(path, **kwargs)
