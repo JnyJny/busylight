@@ -11,7 +11,6 @@ from typing import (
     Callable,
     cast,
     Dict,
-    Generator,
     Iterator,
     List,
     Tuple,
@@ -346,9 +345,9 @@ class USBLight(abc.ABC):
     def animation_thread(self) -> Union[CancellableThread, None]:
         """A busylight.lights.thread.CancellableThread animating this light.
 
-        The animation thread runs a generator function that takes this light
-        as an argument and calls yield at frequent intervals. If animation_thread
-        is None, the light is not being animated.
+        The animation thread runs a generator function that takes this
+        light as an argument and calls yield at frequent intervals. If
+        animation_thread is None, the light is not being animated.
         """
         return getattr(self, "_animation_thread", None)
 
