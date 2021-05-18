@@ -14,8 +14,6 @@ from ..thread import CancellableThread
 from ..usblight import USBLight
 from ..usblight import USBLightIOError
 
-logger.enable(__name__)
-
 
 class BusyLight(USBLight):
 
