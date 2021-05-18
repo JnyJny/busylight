@@ -4,6 +4,8 @@
 from time import sleep
 from typing import Generator, List, Tuple, Union
 
+from loguru import logger
+
 from .hardware import BusyLightState
 from .hardware import Jump
 from .hardware import KeepAlive
@@ -60,23 +62,25 @@ class BusyLight(USBLight):
             self.reset()
             self.state.line0 = instruction.value
 
-    def keepalive(self) -> Generator[None, None, None]:
+    def keepalive(self) -> Generator[float, None, bool]:
         """Sends a keep alive command to the device periodically.
 
         This device requires constant reassurance and encouragement.
         """
         timeout = 0xF
-        interval = timeout // 2
+        interval = timeout / 2
         ka = KeepAlive(timeout).value
+        logger.info("keepalive generator initialized")
         while True:
             try:
                 with self.batch_update():
                     self.state.reset()
                     self.state.line0 = ka
-            except USBLightIOError:
+            except USBLightIOError as error:
+                logger.error("{self} error {error}")
                 break
-            yield
-            sleep(interval)
+            yield interval
+        logger.info("keepalive generator returning")
 
     @property
     def keepalive_thread(self) -> CancellableThread:
@@ -92,10 +96,13 @@ class BusyLight(USBLight):
 
     @property
     def is_animating(self):
-        return True
+        try:
+            return self.animation_thread.is_alive()
+        except Exception as error:
+            logger.error(f"{self} is_animating: {error}")
+        return False
 
     def acquire(self, reset: bool) -> None:
-
         with self.lock:
             super().acquire(reset)
             self.keepalive_thread.start()
@@ -104,7 +111,11 @@ class BusyLight(USBLight):
         with self.lock:
             try:
                 self.keepalive_thread.cancel()
+                while self.keepalive_thread.alive:
+                    self.keepalive_thread.join(15)
                 del self._keepalive_thread
-            except:
-                pass
+
+            except Exception as error:
+                logger.error(f"{error}")
+
             super().release()
