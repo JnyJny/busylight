@@ -14,6 +14,8 @@ from ..thread import CancellableThread
 from ..usblight import USBLight
 from ..usblight import USBLightIOError
 
+logger.enable(__name__)
+
 
 class BusyLight(USBLight):
 
@@ -67,19 +69,52 @@ class BusyLight(USBLight):
 
         This device requires constant reassurance and encouragement.
         """
+
+        ## This method is "tuned" to send a keep alive message to the device
+        ## every 7.5 seconds, which is half of the device's maximum 15 second
+        ## keep alive window. My goal is to reduce the amount of writes to the
+        ## USB subsystem which are "noops" but have enough margin that drift
+        ## due to process scheduling doesn't cause the the keep alive to be
+        ## sent late. I cannot imagine 7.5s of drift but weirder things have
+        ## happened.
+        ##
+        ## This would be fine by itself, however when a light is released via
+        ## the "release" method, the keep alive thread is cancelled.  Since
+        ## the thread is asleep for aeons of time (7.5s) the release method
+        ## will necessarily have a maximum latency of 7.5s before returning.
+        ##
+        ## To avoid this unresponsiveness, the keep alive generator has
+        ## bookkeeping that sends a packet every 7.5 seconds but sleeps
+        ## for a much shorter interval (0.1 seconds). While 0.1s latency
+        ## is still a "long time" for computers, it's much less noticible
+        ## by humans.
+        ##
+        ## I'm not thrilled about this busy-waiting burning up CPU to avoid
+        ## a perceived performance problem for an infrequently called
+        ## method, but this seems to be the least bad solution so far.
+
         timeout = 0xF
-        interval = timeout / 2
+        interval = 0.1
         ka = KeepAlive(timeout).value
-        logger.info("keepalive generator initialized")
+        logger.info(f"keepalive generator {ka:x}, {timeout} s {interval:5.3f}")
+        countdown = timeout / 2
+
         while True:
-            try:
-                with self.batch_update():
-                    self.state.reset()
-                    self.state.line0 = ka
-            except USBLightIOError as error:
-                logger.error("{self} error {error}")
-                break
+            if countdown <= 0:
+                try:
+                    with self.batch_update():
+                        logger.info("keepalive sent")
+                        self.state.reset()
+                        self.state.line0 = ka
+                except USBLightIOError as error:
+                    logger.error("{self} error {error}")
+                    break
+                countdown = timeout / 2
+            else:
+                countdown -= interval
+
             yield interval
+
         logger.info("keepalive generator returning")
 
     @property
