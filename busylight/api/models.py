@@ -22,10 +22,5 @@ class LightDescription(BaseModel):
     color: str
 
 
-class LightsStatus(BaseModel):
-    lights_count: int
-    lights_on: int
-
-
 class EndPoint(BaseModel):
     path: str

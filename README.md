@@ -103,13 +103,13 @@ Now you can use the web API endpoints which return JSON payloads:
 ```console
   $ curl -s http://localhost:8888/lights
   ...
-  $ curl -s http://localhost:8888/lights/0/on | jq
+  $ curl -s http://localhost:8888/light/0/on | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "green"
   }
-  $ curl -s http://localhost:8888/lights/0/off | jq
+  $ curl -s http://localhost:8888/light/0/off | jq
   {
     "light_id": 0,
     "action": "off"
@@ -125,18 +125,18 @@ Now you can use the web API endpoints which return JSON payloads:
     "light_id": 0,
     "action": "off"
   }
-  $ curl -s http://localhost:8888/lights/all/on | jq
+  $ curl -s http://localhost:8888/lights/on | jq
   {
     "light_id": "all",
     "action": "on",
     "color": "green"
   }
-  $ curl -s http://localhost:8888/lights/all/off | jq
+  $ curl -s http://localhost:8888/lights/off | jq
   {
     "light_id": "all",
     "action": "off"
   }
-  $ curl -s http://localhost:8888/lights/all/rainbow | jq
+  $ curl -s http://localhost:8888/lights/rainbow | jq
   {
     "light_id": "all",
     "action": "effect",
