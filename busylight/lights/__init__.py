@@ -1,6 +1,8 @@
 """USB Connected Presence Lights
 """
 
+from loguru import logger
+
 from .usblight import USBLight
 from .exceptions import USBLightNotFound
 from .exceptions import USBLightUnknownVendor
@@ -18,6 +20,8 @@ from .plantronics import Status_Indicator
 from .kuando import BusyLight
 from .luxafor import Flag
 from .thingm import Blink1
+
+logger.disable(__name__)
 
 __all__ = [
     "USBLight",
