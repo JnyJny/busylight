@@ -1,6 +1,6 @@
 <!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight luxafor flag thingM blink(1) -->
 ![BusyLight Project Logo][LOGO]
-
+![supported python versions][python-versions]
 ![version][pypi-version]
 ![dependencies][dependencies]
 ![pytest][pytest-action]
@@ -200,6 +200,7 @@ manager.lights_off(ALL_LIGHTS)
 [pytest-action]: https://github.com/JnyJny/busylight/workflows/pytest/badge.svg
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
+[python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
