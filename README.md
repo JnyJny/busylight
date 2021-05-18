@@ -1,5 +1,5 @@
 <!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight luxafor flag thingM blink(1) -->
-![BusyLight Project Logo][LOGO]
+![BusyLight Project Logo][LOGO] <br>
 ![supported python versions][python-versions]
 ![version][pypi-version]
 ![dependencies][dependencies]
