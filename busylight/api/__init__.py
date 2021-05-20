@@ -5,6 +5,7 @@ from typing import Callable, List, Dict, Any
 
 from fastapi import FastAPI, Path, Request
 from fastapi.responses import JSONResponse
+from loguru import logger
 
 from .models import LightOperation, LightDescription, EndPoint
 
@@ -45,25 +46,28 @@ An API server for USB connected presence lights.
         return super().get(path, **kwargs)
 
 
-server = BusylightAPI()
+busylightapi = BusylightAPI()
 
 ## Startup & Shutdown
 ##
-@server.on_event("startup")
+@busylightapi.on_event("startup")
 async def startup():
-    server.manager = LightManager()
-    server.manager.light_off()
+    busylightapi.manager = LightManager()
+    busylightapi.manager.light_off()
 
 
-@server.on_event("shutdown")
+@busylightapi.on_event("shutdown")
 async def shutdown():
-    server.manager.light_off()
+    busylightapi.manager.light_off()
 
 
 ## Exception Handlers
 ##
-@server.exception_handler(LightIdRangeError)
-async def light_id_range_error_handler(request: Request, error: LightIdRangeError):
+@busylightapi.exception_handler(LightIdRangeError)
+async def light_id_range_error_handler(
+    request: Request,
+    error: LightIdRangeError,
+) -> JSONResponse:
     """Handle light_id values that are out of bounds."""
     return JSONResponse(
         status_code=404,
@@ -71,33 +75,42 @@ async def light_id_range_error_handler(request: Request, error: LightIdRangeErro
     )
 
 
-@server.exception_handler(ColorLookupError)
-async def color_lookup_error_handler(request: Request, error: ColorLookupError):
+@busylightapi.exception_handler(ColorLookupError)
+async def color_lookup_error_handler(
+    request: Request,
+    error: ColorLookupError,
+) -> JSONResponse:
     """Handle color strings that do not result in a valid color."""
-    return JSONResponse(status_code=404, content={"message": str(error)})
+    return JSONResponse(
+        status_code=404,
+        content={"message": str(error)},
+    )
 
 
 ## Middleware Handlers
 ##
-@server.middleware("http")
+@busylightapi.middleware("http")
 async def light_manager_update(request: Request, call_next):
     """Check for plug/unplug events and update the light manager."""
-    server.manager.update()
+
+    logger.debug("pre manager.update")
+    busylightapi.manager.update()
+    logger.debug("post manager.update")
     return await call_next(request)
 
 
 ## GET API Routes
 ##
-@server.get("/", response_model=List[EndPoint])
+@busylightapi.get("/", response_model=List[EndPoint])
 async def Available_Endpoints() -> List[Dict[str, str]]:
     """API endpoint listing.
 
     List of valid endpoints recognized by this API.
     """
-    return [{"path": endpoint} for endpoint in server.endpoints]
+    return [{"path": endpoint} for endpoint in busylightapi.endpoints]
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/status",
     response_model=LightDescription,
 )
@@ -105,7 +118,7 @@ async def Light_Description(
     light_id: int = Path(..., title="Numeric light identifier", ge=0)
 ) -> Dict[str, Any]:
     """Information about the light selected by `light_id`."""
-    light = server.manager.lights[light_id]
+    light = busylightapi.manager.lights_for(light_id)
     return {
         "light_id": light_id,
         "name": light.name,
@@ -115,14 +128,14 @@ async def Light_Description(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/status",
     response_model=List[LightDescription],
 )
 async def Lights_Description() -> List[Dict[str, Any]]:
     """Information about all available lights."""
     result = []
-    for index, light in enumerate(server.manager.lights):
+    for index, light in enumerate(busylightapi.manager.lights):
         result.append(
             {
                 "light_id": index,
@@ -135,7 +148,7 @@ async def Lights_Description() -> List[Dict[str, Any]]:
     return result
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/on",
     response_model=LightOperation,
 )
@@ -143,7 +156,7 @@ async def Turn_On_Light(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
 ) -> Dict[str, Any]:
     """Turn on the specified light with the default color, green."""
-    server.manager.light_on(light_id)
+    busylightapi.manager.light_on(light_id)
     return {
         "action": "on",
         "light_id": light_id,
@@ -151,7 +164,7 @@ async def Turn_On_Light(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/on/{color}",
     response_model=LightOperation,
 )
@@ -167,7 +180,7 @@ async def Turn_On_Light_With_Color(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-    server.manager.light_on(light_id, color)
+    busylightapi.manager.light_on(light_id, color)
     return {
         "action": "on",
         "light_id": light_id,
@@ -175,13 +188,13 @@ async def Turn_On_Light_With_Color(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/on",
     response_model=LightOperation,
 )
 async def Turn_On_Lights() -> Dict[str, Any]:
     """Turn on all lights with the default color, green."""
-    server.manager.light_on(ALL_LIGHTS)
+    busylightapi.manager.light_on(ALL_LIGHTS)
     return {
         "action": "on",
         "light_id": "all",
@@ -189,7 +202,7 @@ async def Turn_On_Lights() -> Dict[str, Any]:
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/on/{color}",
     response_model=LightOperation,
 )
@@ -201,7 +214,7 @@ async def Turn_On_Lights_With_Color(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-    server.manager.light_on(ALL_LIGHTS, color)
+    busylightapi.manager.light_on(ALL_LIGHTS, color)
     return {
         "action": "on",
         "light_id": "all",
@@ -209,7 +222,7 @@ async def Turn_On_Lights_With_Color(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/off",
     response_model=LightOperation,
 )
@@ -223,27 +236,27 @@ async def Turn_Off_Light(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-    server.manager.light_off(light_id)
+    busylightapi.manager.light_off(light_id)
     return {
         "action": "off",
         "light_id": light_id,
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/off",
     response_model=LightOperation,
 )
 async def Turn_Off_Lights() -> Dict[str, Any]:
     """Turn off all lights."""
-    server.manager.light_off(ALL_LIGHTS)
+    busylightapi.manager.light_off(ALL_LIGHTS)
     return {
         "action": "off",
         "light_id": "all",
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/blink",
     response_model=LightOperation,
 )
@@ -256,7 +269,7 @@ async def Blink_Light(
     between zero and number_of_lights-1.
 
     """
-    server.manager.light_blink(light_id)
+    busylightapi.manager.light_blink(light_id)
     return {
         "action": "blink",
         "light_id": light_id,
@@ -265,7 +278,7 @@ async def Blink_Light(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/blink/{color}",
     response_model=LightOperation,
 )
@@ -281,7 +294,7 @@ async def Blink_Light_With_Color(
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
     """
-    server.manager.light_blink(light_id, color)
+    busylightapi.manager.light_blink(light_id, color)
     return {
         "action": "blink",
         "light_id": light_id,
@@ -290,7 +303,7 @@ async def Blink_Light_With_Color(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/blink/{color}/{speed}",
     response_model=LightOperation,
 )
@@ -309,7 +322,7 @@ async def Blink_Light_With_Color_and_Speed(
 
     `speed` should be a string "slow", "medium" or "fast".
     """
-    server.manager.light_blink(light_id, color, speed)
+    busylightapi.manager.light_blink(light_id, color, speed)
     return {
         "action": "blink",
         "light_id": light_id,
@@ -318,7 +331,7 @@ async def Blink_Light_With_Color_and_Speed(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/blink",
     response_model=LightOperation,
 )
@@ -326,7 +339,7 @@ async def Blink_Lights() -> Dict[str, Any]:
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
     """
-    server.manager.light_blink(ALL_LIGHTS)
+    busylightapi.manager.light_blink(ALL_LIGHTS)
     return {
         "action": "blink",
         "light_id": "all",
@@ -335,7 +348,7 @@ async def Blink_Lights() -> Dict[str, Any]:
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/blink/{color}",
     response_model=LightOperation,
 )
@@ -348,7 +361,7 @@ async def Blink_Lights_With_Color(
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
-    server.manager.light_blink(ALL_LIGHTS, color)
+    busylightapi.manager.light_blink(ALL_LIGHTS, color)
     return {
         "action": "blink",
         "light_id": "all",
@@ -357,7 +370,7 @@ async def Blink_Lights_With_Color(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/blink/{color}/{speed}",
     response_model=LightOperation,
 )
@@ -371,7 +384,7 @@ async def Blink_Lights_With_Color_and_Speed(
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     <p><em>Note:</em> Lights will not be synchronized.</p>
     """
-    server.manager.light_blink(ALL_LIGHTS, color, speed)
+    busylightapi.manager.light_blink(ALL_LIGHTS, color, speed)
     return {
         "action": "blink",
         "light_id": "all",
@@ -380,7 +393,7 @@ async def Blink_Lights_With_Color_and_Speed(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/rainbow",
     response_model=LightOperation,
 )
@@ -393,7 +406,7 @@ async def Rainbow_Light(
     between zero and number_of_lights-1.
     """
 
-    server.manager.apply_effect_to_light(light_id, rainbow)
+    busylightapi.manager.apply_effect_to_light(light_id, rainbow)
     return {
         "action": "effect",
         "name": "rainbow",
@@ -401,7 +414,7 @@ async def Rainbow_Light(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/rainbow",
     response_model=LightOperation,
 )
@@ -409,7 +422,7 @@ async def Rainbow_Lights():
     """Start a rainbow animation on all lights.
     <p><em>Note:</em> lights will not be synchronized.</p>
     """
-    server.manager.apply_effect_to_light(ALL_LIGHTS, rainbow)
+    busylightapi.manager.apply_effect_to_light(ALL_LIGHTS, rainbow)
     return {
         "action": "effect",
         "name": "rainbow",
@@ -417,7 +430,7 @@ async def Rainbow_Lights():
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/fli",
     response_model=LightOperation,
 )
@@ -429,7 +442,7 @@ async def Flash_Light_Impressively(
     `light_id` is an integer value identifying a light and ranges
     between zero and number_of_lights-1.
     """
-    server.manager.apply_effect_to_light(light_id, flash_lights_impressively)
+    busylightapi.manager.apply_effect_to_light(light_id, flash_lights_impressively)
     return {
         "action": "effect",
         "name": "fli",
@@ -437,13 +450,13 @@ async def Flash_Light_Impressively(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/fli",
     response_model=LightOperation,
 )
 async def Flash_Lights_Impressively():
     """Flash all lights impressively."""
-    server.manager.apply_effect_to_light(ALL_LIGHTS, flash_lights_impressively)
+    busylightapi.manager.apply_effect_to_light(ALL_LIGHTS, flash_lights_impressively)
     return {
         "action": "effect",
         "name": "fli",
@@ -451,7 +464,7 @@ async def Flash_Lights_Impressively():
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/pulse",
     response_model=LightOperation,
 )
@@ -463,7 +476,7 @@ async def Pulse_Light(
     `light_id` is an integer value identifying a light and ranges
     between zero and number_of_lights-1.
     """
-    server.manager.apply_effect_to_light(light_id, pulse)
+    busylightapi.manager.apply_effect_to_light(light_id, pulse)
     return {
         "action": "effect",
         "name": "pulse",
@@ -472,7 +485,7 @@ async def Pulse_Light(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/light/{light_id}/pulse/{color}",
     response_model=LightOperation,
 )
@@ -488,7 +501,7 @@ async def Pulse_Light_With_Color(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-    server.manager.apply_effect_to_light(light_id, pulse, color=color)
+    busylightapi.manager.apply_effect_to_light(light_id, pulse, color=color)
     return {
         "action": "effect",
         "name": "pulse",
@@ -497,13 +510,13 @@ async def Pulse_Light_With_Color(
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/pulse",
     response_model=LightOperation,
 )
 async def Pulse_Lights():
     """Pulse all lights red."""
-    server.manager.apply_effect_to_light(ALL_LIGHTS, pulse)
+    busylightapi.manager.apply_effect_to_light(ALL_LIGHTS, pulse)
     return {
         "action": "effect",
         "name": "pulse",
@@ -512,7 +525,7 @@ async def Pulse_Lights():
     }
 
 
-@server.get(
+@busylightapi.get(
     "/lights/pulse/{color}",
     response_model=LightOperation,
 )
@@ -524,7 +537,7 @@ async def Pulse_Lights_With_Color(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-    server.manager.apply_effect_to_light(ALL_LIGHTS, pulse, color=color)
+    busylightapi.manager.apply_effect_to_light(ALL_LIGHTS, pulse, color=color)
     return {
         "action": "effect",
         "name": "pulse",
@@ -533,7 +546,7 @@ async def Pulse_Lights_With_Color(
     }
 
 
-# @server.get("/light", response_model=LightOperation)
+# @busylightapi.get("/light", response_model=LightOperation)
 # async def Light(
 #    light_id: int = 0,
 #    operation: str = "on",
@@ -562,7 +575,7 @@ async def Pulse_Lights_With_Color(
 #    }
 #
 #
-# @server.get("/lights", response_model=LightOperation)
+# @busylightapi.get("/lights", response_model=LightOperation)
 # async def Light(
 #    operation: str = "on",
 #    color: str = "green",
