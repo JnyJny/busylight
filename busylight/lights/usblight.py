@@ -18,6 +18,8 @@ from typing import (
     Union,
 )
 
+from loguru import logger
+
 from .exceptions import USBLightNotFound
 from .exceptions import USBLightUnknownVendor
 from .exceptions import USBLightUnknownProduct
@@ -240,6 +242,19 @@ class USBLight(abc.ABC):
         return self._device
 
     @property
+    def plugged_in(self) -> bool:
+        try:
+            result = self.device.read(128, 1)
+            return True
+        except OSError as error:
+            logger.debug(f"{error}")
+        return False
+
+    @property
+    def unplugged(self) -> bool:
+        return not self.plugged_in
+
+    @property
     def strategy(self) -> Callable:
         """The write function used to communicate with the device.
 
@@ -250,6 +265,7 @@ class USBLight(abc.ABC):
         The strategy function is expected to take `bytes` as it's
         sole argument and return the number of bytes written. A
         return value of -1 indicates error.
+
         """
         return self.device.write
 
