@@ -276,13 +276,13 @@ def serve_subcommand(
     \b
     ```
     $ busylight server >& log &
-    $ curl http://localhost:8888/1/lights
-    $ curl http://localhost:8888/1/lights/on
-    $ curl http://localhost:8888/1/lights/off
-    $ curl http://localhost:8888/1/light/0/on/purple
-    $ curl http://localhost:8888/1/light/0/off
-    $ curl http://localhost:8888/1/lights/on
-    $ curl http://localhost:8888/1/lights/off
+    $ curl http://localhost:8888/lights
+    $ curl http://localhost:8888/lights/on
+    $ curl http://localhost:8888/lights/off
+    $ curl http://localhost:8888/light/0/on/purple
+    $ curl http://localhost:8888/light/0/off
+    $ curl http://localhost:8888/lights/on
+    $ curl http://localhost:8888/lights/off
     ```
     """
 
@@ -296,7 +296,7 @@ def serve_subcommand(
         raise typer.Exit(-1) from None
 
     try:
-        uvicorn.run("busylight.api:server", host=host, port=port)
+        uvicorn.run("busylight.api:busylightapi", host=host, port=port)
     except ModuleNotFoundError:
         typer.secho(
             "The package `fastapi` is missing, unable to serve the busylight API",
