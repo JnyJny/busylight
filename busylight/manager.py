@@ -7,6 +7,8 @@ from functools import partial
 from time import sleep
 from typing import ContextManager, Generator, Dict, List, Tuple, Union
 
+from loguru import logger
+
 from .lights import USBLight
 from .lights import USBLightUnknownVendor
 from .lights import USBLightUnknownProduct
@@ -98,9 +100,9 @@ class LightManager:
 
     @property
     def lights(self) -> List[USBLight]:
-        """List of manged USBLight devices
+        """List of managed USBLight devices
 
-        The devices are open for use exclusively by the manager.
+        The devices are open for exclusive use by the manager.
         """
         try:
             return self._lights
@@ -154,12 +156,17 @@ class LightManager:
 
         :return: number of new lights added to the managed `lights` list.
         """
-
+        logger.info(f"Manager has {len(self.lights)} lights")
         self.lights.extend(USBLight.all_lights())
+
+        logger.info(f"After all_lights, Manager has {len(self.lights)} lights")
         self.lights.sort(key=lambda v: v.path)
 
-        for dead_light in [l for l in self.lights if not l.is_acquired]:
+        for dead_light in [l for l in self.lights if l.unplugged]:
             self.lights.remove(dead_light)
+            logger.debug(f"Removed a dead light {dead_light.identifier}")
+
+        logger.info(f"Manager has {len(self.lights)} lights after update")
 
     def release(self) -> None:
         """Releases all the lights and empties the `lights` property.
