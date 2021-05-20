@@ -23,6 +23,7 @@ def test_supported_lights():
     supported_lights = USBLight.supported_lights()
 
     assert isinstance(supported_lights, list)
+
     for light in supported_lights:
         assert issubclass(light, USBLight)
 
@@ -31,6 +32,10 @@ def test_usblight_first_light():
     """The first_light() classmethod returns a configured
     light or raises USBLightNotFound when no more lights
     can be located.
+
+    For this test, we keep references to each light in a
+    list to keep them from being released and re-found by
+    the `first_light` method.
     """
     with pytest.raises(USBLightNotFound):
         lights = []
