@@ -254,7 +254,11 @@ class LightManager:
                 pass
 
     def apply_effect_to_light(
-        self, light_id: Union[int, None], effect: Generator, *args, **kwds
+        self,
+        light_id: Union[int, None],
+        effect: Generator[float, None, None],
+        *args,
+        **kwds,
     ):
         """Apply an effect function to the specified light.
 
@@ -273,7 +277,7 @@ class LightManager:
         except ValueError:
             raise ColorLookupError(kwds["color"])
         finally:
-            effect = partial(effect, color=color)
+            effect = partial(effect, color=color)  # type: ignore
 
         for light in self.lights_for(light_id):
             light.start_animation(effect)
