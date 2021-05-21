@@ -12,6 +12,7 @@ from typing import (
     cast,
     Dict,
     Iterator,
+    Generator,
     List,
     Tuple,
     Type,
@@ -459,7 +460,7 @@ class USBLight(abc.ABC):
 
         See busylight.lights.thread.CancellableThread for more details.
 
-        :param animation: Callable
+        :param animation: Generator[float, None, None]
 
         Raises:
         - USBLightIOError
