@@ -17,6 +17,8 @@ all:
 	@echo "patch_release - push and publish a patch release"
 	@echo "push          - pushes commits and tags to origin/master"
 	@echo "publish       - publish package to PyPI"
+	@echo "report        - generate a code coverage report"
+	@echo "mypy          - type check the code base"
 
 major: MAJOR update
 
@@ -71,6 +73,7 @@ report:
 mypy: MYPY= mypy
 mypy:
 	$(MYPY) --config-file $(PYPROJECT) $(TARGET)
+
 clean:
 	@rm -rf dist $(TARGET).egg-info *.log
 
