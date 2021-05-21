@@ -60,7 +60,7 @@ async def rainbow_async(
 def blink(
     light: USBLight, color: Tuple[int, int, int], speed: int
 ) -> Generator[float, None, None]:
-    """The the light off and on with the specified color.
+    """Blink the light off and on with the specified color.
 
     :param light: USBLight
     :param color: Tuple[int, int, int]
@@ -79,7 +79,7 @@ def blink(
 async def blink_async(
     light: USBLight, color: Tuple[int, int, int], speed: int
 ) -> AsyncGenerator[float, None]:
-    """The the light off and on with the specified color. (async aware)
+    """Blink the light off and on with the specified color. (async aware)
 
     :param light: USBLight
     :param color: Tuple[int, int, int]
