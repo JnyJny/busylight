@@ -43,6 +43,10 @@ class CancellableThread(Thread):
         return self.is_alive()
 
     @property
+    def target(self) -> Generator[float, None, None]:
+        return getattr(self, "_target")
+
+    @property
     def cancelled(self) -> bool:
         return getattr(self, "_cancelled", False)
 
@@ -66,12 +70,10 @@ class CancellableThread(Thread):
         ```
 
         """
-        logger.debug(f" {self} running target {self._target}")
+        logger.debug(f" {self} running target {self.target}")
         while not self.cancelled:
             try:
-                result = next(self._target)
-                logger.debug(f"target result {result}")
-                sleep(result)
+                sleep(next(self.target))
             except Exception as error:
                 logger.error(f"{error}")
                 break
