@@ -45,4 +45,14 @@ ignore_missing_imports = true
 ignore_missing_imports = true
 [mypy-fastapi]
 ignore_missing_imports = true
+[mypy-pydantic]
+ignore_missing_imports = true
+[mypy-uvicorn]
+ignore_missing_imports = true
+[mypy-loguru]
+ignore_missing_imports = true
+[mypy-bitvector]
+ignore_missing_imports = true
+[mypy-fastapi.responses]
+ignore_missing_imports = true
 
