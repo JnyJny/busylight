@@ -62,7 +62,7 @@ class BusyLight(USBLight):
             self.reset()
             self.state.line0 = instruction.value
 
-    def keepalive(self) -> Generator[float, None, bool]:
+    def keepalive(self) -> Generator[float, None, None]:
         """Sends a keep alive command to the device periodically.
 
         This device requires constant reassurance and encouragement.
@@ -131,6 +131,8 @@ class BusyLight(USBLight):
     def is_animating(self):
         try:
             return self.animation_thread.is_alive()
+        except AttributeError:
+            return False
         except Exception as error:
             logger.error(f"{self} is_animating: {error}")
         return False
