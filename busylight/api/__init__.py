@@ -118,7 +118,7 @@ async def Light_Description(
     light_id: int = Path(..., title="Numeric light identifier", ge=0)
 ) -> Dict[str, Any]:
     """Information about the light selected by `light_id`."""
-    light = busylightapi.manager.lights_for(light_id)
+    light = busylightapi.manager.lights_for(light_id)[0]
     return {
         "light_id": light_id,
         "name": light.name,
