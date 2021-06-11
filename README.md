@@ -38,6 +38,11 @@ If you have a USB light that's not on this list open an issue
 with the make and model device you want supported, where I can get
 one, and any public hardware documentation you are aware of.
 
+### Gratitude
+
+Thank you to [@todbot][todbot] and the very nice people at [ThingM][thingm] who
+graciously and unexpectedly gifted me with two `blink(1) mk3` lights!
+
 ## Basic Install
 
 Installs only the command-line `busylight` tool and associated
@@ -196,6 +201,9 @@ manager.lights_off(ALL_LIGHTS)
 
 [UDEV]: https://en.wikipedia.org/wiki/Udev
 
+[todbot]: https://github.com/todbot
+[thingm]: https://thingm.com
+
 <!-- badges -->
 [pytest-action]: https://github.com/JnyJny/busylight/workflows/pytest/badge.svg
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
@@ -204,3 +212,4 @@ manager.lights_off(ALL_LIGHTS)
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
+
