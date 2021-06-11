@@ -290,15 +290,19 @@ class LightManager:
         off_on_enter: bool = True,
         off_on_exit: bool = False,
     ) -> "LightManager":
-        """This context manager method sets the lights specified by `light_id`
-        to a known state, 'off', upon entering and exiting the context manager.
+        """This context manager  sets the lights specified by `light_id`
+        to a known state, 'off', upon enter and exit.
 
         If `off_on_enter` is False, the lights are not turned off on enter.
+
         If `off_on_exit` is False, the lights are not turned off on exit.
 
+        If `wait_on_animation` is True, the method does not return until
+        all lights have completed their animation.
+
         :param light_id: Union[int, None]
-        :param off_on_enter: bool
         :param wait_on_animation: bool
+        :param off_on_enter: bool
         :param off_on_exit: bool
         """
 
