@@ -128,13 +128,16 @@ class BusyLight(USBLight):
         return self._keepalive_thread
 
     @property
-    def is_animating(self):
+    def is_animating(self) -> bool:
+
         try:
             return self.animation_thread.is_alive()
         except AttributeError:
-            return False
-        except Exception as error:
-            logger.error(f"{self} is_animating: {error}")
+            pass
+        try:
+            return self.keepalive_thread.is_alive()
+        except AttributeError:
+            pass
         return False
 
     def acquire(self, reset: bool) -> None:
