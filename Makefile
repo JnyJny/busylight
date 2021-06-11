@@ -37,7 +37,7 @@ PATCH:
 
 
 docs/busylight.1.md:
-	@typer $(TARGET).__main__ utils docs --name busylight --output $@
+	@typer $(TARGET).main utils docs --name busylight --output $@
 	@sed -i '' -e  "s///g" $@
 
 
