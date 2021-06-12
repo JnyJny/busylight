@@ -14,7 +14,7 @@ from .exceptions import USBLightIOError
 
 from .agile_innovative import BlinkStick
 from .embrava import Blynclight
-from .kuando import BusyLight
+from .kuando import Busylight
 from .luxafor import Flag
 from .plantronics import Status_Indicator
 from .thingm import Blink1

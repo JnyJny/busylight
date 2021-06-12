@@ -1,4 +1,4 @@
-"""Kuando BusyLight Hardware Details
+"""Kuando Busylight Hardware Details
 """
 
 from enum import Enum
@@ -139,9 +139,9 @@ class CheckSumField(StateField):
     """An 8-bit checksum value."""
 
 
-class BusyLightState(StateVector):
+class BusylightState(StateVector):
 
-    """The Kuando BusyLight state vector consists of
+    """The Kuando Busylight state vector consists of
     seven 64-bit instructions and a final 64-bit field
     terminated with a checksum value.
 

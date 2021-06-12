@@ -6,7 +6,7 @@ from typing import Generator, List, Tuple, Union
 
 from loguru import logger
 
-from .hardware import BusyLightState
+from .hardware import BusylightState
 from .hardware import Jump
 from .hardware import KeepAlive
 
@@ -15,20 +15,20 @@ from ..usblight import USBLight
 from ..usblight import USBLightIOError
 
 
-class BusyLight(USBLight):
+class Busylight(USBLight):
 
     VENDOR_IDS: List[int] = [0x27BB]
     PRODUCT_IDS: List[int] = []
     vendor = "Kuando"
 
     @property
-    def state(self) -> BusyLightState:
+    def state(self) -> BusylightState:
         """Implementation dependent hardware state."""
         try:
             return self._state
         except AttributeError:
             pass
-        self._state: BusyLightState = BusyLightState()
+        self._state: BusylightState = BusylightState()
         return self._state
 
     def __bytes__(self) -> bytes:
