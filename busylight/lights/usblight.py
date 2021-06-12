@@ -503,7 +503,7 @@ class USBLight(abc.ABC):
         except ValueError as error:
             raise USBLightIOError(str(error)) from None
 
-        if nbytes != len(data):
+        if nbytes < len(data):
             raise USBLightIOError(f"write returned {nbytes}")
 
     @property
