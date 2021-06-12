@@ -3,11 +3,11 @@
 ![supported python versions][python-versions]
 ![version][pypi-version]
 ![dependencies][dependencies]
-![pytest linux][pytest-linux-action]
-![pytest windows][pytest-windows-action]
+[![pytest][pytest-badge]][pytest-status]
 ![license][license]
 ![monthly-downloads][monthly-downloads]
 ![Code style: black][code-style-black]
+
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
@@ -206,8 +206,8 @@ manager.lights_off(ALL_LIGHTS)
 [thingm]: https://thingm.com
 
 <!-- badges -->
-[pytest-linux-action]: https://github.com/JnyJny/busylight/workflows/linux/badge.svg
-[pytest-windows-action]: https://github.com/JnyJny/busylight/workflows/windows/badge.svg
+[pytest-badge]: https://github.com/JnyJny/busylight/actions/workflows/pytest.yaml/badge.svg
+[pytest-status]: https://github.com/JnyJny/busylight/actions/workflows/pytest.yaml
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
