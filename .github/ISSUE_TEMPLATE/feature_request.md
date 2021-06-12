@@ -1,8 +1,8 @@
 ---
 name: Feature Request
-about: Suggest an idea for this project
+about: Suggest a new feature for BusyLight
 title: "[FEATURE]"
-labels: ''
+labels: 'feature'
 assignees: JnyJny
 
 ---
