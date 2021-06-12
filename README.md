@@ -206,8 +206,8 @@ manager.lights_off(ALL_LIGHTS)
 [thingm]: https://thingm.com
 
 <!-- badges -->
-[pytest-linux-action]: https://github.com/JnyJny/busylight/workflows/pytest-linux/badge.svg
-[pytest-windows-action]: https://github.com/JnyJny/busylight/workflows/pytest-windows/badge.svg
+[pytest-linux-action]: https://github.com/JnyJny/busylight/workflows/linux/badge.svg
+[pytest-windows-action]: https://github.com/JnyJny/busylight/workflows/windows/badge.svg
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
