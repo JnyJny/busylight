@@ -13,10 +13,11 @@ assignees: JnyJny
  - BusyLight version: 
 
 **General Type of Problem**
-- [] installing
-- [] using from command-line
-- [] integrating into another project
-- [] other
+- [ ] Installation
+- [ ] Command-line
+- [ ] Integrating into another project
+- [ ] Web API
+- [ ] other
 
 **Describe the Problem**
 A description of what the bug is.
