@@ -154,16 +154,20 @@ class USBLight(abc.ABC):
 
         lights = []
         if cls.__name__ != "USBLight":
-
+            logger.debug(f"Searching for lights belonging to: {cls.__name__}")
             while True:
                 try:
                     lights.append(cls.first_light())
+                    logger.debug(f"{cls.__name__} added a light {lights[-1]!s}")
                 except USBLightNotFound:
                     break
+            logger.debug(f"{cls.__name__} found {len(lights)} lights")
             return lights
 
+        logger.debug("USBLight querying subclass lights...")
         for supported_light in cls.supported_lights():
             lights.extend(supported_light.all_lights())
+        logger.debug(f"USBLight found {len(lights)} in total.")
         return lights
 
     @classmethod
@@ -504,7 +508,7 @@ class USBLight(abc.ABC):
             raise USBLightIOError(str(error)) from None
 
         if nbytes < len(data):
-            raise USBLightIOError(f"write returned {nbytes}")
+            raise USBLightIOError(f"write returned {nbytes} for buf {len(data)}")
 
     @property
     @abc.abstractmethod
