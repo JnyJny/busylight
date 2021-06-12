@@ -495,7 +495,7 @@ class USBLight(abc.ABC):
           The light may have been released.
         """
 
-        data = bytes(self)
+        data = bytes(0) + bytes(self)
 
         try:
             with self.lock:
