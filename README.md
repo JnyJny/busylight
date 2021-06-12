@@ -3,7 +3,8 @@
 ![supported python versions][python-versions]
 ![version][pypi-version]
 ![dependencies][dependencies]
-![pytest][pytest-action]
+![pytest linux][pytest-linux-action]
+![pytest windows][pytest-windows-action]
 ![license][license]
 ![monthly-downloads][monthly-downloads]
 ![Code style: black][code-style-black]
@@ -205,7 +206,8 @@ manager.lights_off(ALL_LIGHTS)
 [thingm]: https://thingm.com
 
 <!-- badges -->
-[pytest-action]: https://github.com/JnyJny/busylight/workflows/pytest/badge.svg
+[pytest-linux-action]: https://github.com/JnyJny/busylight/workflows/pytest-linux/badge.svg
+[pytest-windows-action]: https://github.com/JnyJny/busylight/workflows/pytest-windows/badge.svg
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
