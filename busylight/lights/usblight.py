@@ -110,7 +110,7 @@ class USBLight(abc.ABC):
                 for light_entry in hid.enumerate(vendor_id):
                     logger.debug(f"{cls.__name__} entry found for {vendor_id}")
                     try:
-                        logger.debug("entry: {light_entry}")
+                        logger.debug(f"entry: {light_entry}")
                         return cls.from_dict(light_entry)
                     except (
                         USBLightUnknownVendor,
@@ -437,7 +437,8 @@ class USBLight(abc.ABC):
         with self.lock:
             try:
                 self.device.open_path(self.path)
-            except IOError:
+            except IOError as error:
+                logger.error(f"hid_open {error} for open_path({self.path})")
                 raise USBLightInUse(
                     self.vendor_id, self.product_id, self.path
                 ) from None
@@ -505,12 +506,15 @@ class USBLight(abc.ABC):
           The light may have been released.
         """
 
-        data = bytes(0) + bytes(self)
+        data = bytes(self)
+
+        logger.debug(f"{self.__class__.__name__} update for {data}")
 
         try:
             with self.lock:
                 nbytes = self.strategy(data)
         except ValueError as error:
+            logger.error(f"strategy {error} for {data}")
             raise USBLightIOError(str(error)) from None
 
         if nbytes < len(data):
