@@ -224,6 +224,9 @@ class USBLight(abc.ABC):
         self.vendor_id = vendor_id
         self.product_id = product_id
         self.path = path
+        logger.debug(
+            f"{self.__class__.__name__} init {vendor_id:x} {product_id:x} {path} {reset}"
+        )
         self.acquire(reset=reset)
 
     def __del__(self):
@@ -434,9 +437,11 @@ class USBLight(abc.ABC):
         - USBLightInUse
         - USBLightIOError
         """
+        logger.debug(f"{self.__class__.__name__}.acquire(reset={reset})")
         with self.lock:
+            logger.debug("lock acquired")
             try:
-                self.device.open_path(self.path)
+                result = self.device.open_path(self.path)
             except IOError as error:
                 logger.error(f"hid_open {error} for open_path({self.path})")
                 raise USBLightInUse(
@@ -446,8 +451,12 @@ class USBLight(abc.ABC):
                 raise USBLightIOError(f"error opening {self.path!s}: {error}") from None
 
             if reset:
+                logger.debug("Calling reset and update")
                 self.reset()
                 self.update()
+        logger.success(
+            f"{self.__class__.__name__} hid.open_path({self.path}) was a success {result}"
+        )
 
     def release(self) -> None:
         """Shutdown the animation thread and close the device.
