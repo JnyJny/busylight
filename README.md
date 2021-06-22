@@ -169,7 +169,7 @@ light.on((255, 255, 255))
 
 ### Slightly More Complicated
 
-The `busylight` package includes a manager class that great for
+The `busylight` package includes a manager class that's great for
 working with multiple lights or lights that require a little
 more direct intervention like the Kuando Busylight series.
 
