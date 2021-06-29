@@ -32,8 +32,8 @@ python project.
   * [**Luxafor** Flag][5]
   * [**Plantronics** Status Indicator][3]
   * [**ThingM** Blink1][6]
-- Works on MacOS, Linux, probably Windows and BSD too!
-- Tested extensively on Raspberry Pi 3b+, Zero W and 4
+- Supported on MacOS and Linux
+- Windows support will be available in the near future.
 
 If you have a USB light that's not on this list open an issue
 with the make and model device you want supported, where I can get
