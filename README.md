@@ -25,7 +25,7 @@ python project.
 - Control lights from the [command-line][HELP].
 - Control lights via a [Web API][WEBAPI].
 - Import `busylight` into your own project.
-- Supports Six Vendors & Multiple Models:
+- Supports six vendors & multiple models:
   * [**Agile Innovative** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
   * [**Kuando** BusyLight][4]
