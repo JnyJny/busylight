@@ -27,7 +27,7 @@ typer-cli = "^0.0.9"
 black = "^21.6b0"
 pytest-cov = "^2.12.1"
 mypy = "^0.910"
-requests = "^2.25.1"
+requests = "^2.26.0"
 
 [tool.poetry.scripts]
 busylight="busylight.main:cli"
