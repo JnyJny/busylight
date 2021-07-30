@@ -122,7 +122,7 @@ toml = ["toml"]
 
 [[package]]
 name = "fastapi"
-version = "0.67.0"
+version = "0.68.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 category = "main"
 optional = true
@@ -503,7 +503,7 @@ webapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "a8def65573fd2f74b90e8cf94fd1f8973e9b64e9913ad01b17eff986c9053ff2"
+content-hash = "88a6031ffb391db4872461cc0f273d76891a5a4c2f4085b4ec367290a4e6d6f9"
 
 [metadata.files]
 appdirs = [
@@ -601,8 +601,8 @@ coverage = [
     {file = "coverage-5.5.tar.gz", hash = "sha256:ebe78fe9a0e874362175b02371bdfbee64d8edc42a044253ddf4ee7d3c15212c"},
 ]
 fastapi = [
-    {file = "fastapi-0.67.0-py3-none-any.whl", hash = "sha256:b05f5af77af3b21cab896b8dade8b383b2d2f254caae4681a56313e29196f1ac"},
-    {file = "fastapi-0.67.0.tar.gz", hash = "sha256:24f45d65e589db3bab162c02a1e2e8b798c098861b1fa3e266efeb71b4faa8e2"},
+    {file = "fastapi-0.68.0-py3-none-any.whl", hash = "sha256:f4dba2596b1e0a1f962834c3b9ec4291a7aec387a1031c6c2e25bf239d27fd0f"},
+    {file = "fastapi-0.68.0.tar.gz", hash = "sha256:c9256a89b0436223b45f53fe3a39b178f3da6be5841a2c59deedff4b676d003f"},
 ]
 h11 = [
     {file = "h11-0.12.0-py3-none-any.whl", hash = "sha256:36a3cb8c0a032f56e2da7084577878a035d3b61d104230d4bd49c0c6b555a9c6"},
