@@ -150,6 +150,13 @@ Now you can use the web API endpoints which return JSON payloads:
   }
 ```
 
+### Authentication
+The API can be secured with a simple username and password through
+[HTTP Basic Authentication][BASICAUTH]. To require authentication
+for all API requests, set the `BUSYLIGHT_API_USER` and
+`BUSYLIGHT_API_PASS` environmental variables before running
+`busylight serve`.
+
 ## Code Examples
 
 Adding light support to your own python applications is easy!
@@ -200,6 +207,7 @@ manager.lights_off(ALL_LIGHTS)
 [WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
 [DEMO]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
 
+[BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
 
 [todbot]: https://github.com/todbot

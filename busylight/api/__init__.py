@@ -1,10 +1,13 @@
 """BusyLight API
 """
 
+from os import environ
+from secrets import compare_digest
 from typing import Callable, List, Dict, Any
 
-from fastapi import FastAPI, Path, Request
+from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from loguru import logger
 
 from .models import LightOperation, LightDescription, EndPoint
@@ -16,9 +19,22 @@ from ..manager import LightIdRangeError, ColorLookupError
 from ..manager import ALL_LIGHTS
 from ..color import rgb_to_hex
 
+# FastAPI Security Scheme
+busylightapi_security = HTTPBasic()
 
 class BusylightAPI(FastAPI):
     def __init__(self):
+        # Set up authentication, if env. variables set
+        dependencies = []
+        try:
+            self.username = environ['BUSYLIGHT_API_USER']
+            self.password = environ['BUSYLIGHT_API_PASS']
+            dependencies.append(Depends(self.authenticate_user))
+        except KeyError:
+            # Env. variables not set, so auth disabled
+            self.username = None
+            self.password = None
+
         super().__init__(
             title="Busylight Server: A USB Light Server",
             description="""
@@ -36,6 +52,7 @@ An API server for USB connected presence lights.
 [Source](https://github.com/JnyJny/busylight.git)
 """,
             version=__version__,
+            dependencies=dependencies,
         )
         self.manager: LightManager = None
         self.endpoints: List[str] = []
@@ -44,7 +61,19 @@ An API server for USB connected presence lights.
         self.endpoints.append(path)
         kwargs.setdefault("response_model_exclude_unset", True)
         return super().get(path, **kwargs)
-
+    
+    def authenticate_user(
+        self, 
+        credentials: HTTPBasicCredentials = Depends(busylightapi_security)
+    ) -> None:
+        username_correct = compare_digest(credentials.username, self.username)
+        password_correct = compare_digest(credentials.password, self.password)
+        if not (username_correct and password_correct):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Basic"},
+            )
 
 busylightapi = BusylightAPI()
 
