@@ -157,6 +157,8 @@ for all API requests, set the `BUSYLIGHT_API_USER` and
 `BUSYLIGHT_API_PASS` environmental variables before running
 `busylight serve`.
 
+> :warning: **SECURITY WARNING**: HTTP Basic Auth sends usernames and passwords in *cleartext* (i.e., unencrypted). Use of SSL is highly recommended!
+
 ## Code Examples
 
 Adding light support to your own python applications is easy!
