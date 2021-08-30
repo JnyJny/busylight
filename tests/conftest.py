@@ -1,11 +1,16 @@
 """
 """
 
+from typing import List
+
 import pytest
 
 from unittest import mock
 
+from fastapi.testclient import TestClient
+
 from busylight.lights import USBLight
+from busylight.api import busylightapi
 
 
 @pytest.fixture(scope="session")
@@ -52,3 +57,17 @@ def lights(supported_lights) -> list:
                     "release_number": 0x200,
                 }
     return lights
+
+
+@pytest.fixture(scope="session")
+def busylight_client() -> TestClient:
+    return TestClient(busylightapi)
+
+
+@pytest.fixture(scope="session")
+def busylight_api_routes(busylight_client) -> List[str]:
+
+    with busylight_client as client:
+        response = client.get("/")
+
+    return [r["path"] for r in response.json()]

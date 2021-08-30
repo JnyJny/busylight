@@ -11,13 +11,15 @@ from typing import (
     Callable,
     cast,
     Dict,
-    Generator,
     Iterator,
+    Generator,
     List,
     Tuple,
     Type,
     Union,
 )
+
+from loguru import logger
 
 from .exceptions import USBLightNotFound
 from .exceptions import USBLightUnknownVendor
@@ -103,27 +105,33 @@ class USBLight(abc.ABC):
         """
 
         if cls.__name__ != "USBLight":
-
+            logger.debug(f"{cls.__name__} looking for first unclaimed light...")
             for vendor_id in cls.vendor_ids():
                 for light_entry in hid.enumerate(vendor_id):
+                    logger.debug(f"{cls.__name__} entry found for {vendor_id}")
                     try:
+                        logger.debug(f"entry: {light_entry}")
                         return cls.from_dict(light_entry)
                     except (
                         USBLightUnknownVendor,
                         USBLightUnknownProduct,
                         USBLightInUse,
-                    ):
+                    ) as error:
+                        logger.error(f"{cls.__name__} {error} for {vendor_id}")
                         pass
-            else:
-                raise USBLightNotFound()
+
+            logger.debug(f"{cls.__name__} found no unclaimed lights.")
+            raise USBLightNotFound()
 
         for supported_light in cls.supported_lights():
+            logger.debug("USBLight looking for first unclaimed light..")
             try:
                 return supported_light.first_light()
             except USBLightNotFound:
+                logger.debug(f"No unclaimed lights for {supported_light}")
                 pass
-        else:
-            raise USBLightNotFound()
+        logger.debug(f"USBLight no unclaimed lights found.")
+        raise USBLightNotFound()
 
     @classmethod
     def all_lights(cls) -> List["USBLight"]:
@@ -152,16 +160,20 @@ class USBLight(abc.ABC):
 
         lights = []
         if cls.__name__ != "USBLight":
-
+            logger.debug(f"Searching for lights belonging to: {cls.__name__}")
             while True:
                 try:
                     lights.append(cls.first_light())
+                    logger.debug(f"{cls.__name__} added a light {lights[-1]!s}")
                 except USBLightNotFound:
                     break
+            logger.debug(f"{cls.__name__} found {len(lights)} lights")
             return lights
 
+        logger.debug("USBLight querying subclass lights...")
         for supported_light in cls.supported_lights():
             lights.extend(supported_light.all_lights())
+        logger.debug(f"USBLight found {len(lights)} in total.")
         return lights
 
     @classmethod
@@ -212,6 +224,9 @@ class USBLight(abc.ABC):
         self.vendor_id = vendor_id
         self.product_id = product_id
         self.path = path
+        logger.debug(
+            f"{self.__class__.__name__} init {vendor_id:x} {product_id:x} {path} {reset}"
+        )
         self.acquire(reset=reset)
 
     def __del__(self):
@@ -241,6 +256,19 @@ class USBLight(abc.ABC):
         return self._device
 
     @property
+    def plugged_in(self) -> bool:
+        try:
+            result = self.device.read(128, 1)
+            return True
+        except OSError as error:
+            logger.debug(f"{error}")
+        return False
+
+    @property
+    def unplugged(self) -> bool:
+        return not self.plugged_in
+
+    @property
     def strategy(self) -> Callable:
         """The write function used to communicate with the device.
 
@@ -251,6 +279,7 @@ class USBLight(abc.ABC):
         The strategy function is expected to take `bytes` as it's
         sole argument and return the number of bytes written. A
         return value of -1 indicates error.
+
         """
         return self.device.write
 
@@ -346,9 +375,9 @@ class USBLight(abc.ABC):
     def animation_thread(self) -> Union[CancellableThread, None]:
         """A busylight.lights.thread.CancellableThread animating this light.
 
-        The animation thread runs a generator function that takes this light
-        as an argument and calls yield at frequent intervals. If animation_thread
-        is None, the light is not being animated.
+        The animation thread runs a generator function that takes this
+        light as an argument and calls yield at frequent intervals. If
+        animation_thread is None, the light is not being animated.
         """
         return getattr(self, "_animation_thread", None)
 
@@ -408,10 +437,13 @@ class USBLight(abc.ABC):
         - USBLightInUse
         - USBLightIOError
         """
+        logger.debug(f"{self.__class__.__name__}.acquire(reset={reset})")
         with self.lock:
+            logger.debug("lock acquired")
             try:
-                self.device.open_path(self.path)
-            except IOError:
+                result = self.device.open_path(self.path)
+            except IOError as error:
+                logger.error(f"hid_open {error} for open_path({self.path})")
                 raise USBLightInUse(
                     self.vendor_id, self.product_id, self.path
                 ) from None
@@ -419,8 +451,12 @@ class USBLight(abc.ABC):
                 raise USBLightIOError(f"error opening {self.path!s}: {error}") from None
 
             if reset:
+                logger.debug("Calling reset and update")
                 self.reset()
                 self.update()
+        logger.success(
+            f"{self.__class__.__name__} hid.open_path({self.path}) was a success {result}"
+        )
 
     def release(self) -> None:
         """Shutdown the animation thread and close the device.
@@ -444,7 +480,7 @@ class USBLight(abc.ABC):
 
         See busylight.lights.thread.CancellableThread for more details.
 
-        :param animation: Callable
+        :param animation: Generator[float, None, None]
 
         Raises:
         - USBLightIOError
@@ -481,14 +517,17 @@ class USBLight(abc.ABC):
 
         data = bytes(self)
 
+        logger.debug(f"{self.__class__.__name__} update for {data}")
+
         try:
             with self.lock:
                 nbytes = self.strategy(data)
         except ValueError as error:
+            logger.error(f"strategy {error} for {data}")
             raise USBLightIOError(str(error)) from None
 
-        if nbytes != len(data):
-            raise USBLightIOError(f"write returned {nbytes}")
+        if nbytes < len(data):
+            raise USBLightIOError(f"write returned {nbytes} for buf {len(data)}")
 
     @property
     @abc.abstractmethod

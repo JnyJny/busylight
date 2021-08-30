@@ -24,6 +24,6 @@ def test_cancellable_thread():
 
     assert thrd.is_alive()
 
-    thrd.cancel(join=True)
+    thrd.cancel()
 
-    assert not thrd.is_alive()
+    assert thrd.cancelled == True

@@ -17,6 +17,7 @@ $ busylight [OPTIONS] COMMAND [ARGS]...
 
 * `-l, --light-id INTEGER`: Which light to operate on, see list output.  [default: 0]
 * `-a, --all`: Operate on all lights.
+* `-D, --debug`: Enable logging
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
@@ -71,7 +72,6 @@ $ busylight blink [OPTIONS] [COLOR] [[slow|medium|fast]]
 ## `busylight list`
 
 List available lights (currently connected).
-    
 
 **Usage**:
 
@@ -161,13 +161,13 @@ Examples:
 
 ```
 $ busylight server >& log &
-$ curl http://localhost:8888/1/lights
-$ curl http://localhost:8888/1/lights/on
-$ curl http://localhost:8888/1/lights/off
-$ curl http://localhost:8888/1/light/0/on/purple
-$ curl http://localhost:8888/1/light/0/off
-$ curl http://localhost:8888/1/lights/on
-$ curl http://localhost:8888/1/lights/off
+$ curl http://localhost:8888/lights
+$ curl http://localhost:8888/lights/on
+$ curl http://localhost:8888/lights/off
+$ curl http://localhost:8888/light/0/on/purple
+$ curl http://localhost:8888/light/0/off
+$ curl http://localhost:8888/lights/on
+$ curl http://localhost:8888/lights/off
 ```
 
 **Usage**:
@@ -185,7 +185,6 @@ $ busylight serve [OPTIONS]
 ## `busylight supported`
 
 List supported LED lights.
-    
 
 **Usage**:
 

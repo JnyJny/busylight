@@ -1,12 +1,13 @@
-<!-- USB HID API embrava blynclight agile innovations blinkstick kuando busylight luxafor flag thingM blink(1) -->
-![BusyLight Project Logo][LOGO]
-
+<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight luxafor flag thingM blink(1) -->
+![BusyLight Project Logo][LOGO] <br>
+![supported python versions][python-versions]
 ![version][pypi-version]
 ![dependencies][dependencies]
-![pytest][pytest-action]
+[![pytest][pytest-badge]][pytest-status]
 ![license][license]
 ![monthly-downloads][monthly-downloads]
 ![Code style: black][code-style-black]
+
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
@@ -23,20 +24,30 @@ python project.
 ## Features
 - Control lights from the [command-line][HELP].
 - Control lights via a [Web API][WEBAPI].
-- Individually addresable lights.
-- Supports Five Vendors & Multiple Models:
-  * [**Agile Innovations** BlinkStick ][2]
+- Import `busylight` into your own project.
+- Supports six vendors & multiple models:
+  * [**Agile Innovative** BlinkStick ][2]
   * [**Embrava** Blynclight][3]
   * [**Kuando** BusyLight][4]
   * [**Luxafor** Flag][5]
+  * [**Plantronics** Status Indicator][3]
   * [**ThingM** Blink1][6]
-- Works on MacOS, Linux, probably Windows and BSD too!
-- Tested extensively on Raspberry Pi 3b+, Zero W and 4
+- Supported on MacOS and Linux
+- Windows support will be available in the near future.
 
-If you have a USB light that's not on this list, please open
-an issue with the make and model device you want supported.
+If you have a USB light that's not on this list open an issue
+with the make and model device you want supported, where I can get
+one, and any public hardware documentation you are aware of.
 
-## Basic Install 
+### Gratitude
+
+Thank you to [@todbot][todbot] and the very nice people at [ThingM][thingm] who
+graciously and unexpectedly gifted me with two `blink(1) mk3` lights!
+
+## Basic Install
+
+Installs only the command-line `busylight` tool and associated
+modules.
 
 ```console
 $ python3 -m pip install busylight-for-humans 
@@ -51,6 +62,7 @@ $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
 ## Linux Post-Install Activities
+
 Linux controls access to USB devices via the [udev subsystem][UDEV]. By
 default it denies non-root users access to devices it doesn't
 recognize. I've got you covered!
@@ -95,42 +107,42 @@ The API is fully documented and available @ `https://localhost:8888/redoc`
 Now you can use the web API endpoints which return JSON payloads:
 
 ```console
-  $ curl -s http://localhost:8888/1/lights
+  $ curl -s http://localhost:8888/lights
   ...
-  $ curl -s http://localhost:8888/1/lights/on | jq
+  $ curl -s http://localhost:8888/light/0/on | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "green"
   }
-  $ curl -s http://localhost:8888/1/lights/off | jq
+  $ curl -s http://localhost:8888/light/0/off | jq
   {
     "light_id": 0,
     "action": "off"
   }
-  $ curl -s http://localhost:8888/1/light/0/on/purple | jq
+  $ curl -s http://localhost:8888/light/0/on/purple | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "purple"
   }
-  $ curl -s http://localhost:8888/1/light/0/off | jq
+  $ curl -s http://localhost:8888/light/0/off | jq
   {
     "light_id": 0,
     "action": "off"
   }
-  $ curl -s http://localhost:8888/1/lights/on | jq
+  $ curl -s http://localhost:8888/lights/on | jq
   {
     "light_id": "all",
     "action": "on",
     "color": "green"
   }
-  $ curl -s http://localhost:8888/1/lights/off | jq
+  $ curl -s http://localhost:8888/lights/off | jq
   {
     "light_id": "all",
     "action": "off"
   }
-  $ curl -s http://localhost:8888/1/lights/rainbow | jq
+  $ curl -s http://localhost:8888/lights/rainbow | jq
   {
     "light_id": "all",
     "action": "effect",
@@ -138,8 +150,18 @@ Now you can use the web API endpoints which return JSON payloads:
   }
 ```
 
+### Authentication
+The API can be secured with a simple username and password through
+[HTTP Basic Authentication][BASICAUTH]. To require authentication
+for all API requests, set the `BUSYLIGHT_API_USER` and
+`BUSYLIGHT_API_PASS` environmental variables before running
+`busylight serve`.
+
+> :warning: **SECURITY WARNING**: HTTP Basic Auth sends usernames and passwords in *cleartext* (i.e., unencrypted). Use of SSL is highly recommended!
+
 ## Code Examples
 
+Adding light support to your own python applications is easy!
 
 ### Simple Case: Turn On a Single Light
 
@@ -156,7 +178,7 @@ light.on((255, 255, 255))
 
 ### Slightly More Complicated
 
-The `busylight` package includes a manager class that great for
+The `busylight` package includes a manager class that's great for
 working with multiple lights or lights that require a little
 more direct intervention like the Kuando Busylight series.
 
@@ -176,7 +198,7 @@ manager.lights_off(ALL_LIGHTS)
 [0]: https://pypi.org/project/busylight-for-humans/
 
 <!-- doc links -->
-[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovations.md
+[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
 [3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
 [4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
 [5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
@@ -187,12 +209,19 @@ manager.lights_off(ALL_LIGHTS)
 [WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
 [DEMO]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
 
+[BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
 
+[todbot]: https://github.com/todbot
+[thingm]: https://thingm.com
+
 <!-- badges -->
-[pytest-action]: https://github.com/JnyJny/busylight/workflows/pytest/badge.svg
+[pytest-badge]: https://github.com/JnyJny/busylight/actions/workflows/pytest.yaml/badge.svg
+[pytest-status]: https://github.com/JnyJny/busylight/actions/workflows/pytest.yaml
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
+[python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
+

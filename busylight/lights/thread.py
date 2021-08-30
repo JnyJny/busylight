@@ -2,8 +2,11 @@
 
 """
 
+from time import sleep
 from threading import Thread
 from typing import Generator
+
+from loguru import logger
 
 
 class CancellableThread(Thread):
@@ -14,9 +17,14 @@ class CancellableThread(Thread):
     `run` method must call `yield` periodically. The thread will be more
     responsive to cancelling if generator yields often. A thread should
     not be re-used after it has been cancelled.
+
+    The generator function should yeild a floating point value, indicating
+    the time in seconds to wait before the next iteration of the generator.
+
+
     """
 
-    def __init__(self, target: Generator[None, None, None], name: str = None):
+    def __init__(self, target: Generator[float, None, None], name: str = None) -> None:
         """
         :param target: generator
         :param name: str
@@ -29,7 +37,22 @@ class CancellableThread(Thread):
             name=name,
             daemon=True,
         )
-        self._is_cancelled = False
+
+    @property
+    def alive(self) -> bool:
+        return self.is_alive()
+
+    @property
+    def target(self) -> Generator[float, None, None]:
+        return getattr(self, "_target")
+
+    @property
+    def cancelled(self) -> bool:
+        return getattr(self, "_cancelled", False)
+
+    @cancelled.setter
+    def cancelled(self, value: bool) -> None:
+        self._cancelled = value
 
     def run(self) -> None:
         """Executes the `target` generator until the thread is cancelled.
@@ -47,19 +70,19 @@ class CancellableThread(Thread):
         ```
 
         """
-        for _ in self._target:  # type: ignore
-            if self._is_cancelled:
-                return
+        logger.debug(f" {self} running target {self.target}")
+        while not self.cancelled:
+            try:
+                sleep(next(self.target))
+            except Exception as error:
+                logger.error(f"{error}")
+                break
 
-    def cancel(self, join: bool = True, timeout: float = 0.05) -> None:
+        logger.debug(f"{self} returning")
+
+    def cancel(self) -> None:
         """Signals that the thread should terminate as soon as possible.
 
         Call this method from the main thread on the running thread.
-
-        :param join: bool
-        :param timeout: float
         """
-        self._is_cancelled = True
-        if join:
-            while self.is_alive():
-                self.join(timeout)
+        self.cancelled = True

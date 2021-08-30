@@ -7,6 +7,8 @@ from functools import partial
 from time import sleep
 from typing import ContextManager, Generator, Dict, List, Tuple, Union
 
+from loguru import logger
+
 from .lights import USBLight
 from .lights import USBLightUnknownVendor
 from .lights import USBLightUnknownProduct
@@ -93,14 +95,14 @@ class LightManager:
             pass
         self._supported: List[str] = []
         for light in USBLight.supported_lights():
-            self._supported.append(f"{light.vendor} {light.__name__}")
+            self._supported.append(f"{light.vendor} {light.__name__.replace('_',' ')}")
         return self._supported
 
     @property
     def lights(self) -> List[USBLight]:
-        """List of manged USBLight devices
+        """List of managed USBLight devices
 
-        The devices are open for use exclusively by the manager.
+        The devices are open for exclusive use by the manager.
         """
         try:
             return self._lights
@@ -154,12 +156,17 @@ class LightManager:
 
         :return: number of new lights added to the managed `lights` list.
         """
-
+        logger.info(f"Manager has {len(self.lights)} lights")
         self.lights.extend(USBLight.all_lights())
+
+        logger.info(f"After all_lights, Manager has {len(self.lights)} lights")
         self.lights.sort(key=lambda v: v.path)
 
-        for dead_light in [l for l in self.lights if not l.is_acquired]:
+        for dead_light in [l for l in self.lights if l.unplugged]:
             self.lights.remove(dead_light)
+            logger.debug(f"Removed a dead light {dead_light.identifier}")
+
+        logger.info(f"Manager has {len(self.lights)} lights after update")
 
     def release(self) -> None:
         """Releases all the lights and empties the `lights` property.
@@ -247,7 +254,11 @@ class LightManager:
                 pass
 
     def apply_effect_to_light(
-        self, light_id: Union[int, None], effect: Generator, *args, **kwds
+        self,
+        light_id: Union[int, None],
+        effect: Generator[float, None, None],
+        *args,
+        **kwds,
     ):
         """Apply an effect function to the specified light.
 
@@ -266,7 +277,7 @@ class LightManager:
         except ValueError:
             raise ColorLookupError(kwds["color"])
         finally:
-            effect = partial(effect, color=color)
+            effect = partial(effect, color=color)  # type: ignore
 
         for light in self.lights_for(light_id):
             light.start_animation(effect)
@@ -279,15 +290,19 @@ class LightManager:
         off_on_enter: bool = True,
         off_on_exit: bool = False,
     ) -> "LightManager":
-        """This context manager method sets the lights specified by `light_id`
-        to a known state, 'off', upon entering and exiting the context manager.
+        """This context manager  sets the lights specified by `light_id`
+        to a known state, 'off', upon enter and exit.
 
         If `off_on_enter` is False, the lights are not turned off on enter.
+
         If `off_on_exit` is False, the lights are not turned off on exit.
 
+        If `wait_on_animation` is True, the method does not return until
+        all lights have completed their animation.
+
         :param light_id: Union[int, None]
-        :param off_on_enter: bool
         :param wait_on_animation: bool
+        :param off_on_enter: bool
         :param off_on_exit: bool
         """
 

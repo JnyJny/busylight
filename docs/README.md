@@ -38,7 +38,7 @@ Human Interface Device (HID) application programming interface
 - [Kuando BusyLight][3]
 - [Luxafor Flag][4]
 - [ThingM blink(1)][5]
-- [Agile Innovations BlinkStick][6]
+- [Agile Innovative BlinkStick][6]
 
 
 [0]: https://github.com/JnyJny/busylight
@@ -51,6 +51,6 @@ Human Interface Device (HID) application programming interface
 [3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
 [4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
 [5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
-[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovations.md
+[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
 
 

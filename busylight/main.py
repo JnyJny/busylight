@@ -7,6 +7,8 @@ from typing import Tuple, Union, List
 
 import typer
 
+from loguru import logger
+
 from .manager import LightManager, BlinkSpeed
 from .manager import LightIdRangeError, ColorLookupError
 from .manager import ALL_LIGHTS
@@ -30,6 +32,13 @@ def main_callback(
     all_lights: bool = typer.Option(
         False, "--all", "-a", is_flag=True, help="Operate on all lights."
     ),
+    debug: bool = typer.Option(
+        False,
+        "--debug",
+        "-D",
+        is_flag=True,
+        help="Enable logging",
+    ),
 ):
     """Control USB attached LED lights like a Human™
 
@@ -40,6 +49,9 @@ def main_callback(
     """
 
     ctx.obj = ALL_LIGHTS if all_lights else light_id
+
+    if debug:
+        logger.enable("busylight")
 
 
 @cli.command(name="list")
@@ -276,13 +288,13 @@ def serve_subcommand(
     \b
     ```
     $ busylight server >& log &
-    $ curl http://localhost:8888/1/lights
-    $ curl http://localhost:8888/1/lights/on
-    $ curl http://localhost:8888/1/lights/off
-    $ curl http://localhost:8888/1/light/0/on/purple
-    $ curl http://localhost:8888/1/light/0/off
-    $ curl http://localhost:8888/1/lights/on
-    $ curl http://localhost:8888/1/lights/off
+    $ curl http://localhost:8888/lights
+    $ curl http://localhost:8888/lights/on
+    $ curl http://localhost:8888/lights/off
+    $ curl http://localhost:8888/light/0/on/purple
+    $ curl http://localhost:8888/light/0/off
+    $ curl http://localhost:8888/lights/on
+    $ curl http://localhost:8888/lights/off
     ```
     """
 
@@ -296,7 +308,7 @@ def serve_subcommand(
         raise typer.Exit(-1) from None
 
     try:
-        uvicorn.run("busylight.api:server", host=host, port=port)
+        uvicorn.run("busylight.api:busylightapi", host=host, port=port)
     except ModuleNotFoundError:
         typer.secho(
             "The package `fastapi` is missing, unable to serve the busylight API",

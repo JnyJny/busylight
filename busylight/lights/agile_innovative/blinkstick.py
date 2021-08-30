@@ -1,12 +1,10 @@
-"""Support for Agile Innovations BlinkSticks
+"""Support for Agile Innovative BlinkSticks
 """
 
 from functools import partial
-from time import sleep
 from typing import List, Tuple
 
 from .hardware import BlinkStickVariant
-from .hardware import BlinkStickUnknownVariant
 
 from ..usblight import USBLight
 from ...effects import blink as blink_effect
@@ -16,7 +14,7 @@ class BlinkStick(USBLight):
 
     VENDOR_IDS: List[int] = [0x20A0]
     PRODUCT_IDS: List[int] = []
-    vendor = "Agile Innovations"
+    vendor = "Agile Innovative"
 
     @property
     def name(self) -> str:

@@ -23,7 +23,7 @@ from ..lights import USBLight, USBLightIOError
 
 def rainbow(
     light: USBLight, interval: float = 0.05, **kwds
-) -> Generator[None, None, None]:
+) -> Generator[float, None, None]:
     """Color cycle the light thru a rainbow spectrum.
 
     :param light: USBLight
@@ -36,13 +36,12 @@ def rainbow(
                 light.on(color)
             except USBLightIOError:
                 exit()
-            yield
-            time.sleep(interval)
+            yield interval
 
 
 async def rainbow_async(
     light: USBLight, interval: float = 0.05, **kwds
-) -> AsyncGenerator[None, None]:
+) -> AsyncGenerator[float, None]:
     """Color cycle the light thru a rainbow spectrum. (async aware)
 
     :param light: USBLight
@@ -55,14 +54,13 @@ async def rainbow_async(
                 light.on(color)
             except USBLightIOError:
                 exit()
-            yield
-            await asyncio.sleep(interval)
+            yield interval
 
 
 def blink(
     light: USBLight, color: Tuple[int, int, int], speed: int
-) -> Generator[None, None, None]:
-    """The the light off and on with the specified color.
+) -> Generator[float, None, None]:
+    """Blink the light off and on with the specified color.
 
     :param light: USBLight
     :param color: Tuple[int, int, int]
@@ -73,17 +71,15 @@ def blink(
 
     while True:
         light.on(color)
-        yield
-        time.sleep(interval)
+        yield interval
         light.off()
-        yield
-        time.sleep(interval)
+        yield interval
 
 
 async def blink_async(
     light: USBLight, color: Tuple[int, int, int], speed: int
-) -> AsyncGenerator[None, None]:
-    """The the light off and on with the specified color. (async aware)
+) -> AsyncGenerator[float, None]:
+    """Blink the light off and on with the specified color. (async aware)
 
     :param light: USBLight
     :param color: Tuple[int, int, int]
@@ -94,18 +90,16 @@ async def blink_async(
 
     while True:
         light.on(color)
-        yield
-        await asyncio.sleep(interval)
+        yield interval
         light.off()
-        yield
-        await asyncio.sleep(interval)
+        yield interval
 
 
 def pulse(
     light: USBLight,
     color: Tuple[int, int, int] = None,
     interval: float = 0.01,
-) -> Generator[None, None, None]:
+) -> Generator[float, None, None]:
     """Pulse the light with scaled values of the supplied `color`.
 
     If no color is supplied or the color is black (0,0,0), the function defaults
@@ -128,15 +122,14 @@ def pulse(
                 light.on(color)
             except USBLightIOError:
                 exit()
-            yield
-            time.sleep(interval)
+            yield interval
 
 
 async def pulse_async(
     light: USBLight,
     color: Tuple[int, int, int],
     interval: float = 0.1,
-) -> AsyncGenerator[None, None]:
+) -> AsyncGenerator[float, None]:
     """Pulse the light with scaled values of the supplied `color`. (async aware)
 
     If no color is supplied or the color is black (0,0,0), the function defaults
@@ -160,8 +153,7 @@ async def pulse_async(
                 light.on(color)
             except USBLightIOError:
                 exit()
-            yield
-            await asyncio.sleep(interval)
+            yield interval
 
 
 def flash_lights_impressively(
@@ -169,7 +161,7 @@ def flash_lights_impressively(
     colors: List[Tuple[int, int, int]] = None,
     interval: float = 0.05,
     **kwds
-) -> Generator[None, None, None]:
+) -> Generator[float, None, None]:
     """Alternate between given colors very quickly.
 
     If no colors are given, defaults to [red, green, blue].
@@ -186,13 +178,12 @@ def flash_lights_impressively(
             light.on(color)
         except USBLightIOError:
             exit()
-        yield
-        time.sleep(interval)
+        yield interval
 
 
 async def flash_lights_impressively_async(
     light: USBLight, colors: List[Tuple[int, int, int]] = None, interval: float = 0.1
-) -> AsyncGenerator[None, None]:
+) -> AsyncGenerator[float, None]:
     """Alternate between given colors very quickly. (async aware)
 
     If no colors are given, defaults to [red, green, blue].
@@ -209,8 +200,7 @@ async def flash_lights_impressively_async(
             light.on(color)
         except USBLightIOError:
             exit()
-        yield
-        await asyncio.sleep(interval)
+        yield interval
 
 
 __all__ = [

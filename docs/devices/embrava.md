@@ -6,7 +6,11 @@ The [Embrava Blynclight][0] family of products is diverse but the physical
 articles I've tested all seem to share a base software
 implementation. Specifically, I've personally tested the BLYNCUSB30
 (Blynclight) and BLYNCUSB40S (Blynclight Plus) models and have
-secondhand accounts of success with the Blynclight Mini.
+secondhand accounts of success with the Blynclight Mini. Also of note, Plantronics
+briefly sold a rebranded BlyncLight Plus as the Plantronics Status Indicator. The 
+only difference between the two devices that I could determine was the vendor
+identifier, documented below.
+
 
 ### Physical Description
 
@@ -27,7 +31,7 @@ The devices are roughly 2 inches tall, and 1.5 inches on a side.
 
 ### Basic Human Interface Device Info 
 
-- Vendor ID values: 0x2c0d, 0x03e5
+- Vendor ID values: 0x2c0d, 0x03e5, 0x047F (Plantronics)
 - I/O Interface: HID `write`
 - Command Length: 9-bytes
 

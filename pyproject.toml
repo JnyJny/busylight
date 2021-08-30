@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "busylight-for-humans"
-version = "0.8.3"
+version = "0.12.9"
 description = "Control USB connected LED lights, like a human."
 authors = ["JnyJny <erik.oshaughnessy@gmail.com>"]
 license = "Apache-2.0"
@@ -15,20 +15,22 @@ hidapi = ">=0.9,<0.11"
 bitvector-for-humans = "^0.14.0"
 webcolors = "^1.11.1"
 
-uvicorn = {version = ">=0.12.2,<0.14.0", optional = true }
-fastapi = {version = ">=0.61.1,<0.64.0", optional = true }
+uvicorn = {version = ">=0.12.2,<0.16.0", optional = true }
+fastapi = {version = ">=0.61.1,<0.69.0", optional = true }
+loguru = "^0.5.3"
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^6"
 typer-cli = "^0.0.9"
-black = "^20.8b1"
-pytest-cov = "^2.11.1"
-mypy = "^0.812"
+black = "^21.8b0"
+pytest-cov = "^2.12.1"
+mypy = "^0.910"
+requests = "^2.26.0"
 
 [tool.poetry.scripts]
-busylight="busylight.__main__:cli"
+busylight="busylight.main:cli"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
@@ -42,5 +44,15 @@ ignore_missing_imports = true
 [mypy-hid]
 ignore_missing_imports = true
 [mypy-fastapi]
+ignore_missing_imports = true
+[mypy-pydantic]
+ignore_missing_imports = true
+[mypy-uvicorn]
+ignore_missing_imports = true
+[mypy-loguru]
+ignore_missing_imports = true
+[mypy-bitvector]
+ignore_missing_imports = true
+[mypy-fastapi.responses]
 ignore_missing_imports = true
 

@@ -17,6 +17,8 @@ all:
 	@echo "patch_release - push and publish a patch release"
 	@echo "push          - pushes commits and tags to origin/master"
 	@echo "publish       - publish package to PyPI"
+	@echo "report        - generate a code coverage report"
+	@echo "mypy          - type check the code base"
 
 major: MAJOR update
 
@@ -35,7 +37,7 @@ PATCH:
 
 
 docs/busylight.1.md:
-	@typer $(TARGET).__main__ utils docs --name busylight --output $@
+	@typer $(TARGET).main utils docs --name busylight --output $@
 	@sed -i '' -e  "s///g" $@
 
 
@@ -71,6 +73,7 @@ report:
 mypy: MYPY= mypy
 mypy:
 	$(MYPY) --config-file $(PYPROJECT) $(TARGET)
+
 clean:
 	@rm -rf dist $(TARGET).egg-info *.log
 

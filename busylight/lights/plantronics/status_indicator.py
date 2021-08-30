@@ -1,20 +1,25 @@
-"""Support for Embrava Blynclights
+"""Support for Plantronics Status Indicators
 """
-
 
 from typing import List, Tuple
 
-from .hardware import BlynclightState
+from ..embrava.hardware import BlynclightState
 
 from ..usblight import USBLight
 
+## XXX I really wanted to just subclass Blynclight here and call it a day.
+##     Unfortunately, the Status_Indicator class didn't show up in the output
+##     of USBLight.__subclasses__(). The lazy solution is a cut-n-paste of the
+##     Blynclight USBLight abc implementation and share the BlynclightState
+##     class.  I'll keep hacking at this.
 
-class Blynclight(USBLight):
-    """Embrava Blynclight family of USB-connected presence lights."""
 
-    VENDOR_IDS: List[int] = [0x2C0D, 0x03E5]
+class Status_Indicator(USBLight):
+    """Plantronics Status Indicator family of USB-connected presence lights."""
+
+    VENDOR_IDS: List[int] = [0x047F]
     PRODUCT_IDS: List[int] = []
-    vendor = "Embrava"
+    vendor = "Plantronics"
 
     @property
     def state(self) -> BlynclightState:

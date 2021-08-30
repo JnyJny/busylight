@@ -1,6 +1,6 @@
 """Kuando 
 """
 
-from .busylight import BusyLight
+from .busylight import Busylight
 
-__all__ = ["BusyLight"]
+__all__ = ["Busylight"]
