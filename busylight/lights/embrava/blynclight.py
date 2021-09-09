@@ -12,7 +12,7 @@ from ..usblight import USBLight
 class Blynclight(USBLight):
     """Embrava Blynclight family of USB-connected presence lights."""
 
-    VENDOR_IDS: List[int] = [0x2C0D, 0x03E5]
+    VENDOR_IDS: List[int] = [0x2C0D, 0x0E53]
     PRODUCT_IDS: List[int] = []
     vendor = "Embrava"
 
