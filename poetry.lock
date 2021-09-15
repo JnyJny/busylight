@@ -44,7 +44,7 @@ python-versions = ">=3.7,<4.0"
 
 [[package]]
 name = "black"
-version = "21.8b0"
+version = "21.9b0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
@@ -512,7 +512,7 @@ webapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "f10e45f2efb773409bcd82e5609c6cee811c0bd52f7bd666382c4b6a9871a5c7"
+content-hash = "6dea768ebeb2d69b1c5d9b5c0e00d5c7fdaadc153ea4e56c7306fd5dd70e0a6f"
 
 [metadata.files]
 asgiref = [
@@ -532,8 +532,8 @@ bitvector-for-humans = [
     {file = "bitvector_for_humans-0.14.1-py3-none-any.whl", hash = "sha256:41bd430cc698f3712e36b32c1ac0d4420ceb230d8fdbf6c3489243f470457305"},
 ]
 black = [
-    {file = "black-21.8b0-py3-none-any.whl", hash = "sha256:2a0f9a8c2b2a60dbcf1ccb058842fb22bdbbcb2f32c6cc02d9578f90b92ce8b7"},
-    {file = "black-21.8b0.tar.gz", hash = "sha256:570608d28aa3af1792b98c4a337dbac6367877b47b12b88ab42095cfc1a627c2"},
+    {file = "black-21.9b0-py3-none-any.whl", hash = "sha256:380f1b5da05e5a1429225676655dddb96f5ae8c75bdf91e53d798871b902a115"},
+    {file = "black-21.9b0.tar.gz", hash = "sha256:7de4cfc7eb6b710de325712d40125689101d21d25283eed7e9998722cf10eb91"},
 ]
 certifi = [
     {file = "certifi-2021.5.30-py2.py3-none-any.whl", hash = "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"},
@@ -614,14 +614,26 @@ h11 = [
     {file = "h11-0.12.0.tar.gz", hash = "sha256:47222cb6067e4a307d535814917cd98fd0a57b6788ce715755fa2b6c28b56042"},
 ]
 hidapi = [
+    {file = "hidapi-0.10.1-cp35-cp35m-macosx_10_9_x86_64.whl", hash = "sha256:4a081c3775a7ac850743dd345a1a4fb1175af3954c4c7a1f7508ab645f72dcb5"},
+    {file = "hidapi-0.10.1-cp35-cp35m-manylinux2014_x86_64.whl", hash = "sha256:9ac04c6dc3d792d92b1d6ff461511853fa166a0e22f4475fe60ad647555d1caf"},
     {file = "hidapi-0.10.1-cp35-cp35m-win32.whl", hash = "sha256:310c53aa81697bf16b5f0c127afda36e5e9ea37794147afe1461422623263ef7"},
     {file = "hidapi-0.10.1-cp35-cp35m-win_amd64.whl", hash = "sha256:59f5205928dbe92513038c50dfb4f939395f8f781e176259a40f37d7a291313f"},
+    {file = "hidapi-0.10.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:5cc5f15b1b68bcb04fa290abc87070d57a8c0d2cb3a01bafeba6a7df52cd8641"},
+    {file = "hidapi-0.10.1-cp36-cp36m-manylinux2014_x86_64.whl", hash = "sha256:83d8aab01afd397a0fee0017df4397fff96bef639d6176f94b747305324732aa"},
     {file = "hidapi-0.10.1-cp36-cp36m-win32.whl", hash = "sha256:0c92b398f6907654b07f7dbd7e06661abe9ad6119b403eb5fd3c2af4ce66a3b7"},
     {file = "hidapi-0.10.1-cp36-cp36m-win_amd64.whl", hash = "sha256:4bab0e8ab066527e09856a6a345e2e0c10061f2640e9281323da9a04b94bdec1"},
+    {file = "hidapi-0.10.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:0f558430c086e9e0028022f4fdfaed5044e6af50cb4f12b79c498da59fc84d51"},
+    {file = "hidapi-0.10.1-cp37-cp37m-manylinux2014_x86_64.whl", hash = "sha256:1e25317ac577e837154f90bc9b6da0451242211beea7a34b9bb117eec17c2e26"},
     {file = "hidapi-0.10.1-cp37-cp37m-win32.whl", hash = "sha256:b1becc9f09c85c473e91cf869b592d5d87fb8b89672988de33776b20b4c53ce1"},
     {file = "hidapi-0.10.1-cp37-cp37m-win_amd64.whl", hash = "sha256:b686b2b547890c8ed17ebeabded0050ce377180a56daefa20822b4d66d3a5dea"},
+    {file = "hidapi-0.10.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:39191d3e34e9a79e3dbb37898ab2ca4b84495e0815801cf84d185936e97bc6ee"},
+    {file = "hidapi-0.10.1-cp38-cp38-manylinux2014_x86_64.whl", hash = "sha256:4a1f4c54d71f748ee6c9ee86565ca0eba2ab9c5d88f9adacc1fe7c3b09a3f299"},
     {file = "hidapi-0.10.1-cp38-cp38-win32.whl", hash = "sha256:3b93d3f9bae38a3459491194ba1abf5c292b59dbd8738c3ac66f01b593cf3724"},
     {file = "hidapi-0.10.1-cp38-cp38-win_amd64.whl", hash = "sha256:f49a0de45217366b85597c2edb4be8bd61c9f26f533b854b058dded4352dd89d"},
+    {file = "hidapi-0.10.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:74e968631537f52579c19c2b93e428b634dc385eb7808071bd9ff759d837fb39"},
+    {file = "hidapi-0.10.1-cp39-cp39-manylinux2014_x86_64.whl", hash = "sha256:46de7d852e10a83187da6af88d6e2cd51ba5ab336bf2ce1659bc879141570de3"},
+    {file = "hidapi-0.10.1-cp39-cp39-win32.whl", hash = "sha256:095798ae1b3d6892fb0eb7ba1ab06054f6fafe6d09bc3714d80fdbf227c98f87"},
+    {file = "hidapi-0.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:df4a23cd03f00d5cdc603252650df82cdd1923ceef6811cb029cc9d11a9a7a61"},
     {file = "hidapi-0.10.1.tar.gz", hash = "sha256:a1170b18050bc57fae3840a51084e8252fd319c0fc6043d68c8501deb0e25846"},
 ]
 idna = [
