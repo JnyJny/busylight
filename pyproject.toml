@@ -30,7 +30,7 @@ mypy = "^0.910"
 requests = "^2.26.0"
 
 [tool.poetry.scripts]
-busylight="busylight.main:cli"
+busylight="busylight.__main__:cli"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
