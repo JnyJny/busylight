@@ -3,18 +3,19 @@
 
 from pathlib import Path
 from sys import stdout
-from typing import Tuple, Union, List
+from typing import List, Tuple, Union
 
 import typer
-
 from loguru import logger
 
-from .manager import LightManager, BlinkSpeed
-from .manager import LightIdRangeError, ColorLookupError
-from .manager import ALL_LIGHTS
-
 from .lights import USBLight
-
+from .manager import (
+    ALL_LIGHTS,
+    BlinkSpeed,
+    ColorLookupError,
+    LightIdRangeError,
+    LightManager,
+)
 
 cli = typer.Typer()
 
@@ -299,7 +300,7 @@ def serve_subcommand(
     """
 
     try:
-        import uvicorn
+        import uvicorn  # type: ignore
     except ImportError:
         typer.secho(
             "The package 'uvicorn' is  missing, unable to serve the busylight API.",

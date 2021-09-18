@@ -6,13 +6,9 @@ from typing import Generator, List, Tuple, Union
 
 from loguru import logger
 
-from .hardware import BusylightState
-from .hardware import Jump
-from .hardware import KeepAlive
-
 from ..thread import CancellableThread
-from ..usblight import USBLight
-from ..usblight import USBLightIOError
+from ..usblight import USBLight, USBLightIOError
+from .hardware import BusylightState, Jump, KeepAlive
 
 
 class Busylight(USBLight):
@@ -129,15 +125,9 @@ class Busylight(USBLight):
 
     @property
     def is_animating(self) -> bool:
-
-        try:
-            return self.animation_thread.is_alive()
-        except AttributeError:
-            pass
-        try:
-            return self.keepalive_thread.is_alive()
-        except AttributeError:
-            pass
+        for thrd in [self.animation_thread, self.keepalive_thread]:
+            if thrd and thrd.is_alive():
+                return True
         return False
 
     def acquire(self, reset: bool) -> None:

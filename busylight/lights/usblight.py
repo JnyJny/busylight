@@ -2,31 +2,16 @@
 """
 
 import abc
-import hid  # type: ignore
-
 from contextlib import contextmanager
 from threading import RLock
-from typing import (
-    Any,
-    Callable,
-    cast,
-    Dict,
-    Iterator,
-    Generator,
-    List,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import (Any, Callable, Dict, Generator, Iterator, List, Tuple,
+                    Type, Union, cast)
 
+import hid  # type: ignore
 from loguru import logger
 
-from .exceptions import USBLightNotFound
-from .exceptions import USBLightUnknownVendor
-from .exceptions import USBLightUnknownProduct
-from .exceptions import USBLightInUse
-from .exceptions import USBLightIOError
-
+from .exceptions import (USBLightInUse, USBLightIOError, USBLightNotFound,
+                         USBLightUnknownProduct, USBLightUnknownVendor)
 from .thread import CancellableThread
 
 
@@ -202,7 +187,11 @@ class USBLight(abc.ABC):
         )
 
     def __init__(
-        self, vendor_id: int, product_id: int, path: bytes, reset: bool = False
+        self,
+        vendor_id: int,
+        product_id: int,
+        path: Union[bytes, str],
+        reset: bool = False,
     ) -> None:
         """Configure and acquire a USBLight instance
 
@@ -225,7 +214,7 @@ class USBLight(abc.ABC):
         self.product_id = product_id
         self.path = path
         logger.debug(
-            f"{self.__class__.__name__} init {vendor_id:x} {product_id:x} {path} {reset}"
+            f"{self.__class__.__name__} init {vendor_id:x} {product_id:x} {path!r} {reset}"
         )
         self.acquire(reset=reset)
 
@@ -443,7 +432,7 @@ class USBLight(abc.ABC):
             try:
                 result = self.device.open_path(self.path)
             except IOError as error:
-                logger.error(f"hid_open {error} for open_path({self.path})")
+                logger.error(f"hid_open {error} for open_path({self.path!r})")
                 raise USBLightInUse(
                     self.vendor_id, self.product_id, self.path
                 ) from None
@@ -454,8 +443,9 @@ class USBLight(abc.ABC):
                 logger.debug("Calling reset and update")
                 self.reset()
                 self.update()
+
         logger.success(
-            f"{self.__class__.__name__} hid.open_path({self.path}) was a success {result}"
+            f"{self.__class__.__name__} hid.open_path({self.path!r}) was a success {result}"
         )
 
     def release(self) -> None:

@@ -5,19 +5,30 @@ from contextlib import contextmanager, suppress
 from enum import Enum
 from functools import partial
 from time import sleep
-from typing import ContextManager, Generator, Dict, List, Tuple, Union
+from typing import (
+    Callable,
+    ContextManager,
+    Dict,
+    Final,
+    Generator,
+    Iterator,
+    List,
+    Tuple,
+    Union,
+)
 
 from loguru import logger
 
-from .lights import USBLight
-from .lights import USBLightUnknownVendor
-from .lights import USBLightUnknownProduct
-from .lights import USBLightInUse
-from .lights import USBLightIOError
-
 from .color import color_to_rgb
+from .lights import (
+    USBLight,
+    USBLightInUse,
+    USBLightIOError,
+    USBLightUnknownProduct,
+    USBLightUnknownVendor,
+)
 
-ALL_LIGHTS: int = -1
+ALL_LIGHTS: Final[int] = -1
 
 
 class BlinkSpeed(str, Enum):
@@ -111,8 +122,11 @@ class LightManager:
         self._lights: List[USBLight] = []
         return self._lights
 
-    # EJO __get_item__ implementation here to allow slice notation?
-    #     maybe make LightManager an iterator?
+    def __getitem__(self, key: int) -> USBLight:
+        try:
+            return self.lights[key]
+        except Exception as error:
+            raise error from None
 
     def lights_for(self, light_id: Union[int, None] = ALL_LIGHTS) -> List[USBLight]:
         """Returns a list of USBLights that match `light_id`, which can be
@@ -256,7 +270,7 @@ class LightManager:
     def apply_effect_to_light(
         self,
         light_id: Union[int, None],
-        effect: Generator[float, None, None],
+        effect: Callable,
         *args,
         **kwds,
     ):
@@ -289,7 +303,7 @@ class LightManager:
         wait_on_animation: bool = True,
         off_on_enter: bool = True,
         off_on_exit: bool = False,
-    ) -> "LightManager":
+    ) -> Iterator["LightManager"]:
         """This context manager  sets the lights specified by `light_id`
         to a known state, 'off', upon enter and exit.
 

@@ -6,7 +6,7 @@ from math import log
 from string import hexdigits
 from typing import Iterable, Tuple
 
-import webcolors
+import webcolors  # type: ignore
 
 ColorTuple = Tuple[int, int, int]
 
