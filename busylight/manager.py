@@ -9,7 +9,6 @@ from typing import (
     Callable,
     ContextManager,
     Dict,
-    Final,
     Generator,
     Iterator,
     List,
@@ -28,7 +27,7 @@ from .lights import (
     USBLightUnknownVendor,
 )
 
-ALL_LIGHTS: Final[int] = -1
+ALL_LIGHTS = -1
 
 
 class BlinkSpeed(str, Enum):
