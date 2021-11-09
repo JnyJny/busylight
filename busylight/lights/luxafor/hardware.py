@@ -134,6 +134,14 @@ class FlagStrobeCommand(StateVector):
     pad = PadField(8, 16)
     repeat = RepeatField(0, 8)
 
+    @property
+    def color(self):
+        return (self.red, self.green, self.blue)
+
+    @color.setter
+    def color(self, values: Tuple[int, int, int]):
+        self.red, self.green, self.blue = values  # type: ignore
+
 
 class FlagWaveCommand(StateVector):
     def __init__(self):
@@ -147,6 +155,14 @@ class FlagWaveCommand(StateVector):
     pad = PadField(16, 8)
     repeat = RepeatField(8, 8)
     speed = SpeedField(0, 8)
+
+    @property
+    def color(self):
+        return (self.red, self.green, self.blue)
+
+    @color.setter
+    def color(self, values: Tuple[int, int, int]):
+        self.red, self.green, self.blue = values  # type: ignore
 
 
 class FlagPatternCommand(StateVector):
