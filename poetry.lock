@@ -358,7 +358,7 @@ testing = ["fields", "hunter", "process-tests", "six", "pytest-xdist", "virtuale
 
 [[package]]
 name = "requests"
-version = "2.27.0"
+version = "2.27.1"
 description = "Python HTTP for Humans."
 category = "dev"
 optional = false
@@ -535,7 +535,7 @@ webapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "765e12f8e7a776e9c65828a8ebef496627622daf0d3ffa10b3d04dda19a57ddd"
+content-hash = "7d01e6dfaf70f4a6b83d233d612cb01034ff9ff0c982bb0ce861f0ceb422fd7f"
 
 [metadata.files]
 anyio = [
@@ -767,8 +767,8 @@ pytest-cov = [
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
 ]
 requests = [
-    {file = "requests-2.27.0-py2.py3-none-any.whl", hash = "sha256:f71a09d7feba4a6b64ffd8e9d9bc60f9bf7d7e19fd0e04362acb1cfc2e3d98df"},
-    {file = "requests-2.27.0.tar.gz", hash = "sha256:8e5643905bf20a308e25e4c1dd379117c09000bf8a82ebccc462cfb1b34a16b5"},
+    {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
+    {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
 ]
 shellingham = [
     {file = "shellingham-1.4.0-py2.py3-none-any.whl", hash = "sha256:536b67a0697f2e4af32ab176c00a50ac2899c5a05e0d8e2dadac8e58888283f9"},
