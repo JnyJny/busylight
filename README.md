@@ -198,11 +198,11 @@ manager.lights_off(ALL_LIGHTS)
 [0]: https://pypi.org/project/busylight-for-humans/
 
 <!-- doc links -->
-[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
-[3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
-[4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
-[5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
-[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
+[2]: docs/devices/agile_innovative.md
+[3]: docs/devices/embrava.md
+[4]: docs/devices/kuando.md
+[5]: docs/devices/luxafor.md
+[6]: docs/devices/thingm.md
 
 [LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
 [HELP]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
