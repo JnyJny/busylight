@@ -204,10 +204,10 @@ manager.lights_off(ALL_LIGHTS)
 [5]: docs/devices/luxafor.md
 [6]: docs/devices/thingm.md
 
-[LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
-[HELP]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
-[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
-[DEMO]: https://github.com/JnyJny/busylight/raw/master/demo/demo.gif
+[LOGO]: docs/assets/BusyLightLogo.png
+[HELP]: docs/busylight.1.md
+[WEBAPI]: docs/busylight_api.pdf
+[DEMO]: demo/demo.gif
 
 [BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
@@ -216,8 +216,8 @@ manager.lights_off(ALL_LIGHTS)
 [thingm]: https://thingm.com
 
 <!-- badges -->
-[pytest-badge]: https://github.com/JnyJny/busylight/actions/workflows/pytest.yaml/badge.svg
-[pytest-status]: https://github.com/JnyJny/busylight/actions/workflows/pytest.yaml
+[pytest-badge]: actions/workflows/pytest.yaml/badge.svg
+[pytest-status]: actions/workflows/pytest.yaml
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
