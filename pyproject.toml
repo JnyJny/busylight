@@ -22,7 +22,7 @@ loguru = ">=0.5.3,<0.7.0"
 webapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.dev-dependencies]
-pytest = "^6"
+pytest = "^7"
 typer-cli = "^0.0.9"
 black = "^21.12b0"
 pytest-cov = "^3.0.0"
