@@ -7,3 +7,4 @@ tst.py
 *.log
 .coverage
 htmlcov
+*token
