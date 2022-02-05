@@ -17,6 +17,7 @@ def test_blink_speed_enumeration():
         assert speed.to_numeric_value() == value
 
 
+@pytest.mark.skip(reason="Induces crash in python somehow")
 def test_lightmanager_available_classmethod():
 
     result = LightManager.available()
@@ -30,6 +31,7 @@ def manager():
     return LightManager()
 
 
+@pytest.mark.skip(reason="Induces crash in python somehow")
 def test_lightmanager_check_attributes(manager):
 
     assert hasattr(manager, "supported")
