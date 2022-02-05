@@ -4,14 +4,29 @@
 import abc
 from contextlib import contextmanager
 from threading import RLock
-from typing import (Any, Callable, Dict, Generator, Iterator, List, Tuple,
-                    Type, Union, cast)
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    Iterator,
+    List,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 import hid  # type: ignore
 from loguru import logger
 
-from .exceptions import (USBLightInUse, USBLightIOError, USBLightNotFound,
-                         USBLightUnknownProduct, USBLightUnknownVendor)
+from .exceptions import (
+    USBLightInUse,
+    USBLightIOError,
+    USBLightNotFound,
+    USBLightUnknownProduct,
+    USBLightUnknownVendor,
+)
 from .thread import CancellableThread
 
 
@@ -190,7 +205,7 @@ class USBLight(abc.ABC):
         self,
         vendor_id: int,
         product_id: int,
-        path: Union[bytes, str],
+        path: bytes,
         reset: bool = False,
     ) -> None:
         """Configure and acquire a USBLight instance
@@ -243,6 +258,19 @@ class USBLight(abc.ABC):
             pass
         self._device: hid.device = hid.device()
         return self._device
+
+    @property
+    def path(self) -> str:
+        return getattr(self, "_path", None)
+
+    @path.setter
+    def path(self, new_value: Union[str, bytes]) -> None:
+        try:
+            self._path = new_value.decode("utf-8")
+            return
+        except AttributeError:
+            pass
+        self._path = new_value
 
     @property
     def plugged_in(self) -> bool:
@@ -316,7 +344,7 @@ class USBLight(abc.ABC):
             pass
 
         for info in hid.enumerate(self.vendor_id, self.product_id):
-            if info["path"] == self.path:
+            if info["path"].decode("utf-8") == self.path:
                 self._info: Dict[str, Union[int, str, bytes]] = dict(info)
                 break
         else:
@@ -430,7 +458,7 @@ class USBLight(abc.ABC):
         with self.lock:
             logger.debug("lock acquired")
             try:
-                result = self.device.open_path(self.path)
+                result = self.device.open_path(bytes(self.path, "utf-8"))
             except IOError as error:
                 logger.error(f"hid_open {error} for open_path({self.path!r})")
                 raise USBLightInUse(
