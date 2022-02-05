@@ -93,11 +93,26 @@ class BlinkCommand(StateVector):
     action = ActionField(48, 8)
 
     arg0 = StateField(40, 8)
+    red = ColorField(40, 8)
+    play = StateField(40, 8)
+
     arg1 = StateField(32, 8)
+    green = ColorField(32, 8)
+    start = StateField(32, 8)
+
     arg2 = StateField(24, 8)
+    blue = ColorField(24, 8)
+    stop = StateField(24, 8)
+
     arg3 = StateField(16, 8)
+    count = StateField(16, 8)
+
     arg4 = StateField(8, 8)
+    fade = FadeField(8, 16)
+
     arg5 = StateField(0, 8)
+    leds = LEDField(0, 8)
+    line = StateField(0, 8)
 
     @property
     def color(self) -> Tuple[int, int, int]:
