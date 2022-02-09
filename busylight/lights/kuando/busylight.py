@@ -13,8 +13,11 @@ from .hardware import BusylightState, Jump, KeepAlive
 
 class Busylight(USBLight):
 
-    VENDOR_IDS: List[int] = [0x27BB]
-    PRODUCT_IDS: List[int] = []
+    VENDOR_IDS: List[int] = [0x27BB, 0x04D8]
+    PRODUCT_IDS: List[int] = [
+        0xF848,  # UC Busylight Alpha
+        0x3BCD,  # UC Busylight Omega
+    ]
     vendor = "Kuando"
 
     @property

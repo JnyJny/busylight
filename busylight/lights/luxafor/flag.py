@@ -19,7 +19,9 @@ class Flag(USBLight):
     """Support for the Luxafor Flag USB light."""
 
     VENDOR_IDS: List[int] = [0x04D8]
-    PRODUCT_IDS: List[int] = []
+    PRODUCT_IDS: List[int] = [
+        0xF372,  # flag
+    ]
     vendor = "Luxafor"
 
     @property
