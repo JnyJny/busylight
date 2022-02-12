@@ -16,10 +16,10 @@ python project.
 
 ![All Supported Lights][DEMO]
 
-**Six Lights Attached to One Host**<br>
+**Eight Lights Attached to One Host**<br>
 <em>Back to Front, Left to Right</em> <br>
-<b>BlyncLight, BlyncLight Plus, Busylight</b> <br>
-<b>Blink(1), Flag, BlinkStick</b>
+<b>Busylight Alpha, Plantronics Status Indicator, BlyncLight, BlyncLight Plus</b><br>
+<b>BlinkStick, Busylight Omega, Blink(1), Flag</b>
 
 ## Features
 - Control lights from the [command-line][HELP].
@@ -31,7 +31,7 @@ python project.
   * [**Kuando** BusyLight][4]
   * [**Luxafor** Flag][5]
   * [**Plantronics** Status Indicator][3]
-  * [**ThingM** Blink1][6]
+  * [**ThingM** Blink(1)][6]
 - Supported on MacOS and Linux
 - Windows support will be available in the near future.
 
@@ -207,7 +207,7 @@ manager.lights_off(ALL_LIGHTS)
 [LOGO]: docs/assets/BusyLightLogo.png
 [HELP]: docs/busylight.1.md
 [WEBAPI]: docs/busylight_api.pdf
-[DEMO]: demo/demo.gif
+[DEMO]: demo/demo-updated.gif
 
 [BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
