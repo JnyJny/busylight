@@ -112,13 +112,13 @@ class USBLight(abc.ABC):
                 except USBLightNotFound:
                     logger.debug(f"No unclaimed lights for {supported_light}")
                     pass
-                logger.debug(f"USBLight no unclaimed lights found.")
+            logger.debug(f"USBLight no unclaimed lights found.")
             raise USBLightNotFound()
 
         logger.debug(f"{cls.__name__} looking for first unclaimed light...")
         for vendor_id in cls.vendor_ids():
             for light_entry in hid.enumerate(vendor_id):
-                logger.debug(f"{cls.__name__} entry found for {vendor_id}")
+                logger.debug(f"{cls.__name__} entry found for {vendor_id:04x}")
                 try:
                     logger.debug(f"entry: {light_entry}")
                     return cls.from_dict(light_entry)
@@ -227,10 +227,10 @@ class USBLight(abc.ABC):
         """
 
         if self.VENDOR_IDS and vendor_id not in self.VENDOR_IDS:
-            raise USBLightUnknownVendor()
+            raise USBLightUnknownVendor(vendor_id)
 
         if self.PRODUCT_IDS and product_id not in self.PRODUCT_IDS:
-            raise USBLightUnknownProduct()
+            raise USBLightUnknownProduct(product_id)
 
         self.vendor_id = vendor_id
         self.product_id = product_id
