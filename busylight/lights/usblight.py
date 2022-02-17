@@ -118,7 +118,9 @@ class USBLight(abc.ABC):
         logger.debug(f"{cls.__name__} looking for first unclaimed light...")
         for vendor_id in cls.vendor_ids():
             for light_entry in hid.enumerate(vendor_id):
-                logger.debug(f"{cls.__name__} entry found for {vendor_id:04x}")
+                logger.debug(
+                    f"{cls.__name__} entry found for vendor_id {vendor_id:04x}"
+                )
                 try:
                     logger.debug(f"entry: {light_entry}")
                     return cls.from_dict(light_entry)
@@ -127,7 +129,9 @@ class USBLight(abc.ABC):
                     USBLightUnknownProduct,
                     USBLightInUse,
                 ) as error:
-                    logger.error(f"{cls.__name__} {error} for {vendor_id}")
+                    logger.error(
+                        f"{cls.__name__} {error} for vendor_id {vendor_id:04x}"
+                    )
                     pass
 
         logger.debug(f"{cls.__name__} found no unclaimed lights.")
@@ -232,20 +236,21 @@ class USBLight(abc.ABC):
         if self.PRODUCT_IDS and product_id not in self.PRODUCT_IDS:
             raise USBLightUnknownProduct(product_id)
 
-        self.vendor_id = vendor_id
-        self.product_id = product_id
+        self.vendor_id: int = vendor_id
+        self.product_id: int = product_id
+
         self.path = path
         logger.debug(
-            f"{self.__class__.__name__} init {vendor_id:x} {product_id:x} {path!r} {reset}"
+            f"{self.__class__.__name__} init {vendor_id:04x} {product_id:04x} {path!r} {reset}"
         )
         self.acquire(reset=reset)
 
     def __del__(self):
-        """Release the light before reclaiming this object."""
+        """Release the light before reclaiming this instance."""
         self.release()
 
     def __repr__(self):
-        return "{}(vendor_id=0x{:04x}, product_id=0x{:04x}, path={}, ...)".format(
+        return "{}(vendor_id=0x{:04x}, product_id=0x{:04x}, path={!r}, ...)".format(
             type(self).__name__, self.vendor_id, self.product_id, self.path
         )
 
@@ -373,7 +378,11 @@ class USBLight(abc.ABC):
     @property
     def identifier(self) -> str:
         """String concatenation of hexadecimal vendor and product identifiers."""
-        return f"0x{self.vendor_id:04x}:0x{self.product_id:04x}"
+        try:
+            return f"0x{self.vendor_id:04x}:0x{self.product_id:04x}"
+        except TypeError as error:
+            logger.exception(error)
+        return f"{self.vendor_id}:{self.product_id}"
 
     @property
     def lock(self) -> RLock:
@@ -496,8 +505,8 @@ class USBLight(abc.ABC):
             self.stop_animation()
             try:
                 self.device.close()
-            except:
-                pass
+            except Exception as error:
+                logger.debug(error)
             del self._device
 
     def start_animation(self, animation: Callable) -> None:
@@ -528,8 +537,8 @@ class USBLight(abc.ABC):
         try:
             self._animation_thread.cancel()
             del self._animation_thread
-        except:
-            pass
+        except Exception as error:
+            logger.debug(error)
 
     def update(self):
         """Updates the hardware with the current software state.
