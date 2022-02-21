@@ -18,6 +18,7 @@ class Busylight(USBLight):
         0xF848,  # UC Busylight Alpha
         0x3BCA,  # UC Busylight Alpha
         0x3BCD,  # UC Busylight Omega
+        0x3BCF,  # UC Busylight Omega
     ]
     vendor = "Kuando"
 
