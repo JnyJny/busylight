@@ -9,7 +9,7 @@ Developer Notes:
 Adding support for a new light requires:
 
 - Optionally create a new vendor directory: `busylight/lights/<vendor>`
-- Update \busylight/lights/<vendor>/__init__.py` to export
+- Update `busylight/lights/<vendor>/__init__.py` to export
   the new USBLight subclass
 - Create `busylight/lights/<vendor>/<device_name>.py`
   - Define a USBLight subclass
@@ -39,7 +39,6 @@ import abc
 import asyncio
 
 from contextlib import contextmanager
-from enum import IntEnum
 from typing import Awaitable, Callable, Generator, Dict, List, Optional, Tuple, Union
 
 import hid
@@ -68,7 +67,6 @@ class USBLight(abc.ABC):
     USB-attached presense lights without having to know device
     specific information.
 
-    ## Code Example:
     >> red = (255, 0, 0)
     >> green = (0, 255, 0)
     >> light = USBLight.first_light()
@@ -80,17 +78,30 @@ class USBLight(abc.ABC):
     - USBLight.subclasses()
     - USBLight.supported_lights()
     - USBLight.available()
+    - USBLight.claims()
+    - USBLight.udev_rules()
 
     Available lights can be acquired using class methods:
     - USBLight.first_light()
     - USBLight.all_lights()
 
-    The capabilities of USB lights vary greatly, however all of them
-    support the ability to turn on with a color and turn off. Most
-    also have to the ability to blink on and off with a specified duty
-    cycle (BlinkStick devices need software intervention to blink).
+    All USBLight subclasses also individually support the classmethods:
 
+    >> from busylight.lights import Blynclight
+    >> blynclights = Blynclight.all_lights()
+    >> Blynclight.supported()
+    [<class 'busylight.lights.embrava.blynclight.Blynclight'>,
+     <class 'busylight.lights.plantronics.status_indicator.Status_Indicator'>]
 
+    The capabilities of USB lights from different vendors vary
+    greatly, however all of them support the ability to turn on with a
+    color and turn off. Most also have to the ability to blink on and
+    off with a specified duty cycle (BlinkStick devices need software
+    intervention to blink).
+
+    More involved effects can be achieved via software; writing
+    new color values at the desired frequency using the async method
+    `apply_effect` and a `FrameGenerator`.
     """
 
     @classmethod
@@ -266,6 +277,7 @@ class USBLight(abc.ABC):
     ) -> None:
         """
         :hidinfo: HidInfo
+        :reset: bool
 
         Raises:
         - LightUnsupported
@@ -304,7 +316,7 @@ class USBLight(abc.ABC):
         """The hardware control data written to the device."""
 
     @abc.abstractmethod
-    def on(self, color: ColorTuple) -> Optional[Awaitable]:
+    def on(self, color: ColorTuple) -> Optional[Awaitable[None]]:
         """Activate the light with the specified color.
 
         The light may optionally return an Awaitable instance
@@ -323,7 +335,7 @@ class USBLight(abc.ABC):
     @abc.abstractmethod
     def blink(
         self, color: ColorTuple, blink: Speed = Speed.Slow
-    ) -> Optional[Awaitable]:
+    ) -> Optional[Awaitable[None]]:
         """Turn the light on and off with the given color and speed.
 
         The light may optionally return an Awaitable instance
@@ -463,20 +475,20 @@ class USBLight(abc.ABC):
     def read_strategy(self) -> Callable[[int], bytes]:
         """The read function used to communicate with the device.
 
-                The default read strategy is `hid.device.read`, however
-                some devices may require `hid.device.read_feature_report`
-                instead.
+        The default read strategy is `hid.device.read`, however some
+        devices may require `hid.device.read_feature_report` instead.
 
-                The read_strategy function is expected to take `nbytes` as it's
-                sole argument and returns byte buffer.
-        i"""
+        The read_strategy function is expected to take `nbytes` as
+        it's sole argument and returns a `bytes` instance of the
+        data read.
+        """
         return self.device.read
 
     @property
     def is_pluggedin(self) -> bool:
         # XXX needs work
         try:
-            results = self.device.read(8)
+            results = self.device.read_strategy(8)
             logger.debug(f"light pluggedin {self!r} {results=!r}")
             return True
         except OSError as error:
@@ -582,16 +594,28 @@ class USBLight(abc.ABC):
         if nbytes < 0:
             logger.error(msg)
             # EJO In general, unplugging the device is the most likely
-            #     cause of strategy returning < 0. Also possible there
-            #     are operating system permission issues blocking
-            #     access to the device, but there isn't enough
-            #     information from < 0 to be able to differentiate
-            #     between the two failure modes.
+            #     cause of write_strategy returning < 0. Also possible
+            #     there are operating system permission issues
+            #     blocking access to the device, but there isn't
+            #     enough information from "< 0" to be able to
+            #     differentiate between the two failure modes.
             raise LightUnavailable(self.vendor_id, self.product_id, self.path)
+
         logger.debug(msg)
 
     @contextmanager
     def batch_update(self) -> Generator[None, None, None]:
         """Context manager which updates hardware state when it exits."""
+        # EJO Considering operating the lights in an unacquired mode
+        #     where acquire is called right before update and then the
+        #     light is released directly afterwards. lights that
+        #     return an async coroutine for animating the update
+        #     effect are a problem.
+        #
+        #     This might help solve a problem with windows where
+        #     exclusive-open of devices isn't a thing. more thinking
+        #     required.
         yield
+        # self.acquire()
         self.update()
+        # self.release()
