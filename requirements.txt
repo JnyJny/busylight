@@ -39,15 +39,15 @@ hidapi==0.11.0.post2 \
     --hash=sha256:89c51889894d389e0de63a2adb7faafd9c8c24928b50848365cd4b4d0d57e10b \
     --hash=sha256:5a64b6509064b683ef8ca9888f71906e3dbc6909ab2e3361cbaf6d25a007ab5f \
     --hash=sha256:da815e0d1d4b2ef1ebbcc85034572105dca29627eb61881337aa39010f2ef8cb
-loguru==0.5.3; python_version >= "3.5" \
-    --hash=sha256:f8087ac396b5ee5f67c963b495d615ebbceac2796379599820e324419d53667c \
-    --hash=sha256:b28e72ac7a98be3d28ad28570299a393dfcd32e5e3f6a353dec94675767b6319
+loguru==0.6.0; python_version >= "3.5" \
+    --hash=sha256:4e2414d534a2ab57573365b3e6d0234dfb1d84b68b7f3b948e6fb743860a77c3 \
+    --hash=sha256:066bd06758d0a513e9836fd9c6b5a75bfb3fd36841f4b996bc60b547a309d41c
 typer==0.2.1; python_version >= "3.6" \
     --hash=sha256:9b66756dfcc9e9f829a33f9019757225af0c8e87e1e692f103556335d5ae3b25 \
     --hash=sha256:a8c49418f20c1d1b04a34424dded86cebf1f87042a8e448c6faa63cf38b9c0af
 webcolors==1.11.1; python_version >= "3.5" \
     --hash=sha256:b8cd5d865a25c51ff1218f0c90d0c0781fc64312a49b746b320cf50de1648f6e \
     --hash=sha256:76f360636957d1c976db7466bc71dcb713bb95ac8911944dffc55c01cb516de6
-win32-setctime==1.0.3; sys_platform == "win32" and python_version >= "3.5" \
-    --hash=sha256:dc925662de0a6eb987f0b01f599c01a8236cb8c62831c22d9cada09ad958243e \
-    --hash=sha256:4e88556c32fdf47f64165a2180ba4552f8bb32c1103a2fafd05723a0bd42bd4b
+win32-setctime==1.1.0; sys_platform == "win32" and python_version >= "3.5" \
+    --hash=sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad \
+    --hash=sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2
