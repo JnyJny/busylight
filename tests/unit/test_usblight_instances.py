@@ -4,7 +4,7 @@
 from contextlib import suppress
 from typing import Callable
 from unittest import mock
-from unittest.mock import Mock
+from unittest.mock import Mock, PropertyMock
 
 import hid
 import pytest
@@ -106,10 +106,6 @@ def test_usblight_plugged(disposable_lights) -> None:
     for light in disposable_lights:
         assert light.is_pluggedin
         assert not light.is_unplugged
-        light.device.read.side_effect = OSError("read error")
-        light.device.get_feature_report.side_effect = OSError("read error")
-        assert light.is_unplugged
-        assert not light.is_pluggedin
 
 
 COLOR_TEST_VALUES = [
