@@ -79,30 +79,38 @@ class LightManager:
 
         selected_lights = []
         for index in indices:
-            logger.debug(f"{index=} {self.lights[index]!s}")
             try:
                 selected_lights.append(self.lights[index])
+                logger.debug(f"{index=} {self.lights[index]!s}")
             except IndexError as error:
                 logger.debug(f"{index=} {error}")
 
         return selected_lights
 
-    def update(self) -> Tuple[int, int]:
+    def update(self) -> Tuple[int, int, int]:
         """Updates managed lights list.
 
         1. Looks for lights that have plugged in since last update
         2. Checks current lights if they are still plugged in
+        3.
         3. Combines new and remaining lights
 
-        :return: Tuple[# of new lights, # of old lights, # of dead lights]
+        :return: Tuple[# of new lights, # of old lights, # of unavailable lights]
 
         """
         new_lights = self.lightclass.all_lights()
+        logger.debug(f"{len(new_lights)} {new_lights=}")
+
         old_lights = [light for light in self.lights if light.is_pluggedin]
-        ded_lights = len(self.lights) - len(old_lights)
+        logger.debug(f"{len(old_lights)} {old_lights=}")
+
+        ded_lights = [light for light in self.lights if light.is_unplugged]
+        logger.debug(f"{len(ded_lights)} {ded_lights=}")
 
         self._lights = sorted(old_lights + new_lights)
-        return len(new_lights), len(old_lights), ded_lights
+        logger.debug(f"{len(self.lights)} {self.lights=}")
+
+        return len(new_lights), len(old_lights), len(ded_lights)
 
     def release(self) -> None:
         """Release managed lights."""
@@ -137,38 +145,58 @@ class LightManager:
         if off_on_exit:
             self.off(lights=lights)
 
-    async def on_supervisor(self, color: ColorTuple, lights: List[USBLight]) -> None:
+    async def on_supervisor(
+        self,
+        color: ColorTuple,
+        lights: List[USBLight],
+        timeout: float = None,
+    ) -> None:
         """Turns on all the lights with the given color, asynchronously.
 
         Each light's `on` method is called with the supplied `color` which
         may optionally return an `Awaitable` coroutine which the light
-        requires to remain lit. After collecting all these coroutines, their
-        results are await'ed.
+        requires to remain on. After collecting all these coroutines, the
+        supervisor awaits the exit of those coroutines. If a timeout in
+        seconds is specified, the coroutines will be stopped at the end
+        of the period.
 
         :color: ColorTuple
         :lights: List[USBLight]
+        :timeout: float seconds
         """
-        logger.debug(f"{lights=}")
+        logger.debug(f"{color=} {lights=} {timeout=}")
+
         awaitables = []
         for light in lights:
             if awaitable := light.on(color):
                 awaitables.append(awaitable())
-        await asyncio.gather(*awaitables)
+
+        if awaitables:
+            done, pending = await asyncio.wait(awaitables, timeout=timeout)
 
     async def effect_supervisor(
         self,
         effect: FrameGenerator,
         lights: List[USBLight],
+        timeout: float = None,
     ) -> None:
         """Builds a list of awaitable coroutines to perform the given `effect`
-        on each of the `lights` and awaits the gathered results.
+        on each of the `lights` and awaits the exit of the coroutines (which
+        typically do not exit). If a timeout in seconds is specified, the
+        effect will stop at the end of the period.
 
         :effect: FrameGenerator
         :lights: List[USBLight]
+        :timeout: float seconds
         """
 
-        await asyncio.gather(
-            *(light.apply_effect(effect) for light in lights),
+        if not lights:
+            logger.debug("no lights were passed to effect_supervisor")
+            return
+
+        done, pending = await asyncio.wait(
+            (light.apply_effect(effect) for light in lights),
+            timeout=timeout,
         )
 
     def off(self, lights: List[int] = None) -> None:
@@ -181,16 +209,26 @@ class LightManager:
         for light in self.selected_lights(lights):
             light.off()
 
-    def on(self, color: ColorTuple, lights: List[int] = None) -> None:
+    def on(
+        self,
+        color: ColorTuple,
+        lights: List[int] = None,
+        timeout: float = None,
+    ) -> None:
         """Turn on all the lights whose indices are in the `lights` list.
 
         :color: ColorTuple
         :lights: List[int]
+        :timeout: float seconds
         """
+
         try:
-            logger.debug("begin on supervisor event loop")
-            asyncio.run(self.on_supervisor(color, self.selected_lights(lights)))
-            logger.debug("  end on supervisor event loop")
+            logger.debug(f"begin on_supervisor event loop {timeout=}")
+            asyncio.run(
+                self.on_supervisor(color, self.selected_lights(lights), timeout)
+            )
+            logger.debug("  end on_supervisor event loop")
+            self.off(lights)
         except KeyboardInterrupt:
             self.off(lights)
 
@@ -198,18 +236,22 @@ class LightManager:
         self,
         effect: FrameGenerator,
         lights: List[int],
+        timeout: float = None,
     ) -> None:
         """Applies the given `effect` to all of the lights whose indices are
         in the `lights` list.
 
         :effect: FrameGenerator
         :lights: List[int]
-
+        :timeout: float seconds
         """
 
         try:
-            logger.debug("begin effect supervisor event loop")
-            asyncio.run(self.effect_supervisor(effect, self.selected_lights(lights)))
-            logger.debug("  end effect supervisor event loop")
+            logger.debug(f"begin effect_supervisor event loop {timeout=}")
+            asyncio.run(
+                self.effect_supervisor(effect, self.selected_lights(lights), timeout)
+            )
+            logger.debug("  end effect_supervisor event loop")
+            self.off(lights)
         except KeyboardInterrupt:
             self.off(lights)

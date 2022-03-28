@@ -1,8 +1,10 @@
 """
 """
 
+from dataclasses import dataclass
 from contextlib import suppress
 from enum import Enum
+from pkg_resources import require as pkg_require
 
 from typing import List, Optional
 
@@ -21,24 +23,29 @@ cli = typer.Typer()
 webapi = typer.Typer()
 
 
+lights: list[int] = []
 manager = LightManager()
+gTimeout: float
 
-lights = []
+try:
+    __version__: str = pkg_require("busylight-for-humans")[0].version
+except Exception as error:
+    logger.error(f"Failed to retrieve version string: {error}")
+    __version__: str = "unknown"
 
 
-@cli.callback()
-def global_callback(
-    ctx: typer.Context,
-    debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
-    targets: str = typer.Option("", "--light-id", "-l"),
-    all_lights: bool = typer.Option(False, "--all", "-a"),
-) -> None:
-    """Control USB connected presense lights."""
+def parse_target_lights(targets: str) -> list[int]:
+    """Parses the `targets` string to produce a list of indicies.
 
-    (logger.enable if debug else logger.disable)("busylight")
+    `lights` list with indices of lights that user wants to operate
+    on. The targets string may be:
+    - empty, meaning all lights
+    - a single integer, specifying one line
+    - [0-9]+[-:][0-9]+, specifying a range.
+    """
+    logger.debug(f"{targets=}")
 
-    if all_lights:
-        return
+    lights = []
     for target in targets.split(","):
         logger.debug(f"target {target}")
         for sep in ["-", ":"]:
@@ -53,6 +60,37 @@ def global_callback(
                 lights.append(int(target))
 
     logger.debug(f"{lights=}")
+    return lights
+
+
+def report_version(value: bool) -> None:
+    """Prints the version string and exits."""
+    if value:
+        typer.secho(__version__, fg="blue")
+        raise typer.Exit()
+
+
+@cli.callback()
+def global_callback(
+    ctx: typer.Context,
+    debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
+    targets: str = typer.Option("", "--light-id", "-l"),
+    all_lights: bool = typer.Option(False, "--all", "-a"),
+    timeout: float = typer.Option(None, "--timeout", help="timeout in seconds"),
+    version: bool = typer.Option(
+        False, "--version", is_flag=True, is_eager=True, callback=report_version
+    ),
+) -> None:
+    """Control USB connected presense lights."""
+
+    (logger.enable if debug else logger.disable)("busylight")
+    logger.debug(f"version {__version__}")
+    if not all_lights:
+        lights.extend(parse_target_lights(targets))
+
+    global gTimeout
+    gTimeout = timeout
+    logger.debug(f"{gTimeout=}")
 
 
 @cli.command(name="on")
@@ -63,7 +101,9 @@ def turn_lights_on(
 
     color = parse_color(color)
 
-    manager.on(color, lights)
+    logger.debug(f"{gTimeout=}")
+
+    manager.on(color, lights, timeout=gTimeout)
 
 
 @cli.command(name="off")
@@ -83,14 +123,18 @@ def blink_lights(
 
     color = parse_color(color)
 
-    manager.apply_effect(Effects.for_name("blink")(color, blink.duty_cycle), lights)
+    manager.apply_effect(
+        Effects.for_name("blink")(color, blink.duty_cycle), lights, timeout=gTimeout
+    )
 
 
 @cli.command(name="rainbow")
 def rainbow_lights(speed: Speed = typer.Argument(Speed.Slow)) -> None:
     """Display rainbow colors on specified lights."""
 
-    manager.apply_effect(Effects.for_name("spectrum")(speed.duty_cycle), lights)
+    manager.apply_effect(
+        Effects.for_name("spectrum")(speed.duty_cycle), lights, timeout=gTimeout
+    )
 
 
 @cli.command(name="list")
@@ -159,9 +203,39 @@ def generate_udev_rules(
 @webapi.command()
 def serve_web_api(
     debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
-    host: str = typer.Option("0.0.0.0", "--host"),
-    port: int = typer.Option(21169, "--port", "-p"),
+    host: str = typer.Option(
+        "0.0.0.0",
+        "--host",
+        "-h",
+        help="Host name to bind the server to.",
+    ),
+    port: int = typer.Option(
+        21169,
+        "--port",
+        "-p",
+        help="Network port number to listen on.",
+    ),
 ) -> None:
-    """Serve a web API to access connected lights."""
+    """Serve a web API to access available lights."""
     (logger.enable if debug else logger.disable)("busylight")
     logger.debug("serving web api")
+
+    try:
+        import uvicorn
+    except ImportError as error:
+        logger.error(f"import uvicorn failed: {error}")
+        typer.secho(
+            "The package `uvicorn` is missing, unabme to serve the busylight API.",
+            fg="red",
+        )
+        raise typer.Exit(code=-1) from None
+
+    try:
+        uvicorn.run("busylight.api:busylightapi", host=host, port=port)
+    except ModuleNotFoundError as error:
+        logger.error(f"Failed to start webapi: {error}")
+        typer.secho(
+            "Failed to start the webapi.",
+            fg="red",
+        )
+        raise typer.Exit(code=-1) from None

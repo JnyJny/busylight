@@ -6,7 +6,7 @@ Find and control supported USB connected presense lights.
 Developer Notes:
 ================
 
-Adding support for a new light requires:
+Adding support for a new light is pretty easy:
 
 - Optionally create a new vendor directory: `busylight/lights/<vendor>`
 - Update `busylight/lights/<vendor>/__init__.py` to export
@@ -17,7 +17,8 @@ Adding support for a new light requires:
   - By convention, I've kept the implementation specific details in
     a file named `busylight/lights/<vendor>/<device>_impl.py`
 - Update `busylight/lights/__init__.py` to import the new light subclass
-  and add it to the `__all__` list.
+  and add it to the `__all__` list. This allows the abc.__subclasses__
+  method to find the subclasses. 
 
 If the new light is a subclass of an existing subclass, consult
 the files for the Embrava Blynclight and the Plantronics Status
@@ -32,6 +33,8 @@ BitVector-approach overly complex: see
 busylight.lights.luxafor.flag for an example of building the
 control packet in the __bytes__ method.
 
+Some lights have extended capabilities, feel free to implement
+as much support of those capabilities as you have time for.
 """
 
 
@@ -53,11 +56,10 @@ from .exceptions import (
     NoLightsFound,
 )
 
-from .speed import Speed
 from .color import ColorTuple
 from .effects import FrameGenerator, FrameTuple
-
-HidInfo = Dict[str, Union[bytes, int, str]]
+from .hidinfo import HidInfo
+from .speed import Speed
 
 
 class USBLight(abc.ABC):
@@ -101,7 +103,7 @@ class USBLight(abc.ABC):
 
     More involved effects can be achieved via software; writing
     new color values at the desired frequency using the async method
-    `apply_effect` and a `FrameGenerator`.
+    `apply_effect` and a `busylight.lights.effects.FrameGenerator`.
     """
 
     @classmethod
@@ -155,18 +157,17 @@ class USBLight(abc.ABC):
         if cls is USBLight:
             for subclass in cls.subclasses():
                 if subclass.claims(hidinfo):
-                    logger.debug(f"{subclass.__name__} claims {hidinfo=}")
+                    logger.debug(f"{subclass.__name__} claimed {hidinfo=}")
                     return True
             return False
 
-        logger.debug(f"{hidinfo=}")
         try:
             device_id = (hidinfo["vendor_id"], hidinfo["product_id"])
         except KeyError as error:
             logger.debug("missing keys from hidinfo {hidinfo=}")
             raise InvalidHidInfo(hidinfo) from None
 
-        return device_id in cls.SUPPORTED_DEVICE_IDS
+        return device_id[:2] in cls.SUPPORTED_DEVICE_IDS
 
     @classmethod
     def all_lights(cls, reset: bool = True) -> List["USBLight"]:
@@ -284,7 +285,7 @@ class USBLight(abc.ABC):
         - LightUnavailable
         """
 
-        self._hidinfo = hidinfo
+        self.hidinfo = hidinfo
 
         if (
             self.vendor_id,
@@ -399,43 +400,36 @@ class USBLight(abc.ABC):
 
     @property
     def hidinfo(self) -> HidInfo:
-        return getattr(self, "_hidinfo", {})
+        """A dictionary of string keys with bytes, int, or string values.
 
-    @property
-    def vendor_id(self) -> int:
-        return self._hidinfo["vendor_id"]
+        The contents of this dictionary come from the results of `hid.enumerate`.
+        """
+        try:
+            return self._hidinfo
+        except AttributeError:
+            pass
+        self._hidinfo = {}
+        return self._hidinfo
 
-    @property
-    def product_id(self) -> int:
-        return self._hidinfo["product_id"]
-
-    @property
-    def path(self) -> str:
-        return self._hidinfo["path"].decode("utf-8")
-
-    @property
-    def product_string(self) -> str:
-        return self._hidinfo.get("product_string", "")
-
-    @property
-    def serial_number(self) -> str:
-        return self._hidinfo.get("serial_number", "")
-
-    @property
-    def release_number(self) -> int:
-        return self._hidinfo.get("release_number", 0)
-
-    @property
-    def manufacturer_string(self) -> str:
-        return self._hidinfo.get("manufacturer_string", "")
-
-    @property
-    def usage_page(self) -> int:
-        return self._hidinfo.get("usage_page", 0)
-
-    @property
-    def usage(self) -> int:
-        return self._hidinfo.get("usage", 0)
+    @hidinfo.setter
+    def hidinfo(self, new_values: HidInfo) -> None:
+        # EJO Side Effect Warning
+        #
+        #     Instead of writing a ton of properties
+        #     that pull values out of self.hidinfo, I
+        #     took the lazy way out and create new instance
+        #     attributes from the key/value pairs in hidinfo
+        #     when a new hidinfo is assigned. This should
+        #     only ever happen when the instance is initialized.
+        #
+        #     Of course it will fail somehow ;)
+        #
+        self.hidinfo.update(new_values)
+        for key, value in self.hidinfo.items():
+            try:
+                setattr(self, key, value.decode("utf-8"))
+            except AttributeError:
+                setattr(self, key, value)
 
     @property
     def name(self) -> str:
@@ -449,7 +443,7 @@ class USBLight(abc.ABC):
 
     @property
     def device(self) -> hid.device:
-        """HID API handle used to perform IO to this USB device."""
+        """HID API handle used to perform IO operations with this USB device."""
         try:
             return self._device
         except AttributeError:
@@ -478,17 +472,17 @@ class USBLight(abc.ABC):
         The default read strategy is `hid.device.read`, however some
         devices may require `hid.device.read_feature_report` instead.
 
-        The read_strategy function is expected to take `nbytes` as
-        it's sole argument and returns a `bytes` instance of the
-        data read.
+        The read_strategy function is expected to accept the integer
+        arguments `nybytes` and `timeout_ms` in milliseconds and return a
+        `bytes` instance of the data read.
         """
         return self.device.read
 
     @property
     def is_pluggedin(self) -> bool:
-        # XXX needs work
+        """True if the light is accessible."""
         try:
-            results = self.device.read_strategy(8)
+            results = self.read_strategy(8, timeout_ms=100)
             logger.debug(f"light pluggedin {self!r} {results=!r}")
             return True
         except OSError as error:
@@ -497,7 +491,18 @@ class USBLight(abc.ABC):
 
     @property
     def is_unplugged(self) -> bool:
+        """True if the light is not accessible."""
         return not self.is_pluggedin
+
+    @property
+    def is_on(self) -> bool:
+        """The light is configured with a color."""
+        return any(self.color)
+
+    @property
+    def is_off(self) -> bool:
+        """The light is not configured with a color."""
+        return not self.is_on
 
     @property
     def red(self) -> int:
@@ -533,7 +538,12 @@ class USBLight(abc.ABC):
 
     @color.setter
     def color(self, new_color: ColorTuple) -> None:
-        self.red, self.green, self.blue = new_color
+        try:
+            self.red, self.green, self.blue = new_color
+        except Exception as error:
+            raise ValueError(
+                f"unable to set color tuple with {new_color!r}: {error}"
+            ) from None
 
     def reset(self, off_color: ColorTuple = (0, 0, 0)) -> None:
         """Set the light to an initial quiesced state."""
@@ -546,14 +556,13 @@ class USBLight(abc.ABC):
         - LightUnavailable if hid.device.open_path fails.
         - InvalidHidInfo if self.hidinfo is missing the `path` key.
         """
-
         try:
             self.device.open_path(self.hidinfo["path"])
         except KeyError as error:
             logger.debug("{error} {self.hidinfo=}")
             raise InvalidHidInfo(self.hidinfo) from None
         except OSError as error:
-            logger.debug(f" {error}")
+            logger.debug(f"open_path failed with {error}")
             raise LightUnavailable.from_dict(self.hidinfo) from None
 
     def release(self) -> None:
@@ -563,12 +572,7 @@ class USBLight(abc.ABC):
         the `acquire` method.
         """
         logger.debug(f"releasing id={id(self):x}")
-        try:
-            if self._device:
-                self.device.close()
-                del self._device
-        except AttributeError:
-            logger.debug(f"_device attribute not yet instantiated")
+        self.device.close()
 
     def update(self) -> None:
         """Send the light's in-memory state, bytes(self), to the device.
@@ -590,7 +594,7 @@ class USBLight(abc.ABC):
         msg = (
             f"{self.name} @ {self.path} {data.hex(':')} {self.write_strategy}={nbytes}"
         )
-
+        logger.debug(msg)
         if nbytes < 0:
             logger.error(msg)
             # EJO In general, unplugging the device is the most likely
@@ -600,8 +604,6 @@ class USBLight(abc.ABC):
             #     enough information from "< 0" to be able to
             #     differentiate between the two failure modes.
             raise LightUnavailable(self.vendor_id, self.product_id, self.path)
-
-        logger.debug(msg)
 
     @contextmanager
     def batch_update(self) -> Generator[None, None, None]:

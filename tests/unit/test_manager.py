@@ -51,6 +51,13 @@ def test_light_manager_init_subclasses(subclass) -> None:
         # assert len(manager.lights) == len(mock_enumerate.return_value)
 
 
+@pytest.mark.parametrize("subclass", [list, set, dict, int, float, tuple])
+def test_light_manager_init_unknown_subclass(subclass):
+
+    with pytest.raises(TypeError):
+        LightManager(lightclass=subclass)
+
+
 @pytest.mark.parametrize("value", [True, False])
 def test_light_manager_init_greedy(value: bool) -> None:
 
@@ -166,17 +173,31 @@ def test_list_manager_selected_lights_default(indices, synthetic_light_manager) 
         assert item == synthetic_light_manager.lights[index]
 
 
+def test_list_manager_selected_lights_out_of_bounds(synthetic_light_manager) -> None:
+    base = len(synthetic_light_manager.lights)
+    results = synthetic_light_manager.selected_lights([base + 1])
+    assert not results
+
+
+@pytest.mark.xfail
 def test_list_manager_update_no_change(synthetic_light_manager) -> None:
-    pass
+
+    assert False, "Not written yet"
 
 
+@pytest.mark.xfail
 def test_list_manager_update_lights_removed(synthetic_light_manager) -> None:
-    pass
+
+    assert False, "Not written yet"
 
 
+@pytest.mark.xfail
 def test_list_manager_update_lights_added(synthetic_light_manager) -> None:
-    pass
+
+    assert False, "Not written yet"
 
 
+@pytest.mark.xfail
 def test_list_manager_release(synthetic_light_manager) -> None:
-    pass
+
+    assert False, "Not written yet"

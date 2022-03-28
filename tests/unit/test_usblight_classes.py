@@ -184,10 +184,19 @@ def test_usblight_init_without_reset(subclass) -> None:
 
     for hidinfo in device_hidinfo(subclass):
         with mock.patch("hid.device") as mock_device:
-            mock_device.write.return_value = 1
-            mock_device.send_feature_report.return_value = 1
             result = subclass(hidinfo, reset=False)
             assert isinstance(result, subclass)
+
+
+@pytest.mark.parametrize("subclass", USBLIGHT_SUBCLASSES)
+def test_usblight_init_with_reset(subclass) -> None:
+
+    for hidinfo in device_hidinfo(subclass):
+        with mock.patch("hid.device"):
+            with mock.patch("busylight.lights.USBLight.reset") as mock_reset:
+                result = subclass(hidinfo, reset=True)
+                assert isinstance(result, subclass)
+                mock_reset.assert_called_once()
 
 
 @pytest.mark.parametrize("subclass", USBLIGHT_SUBCLASSES)

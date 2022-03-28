@@ -31,6 +31,7 @@ def device_hidinfo(subclass) -> Generator[dict, None, None]:
             "product_id": pid,
             "path": f"bogus/path/{time()}/{vpid}".encode("utf-8"),
             "product_string": product_string,
+            "manufacturer_string": "Bogus Manufacturing",
             "serial_number": "BS032974-3.0",
             "release_number": 0x0200,
             "usage_page": vid + pid,

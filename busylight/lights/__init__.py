@@ -10,13 +10,13 @@ from .exceptions import (
 )
 
 from .usblight import USBLight
-from .usblight import HidInfo
 
 from .color import ColorTuple, ColorList, parse_color
-from .speed import Speed
-
 from .effects import Effects
 from .effects import FrameTuple, FrameGenerator
+from .hidinfo import HidInfo
+
+from .speed import Speed
 
 # import new light subclasses here
 from .agile_innovative import BlinkStick
@@ -27,7 +27,7 @@ from .plantronics import Status_Indicator
 from .thingm import Blink1
 
 
-# include new light subclasses here
+# also include new light subclasses here
 __all__ = [
     "Blink1",
     "BlinkStick",

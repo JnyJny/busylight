@@ -5,11 +5,13 @@ from contextlib import suppress
 from random import choice
 from typing import Generator, Union
 from unittest import mock
-from unittest.mock import Mock
+from unittest.mock import Mock, PropertyMock
 
 import pytest
 
 from busylight.lights import USBLight
+from busylight.manager import LightManager
+
 from loguru import logger
 
 from . import device_hidinfo
@@ -32,11 +34,12 @@ def synthetic_lights_for_subclass(
         light._device.open_path.return_value = None
         light._device.read.return_value = []
         light._device.get_feature_report.return_value = []
+
         yield light
 
 
 @pytest.fixture()
-def hidinfo_list() -> list[dict[str, Union[bytes, int, str]]]:
+def hidinfo_list() -> Generator[list[dict[str, Union[bytes, int, str]]], None, None]:
     """List of real light dictionaries."""
     hidinfos = [
         {
@@ -173,11 +176,13 @@ def hidinfo_list() -> list[dict[str, Union[bytes, int, str]]]:
         },
     ]
 
-    return hidinfos
+    yield hidinfos
 
 
 @pytest.fixture()
-def broken_hidinfo_list(hidinfo_list) -> list[str, Union[bytes, int, str]]:
+def broken_hidinfo_list(
+    hidinfo_list,
+) -> Generator[list[str, Union[bytes, int, str]], None, None]:
 
     broken = []
     for item in hidinfo_list:
@@ -185,11 +190,11 @@ def broken_hidinfo_list(hidinfo_list) -> list[str, Union[bytes, int, str]]:
         del item["vendor_id"]
         del item["path"]
         broken.append(item)
-    return broken
+    yield broken
 
 
 @pytest.fixture(scope="session")
-def real_lights() -> list[USBLight]:
+def real_lights() -> Generator[list[USBLight], None, None]:
     """Real instances of USBLight (if available)."""
 
     lights = USBLight.all_lights()
@@ -202,7 +207,7 @@ def real_lights() -> list[USBLight]:
 
 
 @pytest.fixture(scope="session")
-def synthetic_lights() -> list[USBLight]:
+def synthetic_lights() -> Generator[list[USBLight], None, None]:
 
     lights = []
     for subclass in USBLight.subclasses():
@@ -219,7 +224,7 @@ def synthetic_lights() -> list[USBLight]:
 def lights(
     real_lights: list[USBLight],
     synthetic_lights: list[USBLight],
-) -> list[USBLight]:
+) -> Generator[list[USBLight], None, None]:
     """Returns real_lights if available, otherwise synthetic_lights."""
     if real_lights:
         yield real_lights
@@ -228,7 +233,7 @@ def lights(
 
 
 @pytest.fixture()
-def disposable_lights() -> list[USBLight]:
+def disposable_lights() -> Generator[list[USBLight], None, None]:
     """Disposable lights are synthetic but function scoped. Mess'em up."""
     lights = []
     for subclass in USBLight.subclasses():
@@ -241,6 +246,16 @@ def disposable_lights() -> list[USBLight]:
 
 
 @pytest.fixture(scope="session")
-def a_light(lights: list[USBLight]) -> USBLight:
+def a_light(lights: list[USBLight]) -> Generator[USBLight, None, None]:
     """Could be real, could be synthetic. But it's a light."""
     yield lights[0]
+
+
+@pytest.fixture()
+def synthetic_light_manager(synthetic_lights) -> Generator[LightManager, None, None]:
+
+    manager = LightManager()
+    manager.release()
+    manager._lights = synthetic_lights
+
+    yield manager

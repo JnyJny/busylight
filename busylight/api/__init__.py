@@ -17,18 +17,19 @@ from ..effects import rainbow, pulse, flash_lights_impressively
 from ..manager import LightManager, BlinkSpeed
 from ..manager import LightIdRangeError, ColorLookupError
 from ..manager import ALL_LIGHTS
-from ..color import rgb_to_hex
+from ..lights import parse_color
 
 # FastAPI Security Scheme
 busylightapi_security = HTTPBasic()
+
 
 class BusylightAPI(FastAPI):
     def __init__(self):
         # Set up authentication, if env. variables set
         dependencies = []
         try:
-            self.username = environ['BUSYLIGHT_API_USER']
-            self.password = environ['BUSYLIGHT_API_PASS']
+            self.username = environ["BUSYLIGHT_API_USER"]
+            self.password = environ["BUSYLIGHT_API_PASS"]
             dependencies.append(Depends(self.authenticate_user))
         except KeyError:
             # Env. variables not set, so auth disabled
@@ -42,12 +43,28 @@ class BusylightAPI(FastAPI):
 An API server for USB connected presence lights.
 
 **Supported USB lights:**
-- Agile Innovative BlinkStick family of devices
-- Embrava Blynclight, Blynclight +, Blynclight Mini
-- Kuando BusyLight UC Omega
-- Luxafor Flag
-- Plantronics Status Indicator
-- ThingM blink(1)
+_Agile Innovative_
+  - BlinkStick
+  - BlinkStick Pro
+  - BlinkStick Square
+  - BlinkStick Strip
+  - BlinkStick Nano
+  - BlinkStick Flex
+_Embrava_
+  - Blynclight
+  - Blynclight Mini
+  - Blynclight Plus
+_Plantronics_
+  - Status Indicator
+_Kuando_
+  - Busylight Alpha
+  - Busylight Omega
+_Luxafor_
+  - Flag
+  - Mute
+  - Orb
+_ThingM_
+  - Blink(1)
                         
 [Source](https://github.com/JnyJny/busylight.git)
 """,
@@ -61,10 +78,9 @@ An API server for USB connected presence lights.
         self.endpoints.append(path)
         kwargs.setdefault("response_model_exclude_unset", True)
         return super().get(path, **kwargs)
-    
+
     def authenticate_user(
-        self, 
-        credentials: HTTPBasicCredentials = Depends(busylightapi_security)
+        self, credentials: HTTPBasicCredentials = Depends(busylightapi_security)
     ) -> None:
         username_correct = compare_digest(credentials.username, self.username)
         password_correct = compare_digest(credentials.password, self.password)
@@ -75,6 +91,7 @@ An API server for USB connected presence lights.
                 headers={"WWW-Authenticate": "Basic"},
             )
 
+
 busylightapi = BusylightAPI()
 
 ## Startup & Shutdown
@@ -82,12 +99,12 @@ busylightapi = BusylightAPI()
 @busylightapi.on_event("startup")
 async def startup():
     busylightapi.manager = LightManager()
-    busylightapi.manager.light_off()
+    busylightapi.manager.off()
 
 
 @busylightapi.on_event("shutdown")
 async def shutdown():
-    busylightapi.manager.light_off()
+    busylightapi.manager.off()
 
 
 ## Exception Handlers
@@ -153,7 +170,7 @@ async def Light_Description(
         "name": light.name,
         "info": light.info,
         "is_on": light.is_on,
-        "color": rgb_to_hex(*light.color),
+        "color": parse_color(*light.color),
     }
 
 

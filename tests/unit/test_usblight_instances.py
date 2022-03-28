@@ -15,39 +15,43 @@ from busylight.lights import (
     LightUnsupported,
 )
 
+from .. import is_valid_hidinfo
+
 
 ## Data model methods
 
 
 def test_usblight_subclass_repr(synthetic_lights) -> None:
-
+    """Test the __repr__ method to ensure a str is returned."""
     for light in synthetic_lights:
         result = repr(light)
         assert isinstance(result, str)
 
 
 def test_usblight_subclass_str(synthetic_lights) -> None:
-
+    """Test the __str__ method to ensure a str is returned."""
     for light in synthetic_lights:
         result = str(light)
         assert isinstance(result, str)
 
 
 def test_usblight_del(disposable_lights) -> None:
-
+    """Test the __del__ method to ensure it doesn't barf."""
     with pytest.raises(IndexError):
         while light := disposable_lights.pop():
             del light
 
 
 def test_usblight_eq(synthetic_lights) -> None:
-
+    """Test the __eq__ method for functionality."""
     assert synthetic_lights[0] == synthetic_lights[0]
     assert synthetic_lights[0] != synthetic_lights[1]
+    assert synthetic_lights[1] == synthetic_lights[1]
+    assert synthetic_lights[1] != synthetic_lights[0]
 
 
 def test_usblight_lt(synthetic_lights) -> None:
-
+    """Test the __lt__ method to confirm sortability of lists of lights."""
     lights = sorted(synthetic_lights)
     for a, b in zip(lights[:-1], lights[1:]):
         assert a < b
@@ -57,15 +61,17 @@ def test_usblight_lt(synthetic_lights) -> None:
 
 
 def test_usblight_repr(synthetic_lights) -> None:
-
+    """Test the __repr__ method to ensure a str is returned."""
     for light in synthetic_lights:
-        assert isinstance(repr(light), str)
+        result = repr(light)
+        assert isinstance(result, str)
+        assert result.startswith(light.__class__.__name__)
 
 
 def test_usblight_hidinfo(synthetic_lights) -> None:
-
+    """Checks the hidinfo property for validity."""
     for light in synthetic_lights:
-        assert isinstance(light.hidinfo, dict)
+        assert is_valid_hidinfo(light.hidinfo)
 
 
 @pytest.mark.parametrize(
@@ -94,7 +100,6 @@ def test_usblight_hidinfo(synthetic_lights) -> None:
 def test_usblight_properties(
     property_name: str, expected_type: type, synthetic_lights: list[USBLight]
 ) -> None:
-
     for light in synthetic_lights:
         assert hasattr(light, property_name)
         value = getattr(light, property_name)
@@ -106,6 +111,16 @@ def test_usblight_plugged(disposable_lights) -> None:
     for light in disposable_lights:
         assert light.is_pluggedin
         assert not light.is_unplugged
+
+
+def test_usblight_unplugged(disposable_lights) -> None:
+
+    for light in disposable_lights:
+        error = OSError("read error on unplugged device")
+        light.device.read.side_effect = error
+        light.device.get_feature_report.side_effect = error
+        assert not light.is_pluggedin
+        assert light.is_unplugged
 
 
 COLOR_TEST_VALUES = [
@@ -122,18 +137,21 @@ COLOR_TEST_VALUES = [
 def test_usblight_red(value, expected, a_light) -> None:
     a_light.red = value
     assert a_light.red == expected
+    assert a_light.color[0] == expected
 
 
 @pytest.mark.parametrize("value,expected", COLOR_TEST_VALUES)
 def test_usblight_green(value, expected, a_light) -> None:
     a_light.green = value
     assert a_light.green == expected
+    assert a_light.color[1] == expected
 
 
 @pytest.mark.parametrize("value,expected", COLOR_TEST_VALUES)
 def test_usblight_blue(value, expected, a_light) -> None:
     a_light.blue = value
     assert a_light.blue == expected
+    assert a_light.color[2] == expected
 
 
 @pytest.mark.parametrize(
@@ -150,6 +168,31 @@ def test_usblight_color(value, expected, a_light) -> None:
 
     a_light.color = value
     assert a_light.color == expected
+    assert a_light.red == expected[0]
+    assert a_light.green == expected[1]
+    assert a_light.blue == expected[2]
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "a",
+        "#000",
+        "#000000",
+        "blue",
+        1.0,
+        [],
+        {},
+        (),
+        (0,),
+        (0, 0),
+        (0, 0, 0, 0),
+    ],
+)
+def test_usblight_color_malformed(value, a_light) -> None:
+
+    with pytest.raises(ValueError):
+        a_light.color = value
 
 
 ## Instance methods
@@ -158,7 +201,9 @@ def test_usblight_color(value, expected, a_light) -> None:
 def test_usblight_reset(disposable_lights) -> None:
 
     for light in disposable_lights:
+        light.color = (0xFF, 0xEE, 0xDD)
         light.reset()
+        assert light.color == (0, 0, 0)
 
         if light.device.write.called:
             light.device.write.assert_called_once()
@@ -168,16 +213,17 @@ def test_usblight_reset(disposable_lights) -> None:
             light.device.send_feature_report.assert_called_once()
             return
 
-    assert False, "light.reset() resulted in no IO operations"
+    assert False, "light.reset() did not result in expected IO operations"
 
 
 def test_usblight_release(disposable_lights) -> None:
 
     for light in disposable_lights:
-        light._device = Mock()
         light.release()
-        with pytest.raises(AttributeError):
-            getattr(light, "_device")
+        light.device.read.side_effect = OSError("read while closed")
+        light.device.send_feature_report.side_effect = OSError("read while closed")
+        with pytest.raises(OSError):
+            light.read_strategy(8)
 
 
 def test_usblight_batch_update(disposable_lights) -> None:
@@ -195,7 +241,7 @@ def test_usblight_batch_update(disposable_lights) -> None:
             light.device.send_feature_report.assert_called_once()
             return
 
-    assert False, "with light.batch_update() resulted in no IO operations"
+    assert False, "light.batch_update() did not result in expected IO operations"
 
 
 def test_usblight_batch_update_unplugged(disposable_lights) -> None:
@@ -224,7 +270,7 @@ def test_usblight_update(disposable_lights) -> None:
             light.device.send_feature_report.assert_called_once()
             return
 
-    assert False, "light.update() resulted in no IO operations"
+    assert False, "light.update() did not result in expected IO operations"
 
 
 def test_usblight_update_unavailable(disposable_lights) -> None:
@@ -241,8 +287,9 @@ def test_usblight_update_unavailable(disposable_lights) -> None:
 def test_usblight_update_closed(disposable_lights) -> None:
 
     for light in disposable_lights:
-        light.device.write.side_effect = ValueError()
-        light.device.send_feature_report.side_effect = ValueError()
+        error = ValueError("write on a closed device")
+        light.device.write.side_effect = error
+        light.device.send_feature_report.side_effect = error
         with pytest.raises(LightUnavailable):
             light.update()
 
@@ -259,9 +306,17 @@ def test_usblight_acquire(disposable_lights) -> None:
 def test_usblight_acquire_unavailable(disposable_lights) -> None:
 
     for light in disposable_lights:
-        light.device.open_path.side_effect = OSError()
+        light.device.open_path.side_effect = OSError("nope")
         with pytest.raises(LightUnavailable):
             light.acquire()
+
+
+def test_usblight_reset(disposable_lights) -> None:
+
+    for light in disposable_lights:
+        light.color = (0xF, 0xE, 0xD)
+        light.reset()
+        assert light.color == (0, 0, 0)
 
 
 @pytest.mark.parametrize(
@@ -276,9 +331,13 @@ def test_usblight_on(color, disposable_lights):
 
     for light in disposable_lights:
         light.color = (0, 0, 0)
+        assert light.is_off
+        assert not light.is_on
         assert light.color != color
         light.on(color)
         assert light.color == color
+        assert light.is_on
+        assert not light.is_off
 
         if light.device.write.called:
             light.device.write.assert_called_once()
@@ -295,6 +354,8 @@ def test_usblight_off(disposable_lights):
 
     for light in disposable_lights:
         light.off()
+        assert light.is_off
+        assert not light.is_on
         if light.device.write.called:
             light.device.write.assert_called_once()
             return
