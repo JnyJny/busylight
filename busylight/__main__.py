@@ -316,3 +316,7 @@ def serve_subcommand(
             fg="red",
         )
         raise typer.Exit(-1) from None
+
+
+if __name__ == "__main__":
+    exit(cli())
