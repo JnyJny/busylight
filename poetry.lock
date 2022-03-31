@@ -167,7 +167,7 @@ typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "hidapi"
-version = "0.11.0.post2"
+version = "0.11.2"
 description = "A Cython interface to the hidapi from https://github.com/libusb/hidapi"
 category = "main"
 optional = false
@@ -328,7 +328,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytest"
-version = "7.1.0"
+version = "7.1.1"
 description = "pytest: simple powerful testing with Python"
 category = "dev"
 optional = false
@@ -469,14 +469,14 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "urllib3"
-version = "1.26.8"
+version = "1.26.9"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
 [package.extras]
-brotli = ["brotlipy (>=0.6.0)"]
+brotli = ["brotlicffi (>=0.8.0)", "brotli (>=1.0.9)", "brotlipy (>=0.6.0)"]
 secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
@@ -629,37 +629,40 @@ h11 = [
     {file = "h11-0.13.0.tar.gz", hash = "sha256:70813c1135087a248a4d38cc0e1a0181ffab2188141a93eaf567940c3957ff06"},
 ]
 hidapi = [
-    {file = "hidapi-0.11.0.post2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6fc745eaec01dcc25d71b02cd868e1e34e0c53c4ac7f0f0edbb3a56dbd5e50f8"},
-    {file = "hidapi-0.11.0.post2-cp310-cp310-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:23b54a90af7d4d73e730153099f37869feb27784649d1bf29a52ce9faf3168fb"},
-    {file = "hidapi-0.11.0.post2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c91ee15c358787583b8f403f9b7b40d48fa4d3e74544e6313f90de83a7695a96"},
-    {file = "hidapi-0.11.0.post2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c9a70135e8091c8ae685374fcb148ee81b15423072e2ee32f40f7ad710879d4a"},
-    {file = "hidapi-0.11.0.post2-cp310-cp310-win32.whl", hash = "sha256:19ca6866dee8ac7668f3b4f12103c0df55ff65cda5c9c400aefc21fb29512004"},
-    {file = "hidapi-0.11.0.post2-cp310-cp310-win_amd64.whl", hash = "sha256:449f6a9f0230ec0af749a4f6057afd81285112d702e2b8b19059a061ec8df591"},
-    {file = "hidapi-0.11.0.post2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:f30a90663a399f71cd3df75d42422643eb3fc290ca19553eaee88ca352e626ff"},
-    {file = "hidapi-0.11.0.post2-cp36-cp36m-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:e8bd1395e25ae557f129973b2153fdb8a0d6debd0f7411ba72abe7dbe536ebe3"},
-    {file = "hidapi-0.11.0.post2-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:017f379e03f00a35ba12df9819df9bd219a14dd8444860d093a6f9878a505867"},
-    {file = "hidapi-0.11.0.post2-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:afabcf8fdbdc355b907c03984258d7f9acc01eac5114837364fe227c239d53d7"},
-    {file = "hidapi-0.11.0.post2-cp36-cp36m-win32.whl", hash = "sha256:67953056555f48539f268f9326462f4a1d525191712fd6af3666e7787f4a609b"},
-    {file = "hidapi-0.11.0.post2-cp36-cp36m-win_amd64.whl", hash = "sha256:3083655c9306ff87c3f790949cdbac933fc8c6912dd7063c0c3e6e199b9e40b8"},
-    {file = "hidapi-0.11.0.post2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:8f8e67042d5dbf6ecec0f8cbf347d99ad074dcb600754bc60609f3340c746977"},
-    {file = "hidapi-0.11.0.post2-cp37-cp37m-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:782d0c208d794c540e999b1737ddb9ebc36df604d7739889b9659fcc3819f4ce"},
-    {file = "hidapi-0.11.0.post2-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a19864e2528fff9c708126f72176790c0bb7cb1e31a904ccadc6b6f9fd29a7a1"},
-    {file = "hidapi-0.11.0.post2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:053f1f06a671b1e466339a04ee46d91b86932212aaf3b9160d358a6fae80ef50"},
-    {file = "hidapi-0.11.0.post2-cp37-cp37m-win32.whl", hash = "sha256:87cbeee15afe23759a3c8eb07eb0ecf156f5f4db98aa31ff2ceee4b45feac4f9"},
-    {file = "hidapi-0.11.0.post2-cp37-cp37m-win_amd64.whl", hash = "sha256:9e82b4aaa9c000c49b6fb1296974713b21d3e8fa3e0c87efab03998e4d6dbeee"},
-    {file = "hidapi-0.11.0.post2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:1bc4ed3c34e4b0b6be589ef88845d7697bd81acf9079ded9d53ab1ebe874dc01"},
-    {file = "hidapi-0.11.0.post2-cp38-cp38-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:e7d28a6473626f7ddb83a32349196880e8ff38a809f4eeb221f212264c8c9431"},
-    {file = "hidapi-0.11.0.post2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d15e7238bbeab71313b4366e65032e5db6c314a3323729e1d4a4798f6f6c111b"},
-    {file = "hidapi-0.11.0.post2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d84040de52295f043094ca2b6257c6c1fe390fd8d2623ae000a46122150b15b7"},
-    {file = "hidapi-0.11.0.post2-cp38-cp38-win32.whl", hash = "sha256:08da7855400a516a742c4dfd6a3b6d69ee56d281561f7fb284c7a289bb2d5b40"},
-    {file = "hidapi-0.11.0.post2-cp38-cp38-win_amd64.whl", hash = "sha256:08f5eb2e3e5451c3c631b6b018b3187b6a2fca9c3c200cb5a17fb69fd7f479bb"},
-    {file = "hidapi-0.11.0.post2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:55d1a6cdbefb5de85bb54e6d4d4967554fed7d26b874d3290cb1a9f02dfa5865"},
-    {file = "hidapi-0.11.0.post2-cp39-cp39-manylinux_2_12_i686.manylinux2010_i686.whl", hash = "sha256:7c70ec32cdfd0c1303fe4aa22ddf839282bdce279a0c038c6efdddc703342dd6"},
-    {file = "hidapi-0.11.0.post2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:991b9c9f5a4400d3493cfba2511b0a7f6199eff3ef0968ca65bace32d0f811bf"},
-    {file = "hidapi-0.11.0.post2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ad8d5ce93c4ea2a51a10cd8405409252107350b0402e3372d905846c0e7326ae"},
-    {file = "hidapi-0.11.0.post2-cp39-cp39-win32.whl", hash = "sha256:89c51889894d389e0de63a2adb7faafd9c8c24928b50848365cd4b4d0d57e10b"},
-    {file = "hidapi-0.11.0.post2-cp39-cp39-win_amd64.whl", hash = "sha256:5a64b6509064b683ef8ca9888f71906e3dbc6909ab2e3361cbaf6d25a007ab5f"},
-    {file = "hidapi-0.11.0.post2.tar.gz", hash = "sha256:da815e0d1d4b2ef1ebbcc85034572105dca29627eb61881337aa39010f2ef8cb"},
+    {file = "hidapi-0.11.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:94da1fd2f83a5a378069c4365624ad55f009284c056c3edd7a811184464b4c78"},
+    {file = "hidapi-0.11.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:d1c4ceea536e3a323c057f1dd1b2394a5db13c73393e17b6127e9d9ff9dba276"},
+    {file = "hidapi-0.11.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1752c396e0d22ba896712005d9e9dfdad3ac3217446bef0008de126b51dc82c6"},
+    {file = "hidapi-0.11.2-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:1c799d60ec870106c3aea58ac09239849f42ca062ecad5dccadf516e205c55a5"},
+    {file = "hidapi-0.11.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fbac1cdd5277aef5c682e31a02638b8b88bbd2b7fdfa271561a86181ef231428"},
+    {file = "hidapi-0.11.2-cp310-cp310-win32.whl", hash = "sha256:8e3b01acd0ea20d3635284eb3b1b64c322b86b3036f91367dc4f0bf11281013a"},
+    {file = "hidapi-0.11.2-cp310-cp310-win_amd64.whl", hash = "sha256:b2f03f03027c53d3b427c015937515faaf72d42fc3ef8ac7b8cffafb9e03c44c"},
+    {file = "hidapi-0.11.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:95a50f408716eb3a36bf16939c4f5b7a7940c8ca704272e67144c5eecb27c5c5"},
+    {file = "hidapi-0.11.2-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4955c649edb0e1418110bfb6591ec5eda29f2b978a8e87b18d0a8bd8e28ffb63"},
+    {file = "hidapi-0.11.2-cp36-cp36m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:cfd605193ebc0aa3ae71595a9aa33e0a1bbfb172a02c97bbd51bed5e03404fbf"},
+    {file = "hidapi-0.11.2-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5827fd38577304a20268a4da22f4766af3052c33706760fec04f90326dcca5d5"},
+    {file = "hidapi-0.11.2-cp36-cp36m-win32.whl", hash = "sha256:0be398136fa5fd6ed7648ca7df675100312a2158c39e1de059ea1d4f88e61046"},
+    {file = "hidapi-0.11.2-cp36-cp36m-win_amd64.whl", hash = "sha256:0053afb387e660273db3cf252434cd5181c561725ed442cd44024ec2b5c97bbe"},
+    {file = "hidapi-0.11.2-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:a202b2a83feacffe9bad076d3b01cd43589d80456d23dd4cfede78e45b27242d"},
+    {file = "hidapi-0.11.2-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:80b1c110f87af3a6fedad3a0aa1a7a55745aee60470f271d3c333b61da0b1113"},
+    {file = "hidapi-0.11.2-cp37-cp37m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6308ec52a970a491a5a7d888f081d08d523d06a912bdf84fc4d3b109f69876b8"},
+    {file = "hidapi-0.11.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:54ddf36f9b71d37846c60cc0a7777824a078b4e65c06c6dbd201eec538ecfbd3"},
+    {file = "hidapi-0.11.2-cp37-cp37m-win32.whl", hash = "sha256:a10fd1d7071e47c5b16a9ad8014adbce2b5dafacd50c7ffcec56e19c8efc50ae"},
+    {file = "hidapi-0.11.2-cp37-cp37m-win_amd64.whl", hash = "sha256:c65b5de57d078ce4b723be1341afe479ad0987d4ba859ae3b1085f21643e13f3"},
+    {file = "hidapi-0.11.2-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:3af72e81caa8678c82764ea6f09e3d5b616ada59415a6c1e2ae791a604e60a82"},
+    {file = "hidapi-0.11.2-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:3a031dab7380de39f2e81974e7d788f81a5ea7de3862cec42a382ecae9f20885"},
+    {file = "hidapi-0.11.2-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8320e916dda08d8b38f2552c3fbf63e77212a15b0c1f04dcb604fdd3b3fb825d"},
+    {file = "hidapi-0.11.2-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:990683ca81eda551cb0e14efa487fb552a11901be06293167f60bf92e80b7cc3"},
+    {file = "hidapi-0.11.2-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7539ec488e91839c2c17d4a394990fa64ae4149e397ea859596ef6669b6aa23d"},
+    {file = "hidapi-0.11.2-cp38-cp38-win32.whl", hash = "sha256:f9319f8ea5d6f28737355a8462e1ccee6019b3d2d81a462e54b43acc53f63c36"},
+    {file = "hidapi-0.11.2-cp38-cp38-win_amd64.whl", hash = "sha256:5100b267e60eac1ef5e023342838029c41800b61fe9a4de31d94d9126eab4211"},
+    {file = "hidapi-0.11.2-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:b3452b5e4cd9ab330ff098cfe7c71ecf3418874efe94f121353ac1b5208fa14f"},
+    {file = "hidapi-0.11.2-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:e63a7904f2fadab3976240695adc0775f4a473817fa0bcd9230383e70793f538"},
+    {file = "hidapi-0.11.2-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:175588e3e671198668d9d67ed6e8d48b10d02f46e1998e734f1c212e76f7df6f"},
+    {file = "hidapi-0.11.2-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:41b16d2df7eaaa5d47773b0d768d6a05d3731728ccb6ef4c2e19caa6d7e39136"},
+    {file = "hidapi-0.11.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6cf804d58fd6b7f7064577f5ded6487e1466005815a9d83f1f3329432c7e418c"},
+    {file = "hidapi-0.11.2-cp39-cp39-win32.whl", hash = "sha256:54137df3e14d679db0b7574dcb21cbdb001a2faa3ec47c49b17cd4f1e237dce3"},
+    {file = "hidapi-0.11.2-cp39-cp39-win_amd64.whl", hash = "sha256:ce9347211e1c9e57fed8784fc8a9dec3295d14a4ea955e62c8f00a28eaac662e"},
+    {file = "hidapi-0.11.2.tar.gz", hash = "sha256:c984b7ec2fc2ea987cd44cf06947e55572498ed2d43c64890b4ab58b29af72bc"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
@@ -768,8 +771,8 @@ pyparsing = [
     {file = "pyparsing-3.0.7.tar.gz", hash = "sha256:18ee9022775d270c55187733956460083db60b37d0d0fb357445f3094eed3eea"},
 ]
 pytest = [
-    {file = "pytest-7.1.0-py3-none-any.whl", hash = "sha256:b555252a95bbb2a37a97b5ac2eb050c436f7989993565f5e0c9128fcaacadd0e"},
-    {file = "pytest-7.1.0.tar.gz", hash = "sha256:f1089d218cfcc63a212c42896f1b7fbf096874d045e1988186861a1a87d27b47"},
+    {file = "pytest-7.1.1-py3-none-any.whl", hash = "sha256:92f723789a8fdd7180b6b06483874feca4c48a5c76968e03bb3e7f806a1869ea"},
+    {file = "pytest-7.1.1.tar.gz", hash = "sha256:841132caef6b1ad17a9afde46dc4f6cfa59a05f9555aae5151f73bdf2820ca63"},
 ]
 pytest-cov = [
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
@@ -834,8 +837,8 @@ typing-extensions = [
     {file = "typing_extensions-4.1.1.tar.gz", hash = "sha256:1a9462dcc3347a79b1f1c0271fbe79e844580bb598bafa1ed208b94da3cdcd42"},
 ]
 urllib3 = [
-    {file = "urllib3-1.26.8-py2.py3-none-any.whl", hash = "sha256:000ca7f471a233c2251c6c7023ee85305721bfdf18621ebff4fd17a8653427ed"},
-    {file = "urllib3-1.26.8.tar.gz", hash = "sha256:0e7c33d9a63e7ddfcb86780aac87befc2fbddf46c58dbb487e0855f7ceec283c"},
+    {file = "urllib3-1.26.9-py2.py3-none-any.whl", hash = "sha256:44ece4d53fb1706f667c9bd1c648f5469a2ec925fcf3a776667042d645472c14"},
+    {file = "urllib3-1.26.9.tar.gz", hash = "sha256:aabaf16477806a5e1dd19aa41f8c2b7950dd3c746362d7e3223dbe6de6ac448e"},
 ]
 uvicorn = [
     {file = "uvicorn-0.17.6-py3-none-any.whl", hash = "sha256:19e2a0e96c9ac5581c01eb1a79a7d2f72bb479691acd2b8921fce48ed5b961a6"},
