@@ -10,35 +10,15 @@ from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from loguru import logger
 
+from .. import __version__
+from ..manager import LightManager
+from ..lights.color import ColorTuple, parse_color
+from ..lights.effects import Effects
+
 from .models import LightOperation, LightDescription, EndPoint
 
-from ..__version__ import __version__
-from ..effects import rainbow, pulse, flash_lights_impressively
-from ..manager import LightManager, BlinkSpeed
-from ..manager import LightIdRangeError, ColorLookupError
-from ..manager import ALL_LIGHTS
-from ..lights import parse_color
 
-# FastAPI Security Scheme
-busylightapi_security = HTTPBasic()
-
-
-class BusylightAPI(FastAPI):
-    def __init__(self):
-        # Set up authentication, if env. variables set
-        dependencies = []
-        try:
-            self.username = environ["BUSYLIGHT_API_USER"]
-            self.password = environ["BUSYLIGHT_API_PASS"]
-            dependencies.append(Depends(self.authenticate_user))
-        except KeyError:
-            # Env. variables not set, so auth disabled
-            self.username = None
-            self.password = None
-
-        super().__init__(
-            title="Busylight Server: A USB Light Server",
-            description="""
+__description__ = """
 <!-- markdown formatted for HTML rendering -->
 An API server for USB connected presence lights.
 
@@ -65,9 +45,33 @@ _Luxafor_
   - Orb
 _ThingM_
   - Blink(1)
-                        
+
 [Source](https://github.com/JnyJny/busylight.git)
-""",
+"""
+
+# FastAPI Security Scheme
+busylightapi_security = HTTPBasic()
+
+
+class BusylightAPI(FastAPI):
+    def __init__(self):
+        logger.debug("Set up authentication, if env. variables set.")
+        dependencies = []
+        try:
+            self.username = environ["BUSYLIGHT_API_USER"]
+            self.password = environ["BUSYLIGHT_API_PASS"]
+            dependencies.append(Depends(self.authenticate_user))
+            logger.debug("Found username/password in environment.")
+        except KeyError:
+            logger.debug("Did NOT find username/password in environment.")
+            logger.debug("Access authentication  disabled.")
+            # Env. variables not set, so auth disabled
+            self.username = None
+            self.password = None
+
+        super().__init__(
+            title="Busylight Server: A USB Light Server",
+            description=__description__,
             version=__version__,
             dependencies=dependencies,
         )
