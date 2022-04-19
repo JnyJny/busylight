@@ -8,9 +8,7 @@ from .blink import Blink
 from .gradient import Gradient
 from .spectrum import Spectrum
 from .steady import Steady
-
-from .frame import FrameTuple, FrameGenerator
-
+from .throb import Throb
 
 __all__ = [
     "Effects",
@@ -18,4 +16,5 @@ __all__ = [
     "Gradient",
     "Spectrum",
     "Steady",
+    "Throb",
 ]

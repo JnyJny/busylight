@@ -3,6 +3,7 @@
 
 
 import abc
+import asyncio
 
 from itertools import cycle
 from typing import List
@@ -10,7 +11,7 @@ from typing import List
 from loguru import logger
 
 from ..color import ColorList, ColorTuple
-from .frame import FrameGenerator, FrameTuple
+from ..lights import USBLight
 
 
 class BaseEffect(abc.ABC):
@@ -44,34 +45,30 @@ class BaseEffect(abc.ABC):
 
         return f"{self.name}(...)"
 
+    def __str__(self) -> str:
+
+        return f"{self.name} {self.duty_cycle=}"
+
     @property
     def name(self) -> str:
         return self.__class__.__name__
 
     @property
-    @abc.abstractmethod
     def duty_cycle(self) -> float:
         """Interval in seconds for current frame of the effect to be displayed."""
+        return getattr(self, "_duty_cycle", 0)
+
+    @duty_cycle.setter
+    def duty_cycle(self, seconds: float) -> None:
+        self._duty_cycle = seconds
 
     @property
     @abc.abstractmethod
     def colors(self) -> ColorList:
         """A list of color tuples."""
 
-    def __call__(
-        self,
-        repeat: bool = True,
-        reverse: bool = False,
-        duty_cycle: float = None,
-    ) -> FrameGenerator:
-
-        if duty_cycle is None:
-            duty_cycle = self.duty_cycle
-
-        colors = self.colors
-        if reverse:
-            colors += reverse(self.colors)
-        colors = cycle(colors) if repeat else colors
-
-        for color in colors:
-            yield (color, duty_cycle)
+    async def __call__(self, light: USBLight) -> None:
+        """"""
+        for color in cycle(self.colors):
+            light.on(color)
+            await asyncio.sleep(self.duty_cycle)

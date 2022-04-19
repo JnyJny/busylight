@@ -1,6 +1,7 @@
 """
 """
 
+from itertools import cycle
 from typing import List
 
 from ..color import ColorTuple, ColorList
@@ -35,5 +36,5 @@ class Blink(BaseEffect):
             return self._colors
         except AttributeError:
             pass
-        self._colors = [self.on_color, self.off_color]
+        self._colors = cycle([self.on_color, self.off_color])
         return self._colors

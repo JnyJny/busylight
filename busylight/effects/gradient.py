@@ -1,6 +1,7 @@
 """Color Gradient Effect
 """
 
+from itertools import cycle
 
 from ..color import ColorList, ColorTuple
 
@@ -11,9 +12,11 @@ class Gradient(BaseEffect):
     def __init__(
         self,
         color: ColorTuple,
+        duty_cycle: float,
         step: int = 1,
     ) -> None:
         self.color = color
+        self.duty_cycle = duty_cycle
         self.step = step
 
     @property
@@ -25,13 +28,14 @@ class Gradient(BaseEffect):
 
         red, green, blue = self.color
 
-        self._colors = []
+        colors = []
         for i in range(1, 256, self.step):
             scale = i / 255
             r = round(scale * red)
             g = round(scale * green)
             b = round(scale * blue)
-            self._colors.append((r, g, b))
+            colors.append((r, g, b))
 
-        self._colors.append(self.color)
+        self._colors = colors + list(reversed(colors[:-1]))
+
         return self._colors
