@@ -1,17 +1,15 @@
 <!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) -->
-<table>
-	<tr>
-		<td rowspan=7>![BusyLight Project Logo][LOGO]<td>
-		<td>![supported python versions][python-versions]<td>
-	</tr>
-	<tr><td>![version][pypi-version]</td></tr>
-	<tr><td>![dependencies][dependencies]</td></tr>
-	<tr><td>[![pytest][pytest-badge]][pytest-status]</td></tr>
-	<tr><td>![license][license]</td></tr>
-	<tr><td>![monthly-downloads][monthly-downloads]</td></tr>
-	<tr><td>![Code style: black][code-style-black]</td></tr>
-</table>
 
+![version][pypi-version]
+[![pytest][pytest-badge]][pytest-status]
+![supported python versions][python-versions] 
+![dependencies][dependencies]
+![license][license]
+![monthly-downloads][monthly-downloads]
+![Code style: black][code-style-black]
+<br>
+
+![BusyLight Project Logo][LOGO]
 
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
