@@ -11,9 +11,6 @@ from .exceptions import (
 
 from .usblight import USBLight
 
-from .color import ColorTuple, ColorList, parse_color
-from .effects import Effects
-from .effects import FrameTuple, FrameGenerator
 from .hidinfo import HidInfo
 
 from .speed import Speed
@@ -33,12 +30,7 @@ __all__ = [
     "BlinkStick",
     "Blynclight",
     "Busylight",
-    "ColorTuple",
-    "ColorList",
-    "Effects",
     "Flag",
-    "FrameGenerator",
-    "FrameTuple",
     "HidInfo",
     "InvalidHidInfo",
     "LightNotFound",
@@ -47,7 +39,6 @@ __all__ = [
     "Mute",
     "NoLightsFound",
     "Orb",
-    "parse_color",
     "Speed",
     "Status_Indicator",
     "USBLight",
