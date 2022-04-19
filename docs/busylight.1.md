@@ -1,11 +1,6 @@
 # `busylight`
 
-Control USB attached LED lights like a Human™
-
-Make a USB attached LED light turn on, off and blink; all from the
-comfort of your very own command-line. If your platform supports
-HIDAPI (Linux, MacOS, Windows and probably others), then you can use
-busylight with supported lights!
+Control USB connected presense lights.
 
 **Usage**:
 
@@ -15,49 +10,32 @@ $ busylight [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `-l, --light-id INTEGER`: Which light to operate on, see list output.  [default: 0]
-* `-a, --all`: Operate on all lights.
-* `-D, --debug`: Enable logging
+* `-D, --debug`
+* `-l, --light-id TEXT`
+* `-a, --all`
+* `--timeout FLOAT`: timeout in seconds
+* `--version`
 * `--install-completion`: Install completion for the current shell.
 * `--show-completion`: Show completion for the current shell, to copy it or customize the installation.
 * `--help`: Show this message and exit.
 
 **Commands**:
 
-* `blink`: Activate the selected light in blink mode.
-* `list`: List available lights (currently connected).
-* `off`: Turn selected lights off.
-* `on`: Turn selected lights on.
-* `serve`: Start a FastAPI-based service to access...
-* `supported`: List supported LED lights.
-* `udev-rules`: Generate a Linux udev rules file.
+* `blink`: Blink lights on and off.
+* `fli`: Flash lights quickly between two colors.
+* `list`: List currently connected lights.
+* `off`: Deactivate lights.
+* `on`: Activate lights.
+* `rainbow`: Display rainbow colors on specified lights.
+* `supported`: List supported lights.
+* `throb`: Throb light on and off.
+* `udev-rules`: Generate Linux udev rules for all supported...
 
 ## `busylight blink`
 
-Activate the selected light in blink mode.
+Blink lights on and off.
 
-The light selected will blink with the specified color. The default
-color is red if the user does not supply the color argument. Colors
-can be specified with color names and hexadecimal values. Both '0x'
-and '#' are recognized as hexidecimal number prefixes and
-hexadecimal values may be either three or six digits long.
-
-Note: Ironically, BlinkStick products cannot be configured to blink
-      on and off without software constantly updating the
-      devices. If you need your BlinkStick to blink, you will need
-      to use the `busylight serve` web API.
-
-Examples:
-
-
-```
-$ busylight blink          # light is blinking with the color red
-$ busylight blink green    # now it's blinking green
-$ busylight blink 0x00f    # now it's blinking blue
-$ busylight blink #ffffff  # now it's blinking white
-$ busylight --all blink    # now all available lights are blinking red
-$ busylight --all off      # that's enough of that!
-```
+The default on color is red.
 
 **Usage**:
 
@@ -69,9 +47,31 @@ $ busylight blink [OPTIONS] [COLOR] [[slow|medium|fast]]
 
 * `--help`: Show this message and exit.
 
+## `busylight fli`
+
+Flash lights quickly between two colors.
+
+The default colors are red and blue.
+
+Probably need some sort of trigger warning here.
+
+**Usage**:
+
+```console
+$ busylight fli [OPTIONS] [COLOR_A] [COLOR_B] [[slow|medium|fast]]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
 ## `busylight list`
 
-List available lights (currently connected).
+List currently connected lights.
+
+Lights in this list are currently plugged in and available for
+use. The `--verbose` flag will increase the amount of information
+displayed for each light.
 
 **Usage**:
 
@@ -81,21 +81,12 @@ $ busylight list [OPTIONS]
 
 **Options**:
 
-* `-l, --long`: Display more information about each light.
+* `-v, --verbose`
 * `--help`: Show this message and exit.
 
 ## `busylight off`
 
-Turn selected lights off.
-
-Examples:
-
-
-```
-$ busylight off         # turn off light zero
-$ busylight -l 0 off    # also turns off light zero
-$ busylight --all off   # turns off all connected lights
-```
+Deactivate lights.
 
 **Usage**:
 
@@ -109,25 +100,9 @@ $ busylight off [OPTIONS]
 
 ## `busylight on`
 
-Turn selected lights on.
+Activate lights.
 
-The light selected is turned on with the specified color. The
-default color is green if the user does not supply the color
-argument. Colors can be specified with color names and hexadecimal
-values. Both '0x' and '#' are recognized as hexadecimal number
-prefixes and hexadecimal values may be either three or six digits
-long.
-
-Examples:
-
-
-```
-$ busylight on          # light activated with the color green
-$ busylight on red      # now it's red
-$ busylight on 0x00f    # now it's blue
-$ busylight on #ffffff  # now it's white
-$ busylight --all on    # now all available lights are green
-```
+The default is green.
 
 **Usage**:
 
@@ -139,52 +114,23 @@ $ busylight on [OPTIONS] [COLOR]
 
 * `--help`: Show this message and exit.
 
-## `busylight serve`
+## `busylight rainbow`
 
-Start a FastAPI-based service to access lights.
-
-All connected lights are managed by the service, allowing
-long-running animations and effects that the native device APIs
-might not support.
-
-Once the service is started, the API documentation is available
-via these two URLs:
-
-
-```
-- `http://<hostname>:<port>/docs`
-- `http://<hostname>:<port>/redoc`
-```
-
-Examples:
-
-
-```
-$ busylight server >& log &
-$ curl http://localhost:8888/lights
-$ curl http://localhost:8888/lights/on
-$ curl http://localhost:8888/lights/off
-$ curl http://localhost:8888/light/0/on/purple
-$ curl http://localhost:8888/light/0/off
-$ curl http://localhost:8888/lights/on
-$ curl http://localhost:8888/lights/off
-```
+Display rainbow colors on specified lights.
 
 **Usage**:
 
 ```console
-$ busylight serve [OPTIONS]
+$ busylight rainbow [OPTIONS] [[slow|medium|fast]]
 ```
 
 **Options**:
 
-* `-H, --host TEXT`: Hostname to bind the server to.  [default: 0.0.0.0]
-* `-p, --port INTEGER`: Network port number to listen on  [default: 8888]
 * `--help`: Show this message and exit.
 
 ## `busylight supported`
 
-List supported LED lights.
+List supported lights.
 
 **Usage**:
 
@@ -196,25 +142,30 @@ $ busylight supported [OPTIONS]
 
 * `--help`: Show this message and exit.
 
+## `busylight throb`
+
+Throb light on and off.
+
+The default color is red.
+
+**Usage**:
+
+```console
+$ busylight throb [OPTIONS] [COLOR] [[slow|medium|fast]]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
 ## `busylight udev-rules`
 
-Generate a Linux udev rules file.
+Generate Linux udev rules for all supported lights.
 
-Linux uses the udev subsystem to manage USB devices as they are
-plugged and unplugged. By default, only the root user has read and
-write access. The rules generated grant read/write access to all users
-for all known USB lights by vendor id. Modify the rules to suit your
-particular environment.
-
-Example:
-
-
-```
-$ busylight udev-rules -o 99-busylight.rules
-$ sudo cp 99-busylight.rules /etc/udev/rules.d
-$ sudo udevadm control -R
-# unplug/plug USB devices
-```
+The rule file generated by this subcommand includes rules for all
+known supported devices. By default, these devices' file permissions
+are set to 0666 when detected by the udev subsystem. Users are
+encouraged to tailor these rules to suit their security needs.
 
 **Usage**:
 
@@ -224,5 +175,5 @@ $ busylight udev-rules [OPTIONS]
 
 **Options**:
 
-* `-o, --output PATH`: Save udev rules to this file.
+* `-o, --output FILENAME`
 * `--help`: Show this message and exit.
