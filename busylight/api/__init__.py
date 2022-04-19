@@ -92,32 +92,21 @@ class BusylightAPI(FastAPI):
 
         self.lights.clear()
 
-    async def on(self, color: str, light_id: int = None) -> None:
-
-        rgb = parse_color(color)
-        lights = self.lights if light_id is None else [self.lights[light_id]]
-        for light in lights:
-            light.on(rgb)
-
     async def off(self, light_id: int = None) -> None:
 
         lights = self.lights if light_id is None else [self.lights[light_id]]
-        for light in lights:
-            # EJO the light is being reset instead of just turned off to
-            #     quiece any tasks that might be running. We can't count on
-            #     the off method cancelling tasks since that method may be
-            #     implemented differently among the various lights (meaning
-            #     tasks not canceled)
-            light.reset()
 
-    async def apply_effect(self, effect: Effects, light_id: int = None):
+        for light in lights:
+            light.off()
+
+    async def apply_effect(self, effect: Effects, light_id: int = None) -> None:
 
         lights = self.lights if light_id is None else [self.lights[light_id]]
 
         for light in lights:
             # EJO cancel_tasks will cancel any keepalive tasks, but that's ok
             #     since we are going to drive the light with an active effect
-            #     which will re-start the keepalive task if necessary.
+            #     which will re-start any keepalive tasks if necessary.
             light.cancel_tasks()
             light.add_task(effect.name, effect)
 
@@ -284,13 +273,15 @@ async def Turn_On_Light_With_Optional_Color(
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
 
-    await busylightapi.on(color, light_id)
+    rgb = parse_color(color)
+    steady = Effects.for_name("steady")(rgb)
+    await busylightapi.apply_effect(steady, light_id)
 
     return {
         "action": "on",
         "light_id": light_id,
         "color": color,
-        "rgb": busylightapi.lights[light_id].color,
+        "rgb": rgb,
     }
 
 
@@ -305,13 +296,15 @@ async def Turn_On_Lights_With_Optional_Color(color: str = "green") -> Dict[str, 
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
 
-    await busylightapi.on(color)
+    rgb = parse_color(color)
+    steady = Effects.for_name("steady")(rgb)
+    await busylightapi.apply_effect(steady)
 
     return {
         "action": "on",
         "light_id": "all",
         "color": color,
-        "rgb": parse_color(color),
+        "rgb": rgb,
     }
 
 
@@ -329,6 +322,7 @@ async def Turn_Off_Light(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
+
     await busylightapi.off(light_id)
 
     return {
@@ -343,7 +337,9 @@ async def Turn_Off_Light(
 )
 async def Turn_Off_Lights() -> Dict[str, Any]:
     """Turn off all lights."""
+
     await busylightapi.off()
+
     return {
         "action": "off",
         "light_id": "all",
@@ -354,7 +350,7 @@ async def Turn_Off_Lights() -> Dict[str, Any]:
     "/light/{light_id}/blink",
     response_model=LightOperation,
 )
-async def Blink_Light_With_Color(
+async def Blink_Light_With_Optional_Color_And_Speed(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
     color: str = "red",
     speed: Speed = Speed.Slow,
@@ -387,7 +383,7 @@ async def Blink_Light_With_Color(
     "/lights/blink",
     response_model=LightOperation,
 )
-async def Blink_Lights(
+async def Blink_Lights_With_Optional_Color_And_Speed(
     color: str = "red",
     speed: Speed = Speed.Slow,
 ) -> Dict[str, Any]:
@@ -414,7 +410,7 @@ async def Blink_Lights(
     "/light/{light_id}/rainbow",
     response_model=LightOperation,
 )
-async def Rainbow_Light(
+async def Rainbow_Light_With_Optional_Speed(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
     speed: Speed = Speed.Slow,
 ) -> Dict[str, Any]:
@@ -440,7 +436,9 @@ async def Rainbow_Light(
     "/lights/rainbow",
     response_model=LightOperation,
 )
-async def Rainbow_Lights(speed: Speed = Speed.Slow) -> Dict[str, Any]:
+async def Rainbow_Lights_With_Optional_Speed(
+    speed: Speed = Speed.Slow,
+) -> Dict[str, Any]:
     """Start a rainbow animation on all lights.
     <p><em>Note:</em> lights will not be synchronized.</p>
     """
@@ -460,7 +458,7 @@ async def Rainbow_Lights(speed: Speed = Speed.Slow) -> Dict[str, Any]:
     "/light/{light_id}/fli",
     response_model=LightOperation,
 )
-async def Flash_Light_Impressively(
+async def Flash_Light_Impressively_With_Optional_Colors_And_Speed(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
     color_a: str = "red",
     color_b: str = "blue",
@@ -492,7 +490,7 @@ async def Flash_Light_Impressively(
     "/lights/fli",
     response_model=LightOperation,
 )
-async def Flash_Lights_Impressively(
+async def Flash_Lights_Impressively_With_Optional_Colors_And_Speed(
     color_a: str = "red",
     color_b: str = "blue",
     speed: Speed = Speed.Slow,
@@ -519,7 +517,7 @@ async def Flash_Lights_Impressively(
     "/light/{light_id}/pulse",
     response_model=LightOperation,
 )
-async def Pulse_Light(
+async def Pulse_Light_With_Optional_Color_And_Speed(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
     color: str = "red",
     speed: Speed = Speed.Slow,
@@ -549,7 +547,7 @@ async def Pulse_Light(
     "/lights/pulse",
     response_model=LightOperation,
 )
-async def Pulse_Lights(
+async def Pulse_Lights_With_Optional_Color_And_Speed(
     color: str = "red",
     speed: Speed = Speed.Slow,
 ):
