@@ -8,8 +8,9 @@ from contextlib import contextmanager
 from typing import Dict, List, Optional, Union, Tuple
 from loguru import logger
 
-from .lights import LightUnavailable, USBLight
-from .lights import ColorTuple, FrameGenerator, Speed
+from .color import ColorTuple
+from .effects import Effects
+from .lights import LightUnavailable, USBLight, Speed
 
 
 class LightManager:
@@ -98,8 +99,9 @@ class LightManager:
         :return: Tuple[# of new lights, # of old lights, # of unavailable lights]
 
         """
-        new_lights = self.lightclass.all_lights()
-        logger.debug(f"{len(new_lights)} {new_lights=}")
+        if self.greedy:
+            new_lights = self.lightclass.all_lights()
+            logger.debug(f"{len(new_lights)} {new_lights=}")
 
         old_lights = [light for light in self.lights if light.is_pluggedin]
         logger.debug(f"{len(old_lights)} {old_lights=}")
@@ -107,7 +109,8 @@ class LightManager:
         ded_lights = [light for light in self.lights if light.is_unplugged]
         logger.debug(f"{len(ded_lights)} {ded_lights=}")
 
-        self._lights = sorted(old_lights + new_lights)
+        # self._lights = sorted(old_lights + new_lights)
+        self._lights += new_lights
         logger.debug(f"{len(self.lights)} {self.lights=}")
 
         return len(new_lights), len(old_lights), len(ded_lights)
@@ -168,15 +171,15 @@ class LightManager:
 
         awaitables = []
         for light in lights:
-            if awaitable := light.on(color):
-                awaitables.append(awaitable())
+            light.on(color)
+            awaitables.extend(light.tasks.values())
 
         if awaitables:
-            done, pending = await asyncio.wait(awaitables, timeout=timeout)
+            await asyncio.wait(awaitables, timeout=timeout)
 
     async def effect_supervisor(
         self,
-        effect: FrameGenerator,
+        effect: Effects,
         lights: List[USBLight],
         timeout: float = None,
     ) -> None:
@@ -185,7 +188,7 @@ class LightManager:
         typically do not exit). If a timeout in seconds is specified, the
         effect will stop at the end of the period.
 
-        :effect: FrameGenerator
+        :effect:
         :lights: List[USBLight]
         :timeout: float seconds
         """
@@ -194,8 +197,15 @@ class LightManager:
             logger.debug("no lights were passed to effect_supervisor")
             return
 
+        tasks = []
+        for light in lights:
+            light.add_task(effect.name, effect)
+            tasks.extend(light.tasks.values())
+
+        logger.debug(f"{len(tasks)} {tasks=}")
+
         done, pending = await asyncio.wait(
-            (light.apply_effect(effect) for light in lights),
+            tasks,
             timeout=timeout,
         )
 
@@ -234,7 +244,7 @@ class LightManager:
 
     def apply_effect(
         self,
-        effect: FrameGenerator,
+        effect: Effects,
         lights: List[int],
         timeout: float = None,
     ) -> None:
