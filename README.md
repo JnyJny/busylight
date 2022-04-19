@@ -29,14 +29,15 @@ Python project.
 - Control lights via a [Web API][WEBAPI].
 - Import `busylight` into your own Python project.
 - Supports six vendors & multiple models:
-| [**Agile Innovative**][2] | [**Embrava**][3] | [**Plantronics**][3]| [**Kuando**][4]| [***Luxafor**][5]| [**ThingM**][6] |
-|:-------------------------:|:----------------:|:-------------------:|:--------------:|:----------------:|:---------------:|
-| BlinkStick			    | Blynclight	   | Status Indicator	 | Busylight Alpha|  Flag		 	 |	  Blink(1)     |
-| BlinkStick Pro		    | Blynclight Mini  |					 | Busylight Omega|  Mute		 	 |				   |
-| BlinkStick Square		    | Blynclight Plus  |					 |				  |  Orb          	 |				   |
-| BlinkStick Strip		    | 				   |					 |				  |					 |				   |
-| BlinkStick Nano		    | 				   |					 |				  |					 |				   |
-| BlinkStick Flex           |                  |					 |				  |					 |				   |
+ 
+| [**Agile Innovative**][2] | [**Embrava**][3] | [**Plantronics**][3]| [**Kuando**][4]| [**Luxafor**][5] | [**ThingM**][6] |
+|-------------------------|----------------|-------------------|--------------|----------------|---------------|
+| BlinkStick		    | Blynclight       | Status Indicator    | Busylight Alpha|  Flag            | Blink(1)        |
+| BlinkStick Pro	    | Blynclight Mini  |	             | Busylight Omega|  Mute            |                 |
+| BlinkStick Square	    | Blynclight Plus  |                     |                |  Orb             |                 |
+| BlinkStick Strip          |
+| BlinkStick Nano	    |
+| BlinkStick Flex           |
 
 - Supported on MacOS and Linux
 - Windows support will be available in the near future.
