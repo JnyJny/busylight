@@ -5,7 +5,8 @@ import asyncio
 
 from typing import Awaitable, Dict, List, Optional
 
-from ..color import ColorTuple
+from ...color import ColorTuple
+
 from ..exceptions import LightUnsupported
 from ..speed import Speed
 from ..usblight import USBLight, HidInfo
@@ -88,13 +89,13 @@ class BlinkStick(USBLight):
         with self.batch_update():
             super().on(color)
 
-    def blink(self, color: ColorTuple, blink: Speed = Speed.Stop) -> None:
+    def blink(self, color: ColorTuple, speed: Speed = Speed.Slow) -> None:
         async def software_blink() -> None:
             while True:
                 self.on(color)
-                await asyncio.sleep(blink.duty_cycle)
+                await asyncio.sleep(speed.duty_cycle)
                 self.off(color)
-                await asyncio.sleep(blink.duty_cycle)
+                await asyncio.sleep(speed.duty_cycle)
 
         return software_blink()
 

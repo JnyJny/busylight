@@ -2,7 +2,7 @@
 """
 from bitvector import BitVector, BitField, ReadOnlyBitField
 
-from ..color import ColorTuple
+from ...color import ColorTuple
 
 
 class BlynclightCmdHeader(ReadOnlyBitField):

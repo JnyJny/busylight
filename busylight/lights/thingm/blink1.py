@@ -5,7 +5,8 @@ from typing import Callable
 
 from loguru import logger
 
-from ..color import ColorTuple
+from ...color import ColorTuple
+
 from ..speed import Speed
 from ..usblight import USBLight, HidInfo
 

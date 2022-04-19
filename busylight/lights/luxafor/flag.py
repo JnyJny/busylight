@@ -2,7 +2,8 @@
 """
 from loguru import logger
 
-from ..color import ColorTuple
+from ...color import ColorTuple
+
 from ..exceptions import LightUnsupported
 from ..speed import Speed
 from ..usblight import USBLight, HidInfo
@@ -77,7 +78,7 @@ class Flag(USBLight):
             super().on(color)
             self.cmd = Command.Color
 
-    def blink(self, color: ColorTuple, blink: Speed = Speed.Stop) -> None:
+    def blink(self, color: ColorTuple, blink: Speed = Speed.Slow) -> None:
         with self.batch_update():
             self.cmd = Command.Strobe
             self.speed = int(self._base_strobe // blink.rate)

@@ -5,7 +5,7 @@ from enum import IntEnum
 
 from bitvector import BitField, BitVector
 
-from ..color import ColorTuple
+from ...color import ColorTuple
 
 
 class Ring(IntEnum):

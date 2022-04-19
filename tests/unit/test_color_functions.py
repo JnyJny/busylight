@@ -3,7 +3,9 @@
 
 import pytest
 
-from busylight.lights.color import parse_color
+from busylight.color import ColorLookupError
+from busylight.color import parse_color
+from busylight.color import colortuple_to_name
 
 
 @pytest.mark.parametrize(
@@ -45,5 +47,19 @@ def test_parse_color(value, expected) -> None:
 )
 def test_parse_color_invalid(value) -> None:
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ColorLookupError):
         parse_color(value)
+
+
+@pytest.mark.parametrize(
+    "value,expected",
+    [
+        ((0, 0, 0), "black"),
+        ((255, 255, 255), "white"),
+        ((255, 0, 0), "red"),
+        ((0, 128, 0), "green"),
+        ((0, 0, 255), "blue"),
+    ],
+)
+def test_colortuple_to_name(value, expected) -> None:
+    result = colortuple_to_name(value)
