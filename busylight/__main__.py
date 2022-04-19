@@ -13,10 +13,10 @@ import webcolors
 
 from loguru import logger
 
-from .lights import USBLight
-from .lights import ColorTuple, Effects, Speed, parse_color
+from .lights import USBLight, Speed
+from .color import ColorTuple, parse_color
+from .effects import Effects
 from .manager import LightManager
-
 
 cli = typer.Typer()
 
@@ -95,13 +95,12 @@ def global_callback(
 
 @cli.command(name="on")
 def turn_lights_on(
-    color: Optional[str] = typer.Argument("green"),
+    color: Optional[str] = typer.Argument("green", callback=parse_color),
 ) -> None:
-    """Activate lights with a color."""
+    """Activate lights.
 
-    color = parse_color(color)
-
-    logger.debug(f"{gTimeout=}")
+    The default is green.
+    """
 
     manager.on(color, lights, timeout=gTimeout)
 
@@ -116,25 +115,58 @@ def turn_lights_off() -> None:
 
 @cli.command(name="blink")
 def blink_lights(
-    color: Optional[str] = typer.Argument("red"),
-    blink: Speed = typer.Argument(Speed.Slow),
+    color: Optional[str] = typer.Argument("red", callback=parse_color),
+    speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
-    """Blink lights on and off."""
+    """Blink lights on and off.
 
-    color = parse_color(color)
+    The default on color is red.
+    """
 
-    manager.apply_effect(
-        Effects.for_name("blink")(color, blink.duty_cycle), lights, timeout=gTimeout
-    )
+    blink = Effects.for_name("blink")(color, speed.duty_cycle)
+
+    manager.apply_effect(blink, lights, timeout=gTimeout)
 
 
 @cli.command(name="rainbow")
 def rainbow_lights(speed: Speed = typer.Argument(Speed.Slow)) -> None:
     """Display rainbow colors on specified lights."""
 
-    manager.apply_effect(
-        Effects.for_name("spectrum")(speed.duty_cycle), lights, timeout=gTimeout
-    )
+    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4)
+
+    manager.apply_effect(rainbow, lights, timeout=gTimeout)
+
+
+@cli.command(name="throb")
+def throb_lights(
+    color: Optional[str] = typer.Argument("red", callback=parse_color),
+    speed: Speed = typer.Argument(Speed.Slow),
+) -> None:
+    """Throb light on and off.
+
+    The default color is red."""
+
+    throb = Effects.for_name("gradient")(color, speed.duty_cycle / 16, 8)
+
+    manager.apply_effect(throb, lights, timeout=gTimeout)
+
+
+@cli.command(name="fli")
+def flash_lights_impressively(
+    color_a: Optional[str] = typer.Argument("red", callback=parse_color),
+    color_b: Optional[str] = typer.Argument("blue", callback=parse_color),
+    speed: Speed = typer.Argument(Speed.Slow),
+) -> None:
+    """Flash lights quickly between two colors.
+
+    The default colors are red and blue.
+
+    Probably need some sort of trigger warning here.
+    """
+
+    fli = Effects.for_name("blink")(color_a, speed.duty_cycle / 10, off_color=color_b)
+
+    manager.apply_effect(fli, lights, timeout=gTimeout)
 
 
 @cli.command(name="list")
@@ -201,7 +233,7 @@ def generate_udev_rules(
 
 
 @webapi.command()
-def serve_web_api(
+def serve_http_api(
     debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
     host: str = typer.Option(
         "0.0.0.0",
@@ -216,9 +248,10 @@ def serve_web_api(
         help="Network port number to listen on.",
     ),
 ) -> None:
-    """Serve a web API to access available lights."""
+    """Serve a HTTP API to access available lights."""
+
     (logger.enable if debug else logger.disable)("busylight")
-    logger.debug("serving web api")
+    logger.debug("serving http api")
 
     try:
         import uvicorn
@@ -231,7 +264,7 @@ def serve_web_api(
         raise typer.Exit(code=-1) from None
 
     try:
-        uvicorn.run("busylight.api:busylightapi", host=host, port=port)
+        uvicorn.run("busylight.api:busylightapi", host=host, port=port, reload=debug)
     except ModuleNotFoundError as error:
         logger.error(f"Failed to start webapi: {error}")
         typer.secho(
