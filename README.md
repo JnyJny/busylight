@@ -1,18 +1,23 @@
-<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight luxafor flag thingM blink(1) -->
-![BusyLight Project Logo][LOGO] <br>
-![supported python versions][python-versions]
-![version][pypi-version]
-![dependencies][dependencies]
-[![pytest][pytest-badge]][pytest-status]
-![license][license]
-![monthly-downloads][monthly-downloads]
-![Code style: black][code-style-black]
+<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) -->
+<table>
+	<tr>
+		<td rowspan=7>![BusyLight Project Logo][LOGO]<td>
+		<td>![supported python versions][python-versions]<td>
+	</tr>
+	<tr><td>![version][pypi-version]</td></tr>
+	<tr><td>![dependencies][dependencies]</td></tr>
+	<tr><td>[![pytest][pytest-badge]][pytest-status]</td></tr>
+	<tr><td>![license][license]</td></tr>
+	<tr><td>![monthly-downloads][monthly-downloads]</td></tr>
+	<tr><td>![Code style: black][code-style-black]</td></tr>
+</table>
+
 
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
 the command-line, using a HTTP API or imported directly into your own
-python project.
+Python project.
 
 ![All Supported Lights][DEMO]
 
@@ -24,20 +29,37 @@ python project.
 ## Features
 - Control lights from the [command-line][HELP].
 - Control lights via a [Web API][WEBAPI].
-- Import `busylight` into your own project.
+- Import `busylight` into your own Python project.
 - Supports six vendors & multiple models:
-  * [**Agile Innovative** BlinkStick ][2]
-  * [**Embrava** Blynclight][3]
-  * [**Kuando** BusyLight][4]
-  * [**Luxafor** Flag][5]
-  * [**Plantronics** Status Indicator][3]
-  * [**ThingM** Blink(1)][6]
+  * [**Agile Innovative**][2]
+  *   - BlinkStick
+  *   - BlinkStick Pro
+  *   - BlinkStick Square
+  *   - BlinkStick Strip
+  *   - BlinkStick Nano
+  *   - BlinkStick Flex
+  * [**Embrava**][3]
+  *   - Blynclight
+  *   - Blynclight Mini
+  *   - Blynclight Plus
+  * [**Plantronics**][3]
+  *   - Status Indicator
+  * [**Kuando**][4]
+  *   - Busylight Alpha
+  *   - Busylight Omega
+  * [***Luxafor**][5]
+  *   - Flag
+  *   - Mute
+  *   - Orb
+  * [**ThingM**][6]
+  *   - Blink(1)
 - Supported on MacOS and Linux
 - Windows support will be available in the near future.
 
-If you have a USB light that's not on this list open an issue
-with the make and model device you want supported, where I can get
-one, and any public hardware documentation you are aware of.
+If you have a USB light that's not on this list open an issue with the
+make and model device you want supported, where I can get one, and any
+public hardware documentation you are aware of. Or even better, open a
+pull request!
 
 ### Gratitude
 
@@ -92,9 +114,9 @@ $ busylight --all off        # turn all lights off
 
 ## HTTP API Examples
 
-First start the `busylight` API server:
+First start the `busylight` API server using the `busyserv` command line interface:
 ```console
-$ busylight serve
+$ busyserve -D
 INFO:     Started server process [20189]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
@@ -107,35 +129,35 @@ The API is fully documented and available @ `https://localhost:8888/redoc`
 Now you can use the web API endpoints which return JSON payloads:
 
 ```console
-  $ curl -s http://localhost:8888/lights
+  $ curl -s http://localhost:8888/lights/status | jq
+  ...
+  $ curl -s http://localhost:8888/light/0/status | jq
   ...
   $ curl -s http://localhost:8888/light/0/on | jq
   {
     "light_id": 0,
     "action": "on",
-    "color": "green"
+    "color": "green",
+	"rgb": [0, 128, 0]
   }
   $ curl -s http://localhost:8888/light/0/off | jq
   {
     "light_id": 0,
     "action": "off"
   }
-  $ curl -s http://localhost:8888/light/0/on/purple | jq
+  $ curl -s http://localhost:8888/light/0/on?color=purple | jq
   {
     "light_id": 0,
     "action": "on",
-    "color": "purple"
-  }
-  $ curl -s http://localhost:8888/light/0/off | jq
-  {
-    "light_id": 0,
-    "action": "off"
+    "color": "purple",
+	"rgb": [128, 0, 128]
   }
   $ curl -s http://localhost:8888/lights/on | jq
   {
     "light_id": "all",
     "action": "on",
-    "color": "green"
+    "color": "green",
+	"rgb", [0, 128, 0]
   }
   $ curl -s http://localhost:8888/lights/off | jq
   {
@@ -155,7 +177,7 @@ The API can be secured with a simple username and password through
 [HTTP Basic Authentication][BASICAUTH]. To require authentication
 for all API requests, set the `BUSYLIGHT_API_USER` and
 `BUSYLIGHT_API_PASS` environmental variables before running
-`busylight serve`.
+`busyserve`.
 
 > :warning: **SECURITY WARNING**: HTTP Basic Auth sends usernames and passwords in *cleartext* (i.e., unencrypted). Use of SSL is highly recommended!
 
@@ -176,23 +198,35 @@ light = Blynclight.first_light()
 light.on((255, 255, 255))
 ```
 
+Not sure what light you've got? 
+
+```python
+from busylight.lights import USBLight
+
+light = USBLight.first_light()
+
+light.on((0xff, 0, 0xff))
+```
+
 ### Slightly More Complicated
 
 The `busylight` package includes a manager class that's great for
 working with multiple lights or lights that require a little
-more direct intervention like the Kuando Busylight series.
+more direct intervention like the Kuando Busylight family.
 
 ```python
-from busylight.manager import LightManager, ALL_LIGHTS
-from busylight.effects import rainbow
+from busylight.manager import LightManager
+from busylight.effects import Effects
 
 manager = LightManager()
 for light in manager.lights:
    print(light.name)
+   
+rainbow = Effects.for_name("spectrum")(duty_cycle=0.05)
 
-manager.apply_effect_to_light(ALL_LIGHTS, rainbow)
+manager.apply_effect(rainbow)
 ...
-manager.lights_off(ALL_LIGHTS)
+manager.off()
 ```
 
 [0]: https://pypi.org/project/busylight-for-humans/
