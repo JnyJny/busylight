@@ -29,35 +29,24 @@ Python project.
 - Control lights via a [Web API][WEBAPI].
 - Import `busylight` into your own Python project.
 - Supports six vendors & multiple models:
-  * [**Agile Innovative**][2]
-  *   - BlinkStick
-  *   - BlinkStick Pro
-  *   - BlinkStick Square
-  *   - BlinkStick Strip
-  *   - BlinkStick Nano
-  *   - BlinkStick Flex
-  * [**Embrava**][3]
-  *   - Blynclight
-  *   - Blynclight Mini
-  *   - Blynclight Plus
-  * [**Plantronics**][3]
-  *   - Status Indicator
-  * [**Kuando**][4]
-  *   - Busylight Alpha
-  *   - Busylight Omega
-  * [***Luxafor**][5]
-  *   - Flag
-  *   - Mute
-  *   - Orb
-  * [**ThingM**][6]
-  *   - Blink(1)
+| [**Agile Innovative**][2] | [**Embrava**][3] | [**Plantronics**][3]| [**Kuando**][4]| [***Luxafor**][5]| [**ThingM**][6] |
+|:-------------------------:|:----------------:|:-------------------:|:--------------:|:----------------:|:---------------:|
+| BlinkStick			    | Blynclight	   | Status Indicator	 | Busylight Alpha|  Flag		 	 |	  Blink(1)     |
+| BlinkStick Pro		    | Blynclight Mini  |					 | Busylight Omega|  Mute		 	 |				   |
+| BlinkStick Square		    | Blynclight Plus  |					 |				  |  Orb          	 |				   |
+| BlinkStick Strip		    | 				   |					 |				  |					 |				   |
+| BlinkStick Nano		    | 				   |					 |				  |					 |				   |
+| BlinkStick Flex           |                  |					 |				  |					 |				   |
+
 - Supported on MacOS and Linux
 - Windows support will be available in the near future.
 
-If you have a USB light that's not on this list open an issue with the
-make and model device you want supported, where I can get one, and any
-public hardware documentation you are aware of. Or even better, open a
-pull request!
+If you have a USB light that's not on this list open an issue with:
+ - the make and model device you want supported
+ - where I can get one
+ - any public hardware documentation you are aware of
+ 
+Or even better, open a pull request!
 
 ### Gratitude
 
