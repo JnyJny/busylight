@@ -56,10 +56,10 @@ from .exceptions import (
     NoLightsFound,
 )
 
-from .color import ColorTuple
-from .effects import FrameGenerator, FrameTuple
 from .hidinfo import HidInfo
 from .speed import Speed
+
+from ..color import ColorTuple
 
 
 class USBLight(abc.ABC):
@@ -102,8 +102,7 @@ class USBLight(abc.ABC):
     intervention to blink).
 
     More involved effects can be achieved via software; writing
-    new color values at the desired frequency using the async method
-    `apply_effect` and a `busylight.lights.effects.FrameGenerator`.
+    new color values at the desired frequency using  XXX
     """
 
     @classmethod
@@ -332,6 +331,7 @@ class USBLight(abc.ABC):
     @abc.abstractmethod
     def off(self) -> None:
         """Turn the light off."""
+        self.cancel_tasks()
 
     @abc.abstractmethod
     def blink(
@@ -347,20 +347,70 @@ class USBLight(abc.ABC):
         - NotImplementedError - device doesn't support hardware blinking
         """
 
-    async def apply_effect(self, effect: FrameGenerator) -> None:
-        """Apply the given `effect` FrameGenerator instance to this light.
+    @property
+    def tasks(self) -> Dict[str, asyncio.Task]:
+        """A dictionary of asyncio.Tasks associated with this light."""
+        try:
+            return self._tasks
+        except AttributeError:
+            pass
+        self._tasks = {}
+        return self._tasks
 
-        The update loop runs for as long as the FrameGenerator supplies
-        FrameTuples.
+    def add_task(self, name: str, coroutine: Awaitable) -> Optional[asyncio.Task]:
+        """Adds `coroutine` to the list of tasks associated with this light
+        and returns the asyncio.Task created.
 
-        :effect: FrameGenerator
+        If a task with `name` already exists, that task is returned.
+
+        The task is created with coroutine called with this light as
+        it's only argument.
+
+        :name: str
+        :coroutine: Awaitable function
+        :returns: asyncio.Task or None
         """
-        logger.debug(f"{self.name} {effect=}")
-        for color, interval in effect():
-            logger.debug(f"{self.name} {color} {interval}")
-            self.on(color)
-            await asyncio.sleep(interval)
-        logger.debug(f"{self.name} exiting from apply_effect")
+
+        logger.debug(f"{name=} {type(coroutine)} {coroutine=}")
+
+        if task := self.tasks.get(name):
+            return task
+
+        loop = asyncio.get_event_loop()
+
+        if not loop.is_running():
+            logger.error(f"event loop not running, no task created for {name}")
+            return None
+
+        task = loop.create_task(coroutine(self), name=f"{name}-{id(self)}")
+        self.tasks[name] = task
+        logger.debug(f"{self.name} {len(self.tasks)=} {task}")
+        return task
+
+    def cancel_task(self, name: str) -> Optional[asyncio.Task]:
+        """If a task with `name` exists, cancel it and remove it from `tasks`.
+
+        :name: str
+        :return: asyncio.Task or None
+        """
+        if task := self.tasks.get(name):
+            del self.tasks[name]
+            task.cancel()
+            logger.debug(f"task {name} cancelled {task}")
+            return task
+        logger.debug(f"task {name} not found")
+
+    def cancel_tasks(self) -> None:
+        """Cancels all asyncio.Tasks associated with this light.
+
+        After cancelling all tasks, the `tasks` dictionary is cleared.
+
+        :return: None
+        """
+        for task in self.tasks.values():
+            task.cancel()
+            logger.debug(f"cancelled {task=}")
+        self.tasks.clear()
 
     def __repr__(self) -> str:
         vendor = f"vendor_id=0x{self.vendor_id:04x}"
@@ -545,9 +595,10 @@ class USBLight(abc.ABC):
                 f"unable to set color tuple with {new_color!r}: {error}"
             ) from None
 
-    def reset(self, off_color: ColorTuple = (0, 0, 0)) -> None:
+    def reset(self) -> None:
         """Set the light to an initial quiesced state."""
-        self.on(off_color)
+        self.off()
+        self.cancel_tasks()
 
     def acquire(self) -> None:
         """Acquire the light's resources.
@@ -572,6 +623,8 @@ class USBLight(abc.ABC):
         the `acquire` method.
         """
         logger.debug(f"releasing id={id(self):x}")
+
+        self.cancel_tasks()
         self.device.close()
 
     def update(self) -> None:
