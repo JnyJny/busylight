@@ -90,6 +90,8 @@ class BlinkStick(USBLight):
             super().on(color)
 
     def blink(self, color: ColorTuple, speed: Speed = Speed.Slow) -> None:
+
+        # EJO this is not correct. Fix it later.
         async def software_blink() -> None:
             while True:
                 self.on(color)
@@ -101,3 +103,4 @@ class BlinkStick(USBLight):
 
     def off(self):
         self.on((0, 0, 0))
+        super().off()

@@ -60,3 +60,4 @@ class Blink1(USBLight):
 
     def off(self) -> None:
         self.on((0, 0, 0))
+        super().off()

@@ -50,6 +50,7 @@ class Blynclight(USBLight):
 
     def off(self) -> None:
         self.on((0, 0, 0))
+        super().off()
 
     def reset(self) -> None:
         self.command.reset()

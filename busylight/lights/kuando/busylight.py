@@ -67,7 +67,6 @@ class Busylight(USBLight):
         return self.SUPPORTED_DEVICE_IDS[(self.vendor_id, self.product_id)]
 
     def __bytes__(self) -> bytes:
-
         return bytes(self.command)
 
     def on(self, color: ColorTuple) -> None:
@@ -99,10 +98,9 @@ class Busylight(USBLight):
 
     def off(self) -> None:
 
-        super().off()
         color = (0, 0, 0)
+        super().on(color)
         with self.batch_update():
-            super().on(color)
             instruction = Instruction.Jump(
                 target=0,
                 color=color,
@@ -110,3 +108,4 @@ class Busylight(USBLight):
                 off_time=0,
             )
             self.command.line0 = instruction.value
+        super().off()
