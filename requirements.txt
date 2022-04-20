@@ -48,6 +48,6 @@ typer==0.2.1; python_version >= "3.6" \
 webcolors==1.11.1; python_version >= "3.5" \
     --hash=sha256:b8cd5d865a25c51ff1218f0c90d0c0781fc64312a49b746b320cf50de1648f6e \
     --hash=sha256:76f360636957d1c976db7466bc71dcb713bb95ac8911944dffc55c01cb516de6
-win32-setctime==1.0.3; sys_platform == "win32" and python_version >= "3.5" \
-    --hash=sha256:dc925662de0a6eb987f0b01f599c01a8236cb8c62831c22d9cada09ad958243e \
-    --hash=sha256:4e88556c32fdf47f64165a2180ba4552f8bb32c1103a2fafd05723a0bd42bd4b
+win32-setctime==1.1.0; sys_platform == "win32" and python_version >= "3.5" \
+    --hash=sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2 \
+    --hash=sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad
