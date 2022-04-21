@@ -3,8 +3,6 @@
 
 import asyncio
 
-from collections import deque
-from contextlib import contextmanager
 from typing import Dict, List, Optional, Union, Tuple
 from loguru import logger
 
@@ -18,6 +16,15 @@ class LightManager:
         """
         :greedy: bool
         :lightclass: USBLight or subclass
+
+        If `greedy` is True, the default, then calls to the update
+        method will look for lights that have been plugged in since
+        the last update.
+
+        If the caller supplies a `lightclass`, which is expected to
+        be USBLight or a subclass, the light manager will only
+        manage lights returned by `lightclass.all_lights()`. If the
+        user does not supply a class, the default is `USBLight`.
         """
 
         self.greedy = greedy
@@ -52,6 +59,7 @@ class LightManager:
 
     @property
     def lightclass(self) -> USBLight:
+        """USBLight subclass used to locate lights, read-only."""
         return getattr(self, "_lightclass", USBLight)
 
     @property
@@ -62,7 +70,6 @@ class LightManager:
         except AttributeError:
             pass
         self._lights = list(self.lightclass.all_lights(reset=False))
-        logger.debug(f"found {len(self._lights)}")
         return self._lights
 
     def selected_lights(self, indices: List[int] = None) -> List[USBLight]:
@@ -82,7 +89,6 @@ class LightManager:
         for index in indices:
             try:
                 selected_lights.append(self.lights[index])
-                logger.debug(f"{index=} {self.lights[index]!s}")
             except IndexError as error:
                 logger.debug(f"{index=} {error}")
 
@@ -91,133 +97,42 @@ class LightManager:
     def update(self) -> Tuple[int, int, int]:
         """Updates managed lights list.
 
-        1. Looks for lights that have plugged in since last update
-        2. Checks current lights if they are still plugged in
-        3.
-        3. Combines new and remaining lights
+        This method looks for newly plugged in lights if the greedy
+        property is True. It then surveys known lights, building a
+        count of plugged in lights and unplugged lights. New lights
+        are appended to the end of the `lights` property in order to
+        keep the light index order stable over the lifetime of the
+        manager. The return value is an integer three-tuple which
+        records the number of new lights found, the number of
+        previously known lights that are still active and the number
+        of previously known lights that are now inactive.
 
-        :return: Tuple[# of new lights, # of old lights, # of unavailable lights]
-
+        :return: Tuple[# new lights, # active lights, # inactive lights]
         """
         if self.greedy:
             new_lights = self.lightclass.all_lights()
             logger.debug(f"{len(new_lights)} {new_lights=}")
 
-        old_lights = [light for light in self.lights if light.is_pluggedin]
-        logger.debug(f"{len(old_lights)} {old_lights=}")
+        active_lights = [light for light in self.lights if light.is_pluggedin]
 
-        ded_lights = [light for light in self.lights if light.is_unplugged]
-        logger.debug(f"{len(ded_lights)} {ded_lights=}")
+        inactive_lights = [light for light in self.lights if light.is_unplugged]
 
-        # self._lights = sorted(old_lights + new_lights)
         self._lights += new_lights
-        logger.debug(f"{len(self.lights)} {self.lights=}")
 
-        return len(new_lights), len(old_lights), len(ded_lights)
+        return len(new_lights), len(active_lights), len(inactive_lights)
 
     def release(self) -> None:
         """Release managed lights."""
         try:
-            logger.debug(f"starting to release {len(self._lights)} lights")
             while light := self._lights.pop():
                 del light
-
         except (IndexError, AttributeError) as error:
             logger.debug(f"during release {error}")
 
         try:
             del self._lights
         except AttributeError as error:
-            logger.debug(f"during release, failed to del _lights {error}")
-
-        logger.debug("completed releasing lights")
-
-    @contextmanager
-    def operate_on(
-        self,
-        lights: List[int] = None,
-        off_on_enter: bool = True,
-        off_on_exit: bool = True,
-    ):
-
-        if off_on_enter:
-            self.off(lights=lights)
-
-        yield self
-
-        if off_on_exit:
-            self.off(lights=lights)
-
-    async def on_supervisor(
-        self,
-        color: ColorTuple,
-        lights: List[USBLight],
-        timeout: float = None,
-    ) -> None:
-        """Turns on all the lights with the given color, asynchronously.
-
-        Each light's `on` method is called with the supplied `color` which
-        may optionally return an `Awaitable` coroutine which the light
-        requires to remain on. After collecting all these coroutines, the
-        supervisor awaits the exit of those coroutines. If a timeout in
-        seconds is specified, the coroutines will be stopped at the end
-        of the period.
-
-        :color: ColorTuple
-        :lights: List[USBLight]
-        :timeout: float seconds
-        """
-        logger.debug(f"{color=} {lights=} {timeout=}")
-
-        awaitables = []
-        for light in lights:
-            light.on(color)
-            awaitables.extend(light.tasks.values())
-
-        if awaitables:
-            await asyncio.wait(awaitables, timeout=timeout)
-
-    async def effect_supervisor(
-        self,
-        effect: Effects,
-        lights: List[USBLight],
-        timeout: float = None,
-    ) -> None:
-        """Builds a list of awaitable coroutines to perform the given `effect`
-        on each of the `lights` and awaits the exit of the coroutines (which
-        typically do not exit). If a timeout in seconds is specified, the
-        effect will stop at the end of the period.
-
-        :effect:
-        :lights: List[USBLight]
-        :timeout: float seconds
-        """
-
-        if not lights:
-            logger.debug("no lights were passed to effect_supervisor")
-            return
-
-        tasks = []
-        for light in lights:
-            light.add_task(effect.name, effect)
-            tasks.extend(light.tasks.values())
-
-        logger.debug(f"{len(tasks)} {tasks=}")
-
-        done, pending = await asyncio.wait(
-            tasks,
-            timeout=timeout,
-        )
-
-    def off(self, lights: List[int] = None) -> None:
-        """Turn off all the lights whose indices are in the `lights` list.
-
-        :lights: List[int]
-        """
-        logger.debug(f"{lights=}")
-
-        for light in self.selected_lights(lights):
-            light.off()
+            logger.debug(f"during release, failed to del _lights property {error}")
 
     def on(
         self,
@@ -232,20 +147,17 @@ class LightManager:
         :timeout: float seconds
         """
 
+        steady = Effects.for_name("Steady")(color)
+
         try:
-            logger.debug(f"begin on_supervisor event loop {timeout=}")
-            asyncio.run(
-                self.on_supervisor(color, self.selected_lights(lights), timeout)
-            )
-            logger.debug("  end on_supervisor event loop")
-            self.off(lights)
+            self.apply_effect(steady, lights, timeout)
         except KeyboardInterrupt:
             self.off(lights)
 
     def apply_effect(
         self,
         effect: Effects,
-        lights: List[int],
+        lights: List[int] = None,
         timeout: float = None,
     ) -> None:
         """Applies the given `effect` to all of the lights whose indices are
@@ -265,3 +177,38 @@ class LightManager:
             self.off(lights)
         except KeyboardInterrupt:
             self.off(lights)
+
+    async def effect_supervisor(
+        self,
+        effect: Effects,
+        lights: List[USBLight],
+        timeout: float = None,
+        wait: bool = True,
+    ) -> None:
+        """Builds a list of awaitable coroutines to perform the given `effect`
+        on each of the `lights` and awaits the exit of the coroutines (which
+        typically do not exit). If a timeout in seconds is specified, the
+        effect will stop at the end of the period.
+
+        :effect:
+        :lights: List[USBLight]
+        :timeout: float seconds
+        """
+
+        awaitables = []
+        for light in lights:
+            light.cancel_tasks()
+            light.add_task(effect.name, effect)
+            awaitables.extend(light.tasks.values())
+
+        if awaitables and wait:
+            await asyncio.wait(awaitables, timeout=timeout)
+
+    def off(self, lights: List[int] = None) -> None:
+        """Turn off all the lights whose indices are in the `lights` list.
+
+        :lights: List[int]
+        """
+
+        for light in self.selected_lights(lights):
+            light.off()
