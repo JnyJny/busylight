@@ -8,7 +8,7 @@ from loguru import logger
 
 from .color import ColorTuple
 from .effects import Effects
-from .lights import LightUnavailable, USBLight, Speed
+from .lights import LightUnavailable, NoLightsFound, USBLight, Speed
 
 
 class LightManager:
@@ -81,6 +81,9 @@ class LightManager:
 
         :indices: List[int]
         :return: List[USBLight]
+
+        Raises:
+        - NoLightsFound
         """
         if not indices:
             indices = range(0, len(self.lights))
@@ -92,7 +95,10 @@ class LightManager:
             except IndexError as error:
                 logger.debug(f"{index=} {error}")
 
-        return selected_lights
+        if selected_lights:
+            return selected_lights
+
+        raise NoLightsFound(indices)
 
     def update(self) -> Tuple[int, int, int]:
         """Updates managed lights list.
@@ -137,7 +143,7 @@ class LightManager:
     def on(
         self,
         color: ColorTuple,
-        lights: List[int] = None,
+        light_ids: List[int] = None,
         timeout: float = None,
     ) -> None:
         """Turn on all the lights whose indices are in the `lights` list.
@@ -145,19 +151,34 @@ class LightManager:
         :color: ColorTuple
         :lights: List[int]
         :timeout: float seconds
+
+        Raises:
+        - NoLightsFound
         """
 
-        steady = Effects.for_name("Steady")(color)
+        asyncio.run(self.on_supervisor(color, self.selected_lights(light_ids), timeout))
 
-        try:
-            self.apply_effect(steady, lights, timeout)
-        except KeyboardInterrupt:
-            self.off(lights)
+    async def on_supervisor(
+        self,
+        color: ColorTuple,
+        lights: List[USBLight],
+        timeout: float = None,
+        wait: bool = True,
+    ) -> None:
+        """"""
+        awaitables = []
+        for light in lights:
+            light.on(color)
+            light.add_task(effect.name, effect)
+            awaitables.extend(light.tasks.values())
+
+        if awaitables and wait:
+            await asyncio.wait(awaitables, timeout=timeout)
 
     def apply_effect(
         self,
         effect: Effects,
-        lights: List[int] = None,
+        light_ids: List[int] = None,
         timeout: float = None,
     ) -> None:
         """Applies the given `effect` to all of the lights whose indices are
@@ -166,17 +187,13 @@ class LightManager:
         :effect: FrameGenerator
         :lights: List[int]
         :timeout: float seconds
-        """
 
-        try:
-            logger.debug(f"begin effect_supervisor event loop {timeout=}")
-            asyncio.run(
-                self.effect_supervisor(effect, self.selected_lights(lights), timeout)
-            )
-            logger.debug("  end effect_supervisor event loop")
-            self.off(lights)
-        except KeyboardInterrupt:
-            self.off(lights)
+        Raises:
+        - NoLightsFound
+        """
+        asyncio.run(
+            self.effect_supervisor(effect, self.selected_lights(light_ids), timeout)
+        )
 
     async def effect_supervisor(
         self,
@@ -208,6 +225,9 @@ class LightManager:
         """Turn off all the lights whose indices are in the `lights` list.
 
         :lights: List[int]
+
+        raises:
+        - NoLightsFound
         """
 
         for light in self.selected_lights(lights):
