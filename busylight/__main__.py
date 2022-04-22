@@ -109,7 +109,7 @@ def turn_lights_on(
         manager.off(lights)
     except NoLightsFound as error:
         typer.secho("No lights to turn on.", fg="red")
-        raise typer.Exit(1) from None
+        raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="off")
@@ -142,7 +142,7 @@ def blink_lights(
         manager.off(lights)
     except NoLightsFound as error:
         typer.secho("Unable to blink lights.", fg="red")
-        raise typer.Exit(1) from None
+        raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="rainbow")
@@ -157,7 +157,7 @@ def rainbow_lights(speed: Speed = typer.Argument(Speed.Slow)) -> None:
         manager.off(lights)
     except NoLightsFound as error:
         typer.secho(f"No rainbow for you.", fg="red")
-        raise typer.Exit(1) from None
+        raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="throb")
@@ -176,7 +176,7 @@ def throb_lights(
         manager.off(lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to throb lights.", fg="red")
-        raise typer.Exit(1) from None
+        raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="fli")
@@ -200,7 +200,7 @@ def flash_lights_impressively(
         manager.off(lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to flash lights impressively.", fg="red")
-        raise typer.Exit(1) from None
+        raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="list")
@@ -233,7 +233,7 @@ def list_available_lights(
                     typer.secho(v, fg="green")
     except NoLightsFound as error:
         typer.secho(f"No lights detected.", fg="red")
-        raise typer.Exit(1) from None
+        raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="supported")
@@ -309,12 +309,8 @@ def serve_http_api(
             "Failed to start the webapi.",
             fg="red",
         )
-<<<<<<< HEAD
         raise typer.Exit(code=-1) from None
-=======
-        raise typer.Exit(-1) from None
 
 
 if __name__ == "__main__":
     exit(cli())
->>>>>>> master
