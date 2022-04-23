@@ -6,7 +6,8 @@ from unittest import mock
 
 import pytest
 
-from busylight.manager import LightManager, USBLight
+from busylight.manager import LightManager
+from busylight.lights import USBLight, NoLightsFound
 
 from .. import device_hidinfo
 
@@ -175,8 +176,9 @@ def test_list_manager_selected_lights_default(indices, synthetic_light_manager) 
 
 def test_list_manager_selected_lights_out_of_bounds(synthetic_light_manager) -> None:
     base = len(synthetic_light_manager.lights)
-    results = synthetic_light_manager.selected_lights([base + 1])
-    assert not results
+    with pytest.raises(NoLightsFound):
+        results = synthetic_light_manager.selected_lights([base + 1])
+        # assert not results
 
 
 @pytest.mark.xfail
