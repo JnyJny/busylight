@@ -3,7 +3,7 @@
 
 from contextlib import suppress
 from random import choice
-from typing import Generator, Union
+from typing import Dict, Generator, List, Union
 from unittest import mock
 from unittest.mock import Mock, PropertyMock
 
@@ -39,7 +39,7 @@ def synthetic_lights_for_subclass(
 
 
 @pytest.fixture()
-def hidinfo_list() -> Generator[list[dict[str, Union[bytes, int, str]]], None, None]:
+def hidinfo_list() -> Generator[List[Dict[str, Union[bytes, int, str]]], None, None]:
     """List of real light dictionaries."""
     hidinfos = [
         {
@@ -182,7 +182,7 @@ def hidinfo_list() -> Generator[list[dict[str, Union[bytes, int, str]]], None, N
 @pytest.fixture()
 def broken_hidinfo_list(
     hidinfo_list,
-) -> Generator[list[str, Union[bytes, int, str]], None, None]:
+) -> Generator[List[str, Union[bytes, int, str]], None, None]:
 
     broken = []
     for item in hidinfo_list:
@@ -194,7 +194,7 @@ def broken_hidinfo_list(
 
 
 @pytest.fixture(scope="session")
-def real_lights() -> Generator[list[USBLight], None, None]:
+def real_lights() -> Generator[List[USBLight], None, None]:
     """Real instances of USBLight (if available)."""
 
     lights = USBLight.all_lights()
@@ -207,7 +207,7 @@ def real_lights() -> Generator[list[USBLight], None, None]:
 
 
 @pytest.fixture(scope="session")
-def synthetic_lights() -> Generator[list[USBLight], None, None]:
+def synthetic_lights() -> Generator[List[USBLight], None, None]:
 
     lights = []
     for subclass in USBLight.subclasses():
@@ -222,9 +222,9 @@ def synthetic_lights() -> Generator[list[USBLight], None, None]:
 
 @pytest.fixture(scope="session")
 def lights(
-    real_lights: list[USBLight],
-    synthetic_lights: list[USBLight],
-) -> Generator[list[USBLight], None, None]:
+    real_lights: List[USBLight],
+    synthetic_lights: List[USBLight],
+) -> Generator[List[USBLight], None, None]:
     """Returns real_lights if available, otherwise synthetic_lights."""
     if real_lights:
         yield real_lights
@@ -233,7 +233,7 @@ def lights(
 
 
 @pytest.fixture()
-def disposable_lights() -> Generator[list[USBLight], None, None]:
+def disposable_lights() -> Generator[List[USBLight], None, None]:
     """Disposable lights are synthetic but function scoped. Mess'em up."""
     lights = []
     for subclass in USBLight.subclasses():
@@ -246,7 +246,7 @@ def disposable_lights() -> Generator[list[USBLight], None, None]:
 
 
 @pytest.fixture(scope="session")
-def a_light(lights: list[USBLight]) -> Generator[USBLight, None, None]:
+def a_light(lights: List[USBLight]) -> Generator[USBLight, None, None]:
     """Could be real, could be synthetic. But it's a light."""
     yield lights[0]
 
