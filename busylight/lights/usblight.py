@@ -661,9 +661,7 @@ class USBLight(abc.ABC):
             logger.debug(f"write_strategy raised {error}")
             raise LightUnavailable.from_dict(self.hidinfo) from None
 
-        msg = (
-            f"{self.name} @ {self.path} {data.hex(':')} {self.write_strategy}={nbytes}"
-        )
+        msg = f"{self.name} @ {self.path} {data.hex()} {self.write_strategy}={nbytes}"
         logger.debug(msg)
         if nbytes < 0:
             logger.error(msg)
