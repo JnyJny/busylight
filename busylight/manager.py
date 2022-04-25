@@ -93,7 +93,7 @@ class LightManager:
             try:
                 selected_lights.append(self.lights[index])
             except IndexError as error:
-                logger.debug(f"{index=} {error}")
+                logger.debug(f"index:{index} {error}")
 
         if selected_lights:
             return selected_lights
@@ -117,7 +117,7 @@ class LightManager:
         """
         if self.greedy:
             new_lights = self.lightclass.all_lights()
-            logger.debug(f"{len(new_lights)} {new_lights=}")
+            logger.debug(f"{len(new_lights)} new {new_lights}")
 
         active_lights = [light for light in self.lights if light.is_pluggedin]
 

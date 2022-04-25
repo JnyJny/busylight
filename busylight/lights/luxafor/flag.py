@@ -28,7 +28,7 @@ class Flag(USBLight):
         try:
             product = hidinfo["product_string"].split()[-1].casefold()
         except (KeyError, IndexError) as error:
-            logger.debug(f"messed up hidinfo or product_string {hidinfo=}")
+            logger.debug(f"problem {error} processing {hidinfo}")
             return False
 
         return product in map(str.casefold, cls.SUPPORTED_DEVICE_IDS.values())

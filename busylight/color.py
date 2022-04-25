@@ -31,7 +31,7 @@ def parse_color(value: str) -> ColorTuple:
     try:
         return tuple(webcolors.name_to_rgb(value))
     except ValueError as error:
-        logger.debug(f"name_to_rgb {value=} {error}")
+        logger.debug(f"name_to_rgb {value} {error}")
 
     value = value.lower().replace("0x", "#")
 
@@ -52,6 +52,6 @@ def colortuple_to_name(color: ColorTuple) -> str:
     try:
         return webcolors.rgb_to_name(color)
     except ValueError as error:
-        logger.debug(f"{color=} -> {error}")
+        logger.debug(f"{color} -> {error}")
 
     raise ColorLookupError(f"No color mapping for {color}")

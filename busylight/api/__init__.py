@@ -242,7 +242,6 @@ async def Lights_Description() -> List[Dict[str, Any]]:
     """Information about all available lights."""
     result = []
     for light_id, light in enumerate(busylightapi.lights):
-        logger.debug("{index=} {light=}")
         result.append(
             {
                 "light_id": light_id,

@@ -47,7 +47,7 @@ class BaseEffect(abc.ABC):
 
     def __str__(self) -> str:
 
-        return f"{self.name} {self.duty_cycle=}"
+        return f"{self.name} duty_cycle={self.duty_cycle}"
 
     @property
     def name(self) -> str:

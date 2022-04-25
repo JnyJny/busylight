@@ -115,6 +115,30 @@ class USBLight(abc.ABC):
         """
         return [hidinfo for hidinfo in hid.enumerate() if cls.claims(hidinfo)]
 
+    # EJO - Classmethod structure note
+    #
+    #       My goal is to make all of the USBLight class methods callable from
+    #       both USBLight and it's subclassess. As such, the first "section"
+    #       of a class method will be the USBLight "version" of the method that
+    #       iterates through known subclasses and calls the class method on each
+    #       of those. The second "section" is the generic version that each subclass
+    #       will execute to satisfy the class method call. If a subclass needs to
+    #       provide an alternate implementation, it need only provide the "subclass"
+    #       section.
+
+    @classmethod
+    def subclasses(cls) -> List["USBLight"]:
+        """Returns a list of USBLight subclasses supporting different products."""
+        subclasses = []
+        if cls is USBLight:
+            for subclass in cls.__subclasses__():
+                subclasses.extend(subclass.subclasses())
+            return subclasses
+
+        subclasses.append(cls)
+        subclasses.extend(cls.__subclasses__())
+        return subclasses
+
     @classmethod
     def supported_lights(cls) -> Dict[str, List[str]]:
         """Returns a dictionary whose keys are USBLight vendor names and values
@@ -134,19 +158,6 @@ class USBLight(abc.ABC):
         return supported_lights
 
     @classmethod
-    def subclasses(cls) -> List["USBLight"]:
-        """Returns a list of USBLight subclasses supporting different products."""
-        subclasses = []
-        if cls is USBLight:
-            for subclass in cls.__subclasses__():
-                subclasses.extend(subclass.subclasses())
-            return subclasses
-
-        subclasses.append(cls)
-        subclasses.extend(cls.__subclasses__())
-        return subclasses
-
-    @classmethod
     def claims(cls, hidinfo: HidInfo) -> bool:
         """Returns True if this class claims the device described by `hidinfo`.
 
@@ -156,17 +167,16 @@ class USBLight(abc.ABC):
         if cls is USBLight:
             for subclass in cls.subclasses():
                 if subclass.claims(hidinfo):
-                    logger.debug(f"{subclass.__name__} claimed {hidinfo=}")
                     return True
             return False
 
         try:
             device_id = (hidinfo["vendor_id"], hidinfo["product_id"])
         except KeyError as error:
-            logger.debug("missing keys from hidinfo {hidinfo=}")
+            logger.debug(f"missing keys {error} from hidinfo {hidinfo}")
             raise InvalidHidInfo(hidinfo) from None
 
-        return device_id[:2] in cls.SUPPORTED_DEVICE_IDS
+        return device_id in cls.SUPPORTED_DEVICE_IDS
 
     @classmethod
     def all_lights(cls, reset: bool = True) -> List["USBLight"]:
@@ -370,8 +380,7 @@ class USBLight(abc.ABC):
         :coroutine: Awaitable function
         :returns: asyncio.Task or None
         """
-
-        logger.debug(f"{name=} {type(coroutine)} {coroutine=}")
+        logger.debug(f"name: {name} {coroutine}")
 
         if task := self.tasks.get(name):
             return task
@@ -383,8 +392,11 @@ class USBLight(abc.ABC):
             return None
 
         task = loop.create_task(coroutine(self), name=f"{name}-{id(self)}")
+
         self.tasks[name] = task
-        logger.debug(f"{self.name} {len(self.tasks)=} {task}")
+
+        logger.debug(f"{self.name} #tasks {len(self.tasks)}: {task}")
+
         return task
 
     def cancel_task(self, name: str) -> Optional[asyncio.Task]:
@@ -396,9 +408,9 @@ class USBLight(abc.ABC):
         if task := self.tasks.get(name):
             del self.tasks[name]
             task.cancel()
-            logger.debug(f"task {name} cancelled {task}")
+            logger.debug(f"cancelled: {name}")
             return task
-        logger.debug(f"task {name} not found")
+        logger.debug(f"not found: {name}")
 
     def cancel_tasks(self) -> None:
         """Cancels all asyncio.Tasks associated with this light.
@@ -409,7 +421,8 @@ class USBLight(abc.ABC):
         """
         for task in self.tasks.values():
             task.cancel()
-            logger.debug(f"cancelled {task=}")
+            logger.debug(f"cancelled {task}")
+
         self.tasks.clear()
 
     def __repr__(self) -> str:
@@ -483,7 +496,7 @@ class USBLight(abc.ABC):
 
     @property
     def name(self) -> str:
-        """Device product name (read-only)."""
+        """Device product name."""
         try:
             return self._name
         except AttributeError:
@@ -610,7 +623,7 @@ class USBLight(abc.ABC):
         try:
             self.device.open_path(self.hidinfo["path"])
         except KeyError as error:
-            logger.debug("{error} {self.hidinfo=}")
+            logger.debug(f"missing {error} in hidinfo")
             raise InvalidHidInfo(self.hidinfo) from None
         except OSError as error:
             logger.debug(f"open_path failed with {error}")

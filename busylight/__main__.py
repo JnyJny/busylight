@@ -24,7 +24,7 @@ cli = typer.Typer()
 webapi = typer.Typer()
 
 
-lights: list[int] = []
+lights: List[int] = []
 manager = LightManager()
 gTimeout: float
 
@@ -35,7 +35,7 @@ except Exception as error:
     __version__: str = "unknown"
 
 
-def parse_target_lights(targets: str) -> list[int]:
+def parse_target_lights(targets: str) -> List[int]:
     """Parses the `targets` string to produce a list of indicies.
 
     `lights` list with indices of lights that user wants to operate
@@ -44,7 +44,7 @@ def parse_target_lights(targets: str) -> list[int]:
     - a single integer, specifying one line
     - [0-9]+[-:][0-9]+, specifying a range.
     """
-    logger.debug(f"{targets=}")
+    logger.debug(f"targets={targets}")
 
     lights = []
     for target in targets.split(","):
@@ -60,7 +60,7 @@ def parse_target_lights(targets: str) -> list[int]:
             with suppress(ValueError):
                 lights.append(int(target))
 
-    logger.debug(f"{lights=}")
+    logger.debug(f"lights={lights}")
     return lights
 
 
@@ -77,9 +77,17 @@ def global_callback(
     debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
     targets: str = typer.Option("0", "--light-id", "-l"),
     all_lights: bool = typer.Option(False, "--all", "-a"),
-    timeout: float = typer.Option(None, "--timeout", help="timeout in seconds"),
+    timeout: float = typer.Option(
+        None,
+        "--timeout",
+        help="timeout in seconds",
+    ),
     version: bool = typer.Option(
-        False, "--version", is_flag=True, is_eager=True, callback=report_version
+        False,
+        "--version",
+        is_flag=True,
+        is_eager=True,
+        callback=report_version,
     ),
 ) -> None:
     """Control USB connected presense lights."""
@@ -92,7 +100,7 @@ def global_callback(
 
     global gTimeout
     gTimeout = timeout
-    logger.debug(f"{gTimeout=}")
+    logger.debug(f"gTimeout={gTimeout}")
 
 
 @cli.command(name="on")
@@ -213,7 +221,7 @@ def list_available_lights(
     use. The `--verbose` flag will increase the amount of information
     displayed for each light.
     """
-    logger.debug(f"listing connected lights {lights=}")
+    logger.debug(f"listing connected lights {lights}")
 
     try:
         for light in manager.selected_lights(lights):
@@ -259,7 +267,7 @@ def generate_udev_rules(
     encouraged to tailor these rules to suit their security needs.
     """
 
-    logger.debug("generating udev rules")
+    logger.debug(f"generating udev rules: {output}")
 
     rules = USBLight.udev_rules()
     about = [
