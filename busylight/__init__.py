@@ -1,7 +1,9 @@
 """Control USB Attached Lights with Style!
 
 """
+try:
+    from importlib.metadata import distribution
+except ModuleNotFoundError:
+    from importlib_metadata import distribution
 
-import importlib.metadata
-
-__version__ = importlib.metadata.distribution("busylight-for-humans").version
+__version__ = distribution("busylight-for-humans").version
