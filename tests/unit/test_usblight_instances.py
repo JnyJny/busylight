@@ -37,9 +37,10 @@ def test_usblight_subclass_str(synthetic_lights) -> None:
 
 def test_usblight_del(disposable_lights) -> None:
     """Test the __del__ method to ensure it doesn't barf."""
-    with pytest.raises(IndexError):
-        while light := disposable_lights.pop():
-            del light
+
+    while disposable_lights:
+        light = disposable_lights.pop()
+        del light
 
 
 def test_usblight_eq(synthetic_lights) -> None:

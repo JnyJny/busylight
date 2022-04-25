@@ -129,8 +129,14 @@ class LightManager:
 
     def release(self) -> None:
         """Release managed lights."""
+
+        # EJO Is this better than calling self._lights.clear()?
+        #     This implementation forces the finalization of each
+        #     light and adds some logging. I'm not sure it's
+        #     worth the added complexity.
         try:
-            while light := self._lights.pop():
+            while self._lights:
+                light = self._lights.pop()
                 del light
         except (IndexError, AttributeError) as error:
             logger.debug(f"during release {error}")

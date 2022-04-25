@@ -382,7 +382,8 @@ class USBLight(abc.ABC):
         """
         logger.debug(f"name: {name} {coroutine}")
 
-        if task := self.tasks.get(name):
+        task = self.tasks.get(name)
+        if task:
             return task
 
         loop = asyncio.get_event_loop()
@@ -405,12 +406,15 @@ class USBLight(abc.ABC):
         :name: str
         :return: asyncio.Task or None
         """
-        if task := self.tasks.get(name):
-            del self.tasks[name]
-            task.cancel()
-            logger.debug(f"cancelled: {name}")
-            return task
-        logger.debug(f"not found: {name}")
+
+        task = self.tasks.get(name)
+        if not task:
+            logger.debug(f"not found: {name}")
+
+        del self.tasks[name]
+        task.cancel()
+        logger.debug(f"cancelled: {name}")
+        return task
 
     def cancel_tasks(self) -> None:
         """Cancels all asyncio.Tasks associated with this light.

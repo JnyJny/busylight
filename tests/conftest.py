@@ -202,7 +202,8 @@ def real_lights() -> Generator[List[USBLight], None, None]:
     yield lights
 
     with suppress(IndexError):
-        while light := lights.pop():
+        while lights:
+            light = lights.pop()
             del light
 
 
@@ -216,8 +217,9 @@ def synthetic_lights() -> Generator[List[USBLight], None, None]:
     yield lights
 
     with suppress(IndexError):
-        while item := lights.pop():
-            del item
+        while lights:
+            light = lights.pop()
+            del light
 
 
 @pytest.fixture(scope="session")
@@ -241,8 +243,9 @@ def disposable_lights() -> Generator[List[USBLight], None, None]:
     yield lights
 
     with suppress(IndexError):
-        while item := lights.pop():
-            del item
+        while lights:
+            light = lights.pop()
+            del light
 
 
 @pytest.fixture(scope="session")
