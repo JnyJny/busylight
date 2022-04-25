@@ -550,7 +550,7 @@ class USBLight(abc.ABC):
         """True if the light is accessible."""
         try:
             results = self.read_strategy(8, timeout_ms=100)
-            logger.debug(f"light pluggedin {self!r} {results=!r}")
+            logger.debug(f"light pluggedin {self!r} results {results!r}")
             return True
         except OSError as error:
             logger.debug(f"light unplugged {self!r} {error}")
