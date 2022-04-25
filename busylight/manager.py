@@ -175,7 +175,6 @@ class LightManager:
         awaitables = []
         for light in lights:
             light.on(color)
-            light.add_task(effect.name, effect)
             awaitables.extend(light.tasks.values())
 
         if awaitables and wait:
