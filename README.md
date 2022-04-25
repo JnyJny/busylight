@@ -2,8 +2,8 @@
 
 ![version][pypi-version]
 [![pytest-linux](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml)
+[![pytest-windows](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml)
 ![supported python versions][python-versions] 
-![dependencies][dependencies]
 ![license][license]
 ![monthly-downloads][monthly-downloads]
 ![Code style: black][code-style-black]
