@@ -1,7 +1,7 @@
 <!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) -->
 
 ![version][pypi-version]
-[![pytest][pytest-badge]][pytest-status]
+[![pytest-linux](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml)
 ![supported python versions][python-versions] 
 ![dependencies][dependencies]
 ![license][license]
