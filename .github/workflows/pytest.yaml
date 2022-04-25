@@ -38,6 +38,7 @@ jobs:
   test-on-windows:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest]
         python-version: [ '3.7', '3.8', '3.9' ]
