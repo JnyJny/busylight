@@ -1,4 +1,4 @@
-name: pytest-linux
+name: Linux
 
 on:
   push:
