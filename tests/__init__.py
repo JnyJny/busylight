@@ -2,12 +2,12 @@
 """
 
 from time import time
-from typing import Generator, Union
+from typing import Dict, Generator, Union
 
 from loguru import logger
 
 
-def is_valid_hidinfo(hidinfo: dict[str, Union[bytes, int, str]]) -> None:
+def is_valid_hidinfo(hidinfo: Dict[str, Union[bytes, int, str]]) -> None:
     """ """
     return all(
         (

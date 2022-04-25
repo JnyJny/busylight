@@ -2,7 +2,7 @@
 """
 
 from contextlib import suppress
-from typing import Callable
+from typing import Callable, List
 from unittest import mock
 from unittest.mock import Mock, PropertyMock
 
@@ -98,7 +98,7 @@ def test_usblight_hidinfo(synthetic_lights) -> None:
     ],
 )
 def test_usblight_properties(
-    property_name: str, expected_type: type, synthetic_lights: list[USBLight]
+    property_name: str, expected_type: type, synthetic_lights: List[USBLight]
 ) -> None:
     for light in synthetic_lights:
         assert hasattr(light, property_name)
