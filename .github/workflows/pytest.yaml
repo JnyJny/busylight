@@ -52,7 +52,7 @@ jobs:
       - name: Install poetry/pytest
         run: |
           python -m pip install -U poetry pytest
-          echo "C:\hostedtoolcache\windows\Python\3.9.5\x64\Scripts" >> $GITHUB_PATH
+          #echo "C:\hostedtoolcache\windows\Python\3.9.5\x64\Scripts" >> $GITHUB_PATH
       - name: Install BusyLight-For-Humans with WebAPI
         run: |
           poetry install -E webapi
