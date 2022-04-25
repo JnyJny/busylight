@@ -219,12 +219,13 @@ def list_available_lights(
 
     Lights in this list are currently plugged in and available for
     use. The `--verbose` flag will increase the amount of information
-    displayed for each light.
+    displayed for each light. The global `--light-id` argument is ignored
+    by this subcommand.
     """
-    logger.debug(f"listing connected lights {lights}")
+    logger.debug(f"listing connected lights")
 
     try:
-        for light in manager.selected_lights(lights):
+        for light in manager.selected_lights():
             typer.secho(f"{manager.lights.index(light):3d} ", nl=False, fg="red")
             typer.secho(light.name, fg="green")
             if not verbose:
