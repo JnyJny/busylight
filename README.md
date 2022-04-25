@@ -1,12 +1,12 @@
 <!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) -->
-
 ![version][pypi-version]
-[![pytest-linux](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml)
-[![pytest-windows](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml)
+![monthly-downloads][monthly-downloads]
 ![supported python versions][python-versions] 
 ![license][license]
-![monthly-downloads][monthly-downloads]
 ![Code style: black][code-style-black]
+<br>
+[![pytest-linux](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml)
+[![pytest-windows](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml)
 <br>
 
 ![BusyLight Project Logo][LOGO]
