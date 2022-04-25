@@ -182,7 +182,7 @@ def hidinfo_list() -> Generator[List[Dict[str, Union[bytes, int, str]]], None, N
 @pytest.fixture()
 def broken_hidinfo_list(
     hidinfo_list,
-) -> Generator[List[str, Union[bytes, int, str]], None, None]:
+) -> Generator[Dict[str, Union[bytes, int, str]], None, None]:
 
     broken = []
     for item in hidinfo_list:
