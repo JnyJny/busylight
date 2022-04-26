@@ -6,6 +6,18 @@ from typing import Dict, Union
 from loguru import logger
 
 
+class InvalidHidInfo(Exception):
+    """The dictionary from hid.enumerate is somehow broken."""
+
+    def __init__(self, hidinfo: Dict[str, Union[bytes, int, str]]) -> None:
+        super().__init__(hidinfo)
+        self.hidinfo = hidinfo
+
+
+class NoLightsFound(Exception):
+    """No lights available for use."""
+
+
 class BaseLightException(Exception):
     @classmethod
     def from_dict(
@@ -14,9 +26,9 @@ class BaseLightException(Exception):
         """Convenience method for initializing light exceptions."""
         try:
             return cls(hidinfo["vendor_id"], hidinfo["product_id"], hidinfo["path"])
-        except KeyError:
-            logger.error("BAD hidinfo {hidinfo}")
-        return cls(0, 0, b"invalid")
+        except KeyError as error:
+            logger.error("BAD hidinfo {error}")
+            raise InvalidHidInfo(hidinfo)
 
     def __init__(self, vendor_id: int, product_id: int, path: bytes = None) -> None:
         """
@@ -24,10 +36,11 @@ class BaseLightException(Exception):
         :product_id: 2-byte integer
         :path: optional bytes encoded device path
         """
+        super().__init__(vendor_id, product_id, path)
         self.vendor_id: str = f"vendor_id={vendor_id:04x}"
         self.product_id: str = f"product_id={product_id:04x}"
         self.device_id: str = f"{vendor_id:04x}:{product_id:04x}"
-        self.path: bytes = f"path={path!r}"
+        self.path: str = f"path={path!r}"
         self.name: str = self.__class__.__name__
 
     def __repr__(self) -> str:
@@ -42,19 +55,8 @@ class LightUnavailable(BaseLightException):
 
 
 class LightNotFound(BaseLightException):
-    """The requested light was not found."""
+    """A requested light was not found."""
 
 
 class LightUnsupported(BaseLightException):
     """The requested light is not supported by this subclass."""
-
-
-class NoLightsFound(Exception):
-    """No lights available for use."""
-
-
-class InvalidHidInfo(Exception):
-    """The dictionary from hid.enumerate is somehow broken."""
-
-    def __init__(self, hidinfo: Dict[str, Union[bytes, int, str]]) -> None:
-        self.hidinfo = hidinfo
