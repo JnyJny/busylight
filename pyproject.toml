@@ -32,6 +32,7 @@ requests = "^2.27.1"
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
+busyserve="busylight.__main__:webapi"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
