@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "busylight-for-humans"
-version = "0.17.2"
+version = "0.17.3"
 description = "Control USB connected LED lights, like a human."
 authors = ["JnyJny <erik.oshaughnessy@gmail.com>"]
 license = "Apache-2.0"
