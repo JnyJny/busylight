@@ -18,6 +18,7 @@ class Blynclight(USBLight):
         (0x2C0D, 0x000C): "Blynclight",
         (0x2C0D, 0x0010): "Blynclight Plus",
         (0x0E53, 0x2517): "Blynclight Mini",
+        (0x0E53, 0x2516): "Blynclight"
     }
     vendor = "Embrava"
 
