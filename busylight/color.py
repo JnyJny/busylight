@@ -15,7 +15,7 @@ class ColorLookupError(Exception):
     pass
 
 
-def parse_color(value: str) -> ColorTuple:
+def parse_color_string(value: str) -> ColorTuple:
     """Convert a string to a 24-bit color, 3 channel color.
 
     String values can be:
@@ -24,7 +24,7 @@ def parse_color(value: str) -> ColorTuple:
     - a 24 or 12-bit hex string prefaced with `0x`
     - a bare 24 or 12-bit hex string
 
-    raises:
+    Raises:
     - ColorLookupError
     """
 
@@ -48,10 +48,32 @@ def parse_color(value: str) -> ColorTuple:
 
 
 def colortuple_to_name(color: ColorTuple) -> str:
+    """Returns a string name of the given ColorTuple if found.
 
+    :color: ColorTuple
+    :return: str
+
+    Raises:
+    - ColorLookupError
+    """
     try:
         return webcolors.rgb_to_name(color)
     except ValueError as error:
         logger.debug(f"{color} -> {error}")
 
     raise ColorLookupError(f"No color mapping for {color}")
+
+
+def scale_color(color: ColorTuple, scale: float = 1.0) -> ColorTuple:
+    """Returns a ColorTuple whose color intensity scaled by the given value.
+
+    Each of the component values of the ColorTuple are multiplied by scale
+    which is assumed to range from 0.0 to 1.0 corresponding to 0% to 100%
+    intensitity.
+
+    :param color: ColorTuple
+    :param scale: float
+    :return: ColorTuple
+    """
+
+    return tuple(max(0, min(255, round(v * scale))) for v in color)
