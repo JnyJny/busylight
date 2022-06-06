@@ -4,7 +4,7 @@
 import pytest
 
 from busylight.color import ColorLookupError
-from busylight.color import parse_color
+from busylight.color import parse_color_string
 from busylight.color import colortuple_to_name
 
 
@@ -23,9 +23,9 @@ from busylight.color import colortuple_to_name
         ("0X000", (0, 0, 0)),
     ],
 )
-def test_parse_color(value, expected) -> None:
+def test_parse_color_string(value, expected) -> None:
 
-    result = parse_color(value)
+    result = parse_color_string(value)
     assert result == expected
 
 
@@ -45,10 +45,10 @@ def test_parse_color(value, expected) -> None:
         "bogus green",
     ],
 )
-def test_parse_color_invalid(value) -> None:
+def test_parse_color_string_invalid(value) -> None:
 
     with pytest.raises(ColorLookupError):
-        parse_color(value)
+        parse_color_string(value)
 
 
 @pytest.mark.parametrize(

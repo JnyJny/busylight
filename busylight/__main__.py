@@ -15,7 +15,7 @@ from loguru import logger
 
 from .lights import USBLight, Speed
 from .lights import NoLightsFound
-from .color import ColorTuple, parse_color
+from .color import ColorTuple, parse_color_string
 from .effects import Effects
 from .manager import LightManager
 
@@ -105,7 +105,7 @@ def global_callback(
 
 @cli.command(name="on")
 def turn_lights_on(
-    color: Optional[str] = typer.Argument("green", callback=parse_color),
+    color: Optional[str] = typer.Argument("green", callback=parse_color_string),
 ) -> None:
     """Activate lights.
 
@@ -134,7 +134,7 @@ def turn_lights_off() -> None:
 
 @cli.command(name="blink")
 def blink_lights(
-    color: Optional[str] = typer.Argument("red", callback=parse_color),
+    color: Optional[str] = typer.Argument("red", callback=parse_color_string),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Blink lights on and off.
@@ -170,7 +170,7 @@ def rainbow_lights(speed: Speed = typer.Argument(Speed.Slow)) -> None:
 
 @cli.command(name="throb")
 def throb_lights(
-    color: Optional[str] = typer.Argument("red", callback=parse_color),
+    color: Optional[str] = typer.Argument("red", callback=parse_color_string),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Throb light on and off.
@@ -189,8 +189,8 @@ def throb_lights(
 
 @cli.command(name="fli")
 def flash_lights_impressively(
-    color_a: Optional[str] = typer.Argument("red", callback=parse_color),
-    color_b: Optional[str] = typer.Argument("blue", callback=parse_color),
+    color_a: Optional[str] = typer.Argument("red", callback=parse_color_string),
+    color_b: Optional[str] = typer.Argument("blue", callback=parse_color_string),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Flash lights quickly between two colors.
