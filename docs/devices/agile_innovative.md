@@ -17,7 +17,8 @@ printed opaque cube roughly an inch on a side.
 
 ### Basic Human Interface Device Info
 
-- Vendor ID values: 0x20A0
+- Vendor ID values:
+  - 0x20a0, 0x41e5: BlinkStick
 - I/O Interface: `HID` write
 - Command Length: variable
 
@@ -51,7 +52,7 @@ typedef enum {
 The `channel` field is documented as 8-bit value that can take on
 three values; 0:red, 1:green, 2: blue. It not docummented what the
 channel value effects and values other than zero result in no
-change to LED color values on a BlinStick Square.
+change to LED color values on a BlinkStick Square.
 
 ###### Single LED Command
 This command is used to update the RGB values of the first LED.
