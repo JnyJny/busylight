@@ -5,8 +5,7 @@
 [ThingM][0] is a California company that describes themselves as a "device
 studio" and offer many different LED based devices; the consumer
 oriented blink(1) product line and for prototyping and hacking they
-offer the BlinkM line of products. I developed with the blink(1) mk3
-device.
+offer the BlinkM line of products. I worked with the blink(1) mk3 device.
 
 ### Physical Description
 
@@ -14,7 +13,7 @@ device.
 
 The ThingM blink(1) is the smallest USB connected LED light I have
 worked with so far. The device mostly consists of a USB-A male
-connector with a wraparound transluscent diffusor. The device
+connector with a wraparound transluscent diffuser. The device
 dimensions are _roughly_ 1.5 inches long, (excluding USB-A male
 connector), 1.25 inches wide and 0.25 inches deep.  The device has two
 LEDs; one firing up and the other firing down. My ThingM blink(1) mk3
@@ -23,7 +22,8 @@ connector and a USB-A female connector.
 
 ### Basic Human Interface Device Info
 
-- Vendor ID values:
+- Vendor/Product ID values:
+  - 0x27b8, 0x01ed : Blink(1)
 - I/O Interface:
 - Command Length:
 
@@ -37,8 +37,7 @@ connector and a USB-A female connector.
 
 ### Observations
 
-The device will briefly flash a white color on both LEDs when first
-plugged in.
+The device will briefly flash a white color on both LEDs when first plugged in.
 
 ### Functionality Wishlist
 
