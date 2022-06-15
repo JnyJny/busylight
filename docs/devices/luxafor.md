@@ -2,12 +2,12 @@
 
 ## Luxafor Flag 
 
-The [Luxafor][0] line of products includes many devices which are
-designed for office productivity. The Luxafor Flag is the only
-USB-connected presence light.
+The [Luxafor][0] line of products includes three USB connected presence
+lights: the Flag, the Mute and the Orb.
 
 ### Physical Description
 
+#### Luxafor Flag
 The Luxafor Flag is small device with six LEDs and a female mini-USB
 port. The main body of the device is rectangular; roughly 1.75 inches
 long, 0.5 inches wide and 0.25 inches deep. The device's transluscent
@@ -19,16 +19,23 @@ is a relatively strong magnet embedded in the enclosure, near the USB
 port, which can be used with the supplied adhesive-backed magnet to
 "mount" the light.
 
+#### Luxafor Mute
+
+#### Luxafor Orb
+
 ### Basic Human Interface Device Info
 
-- Vendor ID values: 0x04D8
+- Vendor ID values:
+  - 0x04d8, 0xf372: Flag, Mute, Orb
 - I/O Interface: `HID` write
 - Command Length: 8-bytes
 
 ### Command Format
 
-The Luxafor Flag is a [USB HID][H] accessible device whose attributes
-are controlled by writing an 8 byte packet to the device.
+The Luxafor family of lights are [USB HID][H] accessible devices whose
+attributes are controlled by writing an 8 byte packet to the device.
+All three devices share the same product/vendor identifier so they
+are discerned by the embedded product string; Flag, Mute or Orb.
 
 #### Steady Color Command
 ```C
@@ -99,6 +106,8 @@ typedef struct {
 #### Activating with a RGB Color
 
 #### Turning the Light Off
+
+#### Read Button State - Mute Only
 
 ### Observations
 
