@@ -9,6 +9,10 @@ any significant way with respect to it's software configuration.
 
 ### Physical Description
 
+#### UC Alpha
+
+<!-- missing -->
+
 #### UC Omega
 
 The UC Omega is vaguely cylindrical in shape, with a slightly wider
@@ -21,7 +25,11 @@ LED lights the device has.
 
 ### Basic Human Interface Device Info
 
-- Vendor Id values: 0x27bb
+- Vendor/Product Id values:
+    - 0x04d8, 0xf848: Busylight Alpha
+    - 0x27bb, 0x3bca: Busylight Alpha
+    - 0x27bb, 0x3bcd: Busylight Omega
+    - 0x27bb, 0x3bcf: Busylight Omega
 - I/O Interface: HID `write`
 - Command Length: 64-bytes
 
