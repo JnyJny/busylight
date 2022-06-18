@@ -1,8 +1,9 @@
-""" a Manager for working with multiple USBLights
+""" a Manager for controlling multiple USBLights.
 """
 
 import asyncio
 
+from contextlib import suppress
 from typing import Dict, List, Optional, Union, Tuple
 from loguru import logger
 
@@ -12,6 +13,27 @@ from .lights import LightUnavailable, NoLightsFound, USBLight, Speed
 
 
 class LightManager:
+    @staticmethod
+    def parse_target_lights(targets: str) -> List[int]:
+        """Parses the `targets` string to produce a list of indicies.
+
+        The targets string may be:
+        - empty, meaning all lights
+        - a single integer, specifying one line
+        - [0-9]+[-:][0-9]+, specifying a range.
+        """
+        lights = []
+        for target in targets.split(","):
+            for sep in ["-", ":"]:
+                if sep in target:
+                    start, _, end = target.partition(sep)
+                    lights.extend(list(range(int(start), int(end) + 1)))
+                    break
+                else:
+                    with suppress(ValueError):
+                        lights.append(int(target))
+        return list(set(lights))
+
     def __init__(self, greedy: bool = True, lightclass: type = None):
         """
         :greedy: bool
@@ -54,7 +76,7 @@ class LightManager:
         return len(self.lights)
 
     def __del__(self) -> None:
-        logger.debug(f"releasing resources for LightManager {id(self)}")
+        logger.info(f"releasing resources for LightManager {id(self)}")
         self.release()
 
     @property
@@ -93,7 +115,7 @@ class LightManager:
             try:
                 selected_lights.append(self.lights[index])
             except IndexError as error:
-                logger.debug(f"index:{index} {error}")
+                logger.info(f"index:{index} {error}")
 
         if selected_lights:
             return selected_lights
@@ -139,12 +161,12 @@ class LightManager:
                 light = self._lights.pop()
                 del light
         except (IndexError, AttributeError) as error:
-            logger.debug(f"during release {error}")
+            logger.error(f"during release {error}")
 
         try:
             del self._lights
         except AttributeError as error:
-            logger.debug(f"during release, failed to del _lights property {error}")
+            logger.error(f"during release, failed to del _lights property {error}")
 
     def on(
         self,
