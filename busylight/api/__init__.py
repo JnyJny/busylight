@@ -58,17 +58,18 @@ busylightapi_security = HTTPBasic()
 
 class BusylightAPI(FastAPI):
     def __init__(self):
-        logger.debug("Set up authentication, if env. variables set.")
+
         dependencies = []
+        logger.info("Set up authentication, if environment variables set.")
         try:
+
             self.username = environ["BUSYLIGHT_API_USER"]
             self.password = environ["BUSYLIGHT_API_PASS"]
             dependencies.append(Depends(self.authenticate_user))
-            logger.debug("Found username/password in environment.")
+            logger.info("Found user credentials in environment.")
         except KeyError:
-            logger.debug("Did NOT find username/password in environment.")
-            logger.debug("Access authentication  disabled.")
-            # Env. variables not set, so auth disabled
+            logger.info("Did NOT find user credentials in environment.")
+            logger.info("Access authentication disabled.")
             self.username = None
             self.password = None
 

@@ -1,4 +1,4 @@
-"""
+""" Agile Innovative BlinkStick implementation details.
 """
 
 from enum import IntEnum
@@ -47,14 +47,14 @@ class BlinkStickType(IntEnum):
             return cls(int(hidinfo["serial_number"].split("-")[-1].split(".")[0]))
         except KeyError as error:
             logger.error(f"serial_number missing from hidinfo -> {error} {hidinfo}")
-            raise LightUnsupported.from_dict(hidinfo)
+            raise LightUnsupported.from_dict(hidinfo) from None
         except IndexError as error:
             logger.error(
-                f"failed to find major number in {hidinfo['serial_number']} {error}"
+                f"failed to parse major number in {hidinfo['serial_number']}: {error}"
             )
-            raise LightUnsupported.from_dict(hidinfo)
-        except ValueError as error:
-            logger.debug(f"{error}")
+            raise LightUnsupported.from_dict(hidinfo) from None
+        except ValueError:
+            pass
 
         try:
             return cls(int(hidinfo["release_number"]))

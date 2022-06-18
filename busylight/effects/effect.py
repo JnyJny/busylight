@@ -22,13 +22,13 @@ class BaseEffect(abc.ABC):
         if cls is BaseEffect:
             for subclass in cls.__subclasses__():
                 subclasses.extend(subclass.subclasses())
-            logger.debug(f"{cls.__name__} found {len(subclasses)}")
+            logger.info(f"{cls.__name__} found {len(subclasses)}")
             return subclasses
 
         subclasses.append(cls)
         for subclass in cls.__subclasses__():
             subclasses.extend(subclass.subclasses())
-        logger.debug(f"{cls.__name__} found {len(subclasses)}")
+        logger.info(f"{cls.__name__} found {len(subclasses)}")
         return subclasses
 
     @classmethod

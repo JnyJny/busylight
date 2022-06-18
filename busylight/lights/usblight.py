@@ -173,7 +173,7 @@ class USBLight(abc.ABC):
         try:
             device_id = (hidinfo["vendor_id"], hidinfo["product_id"])
         except KeyError as error:
-            logger.debug(f"missing keys {error} from hidinfo {hidinfo}")
+            logger.error(f"missing keys {error} from hidinfo {hidinfo}")
             raise InvalidHidInfo(hidinfo) from None
 
         return device_id in cls.SUPPORTED_DEVICE_IDS
@@ -191,15 +191,15 @@ class USBLight(abc.ABC):
         if cls is USBLight:
             for subclass in cls.subclasses():
                 all_lights.extend(subclass.all_lights(reset=reset))
-            logger.debug(f"{cls.__name__} found {len(all_lights)} lights total")
+            logger.info(f"{cls.__name__} found {len(all_lights)} lights total")
             return sorted(all_lights)
 
         for device in cls.available():
             try:
                 all_lights.append(cls.from_dict(device, reset=reset))
             except LightUnavailable as error:
-                logger.debug(f"{cls.__name__} {error}")
-            logger.debug(f"{cls.__name__} found {len(all_lights)} lights")
+                logger.error(f"{cls.__name__} {error}")
+        logger.info(f"{cls.__name__} found {len(all_lights)} lights")
         return all_lights
 
     @classmethod
@@ -216,14 +216,14 @@ class USBLight(abc.ABC):
                 try:
                     return subclass.first_light(reset=reset)
                 except NoLightsFound as error:
-                    logger.debug(f"{subclass.__name__}.firstlight() -> {error}")
+                    logger.error(f"{subclass.__name__}.firstlight() -> {error}")
             raise NoLightsFound()
 
         for device in cls.available():
             try:
                 return cls.from_dict(device, reset=reset)
             except LightUnavailable as error:
-                logger.debug(f"{cls.__name__}.from_dict() {error}")
+                logger.error(f"{cls.__name__}.from_dict() {error}")
                 raise
 
         raise NoLightsFound()
@@ -251,7 +251,7 @@ class USBLight(abc.ABC):
             f"# Rules for {cls.vendor} Family of Devices: {len(cls.SUPPORTED_DEVICE_IDS)}"
         )
         for n, ((vid, pid), name) in enumerate(cls.SUPPORTED_DEVICE_IDS.items()):
-            logger.debug(f"udev rule for {vid:04x}, {pid:04x} {name}")
+            logger.info(f"udev rule for {vid:04x}, {pid:04x} {name}")
             rules.append(f"# {n} {cls.vendor} {name}")
             for rule_format in rule_formats:
                 rules.append(rule_format.format(vid=vid, pid=pid, mode=mode))
@@ -380,7 +380,7 @@ class USBLight(abc.ABC):
         :coroutine: Awaitable function
         :returns: asyncio.Task or None
         """
-        logger.debug(f"name: {name} {coroutine}")
+        logger.info(f"name: {name} {coroutine}")
 
         task = self.tasks.get(name)
         if task:
@@ -396,7 +396,7 @@ class USBLight(abc.ABC):
 
         self.tasks[name] = task
 
-        logger.debug(f"{self.name} #tasks {len(self.tasks)}: {task}")
+        logger.info(f"{self.name} #tasks {len(self.tasks)}: {task}")
 
         return task
 
@@ -407,14 +407,15 @@ class USBLight(abc.ABC):
         :return: asyncio.Task or None
         """
 
-        task = self.tasks.get(name)
-        if not task:
-            logger.debug(f"not found: {name}")
-
-        del self.tasks[name]
-        task.cancel()
-        logger.debug(f"cancelled: {name}")
-        return task
+        try:
+            task = self.tasks[name]
+            del self.tasks[name]
+            task.cancel()
+            logger.info(f"cancelled: {name}")
+            return task
+        except (KeyError, AttributeError):
+            logger.error(f"not found: {name}")
+        return None
 
     def cancel_tasks(self) -> None:
         """Cancels all asyncio.Tasks associated with this light.
@@ -425,7 +426,6 @@ class USBLight(abc.ABC):
         """
         for task in self.tasks.values():
             task.cancel()
-            logger.debug(f"cancelled {task}")
 
         self.tasks.clear()
 
@@ -547,13 +547,12 @@ class USBLight(abc.ABC):
 
     @property
     def is_pluggedin(self) -> bool:
-        """True if the light is accessible."""
+        """True if the light is plugged in and responding to commands."""
         try:
             results = self.read_strategy(8, timeout_ms=100)
-            logger.debug(f"light pluggedin {self!r} results {results!r}")
             return True
-        except OSError as error:
-            logger.debug(f"light unplugged {self!r} {error}")
+        except OSError:
+            pass
         return False
 
     @property
@@ -627,10 +626,10 @@ class USBLight(abc.ABC):
         try:
             self.device.open_path(self.hidinfo["path"])
         except KeyError as error:
-            logger.debug(f"missing {error} in hidinfo")
+            logger.error(f"missing {error} in hidinfo")
             raise InvalidHidInfo(self.hidinfo) from None
         except OSError as error:
-            logger.debug(f"open_path failed with {error}")
+            logger.error(f"open_path failed with {error}")
             raise LightUnavailable.from_dict(self.hidinfo) from None
 
     def release(self) -> None:
@@ -639,8 +638,6 @@ class USBLight(abc.ABC):
         After a light has been released, it needs to be re-acquired using
         the `acquire` method.
         """
-        logger.debug(f"releasing id={id(self):x}")
-
         self.cancel_tasks()
         self.device.close()
 
@@ -658,11 +655,11 @@ class USBLight(abc.ABC):
         try:
             nbytes = self.write_strategy(data)
         except ValueError as error:
-            logger.debug(f"write_strategy raised {error}")
+            logger.error(f"write_strategy raised {error}")
             raise LightUnavailable.from_dict(self.hidinfo) from None
 
-        msg = f"{self.name} @ {self.path} {data.hex()} {self.write_strategy}={nbytes}"
-        logger.debug(msg)
+        msg = f"{self.name}@{self.path} write_strategy returned {nbytes} sent {data.hex(':')}"
+
         if nbytes < 0:
             logger.error(msg)
             # EJO In general, unplugging the device is the most likely
@@ -672,6 +669,7 @@ class USBLight(abc.ABC):
             #     enough information from "< 0" to be able to
             #     differentiate between the two failure modes.
             raise LightUnavailable(self.vendor_id, self.product_id, self.path)
+        logger.debug(msg)
 
     @contextmanager
     def batch_update(self) -> Generator[None, None, None]:

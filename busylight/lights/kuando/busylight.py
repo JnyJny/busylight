@@ -4,8 +4,6 @@ import asyncio
 
 from typing import Awaitable, Optional
 
-from loguru import logger
-
 from ...color import ColorTuple
 
 from ..speed import Speed
@@ -32,15 +30,9 @@ async def keepalive(light: USBLight, interval: int = 0xF) -> None:
     ka_value = Instruction.KeepAlive(interval).value
 
     while True:
-        logger.debug(
-            f"{light.name} keepalive for {interval}s, sleeping {sleep_interval}s"
-        )
         with light.batch_update():
             light.command.line0 = ka_value
-
         await asyncio.sleep(sleep_interval)
-
-    logger.debug("keepalive coro returning")
 
 
 class Busylight(USBLight):
