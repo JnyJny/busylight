@@ -1,10 +1,10 @@
 
 TARGET=busylight
 
-VERSION_FILE= $(TARGET)/__version__.py
+
 PYPROJECT= pyproject.toml
 
-.PHONY: $(VERSION_FILE) docs/busylight.1.md \
+.PHONY: docs/busylight.1.md \
         MAJOR MINOR PATCH \
         major minor patch \
         push publish\
@@ -45,13 +45,10 @@ docs/busyserve.1.md:
 	@sed -i '' -e  "s///g" $@
 
 
-update: $(VERSION_FILE)
-	@git add $(PYPROJECT) $(VERSION_FILE)
-	@awk '{print $$3}' $(VERSION_FILE) | xargs git commit -m
-	@awk '{print $$3}' $(VERSION_FILE) | xargs git tag
-
-$(VERSION_FILE):
-	@awk '/^version/ {print $$0}' $(PYPROJECT) | sed "s/version/__version__/" > $@
+update:
+	@git add $(PYPROJECT)
+	@awk '/^version =/ {print $$3}' $(PYPROJECT) | xargs git commit -m
+	@awk '/^version =/{print $$3}' $(PYPROJECT) | xargs git tag
 
 push:
 	@git push --tags origin master
