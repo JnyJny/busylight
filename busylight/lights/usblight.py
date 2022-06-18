@@ -658,7 +658,8 @@ class USBLight(abc.ABC):
             logger.error(f"write_strategy raised {error}")
             raise LightUnavailable.from_dict(self.hidinfo) from None
 
-        msg = f"{self.name}@{self.path} write_strategy returned {nbytes} sent {data.hex(':')}"
+        # EJO bytes.hex doesn't take a byte seperator until after 3.7
+        msg = f"{self.name}@{self.path} write_strategy returned {nbytes} sent {data.hex()}"
 
         if nbytes < 0:
             logger.error(msg)
