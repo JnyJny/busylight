@@ -1,67 +1,56 @@
-"""
+"""Busylight command-line interface
+
 """
 
-from dataclasses import dataclass
-from contextlib import suppress
-from enum import Enum
-from pkg_resources import require as pkg_require
-
+from dataclasses import dataclass, field
 from typing import List, Optional
 
 import typer
-import webcolors
 
 from loguru import logger
 
 from .lights import USBLight, Speed
 from .lights import NoLightsFound
-from .color import ColorTuple, parse_color_string
+from .color import ColorLookupError, ColorTuple, parse_color_string, scale_color
 from .effects import Effects
 from .manager import LightManager
+from .__version__ import __version__
+
 
 cli = typer.Typer()
 
 webapi = typer.Typer()
 
 
-lights: List[int] = []
+@dataclass
+class GlobalOptions:
+    timeout: float = None
+    dim: float = 0
+    lights: List[int] = field(default_factory=list)
+    debug: bool = False
+
+
 manager = LightManager()
-gTimeout: float
-
-try:
-    __version__: str = pkg_require("busylight-for-humans")[0].version
-except Exception as error:
-    logger.error(f"Failed to retrieve version string: {error}")
-    __version__: str = "unknown"
 
 
-def parse_target_lights(targets: str) -> List[int]:
-    """Parses the `targets` string to produce a list of indicies.
+def string_to_color(ctx: typer.Context, value: str) -> ColorTuple:
+    """typer Option callback: translates a string to a ColorTuple.
 
-    `lights` list with indices of lights that user wants to operate
-    on. The targets string may be:
-    - empty, meaning all lights
-    - a single integer, specifying one line
-    - [0-9]+[-:][0-9]+, specifying a range.
+    This callback is intended to be used by subcommands after the
+    global callback has initialized ctx.obj to an instance of
+    GlobalOptions.
+
+    :param ctx: typer.Context
+    :param value: str
+    :return: ColorTuple
     """
-    logger.debug(f"targets={targets}")
 
-    lights = []
-    for target in targets.split(","):
-        logger.debug(f"target {target}")
-        for sep in ["-", ":"]:
-            if sep in target:
-                logger.debug(f"found {sep} in {target}")
-                start, _, end = target.partition(sep)
-                logger.debug(f"building range {start} to {end}")
-                lights.extend(list(range(int(start), int(end) + 1)))
-                break
-        else:
-            with suppress(ValueError):
-                lights.append(int(target))
-
-    logger.debug(f"lights={lights}")
-    return lights
+    try:
+        color = parse_color_string(value)
+        return scale_color(color, ctx.obj.dim)
+    except ColorLookupError as error:
+        typer.secho(f"No color match for '{value}'", fg="red")
+        raise typer.Exit(code=1) from None
 
 
 def report_version(value: bool) -> None:
@@ -71,16 +60,43 @@ def report_version(value: bool) -> None:
         raise typer.Exit()
 
 
-@cli.callback()
+@cli.callback(invoke_without_command=False)
 def global_callback(
     ctx: typer.Context,
-    debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
-    targets: str = typer.Option("0", "--light-id", "-l"),
-    all_lights: bool = typer.Option(False, "--all", "-a"),
+    debug: bool = typer.Option(
+        False,
+        "--debug",
+        "-D",
+        is_flag=True,
+        help="Enable debugging output.",
+    ),
+    targets: str = typer.Option(
+        "0",
+        "--light-id",
+        "-l",
+        help="Specify a light or lights to act on.",
+        callback=LightManager.parse_target_lights,
+    ),
+    all_lights: bool = typer.Option(
+        False,
+        "--all",
+        "-a",
+        help="Use all connected lights.",
+    ),
+    dim: int = typer.Option(
+        100,
+        "--dim",
+        "-d",
+        min=0,
+        max=100,
+        clamp=True,
+        help="Scale color intensity down by percentage",
+    ),
     timeout: float = typer.Option(
         None,
         "--timeout",
-        help="timeout in seconds",
+        show_default=True,
+        help="Timeout in seconds",
     ),
     version: bool = typer.Option(
         False,
@@ -93,40 +109,50 @@ def global_callback(
     """Control USB connected presense lights."""
 
     (logger.enable if debug else logger.disable)("busylight")
-    logger.debug(f"version {__version__}")
 
-    if not all_lights:
-        lights.extend(parse_target_lights(targets))
+    ctx.ensure_object(GlobalOptions)
 
-    global gTimeout
-    gTimeout = timeout
-    logger.debug(f"gTimeout={gTimeout}")
+    ctx.obj.debug = debug
+    ctx.obj.dim = dim / 100
+    ctx.obj.timeout = timeout
+    ctx.obj.lights = targets
+
+    logger.info(f"version {__version__}")
+
+    if all_lights:
+        ctx.obj.lights.clear()
+
+    logger.info(f"timeout={ctx.obj.timeout}")
+    logger.info(f"    dim={ctx.obj.dim}")
+    logger.info(f" lights={ctx.obj.lights}")
 
 
 @cli.command(name="on")
 def turn_lights_on(
-    color: Optional[str] = typer.Argument("green", callback=parse_color_string),
+    ctx: typer.Context,
+    color: Optional[str] = typer.Argument("green", callback=string_to_color),
 ) -> None:
     """Activate lights.
 
     The default is green.
     """
+
     try:
-        manager.on(color, lights, timeout=gTimeout)
+        manager.on(color, ctx.obj.lights, timeout=ctx.obj.timeout)
     except KeyboardInterrupt:
-        manager.off(lights)
+        manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho("No lights to turn on.", fg="red")
         raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="off")
-def turn_lights_off() -> None:
+def turn_lights_off(ctx: typer.Context) -> None:
     """Deactivate lights."""
-    logger.debug("deactivating lights")
+    logger.info("deactivating lights")
 
     try:
-        manager.off(lights)
+        manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"", fg="red")
         typer.secho("No lights to turn off.", fg="red")
@@ -134,7 +160,8 @@ def turn_lights_off() -> None:
 
 @cli.command(name="blink")
 def blink_lights(
-    color: Optional[str] = typer.Argument("red", callback=parse_color_string),
+    ctx: typer.Context,
+    color: Optional[str] = typer.Argument("red", callback=string_to_color),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Blink lights on and off.
@@ -145,24 +172,26 @@ def blink_lights(
     blink = Effects.for_name("blink")(color, speed.duty_cycle)
 
     try:
-        manager.apply_effect(blink, lights, timeout=gTimeout)
+        manager.apply_effect(blink, ctx.obj.lights, timeout=ctx.obj.timeout)
     except KeyboardInterrupt:
-        manager.off(lights)
+        manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho("Unable to blink lights.", fg="red")
         raise typer.Exit(code=-1) from None
 
 
 @cli.command(name="rainbow")
-def rainbow_lights(speed: Speed = typer.Argument(Speed.Slow)) -> None:
+def rainbow_lights(
+    ctx: typer.Context, speed: Speed = typer.Argument(Speed.Slow)
+) -> None:
     """Display rainbow colors on specified lights."""
 
     rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4)
 
     try:
-        manager.apply_effect(rainbow, lights, timeout=gTimeout)
+        manager.apply_effect(rainbow, ctx.obj.lights, timeout=ctx.obj.timeout)
     except KeyboardInterrupt:
-        manager.off(lights)
+        manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"No rainbow for you.", fg="red")
         raise typer.Exit(code=-1) from None
@@ -170,6 +199,7 @@ def rainbow_lights(speed: Speed = typer.Argument(Speed.Slow)) -> None:
 
 @cli.command(name="throb")
 def throb_lights(
+    ctx: typer.Context,
     color: Optional[str] = typer.Argument("red", callback=parse_color_string),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
@@ -179,9 +209,9 @@ def throb_lights(
 
     throb = Effects.for_name("gradient")(color, speed.duty_cycle / 16, 8)
     try:
-        manager.apply_effect(throb, lights, timeout=gTimeout)
+        manager.apply_effect(throb, ctx.obj.lights, timeout=ctx.obj.timeout)
     except KeyboardInterrupt:
-        manager.off(lights)
+        manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to throb lights.", fg="red")
         raise typer.Exit(code=-1) from None
@@ -189,8 +219,9 @@ def throb_lights(
 
 @cli.command(name="fli")
 def flash_lights_impressively(
-    color_a: Optional[str] = typer.Argument("red", callback=parse_color_string),
-    color_b: Optional[str] = typer.Argument("blue", callback=parse_color_string),
+    ctx: typer.Context,
+    color_a: Optional[str] = typer.Argument("red", callback=string_to_color),
+    color_b: Optional[str] = typer.Argument("blue", callback=string_to_color),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Flash lights quickly between two colors.
@@ -203,9 +234,9 @@ def flash_lights_impressively(
     fli = Effects.for_name("blink")(color_a, speed.duty_cycle / 10, off_color=color_b)
 
     try:
-        manager.apply_effect(fli, lights, timeout=gTimeout)
+        manager.apply_effect(fli, ctx.obj.lights, timeout=ctx.obj.timeout)
     except KeyboardInterrupt:
-        manager.off(lights)
+        manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to flash lights impressively.", fg="red")
         raise typer.Exit(code=-1) from None
@@ -213,6 +244,7 @@ def flash_lights_impressively(
 
 @cli.command(name="list")
 def list_available_lights(
+    ctx: typer.Context,
     verbose: bool = typer.Option(False, "--verbose", "-v", is_flag=True),
 ) -> None:
     """List currently connected lights.
@@ -222,7 +254,7 @@ def list_available_lights(
     displayed for each light. The global `--light-id` argument is ignored
     by this subcommand.
     """
-    logger.debug(f"listing connected lights")
+    logger.info(f"listing connected lights")
 
     try:
         for light in manager.selected_lights():
@@ -248,7 +280,7 @@ def list_available_lights(
 @cli.command(name="supported")
 def list_supported_lights() -> None:
     """List supported lights."""
-    logger.debug("listing supported lights")
+    logger.info("listing supported lights")
     for vendor, names in USBLight.supported_lights().items():
         typer.secho(vendor, fg="blue")
         for name in names:
@@ -268,7 +300,7 @@ def generate_udev_rules(
     encouraged to tailor these rules to suit their security needs.
     """
 
-    logger.debug(f"generating udev rules: {output}")
+    logger.info(f"generating udev rules: {output}")
 
     rules = USBLight.udev_rules()
     about = [
@@ -298,7 +330,7 @@ def serve_http_api(
     """Serve a HTTP API to access available lights."""
 
     (logger.enable if debug else logger.disable)("busylight")
-    logger.debug("serving http api")
+    logger.info("serving http api")
 
     try:
         import uvicorn
