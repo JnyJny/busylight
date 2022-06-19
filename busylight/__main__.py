@@ -187,7 +187,7 @@ def rainbow_lights(
 ) -> None:
     """Display rainbow colors on specified lights."""
 
-    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4)
+    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=ctx.obj.dim)
 
     try:
         manager.apply_effect(rainbow, ctx.obj.lights, timeout=ctx.obj.timeout)

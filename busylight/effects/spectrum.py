@@ -6,7 +6,7 @@ import math
 from itertools import cycle
 from typing import Tuple
 
-from ..color import ColorList, ColorTuple
+from ..color import ColorList, ColorTuple, scale_color
 from .effect import BaseEffect
 
 
@@ -14,6 +14,7 @@ class Spectrum(BaseEffect):
     def __init__(
         self,
         duty_cycle: float,
+        scale: float = 1.0,
         steps: int = 64,
         frequency: Tuple[float, float, float] = None,
         phase: ColorTuple = None,
@@ -22,7 +23,7 @@ class Spectrum(BaseEffect):
     ) -> None:
 
         self.duty_cycle = duty_cycle
-
+        self.scale = scale
         self.steps = steps
         self.frequency = frequency or (0.3, 0.3, 0.3)
         self.phase = phase or (0, 2, 4)
@@ -44,7 +45,7 @@ class Spectrum(BaseEffect):
             r = int((math.sin(rf * i + rp) * self.width) + self.center)
             b = int((math.sin(bf * i + bp) * self.width) + self.center)
             g = int((math.sin(gf * i + gp) * self.width) + self.center)
-            colors.append((r, g, b))
+            colors.append(scale_color((r, g, b), self.scale))
 
         self._colors = colors + list(reversed(colors[:-1]))
 
