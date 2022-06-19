@@ -6,6 +6,7 @@ import pytest
 from busylight.color import ColorLookupError
 from busylight.color import parse_color_string
 from busylight.color import colortuple_to_name
+from busylight.color import scale_color
 
 
 @pytest.mark.parametrize(
@@ -63,3 +64,29 @@ def test_parse_color_string_invalid(value) -> None:
 )
 def test_colortuple_to_name(value, expected) -> None:
     result = colortuple_to_name(value)
+
+
+@pytest.mark.parametrize(
+    "source,scale,expected",
+    [
+        ((255, 255, 255), 1.00, (255, 255, 255)),
+        ((255, 255, 255), 2.00, (255, 255, 255)),
+        ((255, 255, 255), 0.75, (191, 191, 191)),
+        ((255, 255, 255), 0.50, (128, 128, 128)),
+        ((255, 255, 255), 0.25, (64, 64, 64)),
+        ((255, 255, 255), 0.00, (0, 0, 0)),
+        ((255, 255, 255), -1.0, (0, 0, 0)),
+        ((0, 0, 0), 1.00, (0, 0, 0)),
+        ((0, 0, 0), 0.75, (0, 0, 0)),
+        ((0, 0, 0), 0.50, (0, 0, 0)),
+        ((0, 0, 0), 0.25, (0, 0, 0)),
+        ((0, 0, 0), 0.00, (0, 0, 0)),
+    ],
+)
+def test_scale_color(source, scale, expected):
+    result = scale_color(source, scale)
+    assert result == expected
+    result = scale_color(source)
+    assert result == source
+    result = scale_color(expected)
+    assert result == expected
