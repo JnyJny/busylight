@@ -5,6 +5,8 @@ TARGET=busylight
 PYPROJECT= pyproject.toml
 
 .PHONY: docs/busylight.1.md \
+        docs/busyserve.1.md \
+	docs \
         MAJOR MINOR PATCH \
         major minor patch \
         push publish\
@@ -35,6 +37,8 @@ MINOR:
 PATCH:
 	@poetry version patch
 
+
+docs: docs/busylight.1.md docs/busyserve.1.md
 
 docs/busylight.1.md:
 	@typer $(TARGET).__main__ utils docs --name busylight --output $@
