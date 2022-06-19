@@ -66,6 +66,13 @@ def test_colortuple_to_name(value, expected) -> None:
     assert result == expected
 
 
+@pytest.mark.parametrize("color", [(0, 0, 1), (255, 254, 253)])
+def test_colortuple_to_name_unknown_color(color) -> None:
+
+    with pytest.raises(ColorLookupError):
+        colortuple_to_name(color)
+
+
 @pytest.mark.parametrize(
     "source,scale,expected",
     [
