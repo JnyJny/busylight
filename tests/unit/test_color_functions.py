@@ -25,7 +25,6 @@ from busylight.color import scale_color
     ],
 )
 def test_parse_color_string(value, expected) -> None:
-
     result = parse_color_string(value)
     assert result == expected
 
@@ -64,6 +63,7 @@ def test_parse_color_string_invalid(value) -> None:
 )
 def test_colortuple_to_name(value, expected) -> None:
     result = colortuple_to_name(value)
+    assert result == expected
 
 
 @pytest.mark.parametrize(
@@ -86,7 +86,6 @@ def test_colortuple_to_name(value, expected) -> None:
 def test_scale_color(source, scale, expected):
     result = scale_color(source, scale)
     assert result == expected
-    result = scale_color(source)
-    assert result == source
+
     result = scale_color(expected)
     assert result == expected
