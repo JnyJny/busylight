@@ -14,14 +14,21 @@ from .lights import LightUnavailable, NoLightsFound, USBLight, Speed
 
 class LightManager:
     @staticmethod
-    def parse_target_lights(targets: str) -> List[int]:
+    def parse_target_lights(targets: Optional[str]) -> List[int]:
         """Parses the `targets` string to produce a list of indicies.
 
         The targets string may be:
+        - None, meaning choose first light
         - empty, meaning all lights
         - a single integer, specifying one line
-        - [0-9]+[-:][0-9]+, specifying a range.
+        - [0-9]+[-:][0-9]+[,]* specifying a range.
+
+        :return: list[int]
         """
+
+        if targets is None:
+            return [0]
+
         lights = []
         for target in targets.split(","):
             for sep in ["-", ":"]:

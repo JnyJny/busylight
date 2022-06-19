@@ -33,8 +33,8 @@ class GlobalOptions:
 manager = LightManager()
 
 
-def string_to_color(ctx: typer.Context, value: str) -> ColorTuple:
-    """typer Option callback: translates a string to a ColorTuple.
+def string_to_scaled_color(ctx: typer.Context, value: str) -> ColorTuple:
+    """typer.Option callback: translates a string to a ColorTuple.
 
     This callback is intended to be used by subcommands after the
     global callback has initialized ctx.obj to an instance of
@@ -54,14 +54,14 @@ def string_to_color(ctx: typer.Context, value: str) -> ColorTuple:
 
 
 def report_version(value: bool) -> None:
-    """Prints the version string and exits."""
+    """typer.Option callback: prints the version string and exits."""
     if value:
         typer.secho(__version__, fg="blue")
         raise typer.Exit()
 
 
 @cli.callback(invoke_without_command=True, no_args_is_help=True)
-def global_callback(
+def precommand_callback(
     ctx: typer.Context,
     debug: bool = typer.Option(
         False,
@@ -71,11 +71,10 @@ def global_callback(
         help="Enable debugging output.",
     ),
     targets: str = typer.Option(
-        "0",
+        None,
         "--light-id",
         "-l",
         help="Specify a light or lights to act on.",
-        callback=LightManager.parse_target_lights,
     ),
     all_lights: bool = typer.Option(
         False,
@@ -90,13 +89,13 @@ def global_callback(
         min=0,
         max=100,
         clamp=True,
-        help="Scale color intensity down by percentage",
+        help="Scale color intensity by percentage.",
     ),
     timeout: float = typer.Option(
         None,
         "--timeout",
         show_default=True,
-        help="Timeout in seconds",
+        help="Time out command in seconds.",
     ),
     version: bool = typer.Option(
         False,
@@ -110,28 +109,36 @@ def global_callback(
 
     (logger.enable if debug else logger.disable)("busylight")
 
-    ctx.ensure_object(GlobalOptions)
+    options = ctx.ensure_object(GlobalOptions)
 
-    ctx.obj.debug = debug
-    ctx.obj.dim = dim / 100
-    ctx.obj.timeout = timeout
-    ctx.obj.lights = targets
+    options.debug = debug
+    options.dim = dim / 100
+    options.timeout = timeout
+    options.lights = []
 
-    logger.info(f"version {__version__}")
+    if ctx.invoked_subcommand == "list" and targets is None:
+        all_lights = True
+
+    options.lights.extend(LightManager.parse_target_lights(targets))
 
     if all_lights:
-        ctx.obj.lights.clear()
+        options.lights.clear()
 
-    logger.info(f"timeout={ctx.obj.timeout}")
-    logger.info(f"    dim={ctx.obj.dim}")
-    logger.info(f" lights={ctx.obj.lights}")
-    logger.debug(f"    cmd={ctx.invoked_subcommand!r}")
+    if ctx.invoked_subcommand is None:
+        print(ctx.get_help())
+        raise typer.Exit(code=1)
+
+    logger.info(f"version {__version__}")
+    logger.info(f"timeout={options.timeout}")
+    logger.info(f"    dim={options.dim}")
+    logger.info(f" lights={options.lights}")
+    logger.info(f"    cmd={ctx.invoked_subcommand!r}")
 
 
 @cli.command(name="on")
 def turn_lights_on(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument("green", callback=string_to_color),
+    color: Optional[str] = typer.Argument("green", callback=string_to_scaled_color),
 ) -> None:
     """Activate lights.
 
@@ -162,7 +169,7 @@ def turn_lights_off(ctx: typer.Context) -> None:
 @cli.command(name="blink")
 def blink_lights(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument("red", callback=string_to_color),
+    color: Optional[str] = typer.Argument("red", callback=string_to_scaled_color),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Blink lights on and off.
@@ -221,8 +228,8 @@ def throb_lights(
 @cli.command(name="fli")
 def flash_lights_impressively(
     ctx: typer.Context,
-    color_a: Optional[str] = typer.Argument("red", callback=string_to_color),
-    color_b: Optional[str] = typer.Argument("blue", callback=string_to_color),
+    color_a: Optional[str] = typer.Argument("red", callback=string_to_scaled_color),
+    color_b: Optional[str] = typer.Argument("blue", callback=string_to_scaled_color),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Flash lights quickly between two colors.
@@ -258,7 +265,7 @@ def list_available_lights(
     logger.info(f"listing connected lights")
 
     try:
-        for light in manager.selected_lights():
+        for light in manager.selected_lights(ctx.obj.lights):
             typer.secho(f"{manager.lights.index(light):3d} ", nl=False, fg="red")
             typer.secho(light.name, fg="green")
             if not verbose:
