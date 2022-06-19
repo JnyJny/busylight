@@ -60,7 +60,7 @@ def report_version(value: bool) -> None:
         raise typer.Exit()
 
 
-@cli.callback(invoke_without_command=False)
+@cli.callback(invoke_without_command=True, no_args_is_help=True)
 def global_callback(
     ctx: typer.Context,
     debug: bool = typer.Option(
@@ -125,6 +125,7 @@ def global_callback(
     logger.info(f"timeout={ctx.obj.timeout}")
     logger.info(f"    dim={ctx.obj.dim}")
     logger.info(f" lights={ctx.obj.lights}")
+    logger.debug(f"    cmd={ctx.invoked_subcommand!r}")
 
 
 @cli.command(name="on")
