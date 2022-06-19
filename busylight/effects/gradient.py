@@ -17,7 +17,7 @@ class Gradient(BaseEffect):
     ) -> None:
         self.color = color
         self.duty_cycle = duty_cycle
-        self.step = step
+        self.step = max(0, min(step, 255))
 
     @property
     def colors(self) -> ColorList:
