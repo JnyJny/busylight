@@ -23,7 +23,7 @@ class Spectrum(BaseEffect):
     ) -> None:
 
         self.duty_cycle = duty_cycle
-        self.scale = scale
+        self.scale = max(0, min(scale, 1.0))
         self.steps = steps
         self.frequency = frequency or (0.3, 0.3, 0.3)
         self.phase = phase or (0, 2, 4)
