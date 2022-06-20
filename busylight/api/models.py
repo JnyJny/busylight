@@ -13,6 +13,7 @@ class LightOperation(BaseModel):
     rgb: Optional[Tuple[int, int, int]] = None
     speed: Optional[str] = None
     name: Optional[str] = None
+    dim: Optional[float] = 1.0
 
 
 class LightDescription(BaseModel):
