@@ -11,7 +11,7 @@ from loguru import logger
 
 from .lights import USBLight, Speed
 from .lights import NoLightsFound
-from .color import ColorLookupError, ColorTuple, parse_color_string, scale_color
+from .color import ColorLookupError, ColorTuple, parse_color_string
 from .effects import Effects
 from .manager import LightManager
 from .__version__ import __version__
@@ -46,8 +46,7 @@ def string_to_scaled_color(ctx: typer.Context, value: str) -> ColorTuple:
     """
 
     try:
-        color = parse_color_string(value)
-        return scale_color(color, ctx.obj.dim)
+        return parse_color_string(value, ctx.obj.dim)
     except ColorLookupError as error:
         typer.secho(f"No color match for '{value}'", fg="red")
         raise typer.Exit(code=1) from None
@@ -184,7 +183,7 @@ def blink_lights(
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho("Unable to blink lights.", fg="red")
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit(code=1) from None
 
 
 @cli.command(name="rainbow")
@@ -201,7 +200,7 @@ def rainbow_lights(
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"No rainbow for you.", fg="red")
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit(code=1) from None
 
 
 @cli.command(name="throb")
@@ -221,7 +220,7 @@ def throb_lights(
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to throb lights.", fg="red")
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit(code=1) from None
 
 
 @cli.command(name="fli")
@@ -246,7 +245,7 @@ def flash_lights_impressively(
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to flash lights impressively.", fg="red")
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit(code=1) from None
 
 
 @cli.command(name="list")
@@ -281,7 +280,7 @@ def list_available_lights(
                     typer.secho(v, fg="green")
     except NoLightsFound as error:
         typer.secho(f"No lights detected.", fg="red")
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit(code=1) from None
 
 
 @cli.command(name="supported")
@@ -347,7 +346,7 @@ def serve_http_api(
             "The package `uvicorn` is missing, unable to serve the busylight API.",
             fg="red",
         )
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit(code=1) from None
 
     try:
         uvicorn.run("busylight.api:busylightapi", host=host, port=port, reload=debug)
@@ -357,7 +356,7 @@ def serve_http_api(
             "Failed to start the webapi.",
             fg="red",
         )
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit(code=1) from None
 
 
 if __name__ == "__main__":

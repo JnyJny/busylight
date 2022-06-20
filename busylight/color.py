@@ -15,8 +15,8 @@ class ColorLookupError(Exception):
     pass
 
 
-def parse_color_string(value: str) -> ColorTuple:
-    """Convert a string to a 24-bit color, 3 channel color.
+def parse_color_string(value: str, scale: float = 1.0) -> ColorTuple:
+    """Convert a string to a 24-bit three channel (RGB) color.
 
     String values can be:
     - a webcolors recognized color name
@@ -24,12 +24,23 @@ def parse_color_string(value: str) -> ColorTuple:
     - a 24 or 12-bit hex string prefaced with `0x`
     - a bare 24 or 12-bit hex string
 
+    Optionally scales color intensities of all three channels if
+    `scale` is less than 1.0 and greater than or equal to zero.
+
+    If scale is zero, the resulting color is always black.
+    If scale is one, the color is unchanged.
+
+    :param value: str
+    :param scale: float range [0.0, 1.0]
+
     Raises:
     - ColorLookupError
     """
 
+    scale = max(0.0, min(scale, 1.0))
+
     try:
-        return tuple(webcolors.name_to_rgb(value))
+        return scale_color(tuple(webcolors.name_to_rgb(value)), scale)
     except ValueError as error:
         logger.info(f"name_to_rgb {value} -> {error}")
 
@@ -39,7 +50,8 @@ def parse_color_string(value: str) -> ColorTuple:
         value = "#" + value
 
     try:
-        return tuple(webcolors.hex_to_rgb(value))
+        return scale_color(tuple(webcolors.hex_to_rgb(value)), scale)
+
     except ValueError as error:
         logger.error(f"{value} -> {error}")
 
