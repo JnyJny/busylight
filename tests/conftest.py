@@ -262,3 +262,10 @@ def synthetic_light_manager(synthetic_lights) -> Generator[LightManager, None, N
     manager._lights = synthetic_lights
 
     yield manager
+
+
+@pytest.fixture(scope="session")
+def lights_available() -> bool:
+    """True if there are physical lights available for testing."""
+    available_lights = USBLight.available()
+    return bool(available_lights)
