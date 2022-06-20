@@ -1,4 +1,4 @@
-"""Color Generators
+"""Color Effect Generators
 """
 
 from .effect import BaseEffect as Effects
