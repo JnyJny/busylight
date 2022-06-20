@@ -101,38 +101,38 @@ def test_cli_blink_unknown_color(color) -> None:
     assert "No color match for" in result.stdout
 
 
-def test_cli_throb(lights_available) -> None:
-    result = runner.invoke(cli, "--timeout 0.1 throb")
+def test_cli_pulse(lights_available) -> None:
+    result = runner.invoke(cli, "--timeout 0.1 pulse")
     if lights_available:
         assert len(result.stdout) == 0
     else:
-        assert "Unable to throb lights" in result.stdout
+        assert "Unable to pulse lights" in result.stdout
 
 
 @pytest.mark.parametrize("color", GOOD_COLORS)
-def test_cli_throb_colors(color, lights_available) -> None:
-    result = runner.invoke(cli, f"--timeout 0.1 throb {color}")
+def test_cli_pulse_colors(color, lights_available) -> None:
+    result = runner.invoke(cli, f"--timeout 0.1 pulse {color}")
     assert "No color match for" not in result.stdout
 
 
 @pytest.mark.parametrize("color", BAD_COLORS)
-def test_cli_throb_unknown_colors(color) -> None:
-    result = runner.invoke(cli, f"--timeout 0.1 throb {color}")
+def test_cli_pulse_unknown_colors(color) -> None:
+    result = runner.invoke(cli, f"--timeout 0.1 pulse {color}")
     assert "No color match for" in result.stdout
 
 
 @pytest.mark.parametrize("speed", GOOD_SPEEDS)
-def test_cli_throb_speed(speed, lights_available) -> None:
-    result = runner.invoke(cli, f"--timeout 0.1 throb green {speed}")
+def test_cli_pulse_speed(speed, lights_available) -> None:
+    result = runner.invoke(cli, f"--timeout 0.1 pulse green {speed}")
     if lights_available:
         assert len(result.stdout) == 0
     else:
-        assert "Unable to throb lights" in result.stdout
+        assert "Unable to pulse lights" in result.stdout
 
 
 @pytest.mark.parametrize("speed", BAD_SPEEDS)
-def test_cli_throb_speed(speed) -> None:
-    result = runner.invoke(cli, f"--timeout 0.1 throb green {speed}")
+def test_cli_pulse_speed(speed) -> None:
+    result = runner.invoke(cli, f"--timeout 0.1 pulse green {speed}")
     assert "Error" in result.stdout
 
 

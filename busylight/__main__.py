@@ -203,13 +203,13 @@ def rainbow_lights(
         raise typer.Exit(code=1) from None
 
 
-@cli.command(name="throb")
-def throb_lights(
+@cli.command(name="pulse")
+def pulse_lights(
     ctx: typer.Context,
     color: Optional[str] = typer.Argument("red", callback=string_to_scaled_color),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
-    """Throb light on and off.
+    """Pulse light on and off.
 
     The default color is red."""
 
@@ -219,7 +219,7 @@ def throb_lights(
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
-        typer.secho(f"Unable to throb lights.", fg="red")
+        typer.secho(f"Unable to pulse lights.", fg="red")
         raise typer.Exit(code=1) from None
 
 
