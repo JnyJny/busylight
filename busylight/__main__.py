@@ -147,11 +147,11 @@ def turn_lights_on(
 
     try:
         manager.on(color, ctx.obj.lights, timeout=ctx.obj.timeout)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho("No lights to turn on.", fg="red")
-        raise typer.Exit(code=-1) from None
+        raise typer.Exit() from None
 
 
 @cli.command(name="off")
@@ -162,7 +162,6 @@ def turn_lights_off(ctx: typer.Context) -> None:
     try:
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
-        typer.secho(f"", fg="red")
         typer.secho("No lights to turn off.", fg="red")
 
 
@@ -181,7 +180,7 @@ def blink_lights(
 
     try:
         manager.apply_effect(blink, ctx.obj.lights, timeout=ctx.obj.timeout)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho("Unable to blink lights.", fg="red")
@@ -198,7 +197,7 @@ def rainbow_lights(
 
     try:
         manager.apply_effect(rainbow, ctx.obj.lights, timeout=ctx.obj.timeout)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"No rainbow for you.", fg="red")
@@ -208,7 +207,7 @@ def rainbow_lights(
 @cli.command(name="throb")
 def throb_lights(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument("red", callback=parse_color_string),
+    color: Optional[str] = typer.Argument("red", callback=string_to_scaled_color),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Throb light on and off.
@@ -218,7 +217,7 @@ def throb_lights(
     throb = Effects.for_name("gradient")(color, speed.duty_cycle / 16, 8)
     try:
         manager.apply_effect(throb, ctx.obj.lights, timeout=ctx.obj.timeout)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to throb lights.", fg="red")
@@ -243,7 +242,7 @@ def flash_lights_impressively(
 
     try:
         manager.apply_effect(fli, ctx.obj.lights, timeout=ctx.obj.timeout)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
         typer.secho(f"Unable to flash lights impressively.", fg="red")

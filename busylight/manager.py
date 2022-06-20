@@ -200,14 +200,25 @@ class LightManager:
         timeout: float = None,
         wait: bool = True,
     ) -> None:
-        """"""
+        """Async monitor for activating specified lights with the given color.
+
+        :param color: ColorTuple
+        :param lights: list[USBLight]
+        :param timeout: float
+        :param wait: bool
+
+        Raises:
+        - TimeoutError
+        """
         awaitables = []
         for light in lights:
             light.on(color)
             awaitables.extend(light.tasks.values())
 
         if awaitables and wait:
-            await asyncio.wait(awaitables, timeout=timeout)
+            done, pending = await asyncio.wait(awaitables, timeout=timeout)
+            if pending:
+                raise TimeoutError(f"On operation timed out {timeout}")
 
     def apply_effect(
         self,
@@ -244,6 +255,9 @@ class LightManager:
         :effect:
         :lights: List[USBLight]
         :timeout: float seconds
+
+        Raises:
+        - TimoutError if a timeout is specified and effects are still running.
         """
 
         awaitables = []
@@ -253,15 +267,20 @@ class LightManager:
             awaitables.extend(light.tasks.values())
 
         if awaitables and wait:
-            await asyncio.wait(awaitables, timeout=timeout)
+            done, pending = await asyncio.wait(awaitables, timeout=timeout)
+            if pending:
+                raise TimeoutError(f"Effect {effect} timed out {timeout}")
 
     def off(self, lights: List[int] = None) -> None:
         """Turn off all the lights whose indices are in the `lights` list.
 
         :lights: List[int]
 
-        raises:
+        Raises:
         - NoLightsFound
+
+        *Note*: This method is not asynchronnous as all known lights
+                deactive without excessive software mediation and drama.
         """
 
         for light in self.selected_lights(lights):
