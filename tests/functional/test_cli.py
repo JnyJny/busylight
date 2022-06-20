@@ -113,8 +113,14 @@ def test_cli_rainbow():
 
 
 def test_cli_off() -> None:
+
+    lights = USBLight.available()
+
     result = runner.invoke(cli, ["off"])
-    assert len(result.stdout) == 0
+    if lights:
+        assert len(result.stdout) == 0
+    else:
+        assert "No lights to turn off" in result.stdout
 
 
 def test_cli_list() -> None:
