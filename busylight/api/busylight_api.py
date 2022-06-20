@@ -220,6 +220,10 @@ async def available_endpoints() -> List[Dict[str, str]]:
     "/light/{light_id}/status",
     response_model=LightDescription,
 )
+@busylightapi.get(
+    "/light/{light_id}",
+    response_model=LightDescription,
+)
 async def light_status(
     light_id: int = Path(..., title="Numeric light identifier", ge=0)
 ) -> Dict[str, Any]:
@@ -237,6 +241,10 @@ async def light_status(
 
 @busylightapi.get(
     "/lights/status",
+    response_model=List[LightDescription],
+)
+@busylightapi.get(
+    "/lights",
     response_model=List[LightDescription],
 )
 async def lights_status() -> List[Dict[str, Any]]:
