@@ -238,7 +238,7 @@ def test_cli_list_specific_light(lights_available) -> None:
 
 @pytest.mark.parametrize("verbose", ["--verbose", "-v"])
 def test_cli_list_specific_light(verbose, lights_available) -> None:
-    result = runner.invoke(cli, "--light-id 0 list {verbose}")
+    result = runner.invoke(cli, f"--light-id 0 list {verbose}")
     if lights_available:
         assert len(result.stdout.splitlines()) > 1
     else:
