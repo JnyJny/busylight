@@ -19,7 +19,7 @@ from .__version__ import __version__
 
 cli = typer.Typer()
 
-webapi = typer.Typer()
+webcli = typer.Typer()
 
 
 @dataclass
@@ -317,7 +317,7 @@ def generate_udev_rules(
     print("\n".join(about + rules), file=output)
 
 
-@webapi.command()
+@webcli.command()
 def serve_http_api(
     debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
     host: str = typer.Option(

@@ -34,7 +34,7 @@ anyio = {extras = ["trio"], version = "^3.6.1"}
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
-busyserve="busylight.__main__:webapi"
+busyserve="busylight.__main__:webcli"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
