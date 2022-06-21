@@ -5,7 +5,6 @@ import pytest
 
 from typer.testing import CliRunner
 
-
 from busylight.__main__ import cli
 from busylight.__version__ import __version__
 from busylight.lights import USBLight
@@ -270,7 +269,3 @@ def test_cli_udev_rules_contents() -> None:
         ('MODE="0666"', nsupported * 2),
     ]:
         assert result.stdout.count(keyword) == count
-
-
-def test_cli_serve() -> None:
-    result = runner.invoke(cli, ["serve"])
