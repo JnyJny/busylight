@@ -1,6 +1,8 @@
 """ Busylight for Humans™ Web API Testing
 """
 
+import os
+
 import pytest
 
 from busylight.api import busylightapi
@@ -15,12 +17,12 @@ from httpx import AsyncClient
 #     available.
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def anyio_backend() -> str:
     return "asyncio"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 async def client(anyio_backend) -> AsyncClient:
     async with AsyncClient(app=busylightapi, base_url="http://test") as client:
         yield client
@@ -126,3 +128,15 @@ async def test_webapi_light_simple_operation(route, client) -> None:
     assert isinstance(content, dict)
 
     operation = LightOperation(**content)
+
+
+async def test_webapi_authentication(client) -> None:
+    os.environ["BUSYLIGHT_API_USER"] = "test_user"
+    os.environ["BUSYLIGHT_API_PASS"] = "test_pass"
+    async with AsyncClient(app=busylightapi, base_url="http://test") as client:
+        response = await client.get("/")
+        assert response.status_code == 200
+        # os.environ["BUSYLIGHT_API_USER"] = "bad_user"
+        # os.environ["BUSYLIGHT_API_PASS"] = "bad_pass"
+        # response = await client.get("/")
+        # assert response.status_code != 200
