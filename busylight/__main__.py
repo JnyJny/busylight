@@ -137,12 +137,13 @@ def precommand_callback(
 @cli.command(name="on")
 def turn_lights_on(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument("green", callback=string_to_scaled_color),
+    color: Optional[str] = typer.Argument(
+        "green",
+        callback=string_to_scaled_color,
+        show_default=True,
+    ),
 ) -> None:
-    """Activate lights.
-
-    The default is green.
-    """
+    """Activate light."""
 
     try:
         manager.on(color, ctx.obj.lights, timeout=ctx.obj.timeout)
@@ -155,7 +156,7 @@ def turn_lights_on(
 
 @cli.command(name="off")
 def turn_lights_off(ctx: typer.Context) -> None:
-    """Deactivate lights."""
+    """Turn off light."""
     logger.info("deactivating lights")
 
     try:
@@ -167,8 +168,13 @@ def turn_lights_off(ctx: typer.Context) -> None:
 @cli.command(name="blink")
 def blink_lights(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument("red", callback=string_to_scaled_color),
-    speed: Speed = typer.Argument(Speed.Slow),
+    color: Optional[str] = typer.Argument(
+        "red", callback=string_to_scaled_color, show_default=True
+    ),
+    speed: Speed = typer.Argument(
+        Speed.Slow,
+        show_default=True,
+    ),
 ) -> None:
     """Blink lights on and off.
 
@@ -188,7 +194,11 @@ def blink_lights(
 
 @cli.command(name="rainbow")
 def rainbow_lights(
-    ctx: typer.Context, speed: Speed = typer.Argument(Speed.Slow)
+    ctx: typer.Context,
+    speed: Speed = typer.Argument(
+        Speed.Slow,
+        show_default=True,
+    ),
 ) -> None:
     """Display rainbow colors on specified lights."""
 
@@ -206,8 +216,10 @@ def rainbow_lights(
 @cli.command(name="pulse")
 def pulse_lights(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument("red", callback=string_to_scaled_color),
-    speed: Speed = typer.Argument(Speed.Slow),
+    color: Optional[str] = typer.Argument(
+        "red", callback=string_to_scaled_color, show_default=True
+    ),
+    speed: Speed = typer.Argument(Speed.Slow, show_default=True),
 ) -> None:
     """Pulse light on and off.
 
@@ -226,16 +238,19 @@ def pulse_lights(
 @cli.command(name="fli")
 def flash_lights_impressively(
     ctx: typer.Context,
-    color_a: Optional[str] = typer.Argument("red", callback=string_to_scaled_color),
-    color_b: Optional[str] = typer.Argument("blue", callback=string_to_scaled_color),
+    color_a: Optional[str] = typer.Argument(
+        "red",
+        callback=string_to_scaled_color,
+        show_default=True,
+    ),
+    color_b: Optional[str] = typer.Argument(
+        "blue",
+        callback=string_to_scaled_color,
+        show_default=True,
+    ),
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
-    """Flash lights quickly between two colors.
-
-    The default colors are red and blue.
-
-    Probably need some sort of trigger warning here.
-    """
+    """Flash lights impressively between two colors."""
 
     fli = Effects.for_name("blink")(color_a, speed.duty_cycle / 10, off_color=color_b)
 
@@ -251,15 +266,15 @@ def flash_lights_impressively(
 @cli.command(name="list")
 def list_available_lights(
     ctx: typer.Context,
-    verbose: bool = typer.Option(False, "--verbose", "-v", is_flag=True),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        is_flag=True,
+        help="Shows additional information about each light.",
+    ),
 ) -> None:
-    """List currently connected lights.
-
-    Lights in this list are currently plugged in and available for
-    use. The `--verbose` flag will increase the amount of information
-    displayed for each light. The global `--light-id` argument is ignored
-    by this subcommand.
-    """
+    """List currently connected lights."""
     logger.info(f"listing connected lights")
 
     try:
@@ -284,14 +299,42 @@ def list_available_lights(
 
 
 @cli.command(name="supported")
-def list_supported_lights() -> None:
+def list_supported_lights(
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        is_flag=True,
+        help="Print vendor and product identifiers.",
+    ),
+) -> None:
     """List supported lights."""
     logger.info("listing supported lights")
-    for vendor, names in USBLight.supported_lights().items():
-        typer.secho(vendor, fg="blue")
-        for name in names:
+
+    if not verbose:
+
+        for vendor, names in USBLight.supported_lights().items():
+            typer.secho(vendor, fg="blue")
+            for name in sorted(names):
+                typer.secho("  - ", nl=False)
+                typer.secho(name, fg="green")
+        raise typer.Exit()
+
+    prev_vendor = ""
+    for subclass in USBLight.subclasses():
+        if prev_vendor != subclass.vendor:
+            typer.secho(subclass.vendor, fg="blue")
+        prev_vendor = subclass.vendor
+
+        devices = [
+            (vid, pid, name)
+            for (vid, pid), name in subclass.SUPPORTED_DEVICE_IDS.items()
+        ]
+
+        for (vid, pid, name) in sorted(devices, key=lambda entry: entry[2]):
             typer.secho("  - ", nl=False)
-            typer.secho(name, fg="green")
+            typer.secho(f"0x{vid:04x}:0x{pid:04x}", fg="blue", nl=False)
+            typer.secho(f" {name}", fg="green")
 
 
 @cli.command(name="udev-rules")
