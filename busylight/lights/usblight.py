@@ -133,6 +133,7 @@ class USBLight(abc.ABC):
         if cls is USBLight:
             for subclass in cls.__subclasses__():
                 subclasses.extend(subclass.subclasses())
+            subclasses.sort(key=lambda v: v.vendor)
             return subclasses
 
         subclasses.append(cls)
