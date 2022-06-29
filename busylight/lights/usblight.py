@@ -211,6 +211,7 @@ class USBLight(abc.ABC):
         :return: USBLight
         Raises:
         - NoLightsFound
+        - LightUnavailable
         """
         if cls is USBLight:
             for subclass in cls.subclasses():
@@ -327,15 +328,10 @@ class USBLight(abc.ABC):
         """The hardware control data written to the device."""
 
     @abc.abstractmethod
-    def on(self, color: ColorTuple) -> Optional[Awaitable[None]]:
+    def on(self, color: ColorTuple) -> None:
         """Activate the light with the specified color.
 
-        The light may optionally return an Awaitable instance
-        that implements additional software support the light
-        needs for this operation.
-
         :color: 3-tuple of 8-bit RGB values
-        :return: Awaitable or None
         """
         self.color = color
 
