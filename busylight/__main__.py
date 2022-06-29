@@ -144,7 +144,7 @@ def turn_lights_on(
     ),
 ) -> None:
     """Activate light."""
-
+    logger.info("activating lights")
     try:
         manager.on(color, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
@@ -158,7 +158,6 @@ def turn_lights_on(
 def turn_lights_off(ctx: typer.Context) -> None:
     """Turn off light."""
     logger.info("deactivating lights")
-
     try:
         manager.off(ctx.obj.lights)
     except NoLightsFound as error:
@@ -177,6 +176,7 @@ def blink_lights(
     ),
 ) -> None:
     """Blink light on and off."""
+    logger.info("blinking lights")
 
     blink = Effects.for_name("blink")(color, speed.duty_cycle)
 
@@ -198,7 +198,7 @@ def rainbow_lights(
     ),
 ) -> None:
     """Display rainbow colors on specified lights."""
-
+    logger.info("applying rainbow effect")
     rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=ctx.obj.dim)
 
     try:
@@ -219,7 +219,7 @@ def pulse_lights(
     speed: Speed = typer.Argument(Speed.Slow, show_default=True),
 ) -> None:
     """Pulse light on and off."""
-
+    logger.info("applying gradient effect")
     throb = Effects.for_name("gradient")(color, speed.duty_cycle / 16, 8)
     try:
         manager.apply_effect(throb, ctx.obj.lights, timeout=ctx.obj.timeout)
@@ -246,7 +246,7 @@ def flash_lights_impressively(
     speed: Speed = typer.Argument(Speed.Slow),
 ) -> None:
     """Flash lights impressively between two colors."""
-
+    logger.info("applying fli effect")
     fli = Effects.for_name("blink")(color_a, speed.duty_cycle / 10, off_color=color_b)
 
     try:
@@ -270,7 +270,7 @@ def list_available_lights(
     ),
 ) -> None:
     """List currently connected lights."""
-    logger.info(f"listing connected lights")
+    logger.info("listing connected lights")
 
     try:
         for light in manager.selected_lights(ctx.obj.lights):
