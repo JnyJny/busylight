@@ -1,4 +1,4 @@
-"""Spectrum Effect
+""" rainbows are fun!
 
 """
 import math
@@ -11,6 +11,8 @@ from .effect import BaseEffect
 
 
 class Spectrum(BaseEffect):
+    """This effect produces colors in the order of the rainbow (ROYGBIV)."""
+
     def __init__(
         self,
         duty_cycle: float,
@@ -21,6 +23,17 @@ class Spectrum(BaseEffect):
         center: int = 128,
         width: int = 127,
     ) -> None:
+        """
+        The `scale` parameter scales the intensity of the generated colors.
+
+        :param duty_cycle: float
+        :param scale: optional float
+        :param steps: optional int
+        :param frequency: optional tuple[float, float, float]
+        :param phase: optional tuple[int, int, int]
+        :param center: optional int
+        :param width: optional int
+        """
 
         self.duty_cycle = duty_cycle
         self.scale = max(0, min(scale, 1.0))

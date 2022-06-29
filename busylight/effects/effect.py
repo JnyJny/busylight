@@ -33,7 +33,14 @@ class BaseEffect(abc.ABC):
 
     @classmethod
     def for_name(cls, name: str) -> "BaseEffect":
+        """Finds an effect subclass with the given name.
 
+        :param name: str
+        :return: BaseEffect or subclass
+
+        Raises:
+        - ValueError for unknown effect names.
+        """
         casefolded_name = name.casefold()
         for subclass in cls.subclasses():
             if subclass.__name__.casefold() == casefolded_name:
@@ -51,6 +58,7 @@ class BaseEffect(abc.ABC):
 
     @property
     def name(self) -> str:
+        """The name of this effect."""
         return self.__class__.__name__
 
     @property
@@ -68,7 +76,10 @@ class BaseEffect(abc.ABC):
         """A list of color tuples."""
 
     async def __call__(self, light: USBLight) -> None:
-        """"""
+        """Apply this effect to the given light.
+
+        :param light: USBLight
+        """
         for color in cycle(self.colors):
             light.on(color)
             await asyncio.sleep(self.duty_cycle)
