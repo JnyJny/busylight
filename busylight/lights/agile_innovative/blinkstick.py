@@ -24,6 +24,7 @@ class BlinkStick(USBLight):
 
     @classmethod
     def claims(cls, hidinfo: HidInfo) -> bool:
+
         if not super().claims(hidinfo):
             return False
 
@@ -91,15 +92,7 @@ class BlinkStick(USBLight):
 
     def blink(self, color: ColorTuple, speed: Speed = Speed.Slow) -> None:
 
-        # EJO this is not correct. Fix it later.
-        async def software_blink() -> None:
-            while True:
-                self.on(color)
-                await asyncio.sleep(speed.duty_cycle)
-                self.off(color)
-                await asyncio.sleep(speed.duty_cycle)
-
-        return software_blink()
+        raise NotImplementedError("blink")
 
     def off(self):
         self.on((0, 0, 0))
