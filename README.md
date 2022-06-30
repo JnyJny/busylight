@@ -218,7 +218,7 @@ manager.apply_effect(rainbow)
 manager.off()
 ```
 
-[0]: https://pypi.org/project/busylight-for-humans/
+[0]: https://github.com/JnyJny/busylight
 
 <!-- doc links -->
 [2]: docs/devices/agile_innovative.md
