@@ -45,9 +45,9 @@ hidapi==0.11.2 \
 loguru==0.6.0; python_version >= "3.5" \
     --hash=sha256:4e2414d534a2ab57573365b3e6d0234dfb1d84b68b7f3b948e6fb743860a77c3 \
     --hash=sha256:066bd06758d0a513e9836fd9c6b5a75bfb3fd36841f4b996bc60b547a309d41c
-typer==0.2.1; python_version >= "3.6" \
-    --hash=sha256:9b66756dfcc9e9f829a33f9019757225af0c8e87e1e692f103556335d5ae3b25 \
-    --hash=sha256:a8c49418f20c1d1b04a34424dded86cebf1f87042a8e448c6faa63cf38b9c0af
+typer==0.4.2; python_version >= "3.6" \
+    --hash=sha256:023bae00d1baf358a6cc7cea45851639360bb716de687b42b0a4641cd99173f1 \
+    --hash=sha256:b8261c6c0152dd73478b5ba96ba677e5d6948c715c310f7c91079f311f62ec03
 webcolors==1.12; python_version >= "3.5" \
     --hash=sha256:16d043d3a08fd6a1b1b7e3e9e62640d09790dce80d2bdd4792a175b35fe794a9 \
     --hash=sha256:d98743d81d498a2d3eaf165196e65481f0d2ea85281463d856b1e51b09f62dce
