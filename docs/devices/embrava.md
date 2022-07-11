@@ -61,7 +61,7 @@ structure for fields that follow.
 ```C
 typedef struct {
    unsigned int header: 8;  /* 64:71 Constant: 0x00 */
-   unsigned int red:    8;  /* 56:63 Red color value [-255] */
+   unsigned int red:    8;  /* 56:63 Red color value [0-255] */
    unsigned int blue:   8;  /* 48:55 Blue color value [0-255] */
    unsigned int green:  8;  /* 40:47 Green color value [0-255] */
 
