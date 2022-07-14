@@ -20,6 +20,7 @@ from .agile_innovative import BlinkStick
 from .embrava import Blynclight
 from .kuando import Busylight
 from .luxafor import Flag, Mute, Orb
+from .muteme import MuteMe
 from .plantronics import Status_Indicator
 from .thingm import Blink1
 
@@ -37,6 +38,7 @@ __all__ = [
     "LightUnavailable",
     "LightUnsupported",
     "Mute",
+    "MuteMe",
     "NoLightsFound",
     "Orb",
     "Speed",
