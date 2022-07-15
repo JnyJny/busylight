@@ -87,12 +87,12 @@ the color order for the device is BGR rather than the expected RGB.
 
 **Example: Active Light with White Color.**
 ```C
-    muteme_ctl_t cword;
+muteme_ctl_t cword;
 	
-	cword.red = 1;
-	cword.green = 1;
-	cword.blue = 1;
-	/* write control word to device. */
+cword.red = 1;
+cword.green = 1;
+cword.blue = 1;
+/* write control word to device. */
 ```
 
 ### Turn Light Off
