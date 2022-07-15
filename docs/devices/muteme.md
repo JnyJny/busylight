@@ -1,6 +1,6 @@
 ![Busylight Project Logo][0]
 
-## MuteMe.com MuteMe
+## MuteMe
 
 The [MuteMe][1] family of products are designed as physical mute buttons to
 control a computer's microphone function. There are three versions of the
