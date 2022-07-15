@@ -37,6 +37,7 @@ Human Interface Device (HID) application programming interface
 - [Embrava Blynclight][2]
 - [Kuando BusyLight][3]
 - [Luxafor Flag][4]
+- [MuteMe][7]
 - [ThingM blink(1)][5]
 - [Agile Innovative BlinkStick][6]
 
@@ -52,5 +53,5 @@ Human Interface Device (HID) application programming interface
 [4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
 [5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
 [6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
-
+[7]: https://github.com/JnyJny/busylight/blob/master/docs/devices/muteme.md
 
