@@ -119,7 +119,7 @@ somewhat fragile. Writes with unrecognized values can "confuse" the
 device and require a hard reboot (removing and reconnecting power via
 the USB cable). Reading from the device with a buffer length of less
 than 4 or reading at high frequency can also push the device into an
-error state that can be recovered by close and re-opening the device.
+error state that can be recovered by closing and re-opening the device.
 
 While the command word for the device is extremely compact, the
 restriction of specifying color with only 3-bits reduces the
