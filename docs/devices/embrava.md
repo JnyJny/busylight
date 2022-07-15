@@ -81,7 +81,7 @@ typedef struct {
    unsigned int pad2:   3;  /* 16:18 unused bits */
 
    unsigned int footer: 16; /* 00:15 Constant: 0xFF22 */
-} blynclight_ctrl_t
+} blynclight_ctrl_t;
 ```
 
 ### Device Operation
