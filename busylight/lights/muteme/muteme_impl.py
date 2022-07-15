@@ -44,8 +44,9 @@ class Command(BitVector):
 
     typedef struct {
       unsigned int header:8;
+      unsigned int pad:1;
       unsigned int sleep:1;
-      unsigned int blink:2;
+      unsigned int blink:1;
       unsigned int dim:1;
       unsigned int blue:1;
       unsigned int green:1;
