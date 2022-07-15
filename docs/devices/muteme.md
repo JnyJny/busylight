@@ -149,3 +149,4 @@ of other supported devices.
 [0]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
 [1]: https://muteme.com
 [2]: https://muteme.com/pages/muteme-hid-key
+[H]: https://github.com/libusb/hidapi
