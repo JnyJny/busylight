@@ -58,7 +58,7 @@ typedef struct {
   unsigned int header:8;   /* 08:15 Constant: 0x00 */
 
   unsigned int sleep:1;    /* 07:07 Initiates a ten second sleep mode */
-  unsgined int pad0:1;
+  unsigned int pad0:1;
   unsigned int blink:1;	   /* 05:05 Blink */
   unsigned int dim:1;	   /* 04:04 Set is dim, cleared is bright*/
   unsigned int reserved:1; /* 03:03 Reserved for future use. */
