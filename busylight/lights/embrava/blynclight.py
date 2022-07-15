@@ -7,7 +7,7 @@ from ...color import ColorTuple
 from ..speed import Speed
 from ..usblight import USBLight, HidInfo
 
-from .blynclight_impl import BlynclightCommand
+from .blynclight_impl import Command
 
 
 class Blynclight(USBLight):
@@ -18,7 +18,7 @@ class Blynclight(USBLight):
         (0x2C0D, 0x000C): "Blynclight",
         (0x2C0D, 0x0010): "Blynclight Plus",
         (0x0E53, 0x2517): "Blynclight Mini",
-        (0x0E53, 0x2516): "Blynclight"
+        (0x0E53, 0x2516): "Blynclight",
     }
     vendor = "Embrava"
 
@@ -27,7 +27,7 @@ class Blynclight(USBLight):
         hidinfo: HidInfo,
         reset: bool = True,
     ) -> None:
-        self.command = BlynclightCommand()
+        self.command = Command()
         super().__init__(hidinfo, reset=reset)
 
     def __bytes__(self) -> bytes:

@@ -5,27 +5,27 @@ from bitvector import BitVector, BitField, ReadOnlyBitField
 from ...color import ColorTuple
 
 
-class BlynclightCmdHeader(ReadOnlyBitField):
+class Header(ReadOnlyBitField):
     """A 16-bit constant field whose value is zero."""
 
 
-class BlynclightColor(BitField):
+class ColorField(BitField):
     """An 8-bit color value."""
 
 
-class BlynclightOff(BitField):
+class OffField(BitField):
     """A 1-bit field that toggles the light off."""
 
 
-class BlynclightDim(BitField):
+class DimField(BitField):
     """A 1-bit field that toggles dim mode on."""
 
 
-class BlynclightFlash(BitField):
+class FlashField(BitField):
     """A 1-bit field that toggles flash mode on."""
 
 
-class BlynclightSpeed(BitField):
+class SpeedField(BitField):
     """A 3-bit field that specifies the flash speed.
 
     b000 : invalid
@@ -35,26 +35,26 @@ class BlynclightSpeed(BitField):
     """
 
 
-class BlynclightRepeat(BitField):
+class RepeatField(BitField):
     """A 1 bit field that toggles tune repeat mode on."""
 
 
-class BlynclightPlay(BitField):
+class PlayField(BitField):
     """A 1-bit field that toggles playing the selected tune."""
 
 
-class BlynclightMusic(BitField):
+class MusicField(BitField):
     """A 4-bit field that selects a firmware tune to play.
 
     Valid values range from 1 to 10.
     """
 
 
-class BlynclightMute(BitField):
+class MuteField(BitField):
     """A 1-bit field that toggles muting the tune being played."""
 
 
-class BlynclightVolume(BitField):
+class VolumeField(BitField):
     """A 4-bit field controlling the volume of the tune when played.
 
     Valid values range from 0 to 10, corresponding to percentage of
@@ -62,43 +62,44 @@ class BlynclightVolume(BitField):
     """
 
 
-class BlynclightCmdFooter(ReadOnlyBitField):
+class Footer(ReadOnlyBitField):
     """A 16-bit constant field with value 0xFF22."""
 
 
-class BlynclightCommand(BitVector):
+class Command(BitVector):
     """Blynclight Command
 
-    A bit-wise representation of the command format
-    expected by the Blynclight family of devices.
+    A bit-wise representation of the command format expected by the
+    Blynclight family of devices.
 
-    The command format is nine bytes in length;
-    the first byte is constant zero and the final
-    two bytes are constant 0xff22. The intervening
-    bits control various functionality of the light.
+    The command format is nine bytes in length; the first byte is
+    constant zero and the final two bytes are constant 0xff22. The
+    intervening bits control various functionality of the light.
 
-    The field bit length and names are:
-    8 : constant 0
-    8 : red
-    8 : blue
-    8 : green
+    typedef struct {
+      unsigned int header:8; /* constant 0x00 */
+      unsigned int red:8;
+      unsigned int blue:8;
+      unsigned int green:8;
 
-    1 : off
-    1 : dim
-    1 : flash
-    3 : speed
-    2 : pad
+      unsigned int off:1;
+      unsigned int dim:1;
+      unsigned int flash:1;
+      unsigned int speed:3;
+      unsigned int pad0:2;
 
-    4 : music
-    1 : play
-    1 : repeat
-    2 : pad
+      unsigned int music:4;
+      unsigned int play:1;
+      unsigned int repeat:1;
+      unsigned int pad1:2;
 
-    4 : volume
-    1 : mute
-    3 : pad
+      unsigned int volume:4;
+      unsigned int mute:1;
+      unsigned int pad2:3;
 
-    16: constant 0xff22
+      unsigned int footer:16; /* constant 0xff22 */
+    }
+
     """
 
     def __init__(self):
@@ -116,21 +117,21 @@ class BlynclightCommand(BitVector):
     def color(self, new_color: ColorTuple) -> None:
         self.red, self.green, self.blue = new_color
 
-    header = BlynclightCmdHeader(64, 8)
-    red = BlynclightColor(56, 8)
-    blue = BlynclightColor(48, 8)
-    green = BlynclightColor(40, 8)
+    header = Header(64, 8)
+    red = ColorField(56, 8)
+    blue = ColorField(48, 8)
+    green = ColorField(40, 8)
 
-    off = BlynclightOff(32, 1)
-    dim = BlynclightDim(33, 1)
-    flash = BlynclightFlash(34, 1)
-    speed = BlynclightSpeed(35, 3)
+    off = OffField(32, 1)
+    dim = DimField(33, 1)
+    flash = FlashField(34, 1)
+    speed = SpeedField(35, 3)
     # 2 bit pad
-    music = BlynclightMusic(28, 4)
-    play = BlynclightPlay(27, 1)
-    repeat = BlynclightRepeat(26, 1)
+    music = MusicField(28, 4)
+    play = PlayField(27, 1)
+    repeat = RepeatField(26, 1)
     # 2 bit pad
-    volume = BlynclightVolume(20, 4)
-    mute = BlynclightMute(19, 1)
+    volume = VolumeField(20, 4)
+    mute = MuteField(19, 1)
     # 3 bit pad
-    footer = BlynclightCmdFooter(0, 16)
+    footer = Footer(0, 16)
