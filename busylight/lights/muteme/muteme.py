@@ -44,9 +44,37 @@ class MuteMe(USBLight):
         super().blink(color, blink)
         with self.batch_update():
             self.command.color = color
-            self.command.blink = blink.value & 0x2
+            if blink in [Speed.Slow, Speed.Medium]:
+                self.command.blink = 2
+            if blink in [Speed.Fast]:
+                self.command.blink = 1
 
-    @property
-    def touch(self) -> int:
-        """ """
-        raise NotImplementedError("touch")
+    def touch(self, timeout: int = 100) -> bool:
+        """Returns the current state of the touch surface."""
+
+        # EJO this is a hack constructed from observing that
+        #     consecutive reads from the device while touched can be:
+        #
+        #     a = [0, 0, 0, 1]
+        #     b = [0, 0, 0, 0]
+        #
+        #     Sometimes the order is reversed where b contains the
+        #     actual touch status in the final byte. If we sum each of
+        #     the items in both arrays we should arrive at a valid
+        #     touch status in the final byte regardless of how the
+        #     device was polled. This behavior will probably need to
+        #     be controlled, hopefully the device release_number will
+        #     provide the necessary information to differentiate
+        #     devices that might need different polling strategies.
+        #
+
+        first = self.read_strategy(4, timeout)
+        second = self.read_strategy(4, timeout)
+
+        result = [f + s for f, s in zip(first, second)]
+
+        try:
+            return result[-1] == 1
+        except IndexError:
+            pass
+        return False

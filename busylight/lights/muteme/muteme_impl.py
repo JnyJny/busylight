@@ -61,9 +61,10 @@ class Command(BitVector):
         self.default = self.value
 
     header = Header(8, 8)
+    # bit 7 unused?
 
-    sleep = SleepField(7, 1)
-    blink = BlinkField(5, 2)
+    sleep = SleepField(6, 1)
+    _blink = BlinkField(5, 1)
     dim = DimField(4, 1)
 
     reserved = ReservedField(3, 1)
@@ -95,3 +96,19 @@ class Command(BitVector):
     def firmware_update(self, value: bool) -> None:
         self.reserved = int(bool(value))
         self.red = int(bool(value))
+
+    @property
+    def blink(self) -> int:
+        if self._blink:
+            return self._blink + self.dim
+        return 0
+
+    @blink.setter
+    def blink(self, value: int) -> None:
+        if value == 0:
+            self._blink = 0
+        if value == 1:
+            self._blink = 1
+        if value == 2:
+            self._blink = 1
+            self.dim = 1

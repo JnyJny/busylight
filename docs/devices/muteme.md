@@ -58,7 +58,8 @@ typedef struct {
   unsigned int header:8;   /* 08:15 Constant: 0x00 */
 
   unsigned int sleep:1;    /* 07:07 Initiates a ten second sleep mode */
-  unsigned int blink:2;	   /* 05:06 Blink: off=00 slow=01, fast=10 */
+  unsgined int pad0:1;
+  unsigned int blink:1;	   /* 05:05 Blink */
   unsigned int dim:1;	   /* 04:04 Set is dim, cleared is bright*/
   unsigned int reserved:1; /* 03:03 Reserved for future use. */
   unsigned int blue:1;	   /* 02:02 Set is full value blue */
@@ -107,13 +108,9 @@ bright operation when `dim` is cleared.
 
 ### Blink Mode
 
-The light can be made to blink at two different speeds by setting the
-`blink` field. Valid blink values are:
-
-- 0b00 off
-- 0b01 slow
-- 0b10 unused state
-- 0b11 fast
+The light can blink at two different speeds: slow and fast.
+Fast blink is indicated by setting blink and clearing dim.
+Slow blink is indicated by setting blink and setting dim.
 
 ## Observations
 
