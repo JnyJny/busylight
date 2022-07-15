@@ -174,6 +174,18 @@ def hidinfo_list() -> Generator[List[Dict[str, Union[bytes, int, str]]], None, N
             "usage": 1,
             "interface_number": 0,
         },
+        {
+            "interface_number": 0,
+            "manufacturer_string": "muteme.com",
+            "path": b"DevSrvsID:4295036958",
+            "product_id": 17114,
+            "product_string": "MuteMe",
+            "release_number": 256,
+            "serial_number": "",
+            "usage": 6,
+            "usage_page": 9,
+            "vendor_id": 8352,
+        },
     ]
 
     yield hidinfos

@@ -1,66 +1,97 @@
-""" MuteMe implementation details
+""" MuteMe Implementation Details
 """
 
-from enum import Enum
+from bitvector import BitVector, BitField, ReadOnlyBitField
 
 from loguru import logger
 
-from ...color import ColorTuple, colortuple_to_name, ColorLookupError
+from ...color import ColorTuple
 
 
-class MuteMeUnknownColor(Exception):
-    def __str__(self) -> str:
-        return f"Color {self.args[0]} not in {list(MuteMeColor.__members__.keys())}"
+class Header(ReadOnlyBitField):
+    """An 8-bit constant field whose value is zero."""
 
 
-class MuteMeEffect(int, Enum):
-    dim = 0x10
-    blink_fast = 0x20
-    blink_slow = 0x30
+class ColorField(BitField):
+    """A 1-bit color value."""
 
 
-class MuteMeTouch(int, Enum):
-    clear = 0x00
-    touching = 0x01
-    end = 0x02
-    start = 0x04
+class ReservedField(ReadOnlyBitField):
+    """A 1-bit constant field reserved for future use."""
 
 
-class MuteMeColor(int, Enum):
-    black = 0x00
-    red = 0x01
-    green = 0x02
-    yellow = 0x03
-    blue = 0x04
-    purple = 0x05
-    cyan = 0x06
-    white = 0x07
+class DimField(BitField):
+    """A 1-bit field that toggles dim mode on."""
 
-    @classmethod
-    def from_colortuple(
-        cls,
-        color: ColorTuple,
-        dim: bool = False,
-        blink: int = 0,
-    ) -> int:
-        try:
-            name = colortuple_to_name(color)
-            logger.info(f"{color=} {name=}")
-            return getattr(cls, name.lower())
 
-        except ColorLookupError:
-            logger.info(f"no name for {color}")
-        except AttributeError:
-            logger.info(f"name {name} not defined for MuteMe")
+class BlinkField(BitField):
+    """A 2-bit field that toggles blink mode off/slow/flast."""
 
-        r, g, b = color
-        if r and not g and not b:
-            return cls.red
 
-        if g and not r and not b:
-            return cls.green
+class SleepField(BitField):
+    """A 1-bit field that toggles the device's auto-sleep mode."""
 
-        if b and not r and not g:
-            return cls.blue
 
-        raise MuteMeUnknownColor(color)
+class Command(BitVector):
+    """MuteMe Command
+
+    A bit-wise representation of the command format expected by the
+    MuteMe family of devices.
+
+    The command format is two bytes in length; the first byte is constant
+    zero and the second byte consists of five bit fields that control the
+    functionality of the light.
+
+    typedef struct {
+      unsigned int header:8;
+      unsigned int sleep:1;
+      unsigned int blink:2;
+      unsigned int dim:1;
+      unsigned int blue:1;
+      unsigned int green:1;
+      unsigned int red:1;
+    }
+
+    Note: This device can only display 8 colors due to the 3-bit color
+          versus the typical 24-bit color in other devices.
+    """
+
+    def __init__(self):
+        super().__init__(0x00, 16)
+        self.default = self.value
+
+    header = Header(8, 8)
+
+    sleep = SleepField(7, 1)
+    blink = BlinkField(5, 2)
+    dim = DimField(4, 1)
+
+    reserved = ReservedField(3, 1)
+    blue = ColorField(2, 1)
+    green = ColorField(1, 1)
+    red = ColorField(0, 1)
+
+    def reset(self):
+        self.value = self.default
+
+    @property
+    def color(self) -> ColorTuple:
+        color = (self.red, self.green, self.blue)
+        return tuple(255 if value else 0 for value in color)
+
+    @color.setter
+    def color(self, new_color: ColorTuple) -> None:
+        r, g, b = new_color
+        self.red = int(bool(r))
+        self.green = int(bool(g))
+        self.blue = int(bool(b))
+
+    @property
+    def firmware_update(self) -> bool:
+        """Use not recommended."""
+        return self.reserved and self.red
+
+    @firmware_update.setter
+    def firmware_update(self, value: bool) -> None:
+        self.reserved = int(bool(value))
+        self.red = int(bool(value))

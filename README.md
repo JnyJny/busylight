@@ -1,4 +1,4 @@
-<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) -->
+<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) muteme -->
 ![version][pypi-version]
 ![monthly-downloads][monthly-downloads]
 ![supported python versions][python-versions] 
@@ -31,11 +31,11 @@ Python project.
 - Import `busylight` into your own Python project.
 - Supports six vendors & multiple models:
  
-| [**Agile Innovative**][2] | [**Embrava**][3] | [**Plantronics**][3]| [**Kuando**][4]| [**Luxafor**][5] | [**ThingM**][6] |
-|-------------------------|----------------|-------------------|--------------|----------------|---------------|
-| BlinkStick		    | Blynclight       | Status Indicator    | Busylight Alpha|  Flag            | Blink(1)        |
-| BlinkStick Pro	    | Blynclight Mini  |	             | Busylight Omega|  Mute            |                 |
-| BlinkStick Square	    | Blynclight Plus  |                     |                |  Orb             |                 |
+| [**Agile Innovative**][2] | [**Embrava**][3] |  [**MuteMe**][7] | [**Plantronics**][3]| [**Kuando**][4]| [**Luxafor**][5] | [**ThingM**][6] |
+|-------------------------|----------------|-------------------|--------------|----------------|---------------|---------------|
+| BlinkStick		    | Blynclight       | MuteMe Original (prototype) | Status Indicator    | Busylight Alpha|  Flag            | Blink(1)        |
+| BlinkStick Pro	    | Blynclight Mini  | MuteMe Original (production) |	             | Busylight Omega|  Mute            | 
+| BlinkStick Square	    | Blynclight Plus  | Mute Mini |                    |                |  Orb             |                 | 
 | BlinkStick Strip          |
 | BlinkStick Nano	    |
 | BlinkStick Flex           |
@@ -226,6 +226,7 @@ manager.off()
 [4]: docs/devices/kuando.md
 [5]: docs/devices/luxafor.md
 [6]: docs/devices/thingm.md
+[7]: docs/devices/muteme.md
 
 [LOGO]: docs/assets/BusyLightLogo.png
 [HELP]: docs/busylight.1.md
