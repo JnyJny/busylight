@@ -6,7 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from busylight.__main__ import cli
-from busylight.__version__ import __version__
+from busylight import __version__
 from busylight.lights import USBLight
 
 runner = CliRunner()

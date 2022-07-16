@@ -14,7 +14,7 @@ from .lights import NoLightsFound
 from .color import ColorLookupError, ColorTuple, parse_color_string
 from .effects import Effects
 from .manager import LightManager
-from .__version__ import __version__
+from . import __version__
 
 
 cli = typer.Typer()
@@ -368,7 +368,7 @@ def serve_http_api(
         help="Host name to bind the server to.",
     ),
     port: int = typer.Option(
-        21169,
+        8000,
         "--port",
         "-p",
         help="Network port number to listen on.",

@@ -141,7 +141,10 @@ async def startup():
 
 @busylightapi.on_event("shutdown")
 async def shutdown():
-    await busylightapi.off()
+    try:
+        await busylightapi.off()
+    except Exception as error:
+        logger.debug("problem during shutdown: {error}")
 
 
 ## Exception Handlers
