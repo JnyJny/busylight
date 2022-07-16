@@ -33,7 +33,7 @@ def test_model_endpoint(path, expected_exception) -> None:
 
 
 @pytest.mark.parametrize(
-    "light_id,name,hidinfo,is_on,color,rgb",
+    "light_id,name,info,is_on,color,rgb",
     [
         (
             0,
@@ -45,16 +45,16 @@ def test_model_endpoint(path, expected_exception) -> None:
         ),
     ],
 )
-def test_model_lightdescription(light_id, name, hidinfo, is_on, color, rgb) -> None:
+def test_model_lightdescription(light_id, name, info, is_on, color, rgb) -> None:
     light_description = LightDescription(
-        light_id=light_id, name=name, hidinfo=hidinfo, is_on=is_on, color=color, rgb=rgb
+        light_id=light_id, name=name, info=info, is_on=is_on, color=color, rgb=rgb
     )
 
     assert light_description.light_id == light_id
     assert light_description.name == name
-    assert isinstance(light_description.hidinfo, dict)
-    for key, value in hidinfo.items():
-        assert light_description.hidinfo[key] == value
+    assert isinstance(light_description.info, dict)
+    for key, value in info.items():
+        assert light_description.info[key] == value
     assert light_description.is_on == is_on
     assert light_description.color == color
     assert light_description.rgb == rgb
