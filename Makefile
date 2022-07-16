@@ -66,11 +66,11 @@ requirements.txt: poetry.lock
 	@git add $@
 	@git commit -m "export requirements from poetry for dependabot"
 
-major_release: requirements.txt major push publish
+major_release: major push publish
 
-minor_release: requirements.txt minor push publish
+minor_release: minor push publish
 
-patch_release: requirements.txt patch push publish
+patch_release: patch push publish
 
 release: patch_release
 
