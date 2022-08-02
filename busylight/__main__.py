@@ -273,9 +273,7 @@ def list_available_lights(
     logger.info("listing connected lights")
 
     try:
-        for light in sorted(
-            manager.selected_lights(ctx.obj.lights), key=lambda l: l.vendor
-        ):
+        for light in manager.selected_lights(ctx.obj.lights):
             typer.secho(f"{manager.lights.index(light):3d} ", nl=False, fg="red")
             typer.secho(light.name, fg="green")
             if not verbose:

@@ -91,7 +91,7 @@ class USBLight(abc.ABC):
 
     >> from busylight.lights import Blynclight
     >> blynclights = Blynclight.all_lights()
-    >> Blynclight.supported()
+    >> Blynclight.supported_lights()
     [<class 'busylight.lights.embrava.blynclight.Blynclight'>,
      <class 'busylight.lights.plantronics.status_indicator.Status_Indicator'>]
 
@@ -193,7 +193,7 @@ class USBLight(abc.ABC):
             for subclass in cls.subclasses():
                 all_lights.extend(subclass.all_lights(reset=reset))
             logger.info(f"{cls.__name__} found {len(all_lights)} lights total")
-            return sorted(all_lights)
+            return sorted(all_lights, key=lambda l: l.vendor)
 
         for device in cls.available():
             try:
