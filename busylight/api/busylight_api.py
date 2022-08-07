@@ -6,8 +6,10 @@ from secrets import compare_digest
 from typing import Callable, List, Dict, Any
 
 from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from json import loads as json_loads
 from loguru import logger
 
 from .. import __version__
@@ -73,6 +75,16 @@ class BusylightAPI(FastAPI):
             self.username = None
             self.password = None
 
+        logger.info("Set up CORS Access-Control-Allow-Origin header, if environment variable is set.")
+        try:
+            self.origins = json_loads(environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
+            logger.info("Found CORS allowed origins in environment.")
+        except KeyError:
+            logger.info("Did NOT find CORS allowed origins in environment.")
+            logger.info("CORS Access-Control-Allow-Origin header will NOT be set.")
+            self.origins = None
+
+
         super().__init__(
             title="Busylight Server: A USB Light Server",
             description=__description__,
@@ -113,6 +125,17 @@ class BusylightAPI(FastAPI):
 
     def get(self, path: str, **kwargs) -> Callable:
         self.endpoints.append(path)
+
+        # CORS allowed origins (for the Access-Control-Allow-Origin header)
+        # are set through an environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST
+        # e.g.: export BUSYLIGHT_API_CORS_ORIGINS_LIST='["http://localhost", "http://localhost:8080"]'
+        # (see https://fastapi.tiangolo.com/tutorial/cors/ for details)
+        if self.origins != None:
+            self.add_middleware(
+                CORSMiddleware,
+                allow_origins=self.origins,
+            )
+        
         kwargs.setdefault("response_model_exclude_unset", True)
         return super().get(path, **kwargs)
 
