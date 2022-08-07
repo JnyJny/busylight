@@ -13,6 +13,7 @@ from json import loads as json_loads
 from loguru import logger
 
 from .. import __version__
+from ..__main__ import GlobalOptions
 
 from ..color import ColorTuple, parse_color_string, colortuple_to_name, ColorLookupError
 from ..effects import Effects
@@ -61,10 +62,11 @@ busylightapi_security = HTTPBasic()
 class BusylightAPI(FastAPI):
     def __init__(self):
 
+        logger.info('GlobalOptions.debug: {}'.format(GlobalOptions.debug))
+
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
         try:
-
             self.username = environ["BUSYLIGHT_API_USER"]
             self.password = environ["BUSYLIGHT_API_PASS"]
             dependencies.append(Depends(self.authenticate_user))
