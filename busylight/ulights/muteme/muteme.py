@@ -7,7 +7,10 @@ from ..hidlight import HIDLight, HIDInfo
 
 
 class MuteMe(HIDLight):
+    @staticmethod
+    def supported_device_ids() -> dict[tuple[int, int], str]:
+        return {}
 
-    supported_device_ids = {}
-
-    vendor = "MuteMe"
+    @staticmethod
+    def vendor() -> str:
+        return "MuteMe"

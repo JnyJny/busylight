@@ -1,8 +1,10 @@
-"""
+""" USB Serial Light
 """
 
 
 from typing import Any
+
+import serial
 
 from loguru import logger
 
@@ -12,9 +14,7 @@ SerialInfo = dict[Any, Any]
 
 
 class SerialLight(Light):
-    @classmethod
-    def claims(cls, serial_info: SerialInfo) -> bool:
-        pass
+    """ """
 
     @classmethod
     def is_concrete(cls) -> bool:

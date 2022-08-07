@@ -7,12 +7,15 @@ from ..hidlight import HIDLight, HIDInfo
 
 
 class Flag(HIDLight):
+    @staticmethod
+    def supported_device_ids() -> dict[tuple[int, int], str]:
+        return {
+            (0x4D8, 0xF372): "Flag",
+        }
 
-    supported_device_ids = {
-        (0x4D8, 0xF372): "Flag",
-    }
-
-    vendor = "Luxafor"
+    @staticmethod
+    def vendor() -> str:
+        return "Luxafor"
 
     @classmethod
     def claims(cls, hid_info: HIDInfo) -> bool:
@@ -26,4 +29,4 @@ class Flag(HIDLight):
             logger.debug(f"problem {error} processing {hid_info}")
             return False
 
-        return product in map(str.casefold, cls.supported_device_ids.values())
+        return product in map(str.casefold, cls.supported_device_ids().values())

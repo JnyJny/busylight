@@ -130,7 +130,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "coverage"
-version = "6.4.2"
+version = "6.4.3"
 description = "Code coverage measurement for Python"
 category = "dev"
 optional = false
@@ -389,6 +389,17 @@ python-versions = ">=3.6.8"
 diagrams = ["railroad-diagrams", "jinja2"]
 
 [[package]]
+name = "pyserial"
+version = "3.5"
+description = "Python Serial Port Extension"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+cp2110 = ["hidapi"]
+
+[[package]]
 name = "pytest"
 version = "7.1.2"
 description = "pytest: simple powerful testing with Python"
@@ -612,7 +623,7 @@ webapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "26a9ea82f378fa929d6f107726d308950404e88cad3afb46d54dab89e8030c11"
+content-hash = "670228e43ce2a6e31f05282e26dde0fe417d07888e12f90c683159f777d1968b"
 
 [metadata.files]
 anyio = [
@@ -903,6 +914,7 @@ pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
     {file = "pyparsing-3.0.9.tar.gz", hash = "sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb"},
 ]
+pyserial = []
 pytest = [
     {file = "pytest-7.1.2-py3-none-any.whl", hash = "sha256:13d0e3ccfc2b6e26be000cb6568c832ba67ba32e719443bfe725814d3c42433c"},
     {file = "pytest-7.1.2.tar.gz", hash = "sha256:a06a0425453864a270bc45e71f783330a7428defb4230fb5e6a731fde06ecd45"},

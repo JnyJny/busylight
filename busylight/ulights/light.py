@@ -1,4 +1,4 @@
-"""
+""" USB Connected Light
 """
 
 import abc
@@ -15,8 +15,12 @@ from .taskable import Taskable
 
 LightType = TypeVar("Light")
 
+LightInfo = dict[Any, Any]
+
 
 class Light(BaseLight, Taskable):
+    """ """
+
     @classmethod
     def subclasses(cls) -> list[LightType]:
         """Return a list of concrete Light subclasses."""
@@ -36,15 +40,13 @@ class Light(BaseLight, Taskable):
         """Returns a dictionary of supported light names by vendor name."""
 
     @classmethod
-    def available_lights(cls) -> list[dict[Any, Any]]:
+    def available_lights(cls) -> list[LightInfo]:
         """Returns a list of dictionaries describing currently available lights."""
 
         available_lights = []
-        if cls.is_concrete:
-            pass
-        else:
-            for subclass in cls.subclasses():
-                available_lights.extend(subclass.available_lights())
+        for subclass in cls.__subclasses__():
+            logger.info(f"{subclass}")
+            available_lights.extend(subclass.available_lights())
         return available_lights
 
     @classmethod
@@ -56,41 +58,51 @@ class Light(BaseLight, Taskable):
         """Returns the first available light."""
 
     @classmethod
-    def from_dict(cls, info: dict[Any, Any], reset: bool = True) -> "Light":
+    def from_dict(cls, light_info: LightInfo, reset: bool = True) -> "Light":
         """Returns a Light configured with the supplied dictionary.
 
         :param dict: dict[Any, Any]
         :param reset: bool
         :return: a Light subclass
         """
-        for subclass in self.subclasses():
-            try:
-                return cls.from_dict(info, reset=reset)
-            except LightUnsupported as error:
-                logger.info(error)
+        for subclass in cls.subclasses():
+            if subclass.is_concrete():
+                try:
+                    return cls.from_dict(light_info, reset=reset)
+                except LightUnsupported as error:
+                    logger.info(f"{cls} {error}")
+            else:
+                subclass.from_dict(light_info, reset=reset)
 
         raise LightUnsupported()
 
     @classmethod
     @abc.abstractmethod
-    def claims(cls, light_info: dict[Any, Any]) -> bool:
+    def claims(cls, light_info: LightInfo) -> bool:
         """Returns True if the supplied dictionary is recognized."""
 
     @classmethod
     def is_concrete(cls) -> bool:
         return cls is not Light
 
-    @property
-    @abc.abstractmethod
-    def supported_device_ids(self) -> dict[tuple[int, int], str]:
-        """A dictionary  vendor_id/product_id tuples identifying
-        device marketing names."""
+    @classmethod
+    def is_abstract(cls) -> bool:
+        return not cls.is_concrete()
 
-    @property
+    @staticmethod
     @abc.abstractmethod
-    def vendor(self) -> str:
-        """The vendor name associated with this light."""
+    def supported_device_ids() -> dict[tuple[int, int], str]:
+        """A dictionary  of device identfiers support by this class.
+
+        Keys are a 2-tuple of vendor_id and product id, values are the
+        marketing name associated with that device.
+        """
+
+    @staticmethod
+    @abc.abstractmethod
+    def vendor() -> str:
+        """Device vendor name."""
 
     @abc.abstractmethod
-    def __init__(self, light_info: dict[Any, Any], reset: bool = True) -> None:
+    def __init__(self, light_info: LightInfo, reset: bool = True) -> None:
         """"""

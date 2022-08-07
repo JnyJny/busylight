@@ -7,7 +7,8 @@ from .flag import Flag
 
 
 class Orb(Flag):
-
-    supported_device_ids = {
-        (0x4D8, 0xF372): "Orb",
-    }
+    @staticmethod
+    def supported_device_ids() -> dict[tuple[int, int], str]:
+        return {
+            (0x4D8, 0xF372): "Orb",
+        }

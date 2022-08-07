@@ -7,7 +7,10 @@ from ..seriallight import SerialLight
 
 
 class MuteSync(SerialLight):
+    @staticmethod
+    def supported_device_ids() -> dict[tuple[int, int], str]:
+        return {}
 
-    supported_device_ids = {}
-
-    vendor = "MuteSync"
+    @staticmethod
+    def vendor() -> str:
+        return "MuteSync"
