@@ -67,7 +67,7 @@ class BusylightAPI(FastAPI):
         global_options = GlobalOptions(
             debug=environ["BUSYLIGHT_DEBUG"]
         )
-        logger.info('GlobalOptions.debug: {}'.format(global_options.debug))
+        logger.info('Debug: {}'.format(global_options.debug))
 
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
@@ -85,8 +85,7 @@ class BusylightAPI(FastAPI):
         logger.info(
             "Set up CORS Access-Control-Allow-Origin header, if environment variable is set.")
         try:
-            self.origins = json_loads(
-                environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
+            self.origins = json_loads(environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
             logger.info("Found CORS allowed origins in environment.")
         except KeyError:
             logger.info("Did NOT find CORS allowed origins in environment.")
