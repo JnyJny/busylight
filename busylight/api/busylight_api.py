@@ -65,9 +65,9 @@ class BusylightAPI(FastAPI):
     def __init__(self):
 
         global_options = GlobalOptions(
-            debug = environ["BUSYLIGHT_DEBUG"]
+            debug=environ["BUSYLIGHT_DEBUG"]
         )
-        logger.info('debug: {}'.format(global_options.debug))
+        logger.info('GlobalOptions.debug: {}'.format(global_options.debug))
 
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
@@ -82,15 +82,17 @@ class BusylightAPI(FastAPI):
             self.username = None
             self.password = None
 
-        logger.info("Set up CORS Access-Control-Allow-Origin header, if environment variable is set.")
+        logger.info(
+            "Set up CORS Access-Control-Allow-Origin header, if environment variable is set.")
         try:
-            self.origins = json_loads(environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
+            self.origins = json_loads(
+                environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
             logger.info("Found CORS allowed origins in environment.")
         except KeyError:
             logger.info("Did NOT find CORS allowed origins in environment.")
-            logger.info("CORS Access-Control-Allow-Origin header will NOT be set.")
+            logger.info(
+                "CORS Access-Control-Allow-Origin header will NOT be set.")
             self.origins = None
-
 
         super().__init__(
             title="Busylight Server: A USB Light Server",
@@ -142,7 +144,7 @@ class BusylightAPI(FastAPI):
                 CORSMiddleware,
                 allow_origins=self.origins,
             )
-        
+
         kwargs.setdefault("response_model_exclude_unset", True)
         return super().get(path, **kwargs)
 
@@ -163,6 +165,8 @@ busylightapi = BusylightAPI()
 
 ## Startup & Shutdown
 ##
+
+
 @busylightapi.on_event("startup")
 async def startup():
     busylightapi.update()
@@ -177,7 +181,7 @@ async def shutdown():
         logger.debug("problem during shutdown: {error}")
 
 
-## Exception Handlers
+# Exception Handlers
 ##
 @busylightapi.exception_handler(LightUnavailable)
 async def light_unavailable_handler(
@@ -227,7 +231,7 @@ async def color_lookup_error_handler(
     )
 
 
-## Middleware Handlers
+# Middleware Handlers
 ##
 @busylightapi.middleware("http")
 async def light_manager_update(request: Request, call_next):
@@ -238,7 +242,7 @@ async def light_manager_update(request: Request, call_next):
     return await call_next(request)
 
 
-## GET API Routes
+# GET API Routes
 ##
 @busylightapi.get("/", response_model=List[EndPoint])
 async def available_endpoints() -> List[Dict[str, str]]:
@@ -529,7 +533,8 @@ async def flash_light_impressively(
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
+    fli = Effects.for_name("blink")(
+        rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
 
     await busylightapi.apply_effect(fli, light_id)
 
@@ -558,7 +563,8 @@ async def flash_lights_impressively(
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
+    fli = Effects.for_name("blink")(
+        rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
 
     await busylightapi.apply_effect(fli)
 
