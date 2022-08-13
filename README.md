@@ -92,6 +92,8 @@ $ poetry shell
 <venv> $ which busyserve
 ```
 
+After installing into the virtual environment, the project is now available in editable mode.  Changes made in the source will be reflected in the runtime behavior when running in the poetry initiated shell.
+
 ## Linux Post-Install Activities
 
 Linux controls access to USB devices via the [udev subsystem][UDEV]. By
