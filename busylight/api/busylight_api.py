@@ -62,14 +62,11 @@ busylightapi_security = HTTPBasic()
 class BusylightAPI(FastAPI):
     def __init__(self):
 
-        try:
-            global_options = GlobalOptions(
-                debug=environ["BUSYLIGHT_DEBUG"]
-            )
-            logger.info("Found debug flag in environment.")
-            logger.info("Debug: {}".format(global_options.debug))
-        except KeyError:
-            logger.info("Did NOT find debug flag in environment.")
+        # Get and save the debug flag
+        global_options = GlobalOptions(
+            debug = environ.get("BUSYLIGHT_DEBUG", False)
+        )
+        logger.info("Debug: {debug_value}".format(debug_value=global_options.debug))
 
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
@@ -84,23 +81,24 @@ class BusylightAPI(FastAPI):
             self.username = None
             self.password = None
 
-        logger.info(
-            "Set up CORS Access-Control-Allow-Origin header, if environment variable is set.")
-        try:
-            self.origins = json_loads(
-                environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
-            logger.info(
-                "CORS Access-Control-Allow-Origin list: {}".format(self.origins))
-            logger.info("Found CORS allowed origins in environment.")
-        except KeyError:
-            logger.info("Did NOT find CORS allowed origins in environment.")
+        # Get and save the CORS Access-Control-Allow-Origin header
+        logger.info("Set up CORS Access-Control-Allow-Origin header, if environment variable is set.")
+        self.origins = json_loads(environ.get("BUSYLIGHT_API_CORS_ORIGINS_LIST", None))
 
-            if global_options.debug == True:
-                logger.info(
-                    "However, debug mode is enabled! Using debug mode CORS allowed origins: \'[\"http://localhost\", \"http://127.0.0.1\"]\'")
-            logger.info(
-                "CORS Access-Control-Allow-Origin header will NOT be set.")
+        # Validate that BUSYLIGHT_API_CORS_ORIGINS_LIST is a list of strings
+        if (not isinstance(self.origins, list)) or any(not isinstance(item, str) for item in self.origins):
+            logger.warning("BUSYLIGHT_API_CORS_ORIGINS_LIST is invalid: {origins_list}".format(origins_list=self.origins))
+            logger.info("Will NOT set the CORS Access-Control-Allow-Origin header.")
             self.origins = None
+
+        logger.info("CORS Access-Control-Allow-Origin list: {origins_list}".format(origins_list=self.origins))
+
+        if (global_options.debug == True) and (self.origins == None):
+            logger.info("However, debug mode is enabled! Using debug mode CORS allowed origins: \'[\"http://localhost\", \"http://127.0.0.1\"]\'")
+            self.origins = [
+                "http://localhost",
+                "http://127.0.0.1"
+            ]
 
         super().__init__(
             title="Busylight Server: A USB Light Server",
@@ -147,7 +145,7 @@ class BusylightAPI(FastAPI):
         # are set through an environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST
         # e.g.: export BUSYLIGHT_API_CORS_ORIGINS_LIST='["http://localhost", "http://localhost:8080"]'
         # (see https://fastapi.tiangolo.com/tutorial/cors/ for details)
-        if self.origins != None:
+        if self.origins:
             self.add_middleware(
                 CORSMiddleware,
                 allow_origins=self.origins,
@@ -173,8 +171,6 @@ busylightapi = BusylightAPI()
 
 ## Startup & Shutdown
 ##
-
-
 @busylightapi.on_event("startup")
 async def startup():
     busylightapi.update()
@@ -189,7 +185,7 @@ async def shutdown():
         logger.debug("problem during shutdown: {error}")
 
 
-# Exception Handlers
+## Exception Handlers
 ##
 @busylightapi.exception_handler(LightUnavailable)
 async def light_unavailable_handler(
@@ -239,7 +235,7 @@ async def color_lookup_error_handler(
     )
 
 
-# Middleware Handlers
+## Middleware Handlers
 ##
 @busylightapi.middleware("http")
 async def light_manager_update(request: Request, call_next):
@@ -250,7 +246,7 @@ async def light_manager_update(request: Request, call_next):
     return await call_next(request)
 
 
-# GET API Routes
+## GET API Routes
 ##
 @busylightapi.get("/", response_model=List[EndPoint])
 async def available_endpoints() -> List[Dict[str, str]]:
@@ -541,9 +537,7 @@ async def flash_light_impressively(
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(
-        rgb_a, speed.duty_cycle / 10, off_color=rgb_b
-    )
+    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
 
     await busylightapi.apply_effect(fli, light_id)
 
@@ -572,9 +566,7 @@ async def flash_lights_impressively(
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(
-        rgb_a, speed.duty_cycle / 10, off_color=rgb_b
-    )
+    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
 
     await busylightapi.apply_effect(fli)
 
