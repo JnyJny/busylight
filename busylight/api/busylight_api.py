@@ -1,6 +1,8 @@
 """BusyLight API
 """
 
+from contextvars import Context
+from multiprocessing import context
 from os import environ
 from secrets import compare_digest
 from typing import Callable, List, Dict, Any
@@ -62,7 +64,10 @@ busylightapi_security = HTTPBasic()
 class BusylightAPI(FastAPI):
     def __init__(self):
 
-        logger.info('GlobalOptions.debug: {}'.format(GlobalOptions.debug))
+        global_options = GlobalOptions(
+            debug = environ["BUSYLIGHT_DEBUG"]
+        )
+        logger.info('debug: {}'.format(GlobalOptions.debug))
 
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")

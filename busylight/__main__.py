@@ -3,6 +3,7 @@
 """
 
 from dataclasses import dataclass, field
+from os import environ
 from typing import List, Optional
 
 import typer
@@ -373,6 +374,8 @@ def serve_http_api(
     ),
 ) -> None:
     """Serve a HTTP API to access available lights."""
+
+    environ["BUSYLIGHT_DEBUG"] = str(debug)
 
     (logger.enable if debug else logger.disable)("busylight")
     logger.info("serving http api")
