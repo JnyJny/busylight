@@ -88,8 +88,8 @@ $ python3 -m pip install poetry
 $ cd path/to/busylight
 $ poetry shell
 <venv> $ poetry install -E webapi
-$ which busylight
-$ which busyserve
+<venv> $ which busylight
+<venv> $ which busyserve
 ```
 
 ## Linux Post-Install Activities
