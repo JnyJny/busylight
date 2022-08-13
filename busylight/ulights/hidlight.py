@@ -11,9 +11,6 @@ from loguru import logger
 from .light import Light, LightInfo
 
 
-HIDInfo = dict[str, Union[bytes, str, int]]
-
-
 class HIDLight(Light):
     @classmethod
     def is_concrete(cls) -> bool:
@@ -25,6 +22,14 @@ class HIDLight(Light):
         logger.debug(f"{cls} found {len(available)}")
         return available
 
-    @classmethod
-    def from_info(cls, info: LightInfo) -> "HIDLight":
-        raise NotImplementedError("from_info")
+    def __init__(
+        self,
+        light_info: LightInfo,
+        reset: bool = True,
+        exclusive: bool = True,
+    ) -> None:
+        """ """
+        logger.debug(f"{light_info}")
+        self.info = dict(light_info)
+        for key, value in self.info.items():
+            setattr(self, key, value)

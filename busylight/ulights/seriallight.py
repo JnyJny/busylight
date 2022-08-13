@@ -11,10 +11,8 @@ from serial.tools.list_ports_common import ListPortInfo
 
 from .light import Light, LightInfo
 
-SerialInfo = dict[Any, Any]
 
-
-class NotUSBDevice(Exception):
+class UnrecognizedDevice(Exception):
     pass
 
 
@@ -26,10 +24,13 @@ class SerialLight(Light):
         return cls is not SerialLight
 
     @staticmethod
-    def make_lightinfo(device: ListPortInfo) -> LightInfo:
+    def _make_lightinfo(device: ListPortInfo) -> LightInfo:
+        """Convert a serial.tools.list_ports_common.ListPortInfo
+        to a dictionary.
+        """
 
         if not device.vid and not device.pid:
-            raise NotUSBDevice(device)
+            raise UnrecognizedDevice(device)
 
         return {
             "vendor_id": device.vid,
@@ -47,16 +48,26 @@ class SerialLight(Light):
 
         for device in list_ports.comports():
             try:
-                light_info = cls.make_lightinfo(device)
-            except NotUSBDevice:
+                light_info = cls._make_lightinfo(device)
+            except UnrecognizedDevice:
                 continue
 
             if cls.claims(light_info):
                 available_lights.append(light_info)
+
         logger.debug(f"{cls} found {len(available_lights)}")
 
         return available_lights
 
-    @classmethod
-    def from_info(cls, info: LightInfo) -> "SerialLight":
-        raise NotImplementedError("from_info")
+    def __init__(
+        self,
+        light_info: LightInfo,
+        reset: bool = True,
+        exclusive: bool = True,
+    ) -> None:
+        """ """
+        logger.debug(f"{light_info}")
+
+        self.info = dict(light_info)
+        for key, value in self.info.items():
+            setattr(self, key, value)

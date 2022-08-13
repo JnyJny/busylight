@@ -4,7 +4,7 @@
 
 from loguru import logger
 
-from ..hidlight import HIDLight, HIDInfo
+from ..hidlight import HIDLight
 
 
 class BlinkStick(HIDLight):

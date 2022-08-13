@@ -1,7 +1,7 @@
 """
 """
 
-from ..hidlight import HIDLight, HIDInfo
+from ..hidlight import HIDLight
 
 
 class Blynclight(HIDLight):

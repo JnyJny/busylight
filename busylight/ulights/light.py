@@ -77,16 +77,24 @@ class Light(BaseLight, Taskable):
         return device_id in cls.supported_device_ids()
 
     @classmethod
-    def all_lights(cls, reset: bool = True) -> list["Light"]:
+    def all_lights(cls, reset: bool = True, exclusive: bool = True) -> list["Light"]:
         """Returns a list of all lights found."""
 
         all_lights = []
 
-        for subclass in cls.__subclasses__():
-            logger.debug(f"{subclass.__name__} looking for lights")
-            for light_info in subclass.available_lights():
-                all_lights.append(subclass.from_info(light_info, reset=reset))
+        if cls.is_abstract():
+            for subclass in cls.subclasses():
+                all_lights.extend(subclass.all_lights(reset=reset, exclusive=exclusive))
+            logger.info(f"{cls.__name__} found {len(all_lights)} lights total.")
+            return all_lights
 
+        for light_info in cls.available_lights():
+            try:
+                all_lights.append(cls(light_info, reset=reset, exclusive=exclusive))
+            except LightUnavailable as error:
+                logger.error(f"{cls.__name__} {error}")
+
+        logger.info(f"{cls.__name__} found {len(all_lights)} lights.")
         return all_lights
 
     @classmethod
@@ -97,22 +105,12 @@ class Light(BaseLight, Taskable):
             logger.debug(f"{subclass.__name__}")
             for light_info in subclass.available_lights():
                 try:
-                    return subclass.from_info(light_info)
+                    return subclass(light_info, reset=reset)
                 except LightUnavailable as error:
                     logger.error(f"{subclass.__name__} {error}")
                     raise
 
         raise NoLightsFound()
-
-    @classmethod
-    @abc.abstractmethod
-    def from_info(cls, light_info: LightInfo, reset: bool = True) -> "Light":
-        """Returns a Light configured with the supplied dictionary.
-
-        :param dict: dict[Any, Any]
-        :param reset: bool
-        :return: a Light subclass
-        """
 
     @classmethod
     def is_concrete(cls) -> bool:
@@ -137,5 +135,10 @@ class Light(BaseLight, Taskable):
         """Device vendor name."""
 
     @abc.abstractmethod
-    def __init__(self, light_info: LightInfo, reset: bool = True) -> None:
+    def __init__(
+        self,
+        light_info: LightInfo,
+        reset: bool = True,
+        exclusive: bool = True,
+    ) -> None:
         """"""

@@ -3,7 +3,7 @@
 
 from loguru import logger
 
-from ..seriallight import SerialLight, SerialInfo
+from ..seriallight import SerialLight
 
 
 class Fit_StatUSB(SerialLight):

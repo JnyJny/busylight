@@ -3,7 +3,8 @@
 
 from loguru import logger
 
-from ..hidlight import HIDLight, HIDInfo
+from ..hidlight import HIDLight
+from ..light import LightInfo
 
 
 class Flag(HIDLight):
@@ -18,15 +19,15 @@ class Flag(HIDLight):
         return "Luxafor"
 
     @classmethod
-    def claims(cls, hid_info: HIDInfo) -> bool:
+    def claims(cls, light_info: LightInfo) -> bool:
 
-        if not super().claims(hid_info):
+        if not super().claims(light_info):
             return False
 
         try:
-            product = hid_info["product_string"].split()[-1].casefold()
+            product = light_info["product_string"].split()[-1].casefold()
         except (KeyError, IndexError) as error:
-            logger.debug(f"problem {error} processing {hid_info}")
+            logger.debug(f"problem {error} processing {light_info}")
             return False
 
         return product in map(str.casefold, cls.supported_device_ids().values())
