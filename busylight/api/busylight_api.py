@@ -6,6 +6,7 @@ from multiprocessing import context
 from os import environ
 from secrets import compare_digest
 from typing import Callable, List, Dict, Any
+from weakref import KeyedRef
 
 from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -64,10 +65,14 @@ busylightapi_security = HTTPBasic()
 class BusylightAPI(FastAPI):
     def __init__(self):
 
-        global_options = GlobalOptions(
-            debug=environ["BUSYLIGHT_DEBUG"]
-        )
-        logger.info('Debug: {}'.format(global_options.debug))
+        try:
+            global_options = GlobalOptions(
+                debug=environ["BUSYLIGHT_DEBUG"]
+            )
+            logger.info("Found debug flag in environment.")
+            logger.info("Debug: {}".format(global_options.debug))
+        except KeyError:
+            logger.info("Did NOT find debug flag in environment.")
 
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
@@ -91,6 +96,9 @@ class BusylightAPI(FastAPI):
             logger.info("Found CORS allowed origins in environment.")
         except KeyError:
             logger.info("Did NOT find CORS allowed origins in environment.")
+
+            if global_options.debug == True:
+                logger.info("However, debug mode is enabled! Using debug mode CORS allowed origins: \'[\"http://localhost\", \"http://127.0.0.1\"]\'")
             logger.info(
                 "CORS Access-Control-Allow-Origin header will NOT be set.")
             self.origins = None
