@@ -72,6 +72,26 @@ Installs `uvicorn` and `FastAPI` in addition to `busylight`:
 $ python3 -m pip install busylight-for-humans[webapi]
 ```
 
+## Development Install
+
+I use the tool [poetry][poetry-docs] to manage various aspects of this project, including:
+- dependencies
+- pytest configuration
+- versioning
+- optional dependencies
+- virtual environment creation
+- building packages
+- publishing packages to PyPi
+
+```console
+$ python3 -m pip install poetry 
+$ cd path/to/busylight
+$ poetry shell
+<venv> $ poetry install -E webapi
+$ which busylight
+$ which busyserve
+```
+
 ## Linux Post-Install Activities
 
 Linux controls access to USB devices via the [udev subsystem][UDEV]. By
@@ -248,4 +268,4 @@ manager.off()
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
-
+[poetry-docs]: https://python-poetry.org/docs/
