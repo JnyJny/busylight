@@ -6,11 +6,14 @@ from secrets import compare_digest
 from typing import Callable, List, Dict, Any
 
 from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from json import loads as json_loads
 from loguru import logger
 
 from .. import __version__
+from ..__main__ import GlobalOptions
 
 from ..color import ColorTuple, parse_color_string, colortuple_to_name, ColorLookupError
 from ..effects import Effects
@@ -59,10 +62,15 @@ busylightapi_security = HTTPBasic()
 class BusylightAPI(FastAPI):
     def __init__(self):
 
+        # Get and save the debug flag
+        global_options = GlobalOptions(
+            debug = environ.get("BUSYLIGHT_DEBUG", False)
+        )
+        logger.info("Debug: {debug_value}".format(debug_value=global_options.debug))
+
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
         try:
-
             self.username = environ["BUSYLIGHT_API_USER"]
             self.password = environ["BUSYLIGHT_API_PASS"]
             dependencies.append(Depends(self.authenticate_user))
@@ -72,6 +80,25 @@ class BusylightAPI(FastAPI):
             logger.info("Access authentication disabled.")
             self.username = None
             self.password = None
+
+        # Get and save the CORS Access-Control-Allow-Origin header
+        logger.info("Set up CORS Access-Control-Allow-Origin header, if environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST is set.")
+        self.origins = json_loads(environ.get("BUSYLIGHT_API_CORS_ORIGINS_LIST", "[]"))
+
+        # Validate that BUSYLIGHT_API_CORS_ORIGINS_LIST is a list of strings
+        if (not isinstance(self.origins, list)) or any(not isinstance(item, str) for item in self.origins):
+            logger.warning("BUSYLIGHT_API_CORS_ORIGINS_LIST is invalid: {origins_list}".format(origins_list=self.origins))
+            logger.info("Will NOT set the CORS Access-Control-Allow-Origin header.")
+            self.origins = None
+
+        logger.info("CORS Access-Control-Allow-Origin list: {origins_list}".format(origins_list=self.origins))
+
+        if (global_options.debug == True) and (self.origins == None):
+            logger.info("However, debug mode is enabled! Using debug mode CORS allowed origins: \'[\"http://localhost\", \"http://127.0.0.1\"]\'")
+            self.origins = [
+                "http://localhost",
+                "http://127.0.0.1"
+            ]
 
         super().__init__(
             title="Busylight Server: A USB Light Server",
@@ -113,6 +140,17 @@ class BusylightAPI(FastAPI):
 
     def get(self, path: str, **kwargs) -> Callable:
         self.endpoints.append(path)
+
+        # CORS allowed origins (for the Access-Control-Allow-Origin header)
+        # are set through an environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST
+        # e.g.: export BUSYLIGHT_API_CORS_ORIGINS_LIST='["http://localhost", "http://localhost:8080"]'
+        # (see https://fastapi.tiangolo.com/tutorial/cors/ for details)
+        if self.origins:
+            self.add_middleware(
+                CORSMiddleware,
+                allow_origins=self.origins,
+            )
+
         kwargs.setdefault("response_model_exclude_unset", True)
         return super().get(path, **kwargs)
 
