@@ -10,7 +10,7 @@ class Fit_StatUSB(SerialLight):
     @staticmethod
     def supported_device_ids() -> dict[tuple[int, int], str]:
         return {
-            (0, 0): "fit-statUSB",
+            (0x2047, 0x03df): "fit-statUSB",
         }
 
     @staticmethod
