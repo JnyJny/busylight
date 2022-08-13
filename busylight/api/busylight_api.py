@@ -86,6 +86,7 @@ class BusylightAPI(FastAPI):
             "Set up CORS Access-Control-Allow-Origin header, if environment variable is set.")
         try:
             self.origins = json_loads(environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
+            logger.info("CORS list: {}".format(self.origins))
             logger.info("Found CORS allowed origins in environment.")
         except KeyError:
             logger.info("Did NOT find CORS allowed origins in environment.")
