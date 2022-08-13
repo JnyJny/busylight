@@ -1,12 +1,9 @@
 """BusyLight API
 """
 
-from contextvars import Context
-from multiprocessing import context
 from os import environ
 from secrets import compare_digest
 from typing import Callable, List, Dict, Any
-from weakref import KeyedRef
 
 from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -92,13 +89,15 @@ class BusylightAPI(FastAPI):
         try:
             self.origins = json_loads(
                 environ["BUSYLIGHT_API_CORS_ORIGINS_LIST"])
-            logger.info("CORS Access-Control-Allow-Origin list: {}".format(self.origins))
+            logger.info(
+                "CORS Access-Control-Allow-Origin list: {}".format(self.origins))
             logger.info("Found CORS allowed origins in environment.")
         except KeyError:
             logger.info("Did NOT find CORS allowed origins in environment.")
 
             if global_options.debug == True:
-                logger.info("However, debug mode is enabled! Using debug mode CORS allowed origins: \'[\"http://localhost\", \"http://127.0.0.1\"]\'")
+                logger.info(
+                    "However, debug mode is enabled! Using debug mode CORS allowed origins: \'[\"http://localhost\", \"http://127.0.0.1\"]\'")
             logger.info(
                 "CORS Access-Control-Allow-Origin header will NOT be set.")
             self.origins = None
@@ -543,7 +542,8 @@ async def flash_light_impressively(
     rgb_b = parse_color_string(color_b, dim)
 
     fli = Effects.for_name("blink")(
-        rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
+        rgb_a, speed.duty_cycle / 10, off_color=rgb_b
+    )
 
     await busylightapi.apply_effect(fli, light_id)
 
@@ -573,7 +573,8 @@ async def flash_lights_impressively(
     rgb_b = parse_color_string(color_b, dim)
 
     fli = Effects.for_name("blink")(
-        rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
+        rgb_a, speed.duty_cycle / 10, off_color=rgb_b
+    )
 
     await busylightapi.apply_effect(fli)
 
