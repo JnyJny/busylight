@@ -17,7 +17,3 @@ class Status_Indicator(Blynclight):
     @staticmethod
     def vendor() -> str:
         return "Plantronics"
-
-    @property
-    def name(self) -> str:
-        return self.hidinfo["product_string"]

@@ -6,7 +6,7 @@ import asyncio
 from typing import Awaitable, Optional
 
 
-class Taskable:
+class TaskableMixin:
     @property
     def event_loop(self):
         """"""

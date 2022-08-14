@@ -20,7 +20,7 @@ class SerialLight(Light):
     """ """
 
     @classmethod
-    def is_concrete(cls) -> bool:
+    def _is_concrete(cls) -> bool:
         return cls is not SerialLight
 
     @staticmethod
@@ -35,6 +35,7 @@ class SerialLight(Light):
         return {
             "vendor_id": device.vid,
             "product_id": device.pid,
+            "device_id": (device.vid, device.pid),
             "serial_number": device.serial_number,
             "product_string": device.description,
             "manufacturer_string": device.manufacturer,
@@ -55,7 +56,7 @@ class SerialLight(Light):
             if cls.claims(light_info):
                 available_lights.append(light_info)
 
-        logger.debug(f"{cls} found {len(available_lights)}")
+        logger.info(f"{cls} found {len(available_lights)}")
 
         return available_lights
 
@@ -66,8 +67,5 @@ class SerialLight(Light):
         exclusive: bool = True,
     ) -> None:
         """ """
-        logger.debug(f"{light_info}")
 
-        self.info = dict(light_info)
-        for key, value in self.info.items():
-            setattr(self, key, value)
+        super().__init__(light_info, reset=reset, exclusive=exclusive)
