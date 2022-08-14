@@ -45,23 +45,24 @@ class HIDLight(Light):
         return self._device
 
     @property
-    def read_strategy(self) -> Callable:
-        return self.device.read
+    def is_pluggedin(self) -> bool:
 
-    @property
-    def write_strategy(self) -> Callable:
-        return self.device.write
+        try:
+            self.device.error()
+            return True
+        except ValueError:
+            pass
+        return False
 
-    def acquire(self, exclusive: bool = True) -> None:
+    def acquire(self) -> None:
 
         try:
             self.device.open_path(self.path)
+            logger.info(f"{self.name} open_path({self.path}) succeeded")
         except OSError as error:
             logger.error(f"open_path failed: {error}")
             raise LightUnavailable(self.path) from None
 
     def release(self) -> None:
-        raise NotImplementedError()
 
-    def update(self) -> None:
-        raise NotImplementedError()
+        self.device.close()

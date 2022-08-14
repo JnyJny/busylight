@@ -57,9 +57,9 @@ class Light(abc.ABC, TaskableMixin):
     def available_lights(cls) -> List[LightInfo]:
         """Returns a list of dictionaries describing currently available lights."""
 
-        # Note: Light's subclasses, HIDLight and SerialLight, are
-        #       expected to implement device-specific available_light
-        #       classmethods.
+        # Note: Light's subclasses, HIDLight and SerialLight for now,
+        #       are expected to implement device-specific
+        #       available_light classmethods.
 
         available_lights = []
 
@@ -158,8 +158,8 @@ class Light(abc.ABC, TaskableMixin):
     def supported_device_ids() -> Dict[tuple[int, int], str]:
         """A dictionary  of device identfiers support by this class.
 
-        Keys are a 2-tuple of vendor_id and product id, values are the
-        marketing name associated with that device.
+        Keys are a tuple of integer vendor_id and product id, values
+        are the marketing name associated with that device.
         """
 
     @staticmethod
@@ -191,7 +191,8 @@ class Light(abc.ABC, TaskableMixin):
         self._reset = reset
         self._exclusive = exclusive
 
-        self.acquire(exclusive=exclusive)
+        if exclusive:
+            self.acquire()
 
         if reset:
             self.reset()
@@ -230,18 +231,6 @@ class Light(abc.ABC, TaskableMixin):
         self.off()
         self.cancel_tasks()
 
-    def on(self, color: Tuple[int, int, int]) -> None:
-        """Activate the light with the supplied RGB color tuple."""
-        r, g, b = color
-        with self.batch_update():
-            self.red = r
-            self.green = g
-            self.blue = b
-
-    def off(self) -> None:
-        """Turn the light off."""
-        self.on((0, 0, 0))
-
     @contextmanager
     def batch_update(self) -> Generator[None, None, None]:
         """Writes the software state to the device when the context manager exits."""
@@ -263,8 +252,19 @@ class Light(abc.ABC, TaskableMixin):
             except Exception as error:
                 logger.error("Failed to release {self!s} {self.path} {error}")
 
+    def on(self, color: Tuple[int, int, int]) -> None:
+        """Activate the light with the supplied RGB color tuple."""
+
+        with self.batch_update():
+            self.color = color
+
+    def off(self) -> None:
+        """Turn the light off."""
+        self.on((0, 0, 0))
+
     @property
     def name(self) -> str:
+        """The product name for this device."""
         try:
             return self._name
         except AttributeError:
@@ -284,15 +284,17 @@ class Light(abc.ABC, TaskableMixin):
 
     @property
     def is_unplugged(self) -> bool:
-        """True if the light is not accessible."""
+        """True if the light does not respond to commands."""
         return not self.is_pluggedin
 
     @property
     def is_on(self) -> bool:
+        """True if the software state of the light indicates the light is on."""
         return any(self.color)
 
     @property
     def is_off(self) -> bool:
+        """True if the software state of the light indicates the light is off."""
         return not self.is_on
 
     @property
@@ -310,9 +312,22 @@ class Light(abc.ABC, TaskableMixin):
         """A three channel color value in RGB order."""
         return (self.red, self.green, self.blue)
 
+    @property
+    def read_strategy(self) -> Callable:
+        """The read function used to communicate with the device."""
+        return self.device.read
+
+    @property
+    def write_strategy(self) -> Callable:
+        """The write function used to communicate with the device."""
+        return self.device.write
+
     @color.setter
     def color(self, new_value: Tuple[int, int, int]) -> None:
-        self.red, self.green, self.blue = new_value
+        try:
+            self.red, self.green, self.blue = new_value
+        except Exception as error:
+            raise ValueError(f"unable to set color {new_value!r}: {error}") from None
 
     def update(self) -> None:
         """Write the software state to the device."""
@@ -321,17 +336,19 @@ class Light(abc.ABC, TaskableMixin):
 
         try:
             nbytes = self.write_strategy(data)
+            logger.info(f"data:{len(data)} = {data!r} wrote {nbytes}")
         except Exception as error:
-            logger.error(f"write_strategy raised {error}")
+            logger.error(f"write_strategy raised {error} for {data}")
             raise LightUnavailable(self.path) from None
-
-    def query(self) -> bytes:
-        """Read the device state."""
-        return bytes()
 
     @abc.abstractmethod
     def __bytes__(self) -> bytes:
         """Device software state in device format."""
+
+    @property
+    @abc.abstractmethod
+    def device(self) -> Any:
+        """Provides physical I/O to the device."""
 
     @property
     @abc.abstractmethod
@@ -363,18 +380,8 @@ class Light(abc.ABC, TaskableMixin):
     def blue(self, new_blue: int) -> None:
         pass
 
-    @property
     @abc.abstractmethod
-    def read_strategy(self) -> Callable:
-        """The read function used to communicate with the device."""
-
-    @property
-    @abc.abstractmethod
-    def write_strategy(self) -> Callable:
-        """The write function used to communicate with the device."""
-
-    @abc.abstractmethod
-    def acquire(self, exclusive: bool = True) -> None:
+    def acquire(self) -> None:
         """Acquire the device for use."""
 
     @abc.abstractmethod

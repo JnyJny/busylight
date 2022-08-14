@@ -28,6 +28,12 @@ class SerialLight(Light):
     def _make_lightinfo(device: ListPortInfo) -> LightInfo:
         """Convert a serial.tools.list_ports_common.ListPortInfo
         to a LightInfo dictionary.
+
+        The format of this dictionary is loosely based on the
+        dictionary produced from `hid.enumerate`.
+
+        Note: Not all of the HID fields are discoverable with the
+              serial interface.
         """
 
         if not device.vid and not device.pid:
@@ -68,14 +74,19 @@ class SerialLight(Light):
         except AttributeError:
             pass
 
-        self._device = Serial(self.path)
+        self._device = Serial()
+        self._device.port = self.path
 
         return self._device
 
-    @property
-    def read_strategy(self) -> Callable:
-        return self.device.read
+    def acquire(self) -> None:
 
-    @property
-    def write_strategy(self) -> Callable:
-        return self.device.write
+        try:
+            self.device.open()
+        except Exception as error:
+            logger.debug("open failed for {self.path}: {error}")
+            raise LightUnavailable(self.path) from None
+
+    def release(self) -> None:
+
+        self.device.close()
