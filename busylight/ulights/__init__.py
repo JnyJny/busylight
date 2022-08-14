@@ -1,4 +1,5 @@
-""" USB Connected Lights
+""" Support for USB Connected Lights
+
 """
 
 from .light import Light
@@ -26,12 +27,15 @@ from .thingm import Blink1
 
 __all__ = [
     "Light",
+    "HIDLight",
+    "SerialLight",
     "LightNotFound",
     "LightUnavailable",
     "LightUnsupported",
     "NoLightsFound",
     "Blink1",
     "BlinkStick",
+    "Blynclight",
     "Busylight",
     "Fit_StatUSB",
     "Flag",

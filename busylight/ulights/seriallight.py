@@ -2,10 +2,11 @@
 """
 
 
-from typing import Any
-
+from typing import Callable, List
 
 from loguru import logger
+
+from serial import Serial
 from serial.tools import list_ports
 from serial.tools.list_ports_common import ListPortInfo
 
@@ -26,7 +27,7 @@ class SerialLight(Light):
     @staticmethod
     def _make_lightinfo(device: ListPortInfo) -> LightInfo:
         """Convert a serial.tools.list_ports_common.ListPortInfo
-        to a dictionary.
+        to a LightInfo dictionary.
         """
 
         if not device.vid and not device.pid:
@@ -43,7 +44,7 @@ class SerialLight(Light):
         }
 
     @classmethod
-    def available_lights(cls) -> list[LightInfo]:
+    def available_lights(cls) -> List[LightInfo]:
 
         available_lights = []
 
@@ -60,12 +61,21 @@ class SerialLight(Light):
 
         return available_lights
 
-    def __init__(
-        self,
-        light_info: LightInfo,
-        reset: bool = True,
-        exclusive: bool = True,
-    ) -> None:
-        """ """
+    @property
+    def device(self) -> Serial:
+        try:
+            return self._device
+        except AttributeError:
+            pass
 
-        super().__init__(light_info, reset=reset, exclusive=exclusive)
+        self._device = Serial(self.path)
+
+        return self._device
+
+    @property
+    def read_strategy(self) -> Callable:
+        return self.device.read
+
+    @property
+    def write_strategy(self) -> Callable:
+        return self.device.write
