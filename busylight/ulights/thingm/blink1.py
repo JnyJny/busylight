@@ -1,7 +1,7 @@
 """ ThingM blink(1)
 """
 
-from typing import Callable, Tuple
+from typing import Callable, Dict, Tuple
 
 from loguru import logger
 
@@ -13,7 +13,7 @@ from ._blink1 import Command
 
 class Blink1(HIDLight):
     @staticmethod
-    def supported_device_ids() -> dict[tuple[int, int], str]:
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
             (0x27B8, 0x01ED): "Blink(1)",
         }

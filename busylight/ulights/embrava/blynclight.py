@@ -70,6 +70,5 @@ class Blynclight(HIDLight):
         return self.command.bytes
 
     def reset(self) -> None:
-
         with self.batch_update():
             self.command.reset()

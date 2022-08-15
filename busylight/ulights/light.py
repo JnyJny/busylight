@@ -308,11 +308,6 @@ class Light(abc.ABC, TaskableMixin):
         return False
 
     @property
-    def color(self) -> Tuple[int, int, int]:
-        """A three channel color value in RGB order."""
-        return (self.red, self.green, self.blue)
-
-    @property
     def read_strategy(self) -> Callable:
         """The read function used to communicate with the device."""
         return self.device.read
@@ -321,6 +316,38 @@ class Light(abc.ABC, TaskableMixin):
     def write_strategy(self) -> Callable:
         """The write function used to communicate with the device."""
         return self.device.write
+
+    @property
+    def red(self) -> int:
+        """Red intensity value."""
+        return getattr(self, "_red", 0)
+
+    @red.setter
+    def red(self, new_value: int) -> int:
+        self._red = new_value
+
+    @property
+    def green(self) -> int:
+        """Green intensity value."""
+        return getattr(self, "_green", 0)
+
+    @green.setter
+    def green(self, new_value: int) -> int:
+        self._green = new_value
+
+    @property
+    def blue(self) -> int:
+        """Blue intensity value."""
+        return getattr(self, "_blue", 0)
+
+    @blue.setter
+    def blue(self, new_value: int) -> int:
+        self._blue = new_value
+
+    @property
+    def color(self) -> Tuple[int, int, int]:
+        """A three channel color value in RGB order."""
+        return (self.red, self.green, self.blue)
 
     @color.setter
     def color(self, new_value: Tuple[int, int, int]) -> None:
@@ -349,36 +376,6 @@ class Light(abc.ABC, TaskableMixin):
     @abc.abstractmethod
     def device(self) -> Any:
         """Provides physical I/O to the device."""
-
-    @property
-    @abc.abstractmethod
-    def red(self) -> int:
-        """Red intensity value."""
-
-    @red.setter
-    @abc.abstractmethod
-    def red(self, new_red: int) -> None:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def green(self) -> int:
-        """Green intensity value."""
-
-    @green.setter
-    @abc.abstractmethod
-    def green(self, new_green: int) -> None:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def blue(self) -> int:
-        """Blue intensity value."""
-
-    @blue.setter
-    @abc.abstractmethod
-    def blue(self, new_blue: int) -> None:
-        pass
 
     @abc.abstractmethod
     def acquire(self) -> None:

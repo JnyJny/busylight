@@ -2,6 +2,8 @@
 """
 
 
+from typing import Dict, Tuple
+
 from loguru import logger
 
 from ..hidlight import HIDLight
@@ -12,7 +14,7 @@ from ._blinkstick import BlinkStickType, Report
 
 class BlinkStick(HIDLight):
     @staticmethod
-    def supported_device_ids() -> dict[tuple[int, int], str]:
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
             (0x20A0, 0x41E5): "BlinkStick",
         }
@@ -56,27 +58,3 @@ class BlinkStick(HIDLight):
             return bytes([self.report, self.green, self.red, self.blue])
 
         raise ValueError(f"Unsupported report {self.report}")
-
-    @property
-    def red(self) -> int:
-        return getattr(self, "_red", 0)
-
-    @red.setter
-    def red(self, new_value: int) -> int:
-        self._red = new_value
-
-    @property
-    def green(self) -> int:
-        return getattr(self, "_green", 0)
-
-    @green.setter
-    def green(self, new_value: int) -> int:
-        self._green = new_value
-
-    @property
-    def blue(self) -> int:
-        return getattr(self, "_blue", 0)
-
-    @blue.setter
-    def blue(self, new_value: int) -> int:
-        self._blue = new_value
