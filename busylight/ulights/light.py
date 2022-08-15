@@ -167,6 +167,17 @@ class Light(abc.ABC, TaskableMixin):
     def vendor() -> str:
         """Device vendor name."""
 
+    @classmethod
+    @abc.abstractmethod
+    def udev_rules(cls, mode: int = 0o0666) -> List[str]:
+        """"""
+
+        rules = []
+
+        for subclass in cls.__subclasses__():
+            rules.extend(subclass.udev_rules())
+        return rules
+
     def __init__(
         self,
         light_info: LightInfo,

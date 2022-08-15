@@ -1,6 +1,8 @@
 """
 """
 
+import asyncio
+
 from typing import Tuple
 
 from loguru import logger
@@ -9,6 +11,18 @@ from ..hidlight import HIDLight
 from ..light import LightInfo
 
 from ._busylight import CommandBuffer, Instruction
+
+
+async def keepalive(light: HIDLight, interval: int = 0xF) -> None:
+
+    interval = interval & 0x0F
+    sleep_interval = round(interval / 2)
+    command = Instruction.KeepAlive(interval).value
+
+    while True:
+        with light.batch_update():
+            light.command.line0 = command
+        await asyncio.sleep(sleep_interval)
 
 
 class Busylight(HIDLight):
@@ -39,17 +53,6 @@ class Busylight(HIDLight):
 
         return bytes(self.command)
 
-    async def keepalive(self, interval: int = 0xF) -> None:
-
-        interval = interval & 0x0F
-        sleep_interval = round(interval / 2)
-        command = Instruction.KeepAlive(interval).value
-
-        while True:
-            with self.batch_update():
-                light.command.line0 = command
-            await asyncio.sleep(sleep_interval)
-
     def on(self, color: Tuple[int, int, int]) -> None:
 
         with self.batch_update():
@@ -57,7 +60,7 @@ class Busylight(HIDLight):
             instruction = Instruction.Jump(target=0, color=color, on_time=0, off_time=0)
             self.command.line0 = instruction.value
 
-        self.add_task("keepalive", self.keepalive)
+        self.add_task("keepalive", keepalive)
 
     def off(self) -> None:
 

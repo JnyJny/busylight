@@ -35,6 +35,31 @@ class HIDLight(Light):
         logger.info(f"{cls} found {len(available)}")
         return available
 
+    @classmethod
+    def udev_rules(cls, mode: int = 0o0666) -> List[str]:
+
+        rules = []
+
+        if cls._is_abstract():
+            for subclass in cls.subclasses():
+                rules.extend(subclass.udev_rules(mode=mode))
+            return rules
+
+        rule_formats = [
+            'KERNEL=="hidraw*", ATTRS{{idVendor}}=="{vid:04x}", ATTRS{{idProduct}}=="{pid:04x}", MODE="{mode:04o}"',
+            'SUBSYSTEM=="usb", ATTRS{{idVendor}}=="{vid:04x}", ATTRS{{idProduct}}=="{pid:04x}", MODE="{mode:04o}"',
+        ]
+
+        devices = cls.supported_device_ids()
+        rules.append(f"# Rules for {cls.vendor} Family of Devices: {len(devices)}")
+        for n, ((vid, pid), name) in enumerate(devices.items()):
+            logger.info(f"udev rule for {vid:04x}, {pid:04x} {name}")
+            rules.append(f"# {n} {cls.vendor} {name}")
+            for rule_format in rule_formats:
+                rules.append(rule_format.format(vid=vid, pid=pid, mode=mode))
+
+        return rules
+
     @property
     def device(self) -> hid.device:
         try:

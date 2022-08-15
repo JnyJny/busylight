@@ -9,7 +9,13 @@ from loguru import logger
 
 from .color import ColorTuple
 from .effects import Effects
-from .lights import LightUnavailable, NoLightsFound, USBLight, Speed
+
+# from .lights import LightUnavailable, NoLightsFound, USBLight, Speed
+
+from .lights import Speed
+
+
+from .ulights import LightUnavailable, NoLightsFound, Light
 
 
 class LightManager:
@@ -59,10 +65,10 @@ class LightManager:
         self.greedy = greedy
 
         if lightclass is None:
-            self._lightclass = USBLight
+            self._lightclass = Light
         else:
-            if not issubclass(lightclass, USBLight):
-                raise TypeError("Not a USBLight subclass")
+            if not issubclass(lightclass, Light):
+                raise TypeError("Not a Light subclass")
             self._lightclass = lightclass
 
     def __repr__(self) -> str:
@@ -87,12 +93,12 @@ class LightManager:
         self.release()
 
     @property
-    def lightclass(self) -> USBLight:
+    def lightclass(self) -> Light:
         """USBLight subclass used to locate lights, read-only."""
-        return getattr(self, "_lightclass", USBLight)
+        return getattr(self, "_lightclass", Light)
 
     @property
-    def lights(self) -> List[USBLight]:
+    def lights(self) -> List[Light]:
         """List of managed lights."""
         try:
             return self._lights
@@ -101,7 +107,7 @@ class LightManager:
         self._lights = list(self.lightclass.all_lights(reset=False))
         return self._lights
 
-    def selected_lights(self, indices: List[int] = None) -> List[USBLight]:
+    def selected_lights(self, indices: List[int] = None) -> List[Light]:
         """Return a list of USBLights matching the list of `indices`.
 
         If `indices` is empty, all managed lights are returned.
@@ -196,7 +202,7 @@ class LightManager:
     async def on_supervisor(
         self,
         color: ColorTuple,
-        lights: List[USBLight],
+        lights: List[Light],
         timeout: float = None,
         wait: bool = True,
     ) -> None:
@@ -243,7 +249,7 @@ class LightManager:
     async def effect_supervisor(
         self,
         effect: Effects,
-        lights: List[USBLight],
+        lights: List[Light],
         timeout: float = None,
         wait: bool = True,
     ) -> None:
