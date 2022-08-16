@@ -1,58 +1,74 @@
-""" Embrava BlyncLight Family
 """
-from loguru import logger
+"""
 
-from ...color import ColorTuple
+from typing import Dict, Tuple
 
-from ..speed import Speed
-from ..usblight import USBLight, HidInfo
+from ..hidlight import HIDLight
+from ..light import LightInfo
 
-from .blynclight_impl import Command
+from ._blynclight import Command
 
 
-class Blynclight(USBLight):
+class Blynclight(HIDLight):
+    @staticmethod
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
+        return {
+            (0x2C0D, 0x0001): "Blynclight",
+            (0x2C0D, 0x000A): "Blynclight Mini",
+            (0x2C0D, 0x000C): "Blynclight",
+            (0x2C0D, 0x0010): "Blynclight Plus",
+            (0x0E53, 0x2517): "Blynclight Mini",
+            (0x0E53, 0x2516): "Blynclight",
+        }
 
-    SUPPORTED_DEVICE_IDS = {
-        (0x2C0D, 0x0001): "Blynclight",
-        (0x2C0D, 0x000A): "Blynclight Mini",
-        (0x2C0D, 0x000C): "Blynclight",
-        (0x2C0D, 0x0010): "Blynclight Plus",
-        (0x0E53, 0x2517): "Blynclight Mini",
-        (0x0E53, 0x2516): "Blynclight",
-    }
-    vendor = "Embrava"
+    @staticmethod
+    def vendor() -> str:
+        return "Embrava"
 
     def __init__(
         self,
-        hidinfo: HidInfo,
+        light_info: LightInfo,
         reset: bool = True,
+        exclusive: bool = True,
     ) -> None:
+
         self.command = Command()
-        super().__init__(hidinfo, reset=reset)
+
+        super().__init__(light_info, reset=reset, exclusive=exclusive)
+
+    def on(self, color: Tuple[int, int, int]) -> None:
+
+        with self.batch_update():
+            self.command.off = 0
+            self.color = color
+
+    @property
+    def red(self) -> int:
+        return self.command.red
+
+    @red.setter
+    def red(self, new_value: int) -> None:
+        self.command.red = new_value
+
+    @property
+    def green(self) -> int:
+        return self.command.green
+
+    @green.setter
+    def green(self, new_value: int) -> None:
+        self.command.green = new_value
+
+    @property
+    def blue(self) -> int:
+        return self.command.blue
+
+    @blue.setter
+    def blue(self, new_value: int) -> None:
+        self.command.blue = new_value
 
     def __bytes__(self) -> bytes:
-        self.command.color = self.color
         return self.command.bytes
 
-    def on(self, color: ColorTuple) -> None:
-
-        super().on(color)
-
-        with self.batch_update():
-            self.command.off = 1 if color == (0, 0, 0) else 0
-            self.command.flash = 0
-            self.command.speed = 1
-
-    def blink(self, color: ColorTuple, blink: Speed = Speed.Slow) -> None:
-        with self.batch_update():
-            self.color = color
-            self.command.flash = 1
-            self.command.speed = 1 << (blink.rate - 1)
-
-    def off(self) -> None:
-        self.on((0, 0, 0))
-        super().off()
-
     def reset(self) -> None:
-        self.command.reset()
-        super().reset()
+        with self.batch_update():
+            self.command.reset()

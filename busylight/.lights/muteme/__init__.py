@@ -1,6 +1,5 @@
+""" Supported MuteMe Lights
 """
-"""
-
 
 from .muteme import MuteMe
 

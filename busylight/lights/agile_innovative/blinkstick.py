@@ -1,99 +1,60 @@
-"""Agile Innovative BlinkStick
+""" Agile Innovative BlinkStick
 """
 
-import asyncio
 
-from typing import Awaitable, Dict, List, Optional
+from typing import Dict, Tuple
 
-from ...color import ColorTuple
+from loguru import logger
 
-from ..exceptions import LightUnsupported
-from ..speed import Speed
-from ..usblight import USBLight, HidInfo
+from ..hidlight import HIDLight
+from ..light import LightInfo
 
-from .blinkstick_impl import BlinkStickType, Report
+from ._blinkstick import BlinkStickType, Report
 
 
-class BlinkStick(USBLight):
+class BlinkStick(HIDLight):
+    @staticmethod
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
+        return {
+            (0x20A0, 0x41E5): "BlinkStick",
+        }
 
-    SUPPORTED_DEVICE_IDS = {
-        (0x20A0, 0x41E5): "BlinkStick",
-    }
-
-    vendor = "Agile Innovative"
-
-    @classmethod
-    def claims(cls, hidinfo: HidInfo) -> bool:
-
-        if not super().claims(hidinfo):
-            return False
-
-        try:
-            BlinkStickType.from_dict(hidinfo)
-            return True
-        except LightUnsupported:
-            pass
-        return False
-
-    @classmethod
-    def supported_lights(cls) -> Dict[str, List[str]]:
-        return {cls.vendor: [device.name for device in BlinkStickType]}
+    @staticmethod
+    def vendor() -> str:
+        return "Agile Innovative"
 
     def __init__(
-        self,
-        hidinfo: HidInfo,
-        reset: bool = True,
+        self, light_info: LightInfo, reset: bool = True, exclusive: bool = True
     ) -> None:
+
         self.channel = 0
         self.index = 0
-        self._blinkstick_type = BlinkStickType.from_dict(hidinfo)
-        super().__init__(hidinfo, reset=reset)
+        self._device_type = BlinkStickType.from_dict(light_info)
+
+        super().__init__(light_info, reset=reset, exclusive=exclusive)
 
     @property
-    def blinkstick_type(self) -> BlinkStickType:
-        return getattr(self, "_blinkstick_type")
-
-    @property
-    def name(self) -> str:
-        if self.blinkstick_type == BlinkStickType.BlinkStick:
-            return "BlinkStick"
-        return self.blinkstick_type.name.title()
+    def device_type(self) -> BlinkStickType:
+        return self._device_type
 
     @property
     def report(self) -> int:
-        return self.blinkstick_type.report
+        return self.device_type.report
 
     @property
     def nleds(self) -> int:
-        return self.blinkstick_type.nleds
+        return self.device_type.nleds
+
+    @property
+    def name(self) -> str:
+
+        if self.device_type == BlinkStickType.BlinkStick:
+            return "BlinkStick"
+        return self.device_type.name.title()
 
     def __bytes__(self) -> bytes:
 
-        # blinkstick color order is GRB
-        #
-        # To keep the interface consistent, self.color is kept in RGB
-        # order and the order isn't transposed until it's time to
-        # write to the device and `bytes(self)` is called in the
-        # USBLight.strategy method.
-
-        r, g, b = self.color
-
         if self.report == Report.Single:
-            return bytes([self.report, g, r, b])
+            return bytes([self.report, self.green, self.red, self.blue])
 
-        buf = [self.report, self.channel]
-        buf.extend([g, r, b] * self.nleds)
-
-        return bytes(buf)
-
-    def on(self, color: ColorTuple) -> None:
-        with self.batch_update():
-            super().on(color)
-
-    def blink(self, color: ColorTuple, speed: Speed = Speed.Slow) -> None:
-
-        raise NotImplementedError("blink")
-
-    def off(self):
-        self.on((0, 0, 0))
-        super().off()
+        raise ValueError(f"Unsupported report {self.report}")

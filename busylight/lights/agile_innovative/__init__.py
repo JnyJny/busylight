@@ -1,7 +1,7 @@
 """
 """
 
-from .blinkstick import BlinkStick
 
+from .blinkstick import BlinkStick
 
 __all__ = ["BlinkStick"]
