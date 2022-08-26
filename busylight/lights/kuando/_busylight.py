@@ -2,10 +2,9 @@
 """
 
 from enum import IntEnum
+from typing import Tuple
 
 from bitvector import BitField, BitVector
-
-from ...color import ColorTuple
 
 
 class Ring(IntEnum):
@@ -69,7 +68,7 @@ class Instruction(BitVector):
     def Jump(
         cls,
         target: int = 0,
-        color: ColorTuple = None,
+        color: Tuple[int, int, int] = None,
         repeat: int = 0,
         on_time: int = 0,
         off_time: int = 0,
@@ -157,14 +156,14 @@ class Instruction(BitVector):
         return f"{type(self).__name__}(value={self.value:016x})"
 
     @property
-    def color(self) -> ColorTuple:
+    def color(self) -> Tuple[int, int, int]:
         r, g, b = map(
             lambda v: int((v / 100) * 0xFF), (self.red, self.green, self.blue)
         )
         return (r, g, b)
 
     @color.setter
-    def color(self, color: ColorTuple) -> None:
+    def color(self, color: Tuple[int, int, int]) -> None:
         self.red, self.green, self.blue = map(lambda v: int((v / 255) * 100), color)
 
 

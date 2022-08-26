@@ -6,11 +6,10 @@ import abc
 import asyncio
 
 from itertools import cycle
-from typing import List
+from typing import List, Tuple
 
 from loguru import logger
 
-from ..color import ColorList, ColorTuple
 from ..lights import Light
 
 
@@ -72,7 +71,7 @@ class BaseEffect(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def colors(self) -> ColorList:
+    def colors(self) -> List[Tuple[int, int, int]]:
         """A list of color tuples."""
 
     async def __call__(self, light: Light) -> None:

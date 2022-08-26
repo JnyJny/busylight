@@ -7,15 +7,12 @@ import webcolors
 
 from loguru import logger
 
-ColorTuple = Tuple[int, int, int]
-ColorList = List[ColorTuple]
-
 
 class ColorLookupError(Exception):
     pass
 
 
-def parse_color_string(value: str, scale: float = 1.0) -> ColorTuple:
+def parse_color_string(value: str, scale: float = 1.0) -> Tuple[int, int, int]:
     """Convert a string to a 24-bit three channel (RGB) color.
 
     String values can be:
@@ -58,10 +55,10 @@ def parse_color_string(value: str, scale: float = 1.0) -> ColorTuple:
     raise ColorLookupError(f"No color mapping for {value}")
 
 
-def colortuple_to_name(color: ColorTuple) -> str:
-    """Returns a string name of the given ColorTuple if found.
+def colortuple_to_name(color: Tuple[int, int, int]) -> str:
+    """Returns a string name of the given Tuple[int, int, int] if found.
 
-    :color: ColorTuple
+    :color: Tuple[int, int, int]
     :return: str
 
     Raises:
@@ -75,16 +72,18 @@ def colortuple_to_name(color: ColorTuple) -> str:
     raise ColorLookupError(f"No color mapping for {color}")
 
 
-def scale_color(color: ColorTuple, scale: float = 1.0) -> ColorTuple:
-    """Returns a ColorTuple whose color intensity scaled by the given value.
+def scale_color(
+    color: Tuple[int, int, int], scale: float = 1.0
+) -> Tuple[int, int, int]:
+    """Returns a Tuple[int, int, int] whose color intensity scaled by the given value.
 
-    Each of the component values of the ColorTuple are multiplied by scale
+    Each of the component values of the Tuple[int, int, int] are multiplied by scale
     which is assumed to range from 0.0 to 1.0 corresponding to 0% to 100%
     intensitity.
 
-    :param color: ColorTuple
+    :param color: Tuple[int, int, int]
     :param scale: float
-    :return: ColorTuple
+    :return: Tuple[int, int, int]
     """
 
     return tuple(max(0, min(255, round(v * scale))) for v in color)

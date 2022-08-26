@@ -12,7 +12,7 @@ from loguru import logger
 
 from .. import __version__
 
-from ..color import ColorTuple, parse_color_string, colortuple_to_name, ColorLookupError
+from ..color import parse_color_string, colortuple_to_name, ColorLookupError
 from ..effects import Effects
 from ..lights import USBLight, Speed
 from ..lights import LightUnavailable, NoLightsFound, LightNotFound

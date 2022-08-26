@@ -3,7 +3,7 @@
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import typer
 
@@ -11,7 +11,7 @@ from loguru import logger
 
 from .speed import Speed
 from .lights import NoLightsFound
-from .color import ColorLookupError, ColorTuple, parse_color_string
+from .color import ColorLookupError, parse_color_string
 from .effects import Effects
 from .manager import LightManager
 from . import __version__
@@ -34,8 +34,8 @@ class GlobalOptions:
 manager = LightManager()
 
 
-def string_to_scaled_color(ctx: typer.Context, value: str) -> ColorTuple:
-    """typer.Option callback: translates a string to a ColorTuple.
+def string_to_scaled_color(ctx: typer.Context, value: str) -> Tuple[int, int, int]:
+    """typer.Option callback: translates a string to a Tuple[int, int, int].
 
     This callback is intended to be used by subcommands after the
     global callback has initialized ctx.obj to an instance of
@@ -43,7 +43,7 @@ def string_to_scaled_color(ctx: typer.Context, value: str) -> ColorTuple:
 
     :param ctx: typer.Context
     :param value: str
-    :return: ColorTuple
+    :return: Tuple[int, int, int]
     """
 
     try:
