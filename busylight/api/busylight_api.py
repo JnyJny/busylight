@@ -28,27 +28,27 @@ An API server for USB connected presence lights.
 **Supported USB lights:**
 _Agile Innovative_
   - BlinkStick
-  - BlinkStick Pro
-  - BlinkStick Square
-  - BlinkStick Strip
-  - BlinkStick Nano
-  - BlinkStick Flex
+_Compulab_
+  - fit-statUSB
 _Embrava_
   - Blynclight
   - Blynclight Mini
   - Blynclight Plus
-_Plantronics_
-  - Status Indicator
 _Kuando_
   - Busylight Alpha
   - Busylight Omega
 _Luxafor_
-  - Flag
-  - Mute
   - Orb
+_MuteMe_
+  - MuteMe Mini
+  - MuteMe Original
+  - MuteMe Original (prototype)
+_MuteSync_
+  - MuteSync Button
+_Plantronics_
+  - Status Indicator
 _ThingM_
   - Blink(1)
-
 [Source](https://github.com/JnyJny/busylight.git)
 """
 
