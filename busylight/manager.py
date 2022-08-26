@@ -1,4 +1,4 @@
-""" a Manager for controlling multiple USBLights.
+""" a Manager for controlling multiple Lights.
 """
 
 import asyncio
@@ -7,15 +7,11 @@ from contextlib import suppress
 from typing import Dict, List, Optional, Union, Tuple
 from loguru import logger
 
-from .color import ColorTuple
 from .effects import Effects
 
-# from .lights import LightUnavailable, NoLightsFound, USBLight, Speed
+from .lights import LightUnavailable, NoLightsFound, Light
 
-from .lights import Speed
-
-
-from .ulights import LightUnavailable, NoLightsFound, Light
+from .speed import Speed
 
 
 class LightManager:
@@ -50,16 +46,16 @@ class LightManager:
     def __init__(self, greedy: bool = True, lightclass: type = None):
         """
         :greedy: bool
-        :lightclass: USBLight or subclass
+        :lightclass: Light or subclass
 
         If `greedy` is True, the default, then calls to the update
         method will look for lights that have been plugged in since
         the last update.
 
         If the caller supplies a `lightclass`, which is expected to
-        be USBLight or a subclass, the light manager will only
+        be Light or a subclass, the light manager will only
         manage lights returned by `lightclass.all_lights()`. If the
-        user does not supply a class, the default is `USBLight`.
+        user does not supply a class, the default is `Light`.
         """
 
         self.greedy = greedy
@@ -94,7 +90,7 @@ class LightManager:
 
     @property
     def lightclass(self) -> Light:
-        """USBLight subclass used to locate lights, read-only."""
+        """Light subclass used to locate lights, read-only."""
         return getattr(self, "_lightclass", Light)
 
     @property
@@ -108,14 +104,14 @@ class LightManager:
         return self._lights
 
     def selected_lights(self, indices: List[int] = None) -> List[Light]:
-        """Return a list of USBLights matching the list of `indices`.
+        """Return a list of Lights matching the list of `indices`.
 
         If `indices` is empty, all managed lights are returned.
 
         If there are no lights with matching indices, an empty list is returned.
 
         :indices: List[int]
-        :return: List[USBLight]
+        :return: List[Light]
 
         Raises:
         - NoLightsFound
@@ -183,13 +179,13 @@ class LightManager:
 
     def on(
         self,
-        color: ColorTuple,
+        color: Tuple[int, int, int],
         light_ids: List[int] = None,
         timeout: float = None,
     ) -> None:
         """Turn on all the lights whose indices are in the `lights` list.
 
-        :color: ColorTuple
+        :color: Tuple[int,int,int]
         :lights: List[int]
         :timeout: float seconds
 
@@ -201,15 +197,15 @@ class LightManager:
 
     async def on_supervisor(
         self,
-        color: ColorTuple,
+        color: Tuple[int, int, int],
         lights: List[Light],
         timeout: float = None,
         wait: bool = True,
     ) -> None:
         """Async monitor for activating specified lights with the given color.
 
-        :param color: ColorTuple
-        :param lights: list[USBLight]
+        :param color: Tuple[int, int, int]
+        :param lights: list[Light]
         :param timeout: float
         :param wait: bool
 
@@ -259,7 +255,7 @@ class LightManager:
         effect will stop at the end of the period.
 
         :effect:
-        :lights: List[USBLight]
+        :lights: List[Light]
         :timeout: float seconds
 
         Raises:

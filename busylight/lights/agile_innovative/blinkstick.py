@@ -57,4 +57,7 @@ class BlinkStick(HIDLight):
         if self.report == Report.Single:
             return bytes([self.report, self.green, self.red, self.blue])
 
-        raise ValueError(f"Unsupported report {self.report}")
+        buf = [self.report, self.channel]
+        buf.extend([self.green, self.red, self.blue] * self.nleds)
+
+        return bytes(buf)

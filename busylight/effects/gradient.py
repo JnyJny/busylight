@@ -1,9 +1,9 @@
 """a smooth color gradient for a given color.
 """
 
-from itertools import cycle
 
-from ..color import ColorList, ColorTuple
+from itertools import cycle
+from typing import List, Tuple
 
 from .effect import BaseEffect
 
@@ -16,12 +16,12 @@ class Gradient(BaseEffect):
 
     def __init__(
         self,
-        color: ColorTuple,
+        color: Tuple[int, int, int],
         duty_cycle: float,
         step: int = 1,
     ) -> None:
         """
-        :param color: ColorTuple
+        :param color: Tuple[int,int,int]
         :param duty_cycle: float
         :param step: int
         """
@@ -33,7 +33,7 @@ class Gradient(BaseEffect):
         self.step = max(0, min(step, 255))
 
     @property
-    def colors(self) -> ColorList:
+    def colors(self) -> List[Tuple[int, int, int]]:
         try:
             return self._colors
         except AttributeError:

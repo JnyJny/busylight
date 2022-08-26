@@ -1,14 +1,13 @@
 """
 """
 
-from typing import List
+from typing import List, Tuple
 
-from ..color import ColorList, ColorTuple
 from .effect import BaseEffect
 
 
 class Steady(BaseEffect):
-    def __init__(self, color: ColorTuple) -> None:
+    def __init__(self, color: Tuple[int, int, int]) -> None:
         self.color = color
 
     def __repr__(self) -> str:
@@ -19,7 +18,7 @@ class Steady(BaseEffect):
         return 86400
 
     @property
-    def colors(self) -> ColorList:
+    def colors(self) -> List[Tuple[int, int, int]]:
         try:
             return self._colors
         except AttributeError:

@@ -9,14 +9,14 @@ import typer
 
 from loguru import logger
 
-from .lights import Speed
+from .speed import Speed
 from .lights import NoLightsFound
 from .color import ColorLookupError, ColorTuple, parse_color_string
 from .effects import Effects
 from .manager import LightManager
 from . import __version__
 
-from .ulights import Light
+from .lights import Light
 
 cli = typer.Typer()
 
@@ -280,7 +280,7 @@ def list_available_lights(
             typer.secho(light.name, fg="green")
             if not verbose:
                 continue
-            for k, v in light.hidinfo.items():
+            for k, v in light.info.items():
                 if v:
                     typer.secho(f"   {k:>20s}:", nl=False)
                     if isinstance(v, int):

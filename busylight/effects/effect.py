@@ -11,7 +11,7 @@ from typing import List
 from loguru import logger
 
 from ..color import ColorList, ColorTuple
-from ..lights import USBLight
+from ..lights import Light
 
 
 class BaseEffect(abc.ABC):
@@ -75,10 +75,10 @@ class BaseEffect(abc.ABC):
     def colors(self) -> ColorList:
         """A list of color tuples."""
 
-    async def __call__(self, light: USBLight) -> None:
+    async def __call__(self, light: Light) -> None:
         """Apply this effect to the given light.
 
-        :param light: USBLight
+        :param light: Light
         """
         for color in cycle(self.colors):
             light.on(color)

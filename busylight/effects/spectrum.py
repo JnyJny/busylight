@@ -4,9 +4,9 @@
 import math
 
 from itertools import cycle
-from typing import Tuple
+from typing import List, Tuple
 
-from ..color import ColorList, ColorTuple, scale_color
+from ..color import scale_color
 from .effect import BaseEffect
 
 
@@ -19,7 +19,7 @@ class Spectrum(BaseEffect):
         scale: float = 1.0,
         steps: int = 64,
         frequency: Tuple[float, float, float] = None,
-        phase: ColorTuple = None,
+        phase: Tuple[int, int, int] = None,
         center: int = 128,
         width: int = 127,
     ) -> None:
@@ -44,7 +44,7 @@ class Spectrum(BaseEffect):
         self.width = width
 
     @property
-    def colors(self) -> ColorList:
+    def colors(self) -> List[Tuple[int, int, int]]:
         try:
             return self._colors
         except AttributeError:
