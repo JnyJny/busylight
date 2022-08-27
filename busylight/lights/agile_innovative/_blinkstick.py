@@ -49,12 +49,12 @@ class BlinkStickType(IntEnum):
             logger.error(
                 f"serial_number missing from light_info -> {error} {light_info}"
             )
-            raise LightUnsupported.from_dict(light_info) from None
+            raise LightUnsupported(light_info) from None
         except IndexError as error:
             logger.error(
                 f"failed to parse major number in {light_info['serial_number']}: {error}"
             )
-            raise LightUnsupported.from_dict(light_info) from None
+            raise LightUnsupported(light_info) from None
         except ValueError:
             pass
 
@@ -65,7 +65,7 @@ class BlinkStickType(IntEnum):
         except ValueError as error:
             logger.error(f"unknown release {light_info['release_number']} {error}")
 
-        raise LightUnsupported(light_info["path"])
+        raise LightUnsupported(light_info)
 
     @property
     def name(self) -> "str":
