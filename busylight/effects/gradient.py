@@ -49,6 +49,6 @@ class Gradient(BaseEffect):
             b = round(scale * blue)
             colors.append((r, g, b))
 
-        self._colors = colors + list(reversed(colors[:-1]))
+        self._colors: List[Tuple[int, int, int]] = colors + list(reversed(colors[:-1]))
 
         return self._colors

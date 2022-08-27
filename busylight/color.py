@@ -37,7 +37,9 @@ def parse_color_string(value: str, scale: float = 1.0) -> Tuple[int, int, int]:
     scale = max(0.0, min(scale, 1.0))
 
     try:
-        return scale_color(tuple(webcolors.name_to_rgb(value)), scale)
+
+        r, g, b = webcolors.name_to_rgb(value)
+        return scale_color((r, g, b), scale)
     except ValueError as error:
         logger.info(f"name_to_rgb {value} -> {error}")
 
@@ -47,7 +49,8 @@ def parse_color_string(value: str, scale: float = 1.0) -> Tuple[int, int, int]:
         value = "#" + value
 
     try:
-        return scale_color(tuple(webcolors.hex_to_rgb(value)), scale)
+        r, g, b = webcolors.hex_to_rgb(value)
+        return scale_color((r, g, b), scale)
 
     except ValueError as error:
         logger.error(f"{value} -> {error}")
@@ -73,7 +76,8 @@ def colortuple_to_name(color: Tuple[int, int, int]) -> str:
 
 
 def scale_color(
-    color: Tuple[int, int, int], scale: float = 1.0
+    color: Tuple[int, int, int],
+    scale: float = 1.0,
 ) -> Tuple[int, int, int]:
     """Returns a Tuple[int, int, int] whose color intensity scaled by the given value.
 
@@ -86,4 +90,5 @@ def scale_color(
     :return: Tuple[int, int, int]
     """
 
-    return tuple(max(0, min(255, round(v * scale))) for v in color)
+    r, g, b = [max(0, min(255, round(v * scale))) for v in color]
+    return (r, g, b)

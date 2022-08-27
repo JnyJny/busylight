@@ -13,18 +13,6 @@ from ..light import LightInfo
 from ._busylight import CommandBuffer, Instruction
 
 
-async def keepalive(light: HIDLight, interval: int = 0xF) -> None:
-
-    interval = interval & 0x0F
-    sleep_interval = round(interval / 2)
-    command = Instruction.KeepAlive(interval).value
-
-    while True:
-        with light.batch_update():
-            light.command.line0 = command
-        await asyncio.sleep(sleep_interval)
-
-
 class Busylight(HIDLight):
     @staticmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
@@ -46,7 +34,7 @@ class Busylight(HIDLight):
         exclusive: bool = True,
     ) -> None:
 
-        self.command = CommandBuffer()
+        self.command: CommandBuffer = CommandBuffer()
         super().__init__(light_info, reset=reset, exclusive=exclusive)
 
     def __bytes__(self) -> bytes:
@@ -70,3 +58,15 @@ class Busylight(HIDLight):
                 target=0, color=self.color, on_time=0, off_time=0
             )
             self.command.line0 = instruction.value
+
+
+async def keepalive(light: Busylight, interval: int = 0xF) -> None:
+
+    interval = interval & 0x0F
+    sleep_interval = round(interval / 2)
+    command = Instruction.KeepAlive(interval).value
+
+    while True:
+        with light.batch_update():
+            light.command.line0 = command
+        await asyncio.sleep(sleep_interval)

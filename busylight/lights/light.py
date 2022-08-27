@@ -6,7 +6,7 @@ import asyncio
 
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import Any, Callable, Generator, Dict, List, Tuple, Union, TypeVar
+from typing import Any, Callable, Generator, Dict, List, Tuple, Type, TypeVar, Union
 
 from loguru import logger
 
@@ -20,9 +20,9 @@ from .exceptions import (
 
 from .taskable import TaskableMixin
 
+LightType = Type["Light"]
 
-LightType = TypeVar("Light")
-LightInfo = Dict[str, Union[bytes, int, str]]
+LightInfo = Dict[str, Union[bytes, int, str, Tuple[int, int]]]
 
 
 class Light(abc.ABC, TaskableMixin):
@@ -196,8 +196,9 @@ class Light(abc.ABC, TaskableMixin):
             raise InvalidLightInfo(light_info)
 
         self.info = dict(light_info)
-        for key, value in self.info.items():
-            setattr(self, key, value)
+        # for key, value in self.info.items():
+        #    logger.debug("{self.__class__.__name__} adding {key} with {value}")
+        #    setattr(self, key, value)
 
         self._reset = reset
         self._exclusive = exclusive
@@ -209,7 +210,7 @@ class Light(abc.ABC, TaskableMixin):
             if exclusive:
                 self.reset()
             else:
-                self.acqurie()
+                self.acquire()
                 self.reset()
                 self.release()
 
@@ -220,32 +221,42 @@ class Light(abc.ABC, TaskableMixin):
     def __str__(self) -> str:
         return self.name
 
-    def __eq__(self, other: "Light") -> bool:
-        return all(
-            (
-                self.vendor == other.vendor,
-                self.vendor_id == other.vendor_id,
-                self.product_id == other.product_id,
-                self.name == other.name,
-                self.path == other.path,
-            )
-        )
+    def __eq__(self, other: object) -> bool:
 
-    def __lt__(self, other: "Light") -> bool:
-        return any(
-            (
-                self.vendor < other.vendor,
-                self.vendor_id < other.vendor_id,
-                self.product_id < other.product_id,
-                self.name < other.name,
-                self.path < other.path,
-            )
-        )
+        if not isinstance(other, Light):
+            return NotImplemented
+
+        for key, value in other.info.items():
+            if self.info[key] != value:
+                return False
+        return True
+
+    def __lt__(self, other: object) -> bool:
+        if not isinstance(other, Light):
+            return NotImplemented
+
+        return any([self.vendor() < other.vendor(), self.name < other.name])
 
     def reset(self) -> None:
         """Turn off the light and cancel any running async tasks."""
         self.off()
         self.cancel_tasks()
+
+    @property
+    def device_id(self) -> Tuple[int, int]:
+        return self.info["device_id"]
+
+    @property
+    def path(self) -> str:
+        return self.info["path"]
+
+    @property
+    def vendor_id(self) -> int:
+        return self.info["vendor_id"]
+
+    @property
+    def product_id(self) -> int:
+        return self.info["product_id"]
 
     @contextmanager
     def batch_update(self) -> Generator[None, None, None]:
@@ -285,7 +296,7 @@ class Light(abc.ABC, TaskableMixin):
             return self._name
         except AttributeError:
             pass
-        self._name = self.supported_device_ids()[self.device_id]
+        self._name: str = self.supported_device_ids()[self.device_id]
         return self._name
 
     @property
@@ -339,7 +350,7 @@ class Light(abc.ABC, TaskableMixin):
         return getattr(self, "_red", 0)
 
     @red.setter
-    def red(self, new_value: int) -> int:
+    def red(self, new_value: int) -> None:
         self._red = new_value
 
     @property
@@ -348,7 +359,7 @@ class Light(abc.ABC, TaskableMixin):
         return getattr(self, "_green", 0)
 
     @green.setter
-    def green(self, new_value: int) -> int:
+    def green(self, new_value: int) -> None:
         self._green = new_value
 
     @property
@@ -357,7 +368,7 @@ class Light(abc.ABC, TaskableMixin):
         return getattr(self, "_blue", 0)
 
     @blue.setter
-    def blue(self, new_value: int) -> int:
+    def blue(self, new_value: int) -> None:
         self._blue = new_value
 
     @property
@@ -381,8 +392,11 @@ class Light(abc.ABC, TaskableMixin):
             nbytes = self.write_strategy(data)
             logger.info(f"data:{len(data)} = {data!r} wrote {nbytes}")
         except Exception as error:
-            logger.error(f"write_strategy raised {error} for {data}")
+            logger.error(f"write_strategy raised {error} for {data!r}")
             raise LightUnavailable(self.path) from None
+
+    def matches(self, light_info: LightInfo) -> bool:
+        """True if light_info matches info for this light instance."""
 
     @abc.abstractmethod
     def __bytes__(self) -> bytes:

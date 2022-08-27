@@ -79,7 +79,8 @@ class Command(BitVector):
     @property
     def color(self) -> Tuple[int, int, int]:
         color = (self.red, self.green, self.blue)
-        return tuple(255 if value else 0 for value in color)
+        r, g, b = [255 if value else 0 for value in color]
+        return (r, g, b)
 
     @color.setter
     def color(self, new_color: Tuple[int, int, int]) -> None:
@@ -91,7 +92,7 @@ class Command(BitVector):
     @property
     def firmware_update(self) -> bool:
         """Use not recommended."""
-        return self.reserved and self.red
+        return bool(self.reserved and self.red)
 
     @firmware_update.setter
     def firmware_update(self, value: bool) -> None:

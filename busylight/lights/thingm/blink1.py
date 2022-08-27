@@ -55,7 +55,7 @@ class Blink1(HIDLight):
         return self.command.red
 
     @red.setter
-    def red(self, new_value: int) -> int:
+    def red(self, new_value: int) -> None:
         self.command.red = new_value
 
     @property
@@ -63,7 +63,7 @@ class Blink1(HIDLight):
         return self.command.green
 
     @green.setter
-    def green(self, new_value: int) -> int:
+    def green(self, new_value: int) -> None:
         self.command.green = new_value
 
     @property
@@ -71,5 +71,5 @@ class Blink1(HIDLight):
         return self.command.blue
 
     @blue.setter
-    def blue(self, new_value: int) -> int:
+    def blue(self, new_value: int) -> None:
         self.command.blue = new_value

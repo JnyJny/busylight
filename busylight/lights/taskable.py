@@ -3,7 +3,7 @@
 
 import asyncio
 
-from typing import Awaitable, Dict, Optional
+from typing import Any, Awaitable, Dict, Optional
 
 
 class TaskableMixin:
@@ -24,7 +24,7 @@ class TaskableMixin:
             return self._tasks
         except AttributeError:
             pass
-        self._tasks = {}
+        self._tasks: Dict[str, asyncio.Task] = {}
         return self._tasks
 
     def add_task(self, name: str, coroutine: Awaitable) -> asyncio.Task:
@@ -37,6 +37,7 @@ class TaskableMixin:
 
         name += f"-{id(self)}"
 
+        # >py3.7, create_task takes a `name` parameter
         self.tasks[name] = self.event_loop.create_task(coroutine(self))
 
         return self.tasks[name]

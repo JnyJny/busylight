@@ -63,7 +63,7 @@ class BlinkStickType(IntEnum):
         except KeyError as error:
             logger.error(f"failed to find release_number {error}")
         except ValueError as error:
-            logger.error(f"unknown release {light_info['release_number']} {error}")
+            logger.error(f"unknown release {light_info['release_number']!r} {error}")
 
         raise LightUnsupported(light_info)
 
@@ -100,5 +100,5 @@ class BlinkStickType(IntEnum):
             return self._report
         except AttributeError:
             pass
-        self._report = Report.from_nleds(self.nleds)
+        self._report: Report = Report.from_nleds(self.nleds)
         return self._report

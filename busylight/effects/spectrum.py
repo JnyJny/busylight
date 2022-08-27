@@ -60,6 +60,6 @@ class Spectrum(BaseEffect):
             g = int((math.sin(gf * i + gp) * self.width) + self.center)
             colors.append(scale_color((r, g, b), self.scale))
 
-        self._colors = colors + list(reversed(colors[:-1]))
+        self._colors: List[Tuple[int, int, int]] = colors + list(reversed(colors[:-1]))
 
         return self._colors

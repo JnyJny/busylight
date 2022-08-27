@@ -11,6 +11,7 @@ from serial.tools import list_ports
 from serial.tools.list_ports_common import ListPortInfo
 
 from .light import Light, LightInfo
+from .exceptions import LightUnavailable
 
 
 class UnrecognizedDevice(Exception):
@@ -79,7 +80,7 @@ class SerialLight(Light):
         except AttributeError:
             pass
 
-        self._device = Serial()
+        self._device: Serial = Serial()
         self._device.port = self.path
 
         return self._device

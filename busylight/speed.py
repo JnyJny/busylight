@@ -15,7 +15,7 @@ class Speed(str, Enum):
             return self._duty_cycle
         except AttributeError:
             pass
-        self._duty_cycle = {0: 0.75, 1: 0.5, 2: 0.25}.get(self.rate, 0)
+        self._duty_cycle: float = {0: 0.75, 1: 0.5, 2: 0.25}.get(self.rate, 0)
         return self._duty_cycle
 
     @property

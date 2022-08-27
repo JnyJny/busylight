@@ -19,7 +19,7 @@ class LightOperation(BaseModel):
 class LightDescription(BaseModel):
     light_id: int
     name: str
-    info: Dict[str, Union[int, str]]
+    info: Dict[str, Union[int, str, Tuple[int, int]]]
     is_on: bool
     color: str
     rgb: Tuple[int, int, int]

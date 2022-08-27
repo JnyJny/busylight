@@ -14,8 +14,9 @@ from .. import __version__
 
 from ..color import parse_color_string, colortuple_to_name, ColorLookupError
 from ..effects import Effects
-from ..lights import USBLight, Speed
+from ..lights import Light
 from ..lights import LightUnavailable, NoLightsFound, LightNotFound
+from ..speed import Speed
 
 
 from .models import LightOperation, LightDescription, EndPoint
@@ -62,7 +63,6 @@ class BusylightAPI(FastAPI):
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
         try:
-
             self.username = environ["BUSYLIGHT_API_USER"]
             self.password = environ["BUSYLIGHT_API_PASS"]
             dependencies.append(Depends(self.authenticate_user))
@@ -79,12 +79,12 @@ class BusylightAPI(FastAPI):
             version=__version__,
             dependencies=dependencies,
         )
-        self.lights: List[USBLight] = []
+        self.lights: List[Light] = []
         self.endpoints: List[str] = []
 
     def update(self) -> None:
 
-        self.lights.extend(USBLight.all_lights())
+        self.lights.extend(Light.all_lights())
 
     def release(self) -> None:
 

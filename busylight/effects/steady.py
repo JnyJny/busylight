@@ -17,11 +17,15 @@ class Steady(BaseEffect):
     def duty_cycle(self) -> float:
         return 86400
 
+    @duty_cycle.setter
+    def duty_cycle(self, new_value) -> None:
+        pass
+
     @property
     def colors(self) -> List[Tuple[int, int, int]]:
         try:
             return self._colors
         except AttributeError:
             pass
-        self._colors = [self.color]
+        self._colors: List[Tuple[int, int, int]] = [self.color]
         return self._colors

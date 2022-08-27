@@ -35,5 +35,5 @@ class Blink(BaseEffect):
             return self._colors
         except AttributeError:
             pass
-        self._colors = [self.on_color, self.off_color]
+        self._colors: List[Tuple[int, int, int]] = [self.on_color, self.off_color]
         return self._colors

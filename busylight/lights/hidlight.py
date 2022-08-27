@@ -9,6 +9,8 @@ from loguru import logger
 
 from .light import Light, LightInfo
 
+from .exceptions import LightUnavailable
+
 
 class HIDLight(Light):
     @classmethod
@@ -66,7 +68,7 @@ class HIDLight(Light):
             return self._device
         except AttributeError:
             pass
-        self._device = hid.device(*self.device_id)
+        self._device: hid.device = hid.device(*self.device_id)
         return self._device
 
     @property
