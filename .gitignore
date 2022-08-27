@@ -11,3 +11,4 @@ tst.py
 .coverage
 htmlcov
 *token
+.python-version
