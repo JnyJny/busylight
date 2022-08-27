@@ -1,10 +1,16 @@
 """
 """
 
+from typing import List, Tuple, Type, TypeVar
+
 from busylight.lights import Light, HIDLight, SerialLight
 
-ABSTRACT_LIGHT_SUBCLASSES = [Light, HIDLight, SerialLight]
-CONCRETE_LIGHT_SUBCLASSES = Light.subclasses()
-ALL_LIGHT_SUBCLASSES = ABSTRACT_LIGHT_SUBCLASSES + CONCRETE_LIGHT_SUBCLASSES
+LightType = Type[Light]
+LightTypes = List[LightType]
 
-BOGUS_DEVICE_ID = (0xFFFF, 0xFFFF)
+
+ABSTRACT_LIGHT_SUBCLASSES: LightTypes = [Light, HIDLight, SerialLight]
+CONCRETE_LIGHT_SUBCLASSES: LightTypes = Light.subclasses()
+ALL_LIGHT_SUBCLASSES: LightTypes = ABSTRACT_LIGHT_SUBCLASSES + CONCRETE_LIGHT_SUBCLASSES
+
+BOGUS_DEVICE_ID: Tuple[int, int] = (0xFFFF, 0xFFFF)
