@@ -83,5 +83,5 @@ mypy:
 	$(MYPY) --config-file $(PYPROJECT) $(TARGET)
 
 clean:
-	@rm -rf dist $(TARGET).egg-info *.log
+	@rm -rf dist $(TARGET).egg-info *.log htmlcov
 
