@@ -76,6 +76,7 @@ release: patch_release
 
 report:
 	pytest --cov=./busylight --cov-report=html
+	open htmlcov/index.html
 
 mypy: MYPY= mypy
 mypy:
