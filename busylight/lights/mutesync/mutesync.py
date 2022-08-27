@@ -1,6 +1,8 @@
 """
 """
 
+from typing import Dict, Tuple
+
 from loguru import logger
 
 from ..seriallight import SerialLight
@@ -8,7 +10,7 @@ from ..seriallight import SerialLight
 
 class MuteSync(SerialLight):
     @staticmethod
-    def supported_device_ids() -> dict[tuple[int, int], str]:
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
             (0x10C4, 0xEA60): "MuteSync Button",
         }

@@ -3,7 +3,7 @@
 
 import asyncio
 
-from typing import Tuple
+from typing import Dict, Tuple
 
 from loguru import logger
 
@@ -27,7 +27,7 @@ async def keepalive(light: HIDLight, interval: int = 0xF) -> None:
 
 class Busylight(HIDLight):
     @staticmethod
-    def supported_device_ids() -> dict[tuple[int, int], str]:
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
             (0x04D8, 0xF848): "Busylight Alpha",
             (0x27BB, 0x3BCA): "Busylight Alpha",

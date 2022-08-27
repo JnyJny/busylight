@@ -29,7 +29,7 @@ class Light(abc.ABC, TaskableMixin):
     """A USB connected device implementing a light, indicator lamp or button."""
 
     @classmethod
-    @lru_cache
+    @lru_cache(maxsize=None)
     def subclasses(cls) -> List[LightType]:
         """Return a list of Light subclasses implementing support for a physical light."""
 
@@ -155,7 +155,7 @@ class Light(abc.ABC, TaskableMixin):
 
     @staticmethod
     @abc.abstractmethod
-    def supported_device_ids() -> Dict[tuple[int, int], str]:
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
         """A dictionary  of device identfiers support by this class.
 
         Keys are a tuple of integer vendor_id and product id, values

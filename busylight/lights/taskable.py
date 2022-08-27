@@ -3,7 +3,7 @@
 
 import asyncio
 
-from typing import Awaitable, Optional
+from typing import Awaitable, Dict, Optional
 
 
 class TaskableMixin:
@@ -18,7 +18,7 @@ class TaskableMixin:
         return self._event_loop
 
     @property
-    def tasks(self) -> dict[str, asyncio.Task]:
+    def tasks(self) -> Dict[str, asyncio.Task]:
         """"""
         try:
             return self._tasks
@@ -37,7 +37,7 @@ class TaskableMixin:
 
         name += f"-{id(self)}"
 
-        self.tasks[name] = self.event_loop.create_task(coroutine(self), name=name)
+        self.tasks[name] = self.event_loop.create_task(coroutine(self))
 
         return self.tasks[name]
 

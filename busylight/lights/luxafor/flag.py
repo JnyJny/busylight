@@ -1,6 +1,8 @@
 """ Luxafor Flag
 """
 
+from typing import Dict, Tuple
+
 from loguru import logger
 
 from ..hidlight import HIDLight
@@ -11,7 +13,7 @@ from ._flag import Command, LEDS, Pattern, Wave
 
 class Flag(HIDLight):
     @staticmethod
-    def supported_device_ids() -> dict[tuple[int, int], str]:
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
             (0x4D8, 0xF372): "Flag",
         }
