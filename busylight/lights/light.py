@@ -175,7 +175,7 @@ class Light(abc.ABC, TaskableMixin):
         rules = []
 
         for subclass in cls.__subclasses__():
-            rules.extend(subclass.udev_rules())
+            rules.extend(subclass.udev_rules(mode=mode))
         return rules
 
     def __init__(
@@ -206,7 +206,12 @@ class Light(abc.ABC, TaskableMixin):
             self.acquire()
 
         if reset:
-            self.reset()
+            if exclusive:
+                self.reset()
+            else:
+                self.acqurie()
+                self.reset()
+                self.release()
 
     def __repr__(self) -> str:
 
