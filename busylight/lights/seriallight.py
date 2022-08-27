@@ -69,7 +69,7 @@ class SerialLight(Light):
 
     @classmethod
     def udev_rules(cls, mode: int = 0o0666) -> List[str]:
-        # EJO do serial USB devices need udev rules on Linux?
+        # EJO do serial USB devices need udev rules on Linux? I think so yes.
         return []
 
     @property
