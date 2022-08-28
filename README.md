@@ -29,19 +29,22 @@ Python project.
 - Control lights from the [command-line][HELP].
 - Control lights via a [Web API][WEBAPI].
 - Import `busylight` into your own Python project.
-- Supports _seven_ vendors & multiple models:
- 
-| [**Agile Innovative**][2] | [**Embrava**][3] |  [**MuteMe**][7] | [**Plantronics**][3]| [**Kuando**][4]| [**Luxafor**][5] | [**ThingM**][6] |
-|-----------------------|------------------|-------------------|--------------|----------------|---------------|---------------|
-| BlinkStick		    | Blynclight       | MuteMe Original (prototype) | Status Indicator    | Busylight Alpha|  Flag            | Blink(1)        |
-| BlinkStick Pro	    | Blynclight Mini  | MuteMe Original (production) |	             | Busylight Omega|  Mute            | 
-| BlinkStick Square	    | Blynclight Plus  | Mute Mini |                    |                |  Orb             |                 | 
-| BlinkStick Strip      |
-| BlinkStick Nano	    |
-| BlinkStick Flex       |
-
 - Supported on MacOS and Linux
-- Windows support will be available in the near future.
+- Windows not currently supported.
+- Supports _nine_ vendors & fifteen devices:
+
+| **Vendor** | | | |
+|------------:|---|---|---|
+| [**Agile Innovative**][2] | BlinkStick Square |
+| [**Compulab**][8] | fit-statUSB |
+| [**Embrava**][3] | Blynclight | Blynclight Mini | Blynclight Plus |
+| [**Kuando**][4] | Busylight Alpha | BusyLight Omega |
+| [**Luxafor**][5] | Flag | Mute | Orb |
+| [**Plantronics**][3] | Status Indicator |
+| [**MuteMe**][7] | MuteMe Original | Mute Mini |
+| [**MuteSync**][9] | MuteSync |
+| [**ThingM**][6] | Blink(1) |
+
 
 If you have a USB light that's not on this list open an issue with:
  - the make and model device you want supported
@@ -227,6 +230,8 @@ manager.off()
 [5]: docs/devices/luxafor.md
 [6]: docs/devices/thingm.md
 [7]: docs/devices/muteme.md
+[8]: docs/devices/compulab.md
+[9]: docs/devices/mutesync.md
 
 [LOGO]: docs/assets/BusyLightLogo.png
 [HELP]: docs/busylight.1.md
