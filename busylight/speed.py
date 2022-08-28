@@ -1,4 +1,4 @@
-"""
+""" Describe how often to change colors.
 """
 
 from enum import Enum
@@ -11,6 +11,7 @@ class Speed(str, Enum):
 
     @property
     def duty_cycle(self) -> float:
+        """Duty cycle in seconds."""
         try:
             return self._duty_cycle
         except AttributeError:
@@ -21,7 +22,3 @@ class Speed(str, Enum):
     @property
     def rate(self) -> int:
         return ["slow", "medium", "fast"].index(self.name.lower())
-
-
-#    def __bool__(self) -> bool:
-#        return self != Speed.Stop

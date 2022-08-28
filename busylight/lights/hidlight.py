@@ -1,4 +1,4 @@
-"""
+""" USB Human Interface Device (HID) Light Support
 """
 
 from typing import Any, Callable, Dict, List, Union

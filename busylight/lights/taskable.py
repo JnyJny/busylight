@@ -1,4 +1,4 @@
-"""
+""" Asynchronous task support for animating lights.
 """
 
 import asyncio

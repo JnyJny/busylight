@@ -1,4 +1,4 @@
-""" ThingM blink(1)
+""" ThingM blink(1) Support
 """
 
 from typing import Callable, Dict, Tuple

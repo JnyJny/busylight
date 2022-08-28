@@ -1,4 +1,4 @@
-""" USB Serial Light
+""" USB Serial Light Support
 """
 
 
@@ -31,7 +31,7 @@ class SerialLight(Light):
         to a LightInfo dictionary.
 
         The format of this dictionary is loosely based on the
-        dictionary produced from `hid.enumerate`.
+        dictionary produced by `hid.enumerate`.
 
         Note: Not all of the HID fields are discoverable with the
               serial interface.
