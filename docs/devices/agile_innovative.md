@@ -162,14 +162,14 @@ device has the red and green bytes swapped in order from #RRGGBB to
     b = (color & 0xff)
     color = (g<<16) | (r<<8) | b;
 
-    df.led0 = led_color;
-    df.led1 = led_color;
-    df.led2 = led_color;
-    df.led3 = led_color;
-    df.led4 = led_color;
-    df.led5 = led_color;
-    df.led6 = led_color;
-    df.led7 = led_color;
+    df.led0 = color;
+    df.led1 = color;
+    df.led2 = color;
+    df.led3 = color;
+    df.led4 = color;
+    df.led5 = color;
+    df.led6 = color;
+    df.led7 = color;
     /* write the dataframe to the device */
 ```
 

@@ -3,6 +3,7 @@
 """
 
 from dataclasses import dataclass, field
+from os import environ
 from typing import List, Optional, Tuple
 
 import typer
@@ -275,7 +276,6 @@ def list_available_lights(
 
     try:
         for light in manager.selected_lights(ctx.obj.lights):
-
             typer.secho(f"{manager.lights.index(light):3d} ", nl=False, fg="red")
             typer.secho(light.name, fg="green")
             if not verbose:
@@ -377,6 +377,8 @@ def serve_http_api(
     ),
 ) -> None:
     """Serve a HTTP API to access available lights."""
+
+    environ["BUSYLIGHT_DEBUG"] = str(debug)
 
     (logger.enable if debug else logger.disable)("busylight")
     logger.info("serving http api")
