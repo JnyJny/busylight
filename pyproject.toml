@@ -17,8 +17,10 @@ loguru = ">=0.5.3,<0.7.0"
 hidapi = ">=0.11.2,<0.13.0"
 pyserial = "^3.5"
 importlib-metadata = {version = "^4.11.3", python = "<3.8"}
-uvicorn = {version = ">=0.12.2,<0.19.0", optional = true }
-fastapi = {version = ">=0.61.1,<0.81.0", optional = true }
+fastapi = {version = ">=0.61.1,<0.81.0", extras = ["webapi"] }
+starlite = {version = "^1.14.2", extras = ["webapi2"]}
+uvicorn = {version = ">=0.12.2,<0.19.0", extras = ["webapi", "webapi2"] }
+
 
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
