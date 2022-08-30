@@ -1,4 +1,5 @@
 <!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) muteme -->
+![BusyLight Project Logo][LOGO]
 ![version][pypi-version]
 ![monthly-downloads][monthly-downloads]
 ![supported python versions][python-versions] 
@@ -10,7 +11,7 @@
 [![pytest-windows](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml)
 <br>
 
-![BusyLight Project Logo][LOGO]
+
 
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
@@ -255,7 +256,7 @@ manager.off()
 [8]: docs/devices/compulab.md
 [9]: docs/devices/mutesync.md
 
-[LOGO]: docs/assets/BusyLightLogo.png
+[LOGO]: docs/assets/BusyLightForHumans.png
 [HELP]: docs/busylight.1.md
 [WEBAPI]: docs/busylight_api.pdf
 [DEMO]: demo/demo-updated.gif
