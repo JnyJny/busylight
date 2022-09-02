@@ -259,7 +259,8 @@ manager.off()
 [LOGO]: docs/assets/BusyLightForHumans.png
 [HELP]: docs/busylight.1.md
 [WEBAPI]: docs/busylight_api.pdf
-[DEMO]: demo/demo-updated.gif
+<!-- [DEMO]: demo/demo-updated.gif -->
+[DEMO]: docs/assets/HerdOfLights.png
 
 [BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
