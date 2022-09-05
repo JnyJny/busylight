@@ -21,10 +21,20 @@ Python project.
 
 ![All Supported Lights][DEMO]
 
-**Eight Lights Attached to One Host**<br>
-<em>Back to Front, Left to Right</em> <br>
-<b>Busylight Alpha, Plantronics Status Indicator, BlyncLight, BlyncLight Plus</b><br>
-<b>BlinkStick, Busylight Omega, Blink(1), Flag</b>
+Blynclight Plus<sup>1</sup>,
+MuteSync<sup>2</sup>, 
+Blink(1)<sup>3</sup>,
+fit-statUSB<sup>4</sup>,
+Flag<sup>5</sup>,
+MuteMe Original<sup>6</sup>,
+Blynclight Mini<sup>7</sup>,
+BlinkStick Square<sup>8</sup>,
+BusyLight Omega<sup>9</sup>,
+Orb<sup>10</sup>,
+Mute<sup>11</sup>,
+Blynclight<sup>12</sup>.
+Busylight Alpha<sup>13</sup>,
+Status Indicator<sup>14</sup>,
 
 ## Features
 - Control lights from the [command-line][HELP].
