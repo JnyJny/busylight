@@ -48,17 +48,17 @@ Human Interface Device (HID) application programming interface
 
 
 [0]: https://github.com/JnyJny/busylight
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/Unstacked-Logo-Light.png
+[1]: docs/assets/Unstacked-Logo-Light.png
 
 [H]: https://github.com/libusb/hidapi
 [T]: https://github.com/trezor/cython-hidapi
 [S]: https://github.com/pyserial/pyserial
 
-[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
-[3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
-[4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
-[5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
-[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
-[7]: https://github.com/JnyJny/busylight/blob/master/docs/devices/muteme.md
-[8]: https://github.com/JnyJny/busylight/blob/master/docs/devices/mutesync.md
-[9]: https://github.com/JnyJny/busylight/blob/master/docs/devices/compulab.md
+[2]: docs/devices/embrava.md
+[3]: docs/devices/kuando.md
+[4]: docs/devices/luxafor.md
+[5]: docs/devices/thingm.md
+[6]: docs/devices/agile_innovative.md
+[7]: docs/devices/muteme.md
+[8]: docs/devices/mutesync.md
+[9]: docs/devices/compulab.md
