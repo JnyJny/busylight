@@ -48,7 +48,7 @@ Human Interface Device (HID) application programming interface
 
 
 [0]: https://github.com/JnyJny/busylight
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/Unstacked-Logo-Light.png
 
 [H]: https://github.com/libusb/hidapi
 [T]: https://github.com/trezor/cython-hidapi
