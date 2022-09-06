@@ -20,21 +20,20 @@ the command-line, using a HTTP API or imported directly into your own
 Python project.
 
 ![All Supported Lights][DEMO]
-
-Blynclight Plus<sup>1</sup>,
-MuteSync<sup>2</sup>, 
-Blink(1)<sup>3</sup>,
-fit-statUSB<sup>4</sup>,
-Flag<sup>5</sup>,
-MuteMe Original<sup>6</sup>,
-Blynclight Mini<sup>7</sup>,
-BlinkStick Square<sup>8</sup>,
-BusyLight Omega<sup>9</sup>,
-Orb<sup>10</sup>,
-Mute<sup>11</sup>,
-Blynclight<sup>12</sup>.
-Busylight Alpha<sup>13</sup>,
-Status Indicator<sup>14</sup>,
+Flag<sup>1</sup>,
+Busylight Alpha<sup>2</sup>,
+Status Indicator<sup>3</sup>,
+Blink(1)<sup>4</sup>,
+Mute<sup>5</sup>,
+Blynclight<sup>6</sup>.
+Orb<sup>7</sup>,
+BusyLight Omega<sup>8</sup>,
+BlinkStick Square<sup>9</sup>,
+Blynclight Mini<sup>10</sup>,
+MuteSync<sup>11</sup>, 
+fit-statUSB<sup>12</sup>,
+MuteMe Original<sup>13</sup>,
+Blynclight Plus<sup>14</sup>
 
 ## Features
 - Control lights from the [command-line][HELP].
