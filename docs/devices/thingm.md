@@ -42,5 +42,5 @@ The device will briefly flash a white color on both LEDs when first plugged in.
 ### Functionality Wishlist
 
 [0]: https://thingm.com/products
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[1]: ../assets/Unstacked-Logo-Light.png
 [H]: https://github.com/libusb/hidapi

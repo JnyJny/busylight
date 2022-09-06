@@ -210,6 +210,6 @@ Embrava engineers and the SDKs are not updated regularly.
 - Individual control of the five LEDs
 
 [0]: https://embrava.com
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[1]: ../assets/Unstacked-Logo-Light.png
 [H]: https://github.com/libusb/hidapi
 [W]: https://wireshark.com

@@ -201,5 +201,5 @@ The main missing functionality, with respect to BusyLight, is the lack of
 a builtin blink operation.
 
 [0]: https://blinkstick.com
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[1]: ../assets/Unstacked-Logo-Light.png
 [H]: https://github.com/libusb/hidapi

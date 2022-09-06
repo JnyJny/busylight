@@ -258,7 +258,7 @@ benefit.
 
 
 [0]: https://busylight.com
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[1]: ../assets/Unstacked-Logo-Light.png
 [H]: https://github.com/libusb/hidapi
-[Embrava]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
+[Embrava]: embrava.md
 [CHKSUM]: https://wikipedia.com/checksum

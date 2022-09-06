@@ -114,5 +114,5 @@ typedef struct {
 ### Functionality Wishlist
 
 [0]: https://luxafor.com
-[1]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightLogo.png
+[1]: ../assets/Unstacked-Logo-Light.png
 [H]: https://github.com/libusb/hidapi

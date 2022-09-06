@@ -146,7 +146,7 @@ Full 24-bit color support would bring this device inline with capabilities
 of other supported devices.
 
 
-[0]: https://github.com/JnyJny/busylight/blob/master/docs/assets/Unstacked-Logo-Light.png
+[0]: ../assets/Unstacked-Logo-Light.png
 [1]: https://muteme.com
 [2]: https://muteme.com/pages/muteme-hid-key
 [H]: https://github.com/libusb/hidapi
