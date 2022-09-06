@@ -19,6 +19,6 @@
 ### Observations
 
 
-[0]: compulab url
+<!-- [0]: compulab url -->
 [1]: ../assets/Unstacked-Logo-Light.png
-[S]: pyserial project url
+<!-- [S]: pyserial project url -->
