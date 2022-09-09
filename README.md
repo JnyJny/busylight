@@ -1,5 +1,6 @@
-<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) muteme -->
+<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) muteme mutesync compulab fit-statusb -->
 ![BusyLight Project Logo][LOGO]
+<br>
 ![version][pypi-version]
 ![monthly-downloads][monthly-downloads]
 ![supported python versions][python-versions] 
@@ -10,9 +11,6 @@
 [![MacOS](https://github.com/JnyJny/busylight/actions/workflows/pytest-macos.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-macos.yaml)
 [![pytest-windows](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml)
 <br>
-
-
-
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
 lights from a variety of vendors. Lights can be controlled via
