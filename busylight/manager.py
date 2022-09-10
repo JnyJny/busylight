@@ -286,4 +286,7 @@ class LightManager:
         """
 
         for light in self.selected_lights(lights):
-            light.off()
+            try:
+                light.off()
+            except LightUnavailable as error:
+                logger.debug("{light} is {error}")
