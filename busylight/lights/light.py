@@ -91,7 +91,7 @@ class Light(abc.ABC, TaskableMixin):
 
     @classmethod
     def all_lights(cls, reset: bool = True, exclusive: bool = True) -> List["Light"]:
-        """Returns a list of all lights found.
+        """Returns a list of all lights found in a stable ordering.
 
         :reset:      bool Quiesce the light when acquired.
         :exclusive:  bool Light is owned exclusively by process.
@@ -111,7 +111,7 @@ class Light(abc.ABC, TaskableMixin):
                     logger.error(f"{cls.__name__} {error}")
             logger.info(f"{cls.__name__} found {len(all_lights)} lights.")
 
-        return all_lights
+        return sorted(all_lights)
 
     @classmethod
     def first_light(cls, reset: bool = True, exclusive: bool = True) -> "Light":
@@ -226,16 +226,14 @@ class Light(abc.ABC, TaskableMixin):
         if not isinstance(other, Light):
             return NotImplemented
 
-        for key, value in other.info.items():
-            if self.info[key] != value:
-                return False
-        return True
+        return str(self.path) == str(other.path)
 
     def __lt__(self, other: object) -> bool:
+
         if not isinstance(other, Light):
             return NotImplemented
 
-        return any([self.vendor() < other.vendor(), self.name < other.name])
+        return str(self.path) < str(other.path)
 
     def reset(self) -> None:
         """Turn off the light and cancel any running async tasks."""
@@ -244,18 +242,22 @@ class Light(abc.ABC, TaskableMixin):
 
     @property
     def device_id(self) -> Tuple[int, int]:
+        """A tuple of integer vendor and product identfiers."""
         return self.info["device_id"]
 
     @property
     def path(self) -> str:
-        return self.info["path"]
+        """An operating system specific filesytem path for this device."""
+        return str(self.info["path"])
 
     @property
     def vendor_id(self) -> int:
+        """An integer vendor identifier for this device."""
         return self.info["vendor_id"]
 
     @property
     def product_id(self) -> int:
+        """An integer product identifier for this device."""
         return self.info["product_id"]
 
     @contextmanager

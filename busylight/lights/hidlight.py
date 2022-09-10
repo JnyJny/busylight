@@ -84,7 +84,7 @@ class HIDLight(Light):
     def acquire(self) -> None:
 
         try:
-            self.device.open_path(self.path)
+            self.device.open_path(self.info["path"])
             logger.info(f"{self.name} open_path({self.path}) succeeded")
         except OSError as error:
             logger.error(f"open_path failed: {error}")
