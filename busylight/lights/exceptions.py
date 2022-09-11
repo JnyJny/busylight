@@ -1,26 +1,28 @@
+""" raised by busylight.lights.light.Light and subclasses
 """
-"""
 
 
-class BaseLightException(Exception):
+class _BaseLightException(Exception):
     pass
 
 
-class InvalidLightInfo(BaseLightException):
+class InvalidLightInfo(_BaseLightException):
+    """The dictionary passed to Light.__init__ is missing required key/value pairs."""
+
+
+class LightNotFound(_BaseLightException):
+
     pass
 
 
-class LightNotFound(BaseLightException):
-    pass
+class LightUnavailable(_BaseLightException):
+    """Previously accessible light is now not accessible."""
 
 
-class LightUnavailable(BaseLightException):
-    pass
+class LightUnsupported(_BaseLightException):
+    """The dictionary passed to an __init__ method of a subclass of Light
+    does not describe a light supported by the subclass."""
 
 
-class LightUnsupported(BaseLightException):
-    pass
-
-
-class NoLightsFound(BaseLightException):
-    pass
+class NoLightsFound(_BaseLightException):
+    """No lights were discovered by any subclass of Light."""
