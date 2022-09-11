@@ -3,6 +3,8 @@
 
 from typing import List
 
+from busylight.lights import NoLightsFound
+
 import pytest
 
 from . import (
@@ -134,7 +136,10 @@ def test_light_subclass_all_lights(subclass: LightType) -> None:
 def test_light_subclass_first_light(subclass: LightType) -> None:
     """Call the `first_light` class method for all Light subclasses."""
 
-    result = subclass.first_light(reset=False, exclusive=False)
+    try:
+        result = subclass.first_light(reset=False, exclusive=False)
+    except NoLightsFound:
+        return
 
     assert isinstance(result, subclass)
 
