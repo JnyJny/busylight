@@ -17,10 +17,9 @@ loguru = ">=0.5.3,<0.7.0"
 hidapi = ">=0.11.2,<0.13.0"
 pyserial = "^3.5"
 importlib-metadata = {version = "^4.11.3", python = "<3.8"}
-fastapi = {version = ">=0.61.1,<0.81.0", extras = ["webapi"] }
+fastapi = {version = ">=0.61.1,<0.83.0", extras = ["webapi"] }
 starlite = {version = "^1.14.2", extras = ["webapi2"]}
 uvicorn = {version = ">=0.12.2,<0.19.0", extras = ["webapi", "webapi2"] }
-
 
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
@@ -28,7 +27,7 @@ webapi2 = ["starlite", "uvicorn"]
 
 [tool.poetry.dev-dependencies]
 pytest = "^7"
-black = "^22.6"
+black = "^22.8"
 pytest-cov = "^3.0.0"
 mypy = "^0.971"
 requests = "^2.28.1"
