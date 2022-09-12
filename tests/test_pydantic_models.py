@@ -53,7 +53,7 @@ def test_model_lightdescription(
     info: Dict[str, Any],
     is_on: bool,
     color: str,
-    rgb: tuple[int, int, int],
+    rgb: Tuple[int, int, int],
 ) -> None:
     light_description = LightDescription(
         light_id=light_id, name=name, info=info, is_on=is_on, color=color, rgb=rgb
