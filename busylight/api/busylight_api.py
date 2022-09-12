@@ -29,30 +29,6 @@ __description__ = """
 <!-- markdown formatted for HTML rendering -->
 An API server for USB connected presence lights.
 
-**Supported USB lights:**
-_Agile Innovative_
-  - BlinkStick
-_Compulab_
-  - fit-statUSB
-_Embrava_
-  - Blynclight
-  - Blynclight Mini
-  - Blynclight Plus
-_Kuando_
-  - Busylight Alpha
-  - Busylight Omega
-_Luxafor_
-  - Orb
-_MuteMe_
-  - MuteMe Mini
-  - MuteMe Original
-  - MuteMe Original (prototype)
-_MuteSync_
-  - MuteSync Button
-_Plantronics_
-  - Status Indicator
-_ThingM_
-  - Blink(1)
 [Source](https://github.com/JnyJny/busylight.git)
 """
 
@@ -64,9 +40,7 @@ class BusylightAPI(FastAPI):
     def __init__(self):
 
         # Get and save the debug flag
-        global_options = GlobalOptions(
-            debug = environ.get("BUSYLIGHT_DEBUG", False)
-        )
+        global_options = GlobalOptions(debug=environ.get("BUSYLIGHT_DEBUG", False))
         logger.info("Debug: {debug_value}".format(debug_value=global_options.debug))
 
         dependencies = []
@@ -83,23 +57,34 @@ class BusylightAPI(FastAPI):
             self.password = None
 
         # Get and save the CORS Access-Control-Allow-Origin header
-        logger.info("Set up CORS Access-Control-Allow-Origin header, if environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST is set.")
+        logger.info(
+            "Set up CORS Access-Control-Allow-Origin header, if environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST is set."
+        )
         self.origins = json_loads(environ.get("BUSYLIGHT_API_CORS_ORIGINS_LIST", "[]"))
 
         # Validate that BUSYLIGHT_API_CORS_ORIGINS_LIST is a list of strings
-        if (not isinstance(self.origins, list)) or any(not isinstance(item, str) for item in self.origins):
-            logger.warning("BUSYLIGHT_API_CORS_ORIGINS_LIST is invalid: {origins_list}".format(origins_list=self.origins))
+        if (not isinstance(self.origins, list)) or any(
+            not isinstance(item, str) for item in self.origins
+        ):
+            logger.warning(
+                "BUSYLIGHT_API_CORS_ORIGINS_LIST is invalid: {origins_list}".format(
+                    origins_list=self.origins
+                )
+            )
             logger.info("Will NOT set the CORS Access-Control-Allow-Origin header.")
             self.origins = None
 
-        logger.info("CORS Access-Control-Allow-Origin list: {origins_list}".format(origins_list=self.origins))
+        logger.info(
+            "CORS Access-Control-Allow-Origin list: {origins_list}".format(
+                origins_list=self.origins
+            )
+        )
 
         if (global_options.debug == True) and (self.origins == None):
-            logger.info("However, debug mode is enabled! Using debug mode CORS allowed origins: \'[\"http://localhost\", \"http://127.0.0.1\"]\'")
-            self.origins = [
-                "http://localhost",
-                "http://127.0.0.1"
-            ]
+            logger.info(
+                'However, debug mode is enabled! Using debug mode CORS allowed origins: \'["http://localhost", "http://127.0.0.1"]\''
+            )
+            self.origins = ["http://localhost", "http://127.0.0.1"]
 
         super().__init__(
             title="Busylight Server: A USB Light Server",
