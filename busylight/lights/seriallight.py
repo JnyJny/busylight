@@ -9,6 +9,7 @@ from loguru import logger
 from serial import Serial
 from serial.tools import list_ports
 from serial.tools.list_ports_common import ListPortInfo
+from serial.serialutil import SerialException
 
 from .light import Light, LightInfo
 from .exceptions import LightUnavailable
@@ -80,15 +81,29 @@ class SerialLight(Light):
         except AttributeError:
             pass
 
-        self._device: Serial = Serial()
+        self._device: Serial = Serial(timeout=1)
         self._device.port = self.path
 
         return self._device
+
+    @property
+    def is_pluggedin(self) -> bool:
+
+        if not self.device.isOpen():
+            return False
+
+        try:
+            self.device.timeout = 1
+            return True
+        except SerialException:
+            pass
+        return False
 
     def acquire(self) -> None:
 
         try:
             self.device.open()
+            logger.info(f"{self} open() succeeded")
         except Exception as error:
             logger.debug("open failed for {self.path}: {error}")
             raise LightUnavailable(self.path) from None
@@ -96,3 +111,4 @@ class SerialLight(Light):
     def release(self) -> None:
 
         self.device.close()
+        logger.info(f"{self} close succeeded")
