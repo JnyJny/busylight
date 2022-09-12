@@ -207,12 +207,7 @@ class Light(abc.ABC, TaskableMixin):
             self.acquire()
 
         if reset:
-            if exclusive:
-                self.reset()
-            else:
-                self.acquire()
-                self.reset()
-                self.release()
+            self.reset()
 
     def __repr__(self) -> str:
 
@@ -226,60 +221,84 @@ class Light(abc.ABC, TaskableMixin):
         if not isinstance(other, Light):
             return NotImplemented
 
-        return str(self.path) == str(other.path)
+        return all(
+            [
+                self.vendor() == other.vendor(),
+                self.name == other.name,
+                str(self.path) == str(other.path),
+            ]
+        )
 
     def __lt__(self, other: object) -> bool:
 
         if not isinstance(other, Light):
             return NotImplemented
 
+        if self.vendor().lower() < other.vendor().lower():
+            return True
+
+        if not self.vendor().lower() == other.vendor().lower():
+            return False
+
+        if self.name.lower() < other.name.lower():
+            return True
+
+        if not self.name.lower() == other.name.lower():
+            return False
+
         return str(self.path) < str(other.path)
 
     def reset(self) -> None:
         """Turn off the light and cancel any running async tasks."""
+
         self.off()
         self.cancel_tasks()
 
     @property
     def device_id(self) -> Tuple[int, int]:
         """A tuple of integer vendor and product identfiers."""
-        return self.info["device_id"]
+        try:
+            return self._device_id
+        except AttributeError:
+            pass
+        self._device_id: Tuple[int, int] = self.info["device_id"]
+        return self._device_id
 
     @property
     def path(self) -> str:
-        """An operating system specific filesytem path for this device."""
-        return str(self.info["path"])
+        """An operating system specific filesystem path for this device."""
+        try:
+            return self._path
+        except AttributeError:
+            pass
+        self._path: str = str(self.info["path"])
+        return self._path
 
     @property
     def vendor_id(self) -> int:
         """An integer vendor identifier for this device."""
-        return self.info["vendor_id"]
+        try:
+            return self._vendor_id
+        except AttributeError:
+            pass
+        self._vendor_id: int = self.info["vendor_id"]
+        return self._vendor_id
 
     @property
     def product_id(self) -> int:
         """An integer product identifier for this device."""
-        return self.info["product_id"]
+        try:
+            return self._product_id
+        except AttributeError:
+            pass
+        self._product_id: int = self.info["product_id"]
+        return self._product_id
 
     @contextmanager
     def batch_update(self) -> Generator[None, None, None]:
         """Writes the software state to the device when the context manager exits."""
-
         yield
-
-        if not self._exclusive:
-            try:
-                self.acquire()
-            except Exception as error:
-                logger.error("Failed to acquire {self!s} {self.path} {error}")
-                return
-
         self.update()
-
-        if not self._exclusive:
-            try:
-                self.release()
-            except Exception as error:
-                logger.error("Failed to release {self!s} {self.path} {error}")
 
     def on(self, color: Tuple[int, int, int]) -> None:
         """Activate the light with the supplied RGB color tuple."""
@@ -302,14 +321,9 @@ class Light(abc.ABC, TaskableMixin):
         return self._name
 
     @property
+    @abc.abstractmethod
     def is_pluggedin(self) -> bool:
         """True if the light is plugged in and responding to commands."""
-        try:
-            results = self.read_strategy(8, timeout_ms=100)
-            return True
-        except OSError:
-            pass
-        return False
 
     @property
     def is_unplugged(self) -> bool:
@@ -385,17 +399,43 @@ class Light(abc.ABC, TaskableMixin):
         except Exception as error:
             raise ValueError(f"unable to set color {new_value!r}: {error}") from None
 
+    @contextmanager
+    def exclusive_access(self) -> None:
+        """If not in exclusive mode:
+        - acquires the device for I/O
+        - performs the I/O
+        - releases the device
+        """
+        logger.info(f"Entering exclusive access for {self}")
+
+        if not self._exclusive:
+            logger.info(f"Acquiring device for {self}")
+            self.acquire()
+            logger.info(f"Acquired for {self}")
+
+        yield
+
+        if not self._exclusive:
+            logger.info(f"Releasing device for {self}")
+            self.release()
+            logger.info(f"Released for {self}")
+        logger.info(f"Exiting exclusive access for {self}")
+
     def update(self) -> None:
         """Write the software state to the device."""
 
         data = bytes(self)
 
-        try:
-            nbytes = self.write_strategy(data)
-            logger.info(f"data:{len(data)} = {data!r} wrote {nbytes}")
-        except Exception as error:
-            logger.error(f"write_strategy raised {error} for {data!r}")
-            raise LightUnavailable(self.path) from None
+        with self.exclusive_access():
+            try:
+                nbytes = self.write_strategy(data)
+                logger.info(f"data:{len(data)} = {data!r} wrote {nbytes}")
+            except Exception as error:
+                logger.error(f"write_strategy raised {error} for {data!r}")
+                raise LightUnavailable(f"{self} {self.path}") from None
+
+        # if nbytes == -1:
+        #    raise LightUnavailable(self.path)
 
     def matches(self, light_info: LightInfo) -> bool:
         """True if light_info matches info for this light instance."""
