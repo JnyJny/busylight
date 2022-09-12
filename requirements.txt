@@ -14,9 +14,9 @@ dnspython==2.2.1; python_version >= "3.6" and python_version < "4.0" and (python
 email-validator==1.2.1; python_version >= "3.7" and python_full_version < "3.0.0" and python_version < "4.0" or python_version >= "3.7" and python_version < "4.0" and python_full_version >= "3.5.0"
 faker==14.2.0; python_version >= "3.7" and python_version < "4.0"
 fastapi==0.82.0; python_full_version >= "3.6.1"
-h11==0.12.0; python_version >= "3.7" \
-    --hash=sha256:36a3cb8c0a032f56e2da7084577878a035d3b61d104230d4bd49c0c6b555a9c6 \
-    --hash=sha256:47222cb6067e4a307d535814917cd98fd0a57b6788ce715755fa2b6c28b56042
+h11==0.13.0; python_version >= "3.7" \
+    --hash=sha256:70813c1135087a248a4d38cc0e1a0181ffab2188141a93eaf567940c3957ff06 \
+    --hash=sha256:8ddd78563b633ca55346c8cd41ec0af27d3c79931828beffb46ce70a379e7442
 hidapi==0.12.0.post2 \
     --hash=sha256:0db60ba3e9356b7eab9097be49a5dff82cad25881d0ff77a47efd5b9100e8d36 \
     --hash=sha256:59d3cc1d446f91236a984e8784a1644de9892647d09e387a4be7c47dd2441d1e \
