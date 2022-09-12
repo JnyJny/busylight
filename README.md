@@ -139,54 +139,58 @@ $ busylight --all off        # turn all lights off
 First start the `busylight` API server using the `busyserv` command line interface:
 ```console
 $ busyserve -D
-INFO:     Started server process [20189]
+INFO:     Started server process [40064]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8888 (Press CTRL+C to quit)
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+...
 ```
 
-The API is fully documented and available @ `https://localhost:8888/redoc`
+The API is fully documented and available via these URLs:
+
+- `https://localhost:8000/redoc`
+- `https://localhost:8000/docs`
 
 
 Now you can use the web API endpoints which return JSON payloads:
 
 ```console
-  $ curl -s http://localhost:8888/lights/status | jq
+  $ curl -s http://localhost:8000/lights/status | jq
   ...
-  $ curl -s http://localhost:8888/light/0/status | jq
+  $ curl -s http://localhost:8000/light/0/status | jq
   ...
-  $ curl -s http://localhost:8888/light/0/on | jq
+  $ curl -s http://localhost:8000/light/0/on | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "green",
 	"rgb": [0, 128, 0]
   }
-  $ curl -s http://localhost:8888/light/0/off | jq
+  $ curl -s http://localhost:8000/light/0/off | jq
   {
     "light_id": 0,
     "action": "off"
   }
-  $ curl -s http://localhost:8888/light/0/on?color=purple | jq
+  $ curl -s http://localhost:8000/light/0/on?color=purple | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "purple",
 	"rgb": [128, 0, 128]
   }
-  $ curl -s http://localhost:8888/lights/on | jq
+  $ curl -s http://localhost:8000/lights/on | jq
   {
     "light_id": "all",
     "action": "on",
     "color": "green",
 	"rgb", [0, 128, 0]
   }
-  $ curl -s http://localhost:8888/lights/off | jq
+  $ curl -s http://localhost:8000/lights/off | jq
   {
     "light_id": "all",
     "action": "off"
   }
-  $ curl -s http://localhost:8888/lights/rainbow | jq
+  $ curl -s http://localhost:8000/lights/rainbow | jq
   {
     "light_id": "all",
     "action": "effect",
