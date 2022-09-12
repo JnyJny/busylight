@@ -75,9 +75,9 @@ class HIDLight(Light):
     def is_pluggedin(self) -> bool:
 
         try:
-            self.device.error()
+            results = self.read_strategy(8, timeout_ms=100)
             return True
-        except ValueError:
+        except (ValueError, OSError):
             pass
         return False
 
@@ -85,7 +85,7 @@ class HIDLight(Light):
 
         try:
             self.device.open_path(self.info["path"])
-            logger.info(f"{self.name} open_path({self.path}) succeeded")
+            logger.info(f"{self} open_path({self.path}) succeeded")
         except OSError as error:
             logger.error(f"open_path failed: {error}")
             raise LightUnavailable(self.path) from None
@@ -93,3 +93,4 @@ class HIDLight(Light):
     def release(self) -> None:
 
         self.device.close()
+        logger.info(f"{self} close succeeded")
