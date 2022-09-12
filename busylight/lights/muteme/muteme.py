@@ -34,7 +34,7 @@ class MuteMe(HIDLight):
         super().__init__(light_info, reset=reset, exclusive=exclusive)
 
     def __bytes__(self) -> bytes:
-        """ """
+
         return self.command.bytes
 
     def on(self, color: Tuple[int, int, int]) -> None:
@@ -46,6 +46,17 @@ class MuteMe(HIDLight):
 
         with self.batch_update():
             self.command.reset()
+
+    @property
+    def is_pluggedin(self) -> bool:
+
+        # EJO No reason for eight, just a power of two.
+        try:
+            nbytes = self.device.send_feature_report([0] * 8)
+            return nbytes == 8
+        except ValueError:
+            pass
+        return False
 
     @property
     def is_button(self) -> bool:
