@@ -257,21 +257,23 @@ manager.off()
 
 [0]: https://github.com/JnyJny/busylight
 
-<!-- doc links -->
-[2]: docs/devices/agile_innovative.md
-[3]: docs/devices/embrava.md
-[4]: docs/devices/kuando.md
-[5]: docs/devices/luxafor.md
-[6]: docs/devices/thingm.md
-[7]: docs/devices/muteme.md
-[8]: docs/devices/compulab.md
-[9]: docs/devices/mutesync.md
 
-[LOGO]: docs/assets/BusyLightForHumans.png
-[HELP]: docs/busylight.1.md
-[WEBAPI]: docs/busylight_api.pdf
+<!-- doc links -->
+[2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
+[3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
+[4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
+[5]: https://github.com/JnyJny/busylight/blob/master/docs/devices/luxafor.md
+[6]: https://github.com/JnyJny/busylight/blob/master/docs/devices/thingm.md
+[7]: https://github.com/JnyJny/busylight/blob/master/docs/devices/muteme.md
+[8]: https://github.com/JnyJny/busylight/blob/master/docs/devices/compulab.md
+[9]: https://github.com/JnyJny/busylight/blob/master/docs/devices/mutesync.md
+
+[LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightForHumans.png
+[HELP]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
+[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
+
 <!-- [DEMO]: demo/demo-updated.gif -->
-[DEMO]: docs/assets/HerdOfLights.png
+[DEMO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/HerdOfLights.png
 
 [BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
@@ -280,8 +282,7 @@ manager.off()
 [thingm]: https://thingm.com
 
 <!-- badges -->
-[pytest-badge]: actions/workflows/pytest.yaml/badge.svg
-[pytest-status]: actions/workflows/pytest.yaml
+
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
