@@ -15,12 +15,15 @@ from .light import Light, LightInfo
 from .exceptions import LightUnavailable
 
 
-class UnrecognizedDevice(Exception):
+class _UnrecognizedDevice(Exception):
     pass
 
 
 class SerialLight(Light):
-    """ """
+    """A USB connected device implementing a light, indicator lamp or button.
+
+    I/O to the device is thru interfaces provided by the pyserial package.
+    """
 
     @classmethod
     def _is_concrete(cls) -> bool:
@@ -39,7 +42,7 @@ class SerialLight(Light):
         """
 
         if not device.vid and not device.pid:
-            raise UnrecognizedDevice(device)
+            raise _UnrecognizedDevice(device)
 
         return {
             "vendor_id": device.vid,
@@ -59,7 +62,7 @@ class SerialLight(Light):
         for device in list_ports.comports():
             try:
                 light_info = cls._make_lightinfo(device)
-            except UnrecognizedDevice:
+            except _UnrecognizedDevice:
                 continue
 
             if cls.claims(light_info):
