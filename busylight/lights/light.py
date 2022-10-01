@@ -170,7 +170,15 @@ class Light(abc.ABC, TaskableMixin):
     @classmethod
     @lru_cache(maxsize=None)
     def unique_device_names(cls) -> List[str]:
-        return list(set(cls.supported_device_ids().values()))
+        """A list of unique device names supported by this class."""
+
+        if cls._is_concrete():
+            return list(set(cls.supported_device_ids().values()))
+
+        names = []
+        for subclass in cls.subclasses():
+            names.extend(subclass.unique_device_names())
+        return names
 
     @staticmethod
     @abc.abstractmethod
