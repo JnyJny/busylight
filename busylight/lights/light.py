@@ -47,10 +47,14 @@ class Light(abc.ABC, TaskableMixin):
         """Returns a dictionary of supported light names organized by vendor."""
 
         supported_lights = {}
+
+        if cls._is_concrete():
+            supported_lights.setdefault(cls.vendor(), cls.unique_device_names())
+
         for subclass in cls.subclasses():
-            supported_lights[subclass.vendor()] = list(
-                set(subclass.supported_device_ids().values())
-            )
+            lights = supported_lights.setdefault(subclass.vendor(), [])
+            lights.extend(subclass.unique_device_names())
+
         return supported_lights
 
     @classmethod
@@ -159,8 +163,14 @@ class Light(abc.ABC, TaskableMixin):
         """A dictionary  of device identfiers support by this class.
 
         Keys are a tuple of integer vendor_id and product id, values
-        are the marketing name associated with that device.
+        are the marketing name associated with that device. Some tuples
+        may identify devices with the same name.
         """
+
+    @classmethod
+    @lru_cache(maxsize=None)
+    def unique_device_names(cls) -> List[str]:
+        return list(set(cls.supported_device_ids().values()))
 
     @staticmethod
     @abc.abstractmethod
@@ -451,7 +461,10 @@ class Light(abc.ABC, TaskableMixin):
 
     @abc.abstractmethod
     def acquire(self) -> None:
-        """Acquire the device for use."""
+        """Acquire the device for use.
+
+        Raises LightUnavailable if not able to acquire this device.
+        """
 
     @abc.abstractmethod
     def release(self) -> None:
