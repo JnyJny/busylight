@@ -13,6 +13,11 @@ from .exceptions import LightUnavailable
 
 
 class HIDLight(Light):
+    """A USB connected device implementing a light, indicator lamp or button.
+
+    I/O to the device is thru interfaces provided by the hidapi package.
+    """
+
     @classmethod
     def _is_concrete(cls) -> bool:
         return cls is not HIDLight
