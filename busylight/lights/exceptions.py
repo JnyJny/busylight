@@ -10,11 +10,6 @@ class InvalidLightInfo(_BaseLightException):
     """The dictionary passed to Light.__init__ is missing required key/value pairs."""
 
 
-class LightNotFound(_BaseLightException):
-
-    pass
-
-
 class LightUnavailable(_BaseLightException):
     """Previously accessible light is now not accessible."""
 

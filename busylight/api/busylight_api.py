@@ -18,7 +18,7 @@ from ..__main__ import GlobalOptions
 from ..color import parse_color_string, colortuple_to_name, ColorLookupError
 from ..effects import Effects
 from ..lights import Light
-from ..lights import LightUnavailable, NoLightsFound, LightNotFound
+from ..lights import LightUnavailable, NoLightsFound
 from ..speed import Speed
 
 
@@ -185,10 +185,10 @@ async def light_unavailable_handler(
     )
 
 
-@busylightapi.exception_handler(LightNotFound)
+@busylightapi.exception_handler(NoLightsFound)
 async def light_not_found_handler(
     request: Request,
-    error: LightNotFound,
+    error: NoLightsFound,
 ) -> JSONResponse:
     """Handle light not found."""
     return JSONResponse(

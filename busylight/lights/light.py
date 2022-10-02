@@ -6,13 +6,12 @@ import asyncio
 
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import Any, Callable, Generator, Dict, List, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Generator, Dict, List, Tuple, Type, Union
 
 from loguru import logger
 
 from .exceptions import (
     InvalidLightInfo,
-    LightNotFound,
     LightUnavailable,
     LightUnsupported,
     NoLightsFound,
@@ -188,7 +187,7 @@ class Light(abc.ABC, TaskableMixin):
     @classmethod
     @abc.abstractmethod
     def udev_rules(cls, mode: int = 0o0666) -> List[str]:
-        """"""
+        """Returns a list of Linux UDEV subsystem rules for supported devices."""
 
         rules = []
 
@@ -206,18 +205,16 @@ class Light(abc.ABC, TaskableMixin):
         :light_info: dict Describes hardware details of light.
         :reset:      bool Quiesce the light when acquired.
         :exclusive:  bool Light is owned exclusively by process.
+
+        Raises:
+        - LightUnsupported
+        - InvalidLightInfo
         """
-        try:
-            if not self.claims(light_info):
-                raise LightUnsupported(light_info)
-        except KeyError:
-            raise InvalidLightInfo(light_info)
+
+        if not self.claims(light_info):
+            raise LightUnsupported(light_info)
 
         self.info = dict(light_info)
-        # for key, value in self.info.items():
-        #    logger.debug("{self.__class__.__name__} adding {key} with {value}")
-        #    setattr(self, key, value)
-
         self._reset = reset
         self._exclusive = exclusive
 
@@ -419,7 +416,7 @@ class Light(abc.ABC, TaskableMixin):
 
     @contextmanager
     def exclusive_access(self) -> None:
-        """If not in exclusive mode:
+        """If the light is NOT in exclusive mode:
         - acquires the device for I/O
         - performs the I/O
         - releases the device
@@ -437,10 +434,15 @@ class Light(abc.ABC, TaskableMixin):
             logger.info(f"Releasing device for {self}")
             self.release()
             logger.info(f"Released for {self}")
+
         logger.info(f"Exiting exclusive access for {self}")
 
     def update(self) -> None:
-        """Write the software state to the device."""
+        """Write the software state to the device.
+
+        Raises:
+        - LightUnavailable
+        """
 
         data = bytes(self)
 
@@ -451,12 +453,6 @@ class Light(abc.ABC, TaskableMixin):
             except Exception as error:
                 logger.error(f"write_strategy raised {error} for {data!r}")
                 raise LightUnavailable(f"{self} {self.path}") from None
-
-        # if nbytes == -1:
-        #    raise LightUnavailable(self.path)
-
-    def matches(self, light_info: LightInfo) -> bool:
-        """True if light_info matches info for this light instance."""
 
     @abc.abstractmethod
     def __bytes__(self) -> bytes:
@@ -471,7 +467,8 @@ class Light(abc.ABC, TaskableMixin):
     def acquire(self) -> None:
         """Acquire the device for use.
 
-        Raises LightUnavailable if not able to acquire this device.
+        Raises
+        - LightUnavailable
         """
 
     @abc.abstractmethod
