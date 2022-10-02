@@ -10,14 +10,6 @@ to discover and instantiate physical instances without having
 to know specifics of the particular device attached to the computer.
 
 
-Discovery:
-- available_lights()
-
-Instantiation:
-- all_lights()
-- first_light()
-
-
 """
 
 
@@ -56,8 +48,13 @@ LightInfo = Dict[str, Union[bytes, int, str, Tuple[int, int]]]
 class Light(abc.ABC, TaskableMixin):
     """A USB connected device implementing a light, indicator lamp and/or button.
 
-    The Light class supports a very simple device that is either on with a color
-    or off.
+    The Light class supports a very simple device that can be acquired, released,
+    toggled on with a color, toggled off, or queried for it's plugged in state.
+
+    Lists of Light subclasses can be sorted, collating by; vendor name, product
+    name and device path. This generally results in a stable sort until new
+    devices are plugged in.
+
     """
 
     @classmethod
@@ -209,13 +206,13 @@ class Light(abc.ABC, TaskableMixin):
 
     @classmethod
     def _is_abstract(cls) -> bool:
-        """This class supports a family of physical lights."""
+        """This class partial support for an abstract class of lights."""
         return not cls._is_physical()
 
     @staticmethod
     @abc.abstractmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
-        """A dictionary  of device identfiers support by this class.
+        """A dictionary of device identfiers supported by this class.
 
         Keys are a tuple of integer vendor_id and product id, values
         are the marketing name associated with that device. Some tuples
@@ -257,7 +254,8 @@ class Light(abc.ABC, TaskableMixin):
         reset: bool = True,
         exclusive: bool = True,
     ) -> None:
-        """:light_info: dict Describes hardware details of light.
+        """
+        :light_info: dict Describes hardware details of light.
         :reset:      bool Quiesce the light when acquired.
         :exclusive:  bool Light is owned exclusively by process.
 
@@ -287,7 +285,6 @@ class Light(abc.ABC, TaskableMixin):
         Raises:
         - InvalidLightInfo
         - LightUnsupported
-
         """
 
         if not self.claims(light_info):
@@ -468,12 +465,12 @@ class Light(abc.ABC, TaskableMixin):
         return False
 
     @property
-    def read_strategy(self) -> Callable:
+    def read_strategy(self) -> Callable[[int], bytes]:
         """The read function used to communicate with the device."""
         return self.device.read
 
     @property
-    def write_strategy(self) -> Callable:
+    def write_strategy(self) -> Callable[[bytes], int]:
         """The write function used to communicate with the device."""
         return self.device.write
 

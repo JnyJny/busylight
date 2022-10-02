@@ -1,7 +1,7 @@
 """USB Human Interface Device (HID) Light Support
 """
 
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Dict, List, Union
 
 import hid
 
@@ -15,7 +15,8 @@ from .exceptions import LightUnavailable
 class HIDLight(Light):
     """USB Human Interface Device (HID) Light Support
 
-    I/O to the device is thru interfaces provided by the hidapi package.
+    I/O to the device is conducted thru interfaces provided by the
+    hidapi package.
 
     HID is a simplified method of interacting with USB devices like
     keyboards, mice and joysticks.
@@ -23,7 +24,6 @@ class HIDLight(Light):
     The HIDLight class provides methods for managing the hid.device
     instance and discovering known connected HID devices that were abstract in
     the Light superclass.
-
     """
 
     @classmethod

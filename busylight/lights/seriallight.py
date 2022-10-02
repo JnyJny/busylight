@@ -1,8 +1,7 @@
 """ USB Serial Light Support
 """
 
-
-from typing import Callable, List
+from typing import List
 
 from loguru import logger
 
@@ -22,7 +21,8 @@ class _UnrecognizedDevice(Exception):
 class SerialLight(Light):
     """USB Serial Light Support
 
-    I/O to the device is thru interfaces provided by the pyserial package.
+    I/O to the device is conductiong thru interfaces provided by the
+    pyserial package.
 
     USB serial access is similar to older-style serial interfaces where a
     device is opened, configured, read and written to and finally closed.
@@ -93,7 +93,6 @@ class SerialLight(Light):
 
         The device is not necessarily open until the acquire method
         has been called successfully.
-
         """
         try:
             return self._device
