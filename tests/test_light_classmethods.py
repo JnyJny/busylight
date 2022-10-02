@@ -11,7 +11,7 @@ from . import (
     LightType,
     ABSTRACT_LIGHT_SUBCLASSES,
     ALL_LIGHT_SUBCLASSES,
-    CONCRETE_LIGHT_SUBCLASSES,
+    PHYSICAL_LIGHT_SUBCLASSES,
     BOGUS_DEVICE_ID,
 )
 
@@ -56,9 +56,9 @@ def test_light_subclass_available_lights(subclass: LightType) -> None:
             assert isinstance(value, (bytes, int, str, tuple))
 
 
-@pytest.mark.parametrize("subclass", CONCRETE_LIGHT_SUBCLASSES)
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_subclass_supported_device_ids(subclass: LightType) -> None:
-    """Call the `supported_device_ids` static method for each concrete Light subclass."""
+    """Call the `supported_device_ids` static method for each physical Light subclass."""
 
     result = subclass.supported_device_ids()
 
@@ -82,18 +82,18 @@ def test_light_subclass_udev_rules(subclass: LightType) -> None:
             assert f"{mode:04o}" in item
 
 
-@pytest.mark.parametrize("subclass", CONCRETE_LIGHT_SUBCLASSES)
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_subclass_vendor(subclass: LightType) -> None:
-    """Call the `vendor` static method for all concrete Light subclasses."""
+    """Call the `vendor` static method for all physical Light subclasses."""
 
     result = subclass.vendor()
 
     assert isinstance(result, str)
 
 
-@pytest.mark.parametrize("subclass", CONCRETE_LIGHT_SUBCLASSES)
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_subclass_claims_known_good_lights(subclass: LightType) -> None:
-    """Call the `claims` class methdo for all concrete Light subclasses
+    """Call the `claims` class methdo for all physical Light subclasses
     with known good light_info dictionaries.
     """
 
@@ -107,9 +107,9 @@ def test_light_subclass_claims_known_good_lights(subclass: LightType) -> None:
     assert claimed
 
 
-@pytest.mark.parametrize("subclass", CONCRETE_LIGHT_SUBCLASSES)
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_subclass_claims_known_bad_lights(subclass: LightType) -> None:
-    """Call the `claims` class method for all concrete Light subclasses
+    """Call the `claims` class method for all physical Light subclasses
     with known bad light_info dictionaries.
     """
 
@@ -149,16 +149,16 @@ def test_light_subclass_is_abstract(subclass: LightType) -> None:
     """Check that abstract Light subclasses self-identify correctly."""
 
     is_abstract = subclass._is_abstract()
-    is_concrete = subclass._is_concrete()
+    is_physical = subclass._is_physical()
 
-    assert is_abstract and not is_concrete
+    assert is_abstract and not is_physical
 
 
-@pytest.mark.parametrize("subclass", CONCRETE_LIGHT_SUBCLASSES)
-def test_light_subclass_is_concrete(subclass: LightType) -> None:
-    """Check that concrete Light subclasses self-identify correctly."""
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
+def test_light_subclass_is_physical(subclass: LightType) -> None:
+    """Check that physical Light subclasses self-identify correctly."""
 
     is_abstract = subclass._is_abstract()
-    is_concrete = subclass._is_concrete()
+    is_physical = subclass._is_physical()
 
-    assert is_concrete and not is_abstract
+    assert is_physical and not is_abstract

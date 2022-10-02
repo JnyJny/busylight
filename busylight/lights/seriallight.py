@@ -1,8 +1,7 @@
 """ USB Serial Light Support
 """
 
-
-from typing import Callable, List
+from typing import List
 
 from loguru import logger
 
@@ -20,13 +19,21 @@ class _UnrecognizedDevice(Exception):
 
 
 class SerialLight(Light):
-    """A USB connected device implementing a light, indicator lamp or button.
+    """USB Serial Light Support
 
-    I/O to the device is thru interfaces provided by the pyserial package.
+    I/O to the device is conductiong thru interfaces provided by the
+    pyserial package.
+
+    USB serial access is similar to older-style serial interfaces where a
+    device is opened, configured, read and written to and finally closed.
+
+    The SerialLight class provides methods for managing the Serial
+    device instance and descovering known connected USB serial devices that
+    were abstract in the Light superclass.
     """
 
     @classmethod
-    def _is_concrete(cls) -> bool:
+    def _is_physical(cls) -> bool:
         return cls is not SerialLight
 
     @staticmethod
@@ -39,6 +46,9 @@ class SerialLight(Light):
 
         Note: Not all of the HID fields are discoverable with the
               serial interface.
+
+        Raises:
+        - _UnrecognizedDevice
         """
 
         if not device.vid and not device.pid:
@@ -57,7 +67,7 @@ class SerialLight(Light):
     @classmethod
     def available_lights(cls) -> List[LightInfo]:
 
-        available_lights = []
+        available = []
 
         for device in list_ports.comports():
             try:
@@ -66,11 +76,11 @@ class SerialLight(Light):
                 continue
 
             if cls.claims(light_info):
-                available_lights.append(light_info)
+                available.append(light_info)
 
-        logger.info(f"{cls} found {len(available_lights)}")
+        logger.info(f"{cls.__name__} found {len(available)}")
 
-        return available_lights
+        return available
 
     @classmethod
     def udev_rules(cls, mode: int = 0o0666) -> List[str]:
@@ -79,6 +89,11 @@ class SerialLight(Light):
 
     @property
     def device(self) -> Serial:
+        """A serial.Serial instance configured for use by this device.
+
+        The device is not necessarily open until the acquire method
+        has been called successfully.
+        """
         try:
             return self._device
         except AttributeError:

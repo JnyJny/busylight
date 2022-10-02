@@ -36,6 +36,9 @@ anyio = {extras = ["trio"], version = "^3.6.1"}
 busylight="busylight.__main__:cli"
 busyserve="busylight.__main__:webcli"
 
+[tool.poetry.group.dev.dependencies]
+pytest-mock = "^3.9.0"
+
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
 [build-system]

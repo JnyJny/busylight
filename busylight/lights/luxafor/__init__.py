@@ -1,4 +1,4 @@
-"""
+""" Luxafor Flag, Mute and Orb Support
 """
 
 from .flag import Flag

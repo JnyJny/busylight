@@ -1,12 +1,33 @@
-""" USB Connected Light
+"""USB Connected Light
+
+The Light class abstracts the idea of a USB connected LED device
+which can be activated with a color and turned off. Most physical
+lights have more capabililities than that, but are ignored by Light.
+
+Light acts as the base class and supports discovery of subclassess
+via the abc.ABC.__subclasses__() mechanism. Thus, Light can be used
+to discover and instantiate physical instances without having
+to know specifics of the particular device attached to the computer.
+
+
 """
+
 
 import abc
 import asyncio
 
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import Any, Callable, Generator, Dict, List, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Generator,
+    Dict,
+    List,
+    Tuple,
+    Type,
+    Union,
+)
 
 from loguru import logger
 
@@ -25,7 +46,16 @@ LightInfo = Dict[str, Union[bytes, int, str, Tuple[int, int]]]
 
 
 class Light(abc.ABC, TaskableMixin):
-    """A USB connected device implementing a light, indicator lamp or button."""
+    """A USB connected device implementing a light, indicator lamp and/or button.
+
+    The Light class supports a very simple device that can be acquired, released,
+    toggled on with a color, toggled off, or queried for it's plugged in state.
+
+    Lists of Light subclasses can be sorted, collating by; vendor name, product
+    name and device path. This generally results in a stable sort until new
+    devices are plugged in.
+
+    """
 
     @classmethod
     @lru_cache(maxsize=None)
@@ -35,7 +65,7 @@ class Light(abc.ABC, TaskableMixin):
         subclasses = []
 
         for subclass in cls.__subclasses__():
-            if subclass._is_concrete():
+            if subclass._is_physical():
                 subclasses.append(subclass)
             subclasses.extend(subclass.subclasses())
 
@@ -47,7 +77,7 @@ class Light(abc.ABC, TaskableMixin):
 
         supported_lights = {}
 
-        if cls._is_concrete():
+        if cls._is_physical():
             supported_lights.setdefault(cls.vendor(), cls.unique_device_names())
 
         for subclass in cls.subclasses():
@@ -58,7 +88,14 @@ class Light(abc.ABC, TaskableMixin):
 
     @classmethod
     def available_lights(cls) -> List[LightInfo]:
-        """Returns a list of dictionaries describing currently available lights."""
+        """Returns a list of dictionaries describing currently available lights.
+
+        The lights described by those dictionaries may be in use by another process
+        so may not be "technically" available for use by this process. That question
+        will be resolved when the Light instance is instantiated
+
+        If the returned list is empty, no supported lights were found.
+        """
 
         # Note: Light's subclasses, HIDLight and SerialLight for now,
         #       are expected to implement device-specific
@@ -96,8 +133,16 @@ class Light(abc.ABC, TaskableMixin):
     def all_lights(cls, reset: bool = True, exclusive: bool = True) -> List["Light"]:
         """Returns a list of all lights found in a stable ordering.
 
+        If reset is True, all returned lights are turned off and set
+        to an inactive state.
+
+        If exclusive is True, all the lights in the list have been
+        acquired for exclusive use by this process.
+
         :reset:      bool Quiesce the light when acquired.
         :exclusive:  bool Light is owned exclusively by process.
+        :return: List[Light]
+
         """
 
         all_lights = []
@@ -120,11 +165,19 @@ class Light(abc.ABC, TaskableMixin):
     def first_light(cls, reset: bool = True, exclusive: bool = True) -> "Light":
         """Returns the first available light claimed by this class.
 
+        If reset is True, all returned lights are turned off and set
+        to an inactive state.
+
+        If exclusive is True, the light has been acquired for use
+        exclusively by this process. If no lights can be acquired or
+        no lights are found, NoLightsFound is raised.
+
         :reset:      bool Quiesce the light when acquired.
         :exclusive:  bool Light is owned exclusively by process.
 
         Raises:
         busylight.lights.exceptions.NoLightsFound
+
         """
 
         if cls._is_abstract():
@@ -147,19 +200,19 @@ class Light(abc.ABC, TaskableMixin):
         raise NoLightsFound()
 
     @classmethod
-    def _is_concrete(cls) -> bool:
+    def _is_physical(cls) -> bool:
         """This class implements support for a physical light."""
         return cls is not Light
 
     @classmethod
     def _is_abstract(cls) -> bool:
-        """This class supports a family of physical lights."""
-        return not cls._is_concrete()
+        """This class partial support for an abstract class of lights."""
+        return not cls._is_physical()
 
     @staticmethod
     @abc.abstractmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
-        """A dictionary  of device identfiers support by this class.
+        """A dictionary of device identfiers supported by this class.
 
         Keys are a tuple of integer vendor_id and product id, values
         are the marketing name associated with that device. Some tuples
@@ -171,7 +224,7 @@ class Light(abc.ABC, TaskableMixin):
     def unique_device_names(cls) -> List[str]:
         """A list of unique device names supported by this class."""
 
-        if cls._is_concrete():
+        if cls._is_physical():
             return list(set(cls.supported_device_ids().values()))
 
         names = []
@@ -206,15 +259,41 @@ class Light(abc.ABC, TaskableMixin):
         :reset:      bool Quiesce the light when acquired.
         :exclusive:  bool Light is owned exclusively by process.
 
+
+        The light_info argument is expected to be a dictionary
+        obtained from the available_lights() class method. The
+        exception InvalidLightInfo is raised if the dictionary
+        is missing expected entries.
+
+        When reset is True, the light is turned off and put in
+        an inactive state. Using reset=False could allow a
+        process to acquire a device without disrupting it's
+        current state (lit with a color). This is only possible
+        if the light was acquired in non-exclusive mode by the
+        other process.
+
+        Acquring a light with exclusive=True means the light's
+        underlying device is opened during initialization and
+        stays open until the release method is called.
+
+        Using exclusive=False means the light's underlying device is
+        opened prior to attempting an I/O operation and closed
+        immediately afterwards. This sequence should theoretically
+        allow multiple processes the opportunity to interact with the
+        device without requiring excessive synchronization.
+
         Raises:
-        - LightUnsupported
         - InvalidLightInfo
+        - LightUnsupported
         """
 
         if not self.claims(light_info):
             raise LightUnsupported(light_info)
 
         self.info = dict(light_info)
+        # EJO reset only matters at inititalization but we keep
+        #     the value passed in so the repr shows the correct
+        #     instantiation value.
         self._reset = reset
         self._exclusive = exclusive
 
@@ -225,13 +304,19 @@ class Light(abc.ABC, TaskableMixin):
             self.reset()
 
     def __repr__(self) -> str:
-
         return f"{self.__class__.__name__}(..., reset={self._reset}, exclusive={self._exclusive})"
 
     def __str__(self) -> str:
         return self.name
 
     def __eq__(self, other: object) -> bool:
+        """Compares a Light subclass to another Light subclass,
+        returning True if and only if vendor names match, device names
+        match, and device paths match.
+
+        Raises:
+        - NotImplemented for non-Light subclasses
+        """
 
         if not isinstance(other, Light):
             return NotImplemented
@@ -245,6 +330,14 @@ class Light(abc.ABC, TaskableMixin):
         )
 
     def __lt__(self, other: object) -> bool:
+        """A Light subclass is less than another Light subclass
+        if and only if: its lower case vendor string is less,
+        its lower case name is less, and the string representation
+        of its path is less.
+
+        Raises:
+        - NotImplemented for non-Light subclasses
+        """
 
         if not isinstance(other, Light):
             return NotImplemented
@@ -316,7 +409,7 @@ class Light(abc.ABC, TaskableMixin):
         self.update()
 
     def on(self, color: Tuple[int, int, int]) -> None:
-        """Activate the light with the supplied RGB color tuple."""
+        """Activate the light with the supplied red, green, blue color tuple."""
 
         with self.batch_update():
             self.color = color
@@ -338,21 +431,27 @@ class Light(abc.ABC, TaskableMixin):
     @property
     @abc.abstractmethod
     def is_pluggedin(self) -> bool:
-        """True if the light is plugged in and responding to commands."""
+        """True if the light is responding to commands."""
 
     @property
     def is_unplugged(self) -> bool:
-        """True if the light does not respond to commands."""
+        """True if the light is not responding to commands."""
         return not self.is_pluggedin
 
     @property
     def is_on(self) -> bool:
-        """True if the software state of the light indicates the light is on."""
-        return any(self.color)
+        """True if the software state of the light indicates the light is on.
+
+        Will return False if the light is unplugged.
+        """
+        return self.is_pluggedin and any(self.color)
 
     @property
     def is_off(self) -> bool:
-        """True if the software state of the light indicates the light is off."""
+        """True if the software state of the light indicates the light is off.
+
+        Will return True if the light is unplugged.
+        """
         return not self.is_on
 
     @property
@@ -362,16 +461,16 @@ class Light(abc.ABC, TaskableMixin):
 
     @property
     def button_on(self) -> bool:
-        """True if the button is the on state."""
+        """True if the button is the ON state."""
         return False
 
     @property
-    def read_strategy(self) -> Callable:
+    def read_strategy(self) -> Callable[[int], bytes]:
         """The read function used to communicate with the device."""
         return self.device.read
 
     @property
-    def write_strategy(self) -> Callable:
+    def write_strategy(self) -> Callable[[bytes], int]:
         """The write function used to communicate with the device."""
         return self.device.write
 
@@ -420,6 +519,10 @@ class Light(abc.ABC, TaskableMixin):
         - acquires the device for I/O
         - performs the I/O
         - releases the device
+
+        Raises:
+        - LightUnavaliable
+
         """
         logger.info(f"Entering exclusive access for {self}")
 

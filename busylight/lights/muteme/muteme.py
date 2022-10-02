@@ -1,4 +1,4 @@
-""" MuteMe USB Button & Light
+""" MuteMe Button & Light
 """
 
 from typing import Dict, Tuple
@@ -15,9 +15,8 @@ class MuteMe(HIDLight):
     @staticmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
-            (0x16C0, 0x27DB): "MuteMe Original (prototype)",
+            (0x16C0, 0x27DB): "MuteMe Original",
             (0x20A0, 0x42DA): "MuteMe Original",
-            (0x20A0, 0x42DB): "MuteMe Mini",
         }
 
     @staticmethod
