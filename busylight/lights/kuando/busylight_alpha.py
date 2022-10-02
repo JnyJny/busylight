@@ -1,4 +1,4 @@
-""" Busylight Alpha & Omega Support
+""" Busylight Alpha Support
 """
 
 import asyncio
@@ -13,7 +13,7 @@ from ..light import LightInfo
 from ._busylight import CommandBuffer, Instruction
 
 
-class BusylightAlpha(HIDLight):
+class Busylight_Alpha(HIDLight):
     @staticmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
@@ -46,7 +46,7 @@ class BusylightAlpha(HIDLight):
             instruction = Instruction.Jump(target=0, color=color, on_time=0, off_time=0)
             self.command.line0 = instruction.value
 
-        self.add_task("keepalive", keepalive)
+        self.add_task("keepalive", _keepalive)
 
     def off(self) -> None:
 
@@ -58,18 +58,7 @@ class BusylightAlpha(HIDLight):
             self.command.line0 = instruction.value
 
 
-class BusylightOmega(BusylightAlpha):
-    @staticmethod
-    def supported_device_ids() -> Dict[Tuple[int, int], str]:
-        return {
-            (0x27BB, 0x3BCD): "Busylight Omega",
-            (0x27BB, 0x3BCF): "Busylight Omega",
-        }
-
-
-async def keepalive(
-    light: Union[BusylightAlpha, BusylightOmega], interval: int = 0xF
-) -> None:
+async def _keepalive(light: Busylight_Alpha, interval: int = 0xF) -> None:
     """Send a Keepalive packet to a Busylight."""
 
     interval = interval & 0x0F

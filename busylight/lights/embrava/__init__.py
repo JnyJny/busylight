@@ -1,13 +1,13 @@
-""" Embrava Blynclight Family of Devices
+""" Embrava Blynclight Support
 """
 
 from .blynclight import Blynclight
-from .blynclightmini import BlynclightMini
-from .blynclightplus import BlynclightPlus
+from .blynclight_mini import Blynclight_Mini
+from .blynclight_plus import Blynclight_Plus
 
 
 __all__ = [
     "Blynclight",
-    "BlynclightMini",
-    "BlynclightPlus",
+    "Blynclight_Mini",
+    "Blynclight_Plus",
 ]
