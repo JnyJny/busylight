@@ -1,7 +1,7 @@
 """Support for USB Connected Lights
 
 This package provides abstract and physical classes which implement
-support for interacting with USB connect devices.
+support for interacting with USB connected devices.
 
 The Light, HIDLight and SerialLight classes are "abstract". They are
 not tied to a particular vendor's device. HIDLight and SerialLight
@@ -37,18 +37,17 @@ Developers, adding support for a new device will entail:
 
 - Optionally create a new vendor package directory.
 - Create a new subclass of HIDDevice or SerialDevice.
-- Create a new module for each device.
 - Implement all the missing abstract methods.
 - Make sure the vendor package imports all the new subclasses.
 - Make sure the vendor package appends the new subclasses to __all__.
-- Import the new subclasses in busylight.lights.__init__
-- Add the new subclasses to busylight.lights.__init__.__all__
+- Import the new subclasses in busylight.lights.__init__.
+- Add the new subclasses to busylight.lights.__init__.__all__.
 
 Refer to any of the existing vendor packages as an example.
 
 Please note, if the subclasses are not imported here, the
-abc.ABC.__subclasses__ machinery will not find them. This can
-be very frustrating.
+abc.ABC.__subclasses__ machinery will not find them and your
+new lights will not be recognized.
 """
 
 from .light import Light
