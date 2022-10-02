@@ -26,7 +26,7 @@ class SerialLight(Light):
     """
 
     @classmethod
-    def _is_concrete(cls) -> bool:
+    def _is_physical(cls) -> bool:
         return cls is not SerialLight
 
     @staticmethod
@@ -57,7 +57,7 @@ class SerialLight(Light):
     @classmethod
     def available_lights(cls) -> List[LightInfo]:
 
-        available_lights = []
+        available = []
 
         for device in list_ports.comports():
             try:
@@ -66,11 +66,11 @@ class SerialLight(Light):
                 continue
 
             if cls.claims(light_info):
-                available_lights.append(light_info)
+                available.append(light_info)
 
-        logger.info(f"{cls} found {len(available_lights)}")
+        logger.info(f"{cls.__name__} found {len(available)}")
 
-        return available_lights
+        return available
 
     @classmethod
     def udev_rules(cls, mode: int = 0o0666) -> List[str]:

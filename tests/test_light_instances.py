@@ -5,17 +5,17 @@ import pytest
 
 from busylight.lights import LightUnsupported
 
-from . import BOGUS_DEVICE_ID, CONCRETE_LIGHT_SUBCLASSES, LightType
+from . import BOGUS_DEVICE_ID, PHYSICAL_LIGHT_SUBCLASSES, LightType
 
 
-@pytest.mark.parametrize("subclass", CONCRETE_LIGHT_SUBCLASSES)
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_subclass_init_known_good_lights(subclass: LightType) -> None:
     """Initialize a Light subclass with known good light_info dictionaries."""
 
     light_info = {
         # EJO Easier to pre-populate this dictionary with these values
         #     for Agile Innovative BlinkStick than to discover
-        #     them. All other concrete lights will ignore them.
+        #     them. All other physical lights will ignore them.
         "serial_number": "BS032974-3.0",
         "release_number": 0x0200,
     }
@@ -27,7 +27,7 @@ def test_light_subclass_init_known_good_lights(subclass: LightType) -> None:
         assert isinstance(light, subclass)
 
 
-@pytest.mark.parametrize("subclass", CONCRETE_LIGHT_SUBCLASSES)
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_subclass_init_known_bad_lights(subclass: LightType) -> None:
     """Initialize a Light subclass with known bad light_info dictionaries."""
 

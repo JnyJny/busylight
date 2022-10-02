@@ -19,7 +19,7 @@ class HIDLight(Light):
     """
 
     @classmethod
-    def _is_concrete(cls) -> bool:
+    def _is_physical(cls) -> bool:
         return cls is not HIDLight
 
     @classmethod
@@ -39,7 +39,7 @@ class HIDLight(Light):
             info = dict(hidinfo)
             available.append(info)
 
-        logger.info(f"{cls} found {len(available)}")
+        logger.info(f"{cls.__name__} found {len(available)}")
         return available
 
     @classmethod
