@@ -8,7 +8,6 @@ from .seriallight import SerialLight
 
 from .exceptions import (
     InvalidLightInfo,
-    LightNotFound,
     LightUnavailable,
     LightUnsupported,
     NoLightsFound,
