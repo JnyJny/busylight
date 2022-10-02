@@ -1,4 +1,4 @@
-""" USB Human Interface Device (HID) Light Support
+"""USB Human Interface Device (HID) Light Support
 """
 
 from typing import Any, Callable, Dict, List, Union
@@ -13,9 +13,17 @@ from .exceptions import LightUnavailable
 
 
 class HIDLight(Light):
-    """A USB connected device implementing a light, indicator lamp or button.
+    """USB Human Interface Device (HID) Light Support
 
     I/O to the device is thru interfaces provided by the hidapi package.
+
+    HID is a simplified method of interacting with USB devices like
+    keyboards, mice and joysticks.
+
+    The HIDLight class provides methods for managing the hid.device
+    instance and discovering known connected HID devices that were abstract in
+    the Light superclass.
+
     """
 
     @classmethod
@@ -69,6 +77,11 @@ class HIDLight(Light):
 
     @property
     def device(self) -> hid.device:
+        """A hid.device instance configured for use with this device.
+
+        The device is not necessarily open until the acquire method
+        has been called successfully.
+        """
         try:
             return self._device
         except AttributeError:

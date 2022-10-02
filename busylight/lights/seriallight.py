@@ -20,9 +20,16 @@ class _UnrecognizedDevice(Exception):
 
 
 class SerialLight(Light):
-    """A USB connected device implementing a light, indicator lamp or button.
+    """USB Serial Light Support
 
     I/O to the device is thru interfaces provided by the pyserial package.
+
+    USB serial access is similar to older-style serial interfaces where a
+    device is opened, configured, read and written to and finally closed.
+
+    The SerialLight class provides methods for managing the Serial
+    device instance and descovering known connected USB serial devices that
+    were abstract in the Light superclass.
     """
 
     @classmethod
@@ -39,6 +46,9 @@ class SerialLight(Light):
 
         Note: Not all of the HID fields are discoverable with the
               serial interface.
+
+        Raises:
+        - _UnrecognizedDevice
         """
 
         if not device.vid and not device.pid:
@@ -79,6 +89,12 @@ class SerialLight(Light):
 
     @property
     def device(self) -> Serial:
+        """A serial.Serial instance configured for use by this device.
+
+        The device is not necessarily open until the acquire method
+        has been called successfully.
+
+        """
         try:
             return self._device
         except AttributeError:
