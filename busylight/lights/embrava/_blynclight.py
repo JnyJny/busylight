@@ -1,4 +1,4 @@
-"""
+""" Embrava Blynclight Implementation Details
 """
 from bitvector import BitVector, BitField, ReadOnlyBitField
 

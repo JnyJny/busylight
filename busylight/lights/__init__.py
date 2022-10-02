@@ -8,7 +8,6 @@ from .seriallight import SerialLight
 
 from .exceptions import (
     InvalidLightInfo,
-    LightNotFound,
     LightUnavailable,
     LightUnsupported,
     NoLightsFound,
@@ -16,8 +15,8 @@ from .exceptions import (
 
 from .agile_innovative import BlinkStick
 from .compulab import Fit_StatUSB
-from .embrava import Blynclight
-from .kuando import Busylight
+from .embrava import Blynclight, BlynclightMini, BlynclightPlus
+from .kuando import BusylightAlpha, BusylightOmega
 from .luxafor import Flag, Mute, Orb
 from .muteme import MuteMe
 from .mutesync import MuteSync

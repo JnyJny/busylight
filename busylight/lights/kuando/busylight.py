@@ -3,7 +3,7 @@
 
 import asyncio
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 
 from loguru import logger
 
@@ -13,14 +13,12 @@ from ..light import LightInfo
 from ._busylight import CommandBuffer, Instruction
 
 
-class Busylight(HIDLight):
+class BusylightAlpha(HIDLight):
     @staticmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
             (0x04D8, 0xF848): "Busylight Alpha",
             (0x27BB, 0x3BCA): "Busylight Alpha",
-            (0x27BB, 0x3BCD): "Busylight Omega",
-            (0x27BB, 0x3BCF): "Busylight Omega",
         }
 
     @staticmethod
@@ -60,7 +58,19 @@ class Busylight(HIDLight):
             self.command.line0 = instruction.value
 
 
-async def keepalive(light: Busylight, interval: int = 0xF) -> None:
+class BusylightOmega(BusylightAlpha):
+    @staticmethod
+    def supported_device_ids() -> Dict[Tuple[int, int], str]:
+        return {
+            (0x27BB, 0x3BCD): "Busylight Omega",
+            (0x27BB, 0x3BCF): "Busylight Omega",
+        }
+
+
+async def keepalive(
+    light: Union[BusylightAlpha, BusylightOmega], interval: int = 0xF
+) -> None:
+    """Send a Keepalive packet to a Busylight."""
 
     interval = interval & 0x0F
     sleep_interval = round(interval / 2)

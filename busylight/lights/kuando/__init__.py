@@ -1,6 +1,6 @@
 """
 """
 
-from .busylight import Busylight
+from .busylight import BusylightAlpha, BusylightOmega
 
-__all__ = ["Busylight"]
+__all__ = ["BusylightAlpha", "BusylightOmega"]
