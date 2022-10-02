@@ -1,4 +1,4 @@
-""" MuteMe USB Button & Light
+""" MuteMe Button & Light
 """
 
 from typing import Dict, Tuple
