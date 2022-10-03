@@ -22,8 +22,8 @@ class HIDLight(Light):
     keyboards, mice and joysticks.
 
     The HIDLight class provides methods for managing the hid.device
-    instance and discovering known connected HID devices that were abstract in
-    the Light superclass.
+    instance and discovering known connected HID devices that were
+    abstract in the Light superclass.
     """
 
     @classmethod

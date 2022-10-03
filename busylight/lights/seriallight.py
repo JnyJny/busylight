@@ -24,12 +24,14 @@ class SerialLight(Light):
     I/O to the device is conductiong thru interfaces provided by the
     pyserial package.
 
-    USB serial access is similar to older-style serial interfaces where a
-    device is opened, configured, read and written to and finally closed.
+    USB serial access is similar to older-style serial interfaces
+    where a device is opened, configured, read and written to and
+    finally closed.
 
     The SerialLight class provides methods for managing the Serial
-    device instance and descovering known connected USB serial devices that
-    were abstract in the Light superclass.
+    device instance and descovering known connected USB serial devices
+    that were abstract in the Light superclass.
+
     """
 
     @classmethod
