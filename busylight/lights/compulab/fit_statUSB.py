@@ -17,7 +17,7 @@ class Fit_StatUSB(SerialLight):
 
     @staticmethod
     def vendor() -> str:
-        return "Compulab"
+        return "CompuLab"
 
     def __bytes__(self) -> bytes:
 
