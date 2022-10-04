@@ -11,7 +11,7 @@ from busylight.lights import NoLightsFound
 
 from serial.tools.list_ports_common import ListPortInfo
 
-from . import HID_LIGHTS, SERIAL_LIGHTS
+from . import HID_LIGHTS, SERIAL_LIGHTS, MockDevice
 
 
 def listportinfo(light_info: dict) -> ListPortInfo:
@@ -86,30 +86,15 @@ def test_seriallight_available_offline_malformed(mocker) -> None:
     assert len(result) == 0
 
 
-class MockSerialDevice:
-    def open_path(self, *args) -> None:
-        pass
-
-    def read(self, *args) -> bytes:
-        return bytes([0] * 8)
-
-    def write(self, *args) -> int:
-        pass
-
-    def send_feature_report(self, *args) -> int:
-        pass
-
-    def get_feature_report(self, *args) -> list[int]:
-        return [0]
-
-
-@pytest.mark.xfail
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_all_lights_offline_good(light_info, mocker) -> None:
 
-    mocker.patch("hid.enumerate", return_value=[light_info])
+    mocker.patch(
+        "serial.tools.list_ports.comports",
+        return_value=[listportinfo(light_info)],
+    )
 
-    mocker.patch("busylight.lights.hidlight.SerialLight.device", MockHidDevice)
+    mocker.patch("busylight.lights.seriallight.SerialLight.device", MockDevice)
 
     result = SerialLight.all_lights()  # reset=False, exclusive=False)
 
@@ -119,29 +104,29 @@ def test_seriallight_all_lights_offline_good(light_info, mocker) -> None:
     assert isinstance(result[0], SerialLight)
 
 
-@pytest.mark.xfail
 def test_seriallight_first_light_offline_no_lights(mocker) -> None:
 
-    mocker.patch("hid.enumerate", return_value=[])
+    mocker.patch("serial.tools.list_ports.comports", return_value=[])
 
     with pytest.raises(NoLightsFound):
         result = SerialLight.first_light()
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_first_light_offline_good(light_info, mocker) -> None:
 
-    mocker.patch("hid.enumerate", return_value=[light_info])
+    mocker.patch(
+        "serial.tools.list_ports.comports",
+        return_value=[listportinfo(light_info)],
+    )
 
-    mocker.patch("busylight.lights.hidlight.SerialLight.device", MockSerialDevice)
+    mocker.patch("busylight.lights.seriallight.SerialLight.device", MockSerialDevice)
 
     result = SerialLight.first_light()
 
     assert isinstance(result, SerialLight)
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_claims_offline_claimed(light_info) -> None:
 
@@ -152,7 +137,6 @@ def test_seriallight_claims_offline_claimed(light_info) -> None:
     assert result
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_seriallight_claims_offline_not_claimed(light_info):
 
@@ -162,7 +146,6 @@ def test_seriallight_claims_offline_not_claimed(light_info):
     assert not result
 
 
-@pytest.mark.xfail
 def test_seriallight_supported_lights() -> None:
 
     result = SerialLight.supported_lights()
@@ -189,11 +172,8 @@ def test_seriallight__is_physical() -> None:
     assert not result
 
 
-@pytest.mark.xfail
-def test_seriallight_udev_rules() -> None:
+@pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
+def test_seriallight_init_fails_for_abc(light_info, mocker) -> None:
 
-    result = SerialLight.udev_rules()
-    assert isinstance(result, list)
-
-    for item in result:
-        assert isinstance(item, str)
+    with pytest.raises(TypeError):
+        SerialLight(light_info, reset=True, exclusive=True)

@@ -8,7 +8,7 @@ import busylight.lights.hidlight
 from busylight.lights.hidlight import HIDLight
 from busylight.lights import NoLightsFound
 
-from . import HID_LIGHTS, SERIAL_LIGHTS
+from . import HID_LIGHTS, SERIAL_LIGHTS, MockDevice
 
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
@@ -57,29 +57,12 @@ def test_hidlight_available_offline_malformed(light_info, mocker) -> None:
     assert len(result) == 0
 
 
-class MockHidDevice:
-    def open_path(self, *args) -> None:
-        pass
-
-    def read(self, *args) -> bytes:
-        return bytes([0] * 8)
-
-    def write(self, *args) -> int:
-        pass
-
-    def send_feature_report(self, *args) -> int:
-        pass
-
-    def get_feature_report(self, *args) -> list[int]:
-        return [0]
-
-
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_hidlight_all_lights_offline_good(light_info, mocker) -> None:
 
     mocker.patch("hid.enumerate", return_value=[light_info])
 
-    mocker.patch("busylight.lights.hidlight.HIDLight.device", MockHidDevice)
+    mocker.patch("busylight.lights.hidlight.HIDLight.device", MockDevice)
 
     result = HIDLight.all_lights()  # reset=False, exclusive=False)
 
@@ -102,7 +85,7 @@ def test_hidlight_first_light_offline_good(light_info, mocker) -> None:
 
     mocker.patch("hid.enumerate", return_value=[light_info])
 
-    mocker.patch("busylight.lights.hidlight.HIDLight.device", MockHidDevice)
+    mocker.patch("busylight.lights.hidlight.HIDLight.device", MockDevice)
 
     result = HIDLight.first_light()
 
@@ -154,10 +137,8 @@ def test_hidlight__is_physical() -> None:
     assert not result
 
 
-def test_hidlight_udev_rules() -> None:
+@pytest.mark.parametrize("light_info", HID_LIGHTS)
+def test_hidlight_init_fails_for_abc(light_info, mocker) -> None:
 
-    result = HIDLight.udev_rules()
-    assert isinstance(result, list)
-
-    for item in result:
-        assert isinstance(item, str)
+    with pytest.raises(TypeError):
+        HIDLight(light_info, reset=True, exclusive=True)
