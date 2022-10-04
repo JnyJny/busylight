@@ -125,7 +125,7 @@ class SerialLight(Light):
             self.device.open()
             logger.info(f"{self} open() succeeded")
         except Exception as error:
-            logger.debug("open failed for {self.path}: {error}")
+            logger.debug(f"open failed for {self.path}: {error}")
             raise LightUnavailable(self.path) from None
 
     def release(self) -> None:
