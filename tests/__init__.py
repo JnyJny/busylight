@@ -150,3 +150,26 @@ SERIAL_LIGHTS = [
 ]
 
 ALL_LIGHTS = HID_LIGHTS + SERIAL_LIGHTS
+
+
+class MockDevice:
+    def __init__(self, *args, **kwargs) -> None:
+        self.path = ""
+
+    def open(*args) -> None:
+        pass
+
+    def open_path(self, *args, **kwargs) -> None:
+        pass
+
+    def read(self, *args, **kwargs) -> bytes:
+        return bytes([0] * 8)
+
+    def write(self, *args, **kwargs) -> int:
+        pass
+
+    def send_feature_report(self, *args, **kwargs) -> int:
+        pass
+
+    def get_feature_report(self, *args, **kwargs) -> list[int]:
+        return [0]
