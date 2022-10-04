@@ -218,6 +218,7 @@ class Light(abc.ABC, TaskableMixin):
         are the marketing name associated with that device. Some tuples
         may identify devices with the same name.
         """
+        raise NotImplementedError("supported_device_ids")
 
     @classmethod
     @lru_cache(maxsize=None)
@@ -236,6 +237,7 @@ class Light(abc.ABC, TaskableMixin):
     @abc.abstractmethod
     def vendor() -> str:
         """Device vendor name."""
+        raise NotImplementedError("vendor")
 
     @classmethod
     @abc.abstractmethod
