@@ -3,7 +3,7 @@
 ## Kuando BusyLight
 
 The [Kuando BusyLight][0] line of products consists of the Busylight
-UC Alpha and the BusyLight US Omega. For development, I tested with
+UC Alpha and the BusyLight UC Omega. For development, I tested with
 the Omega model. I have no reason to believe that the Alpha varies in
 any significant way with respect to it's software configuration.
 
