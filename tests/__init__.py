@@ -171,5 +171,5 @@ class MockDevice:
     def send_feature_report(self, *args, **kwargs) -> int:
         pass
 
-    def get_feature_report(self, *args, **kwargs) -> list[int]:
+    def get_feature_report(self, *args, **kwargs) -> List[int]:
         return [0]
