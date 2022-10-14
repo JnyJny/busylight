@@ -281,6 +281,9 @@ def list_available_lights(
             if not verbose:
                 continue
             for k, v in light.info.items():
+                if k == "device_id":
+                    continue
+
                 if v:
                     typer.secho(f"   {k:>20s}:", nl=False)
                     if isinstance(v, int):
