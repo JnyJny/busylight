@@ -3,7 +3,9 @@
 
 from typing import List
 
-from busylight.lights import NoLightsFound
+import busylight.lights.light
+
+from busylight.lights import NoLightsFound, InvalidLightInfo
 
 import pytest
 
@@ -45,6 +47,7 @@ def test_light_subclass_supported_lights(subclass: LightType) -> None:
 @pytest.mark.parametrize("subclass", ALL_LIGHT_SUBCLASSES)
 def test_light_subclass_available_lights(subclass: LightType) -> None:
     """Call the `available_lights` class method for all Light subclasses."""
+
     result = subclass.available_lights()
 
     assert isinstance(result, list)
@@ -83,7 +86,7 @@ def test_light_subclass_udev_rules(subclass: LightType) -> None:
 
 
 @pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
-def test_light_subclass_vendor(subclass: LightType) -> None:
+def test_light_subclass_vendor_concrete(subclass: LightType) -> None:
     """Call the `vendor` static method for all physical Light subclasses."""
 
     result = subclass.vendor()
@@ -91,9 +94,17 @@ def test_light_subclass_vendor(subclass: LightType) -> None:
     assert isinstance(result, str)
 
 
+@pytest.mark.parametrize("subclass", ABSTRACT_LIGHT_SUBCLASSES)
+def test_light_subclass_vendor_abstract(subclass: LightType) -> None:
+    """Call the `vendor` static method for all abstract Light subclasses."""
+
+    with pytest.raises(NotImplementedError):
+        result = subclass.vendor()
+
+
 @pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_subclass_claims_known_good_lights(subclass: LightType) -> None:
-    """Call the `claims` class methdo for all physical Light subclasses
+    """Call the `claims` class methdod for all physical Light subclasses
     with known good light_info dictionaries.
     """
 
@@ -120,6 +131,14 @@ def test_light_subclass_claims_known_bad_lights(subclass: LightType) -> None:
     assert not claimed
 
 
+@pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
+def test_light_subclass_claims_malformed(subclass: LightType) -> None:
+    garbage = {"foo": 1, "bar": 2, "baz": 3}
+
+    with pytest.raises(InvalidLightInfo):
+        claimed = subclass.claims(garbage)
+
+
 @pytest.mark.parametrize("subclass", ALL_LIGHT_SUBCLASSES)
 def test_light_subclass_all_lights(subclass: LightType) -> None:
     """Call the `all_lights` class method for all Light subclasses."""
@@ -132,14 +151,12 @@ def test_light_subclass_all_lights(subclass: LightType) -> None:
         assert issubclass(type(item), subclass)
 
 
+@pytest.mark.xfail
 @pytest.mark.parametrize("subclass", ALL_LIGHT_SUBCLASSES)
 def test_light_subclass_first_light(subclass: LightType) -> None:
     """Call the `first_light` class method for all Light subclasses."""
 
-    try:
-        result = subclass.first_light(reset=False, exclusive=False)
-    except NoLightsFound:
-        return
+    result = subclass.first_light(reset=False, exclusive=False)
 
     assert isinstance(result, subclass)
 
@@ -162,3 +179,13 @@ def test_light_subclass_is_physical(subclass: LightType) -> None:
     is_physical = subclass._is_physical()
 
     assert is_physical and not is_abstract
+
+
+@pytest.mark.parametrize("subclass", ALL_LIGHT_SUBCLASSES)
+def test_light_subclass_unique_device_names(subclass: LightType) -> None:
+
+    names = subclass.unique_device_names()
+
+    assert isinstance(names, list)
+    for name in names:
+        assert isinstance(name, str)

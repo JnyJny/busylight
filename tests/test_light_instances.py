@@ -5,12 +5,26 @@ import pytest
 
 from busylight.lights import LightUnsupported
 
-from . import BOGUS_DEVICE_ID, PHYSICAL_LIGHT_SUBCLASSES, LightType
+import busylight.lights.agile_innovative.blinkstick
+import busylight.lights.compulab.fit_statusb
+import busylight.lights.embrava.blynclight
+import busylight.lights.embrava.blynclight_mini
+import busylight.lights.embrava.blynclight_plus
+import busylight.lights.kuando.busylight_alpha
+import busylight.lights.kuando.busylight_omega
+import busylight.lights.luxafor.flag
+import busylight.lights.luxafor.mute
+import busylight.lights.luxafor.orb
+
+from . import BOGUS_DEVICE_ID, PHYSICAL_LIGHT_SUBCLASSES, LightType, MockDevice
 
 
+@pytest.mark.xfail
 @pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
-def test_light_subclass_init_known_good_lights(subclass: LightType) -> None:
+def test_light_instance_init_known_good_lights(subclass: LightType, mocker) -> None:
     """Initialize a Light subclass with known good light_info dictionaries."""
+
+    mocker.patch(subclass.device, MockDevice)
 
     light_info = {
         # EJO Easier to pre-populate this dictionary with these values
@@ -23,12 +37,13 @@ def test_light_subclass_init_known_good_lights(subclass: LightType) -> None:
     for key, value in subclass.supported_device_ids().items():
         light_info["device_id"] = key
         light_info["product_string"] = value
-        light = subclass(light_info, reset=False, exclusive=False)
+        light = subclass(light_info)
+
         assert isinstance(light, subclass)
 
 
 @pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
-def test_light_subclass_init_known_bad_lights(subclass: LightType) -> None:
+def test_light_instance_init_known_bad_lights(subclass: LightType) -> None:
     """Initialize a Light subclass with known bad light_info dictionaries."""
 
     light_info = {

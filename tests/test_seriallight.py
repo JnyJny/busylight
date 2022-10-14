@@ -120,7 +120,7 @@ def test_seriallight_first_light_offline_good(light_info, mocker) -> None:
         return_value=[listportinfo(light_info)],
     )
 
-    mocker.patch("busylight.lights.seriallight.SerialLight.device", MockSerialDevice)
+    mocker.patch("busylight.lights.seriallight.SerialLight.device", MockDevice)
 
     result = SerialLight.first_light()
 
