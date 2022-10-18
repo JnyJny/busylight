@@ -67,9 +67,9 @@ class HIDLight(Light):
 
         devices = cls.supported_device_ids()
         rules.append(f"# Rules for {cls.vendor()} Family of Devices: {len(devices)}")
-        for n, ((vid, pid), name) in enumerate(devices.items()):
+        for n, ((vid, pid), name) in enumerate(devices.items(), start=1):
             logger.info(f"udev rule for {vid:04x}, {pid:04x} {name}")
-            rules.append(f"# {n+1} {cls.vendor()} {name}")
+            rules.append(f"# {n} {cls.vendor()} {name}")
             for rule_format in rule_formats:
                 rules.append(rule_format.format(vid=vid, pid=pid, mode=mode))
 
