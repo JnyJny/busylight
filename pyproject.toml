@@ -30,7 +30,7 @@ pytest-cov = "^3.0.0"
 mypy = "^0.971"
 requests = "^2.28.1"
 httpx = "^0.23.0"
-anyio = {extras = ["trio"], version = "^3.6.1"}
+anyio = {extras = ["trio"], version = "^3.6.2"}
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
