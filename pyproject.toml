@@ -18,7 +18,7 @@ hidapi = ">=0.11.2,<0.13.0"
 pyserial = "^3.5"
 importlib-metadata = {version = "^4.11.3", python = "<3.8"}
 fastapi = {version = ">=0.61.1,<0.86.0", extras = ["webapi"] }
-uvicorn = {version = ">=0.12.2,<0.19.0", extras = ["webapi"] }
+uvicorn = {version = ">=0.12.2,<0.20.0", extras = ["webapi"] }
 
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
