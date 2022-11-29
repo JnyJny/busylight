@@ -574,7 +574,7 @@ webapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.11"
-content-hash = "844fdf78ad90c585b1304a1b669c315ca061010d0b7399d8b03847423f2b6d75"
+content-hash = "a9a06e6f8563eb4e1f3ecc9875909ae9d98697c6af3f2a1028b61929af7ff485"
 
 [metadata.files]
 anyio = [
