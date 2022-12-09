@@ -72,7 +72,7 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "certifi"
-version = "2022.9.24"
+version = "2022.12.7"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "dev"
 optional = false
@@ -694,8 +694,8 @@ black = [
     {file = "black-22.10.0.tar.gz", hash = "sha256:f513588da599943e0cde4e32cc9879e825d58720d6557062d1098c5ad80080e1"},
 ]
 certifi = [
-    {file = "certifi-2022.9.24-py3-none-any.whl", hash = "sha256:90c1a32f1d68f940488354e36370f6cca89f0f106db09518524c88d6ed83f382"},
-    {file = "certifi-2022.9.24.tar.gz", hash = "sha256:0d9c601124e5a6ba9712dbc60d9c53c21e34f5f641fe83002317394311bdce14"},
+    {file = "certifi-2022.12.7-py3-none-any.whl", hash = "sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18"},
+    {file = "certifi-2022.12.7.tar.gz", hash = "sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3"},
 ]
 cffi = [
     {file = "cffi-1.15.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:a66d3508133af6e8548451b25058d5812812ec3798c886bf38ed24a98216fab2"},
@@ -847,6 +847,13 @@ hidapi = [
     {file = "hidapi-0.12.0.post2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:869fe5cc9113b8808785fefb0f219bc892ae70c822141e60a4ee0aeb967c69ec"},
     {file = "hidapi-0.12.0.post2-cp310-cp310-win32.whl", hash = "sha256:c82fdc5fcdb5601c99c811002649ce902cdd8f323cd2bca97238be7507c1c9b0"},
     {file = "hidapi-0.12.0.post2-cp310-cp310-win_amd64.whl", hash = "sha256:e04dd30f599d589883ae37f5663aeaf5301237379f307951b6171ec5bf7540ea"},
+    {file = "hidapi-0.12.0.post2-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:c6e4f6ea56f08532d448b73e1a2ca0705cf28ac34eb06a50b74d7a485e639507"},
+    {file = "hidapi-0.12.0.post2-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:907b9f00ab6e24d2b71e1d7d8b5eb753f711154d141a3d8a5789b3529cb5dcf1"},
+    {file = "hidapi-0.12.0.post2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:6feea19a7f110c333124eef590d13eae6d11c26b20d7cfdca32b746b522e2857"},
+    {file = "hidapi-0.12.0.post2-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:bb3819bf3b335af0ae9f99010475186c25cccc65c35fec160d7281a4b91ecf3d"},
+    {file = "hidapi-0.12.0.post2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a08ecd8480cdfefb83049a5404a39ababe2de75868dc7c0808f9a07b96a33a17"},
+    {file = "hidapi-0.12.0.post2-cp311-cp311-win32.whl", hash = "sha256:852236e25286b5314bf801ef17eba21d3a8ccb175db99d3e362638ddf66729a1"},
+    {file = "hidapi-0.12.0.post2-cp311-cp311-win_amd64.whl", hash = "sha256:2ae4bd1716cb341bf176bf97adbbb709891f76fadf1da58eb0c529fcb1dc86fd"},
     {file = "hidapi-0.12.0.post2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:edc9bd6506723e019e606fbf2400a2819e68370ddbacf432048332ef687522a4"},
     {file = "hidapi-0.12.0.post2-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1b001e2561a9581dd5b0c0610c8cb5acf875e454ba7ca93f0d15384ce5830684"},
     {file = "hidapi-0.12.0.post2-cp36-cp36m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4050e62e1142eb68a9b3a9f87b9cbc97cb8595c9c1c1e9226ea9018fd4a9a410"},
