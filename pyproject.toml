@@ -29,7 +29,7 @@ black = "^22.10"
 pytest-cov = "^3.0.0"
 mypy = "^0.991"
 requests = "^2.28.1"
-httpx = "^0.23.1"
+httpx = "^0.23.2"
 anyio = {extras = ["trio"], version = "^3.6.2"}
 
 [tool.poetry.scripts]
