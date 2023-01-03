@@ -16,7 +16,7 @@ webcolors = "^1.11.1"
 loguru = ">=0.5.3,<0.7.0"
 hidapi = ">=0.11.2,<0.13.0"
 pyserial = "^3.5"
-importlib-metadata = {version = ">=4.11.3,<6.0.0", python = "<3.8"}
+importlib-metadata = {version = ">=4.11.3,<7.0.0", python = "<3.8"}
 fastapi = {version = ">=0.61.1,<0.89.0", extras = ["webapi"] }
 uvicorn = {version = ">=0.12.2,<0.21.0", extras = ["webapi"] }
 
