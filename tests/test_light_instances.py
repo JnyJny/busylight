@@ -15,6 +15,7 @@ import busylight.lights.kuando.busylight_omega
 import busylight.lights.luxafor.flag
 import busylight.lights.luxafor.mute
 import busylight.lights.luxafor.orb
+import busylight.lights.luxafor.bluetooth
 
 from . import BOGUS_DEVICE_ID, PHYSICAL_LIGHT_SUBCLASSES, LightType, MockDevice
 

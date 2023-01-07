@@ -12,3 +12,5 @@ tst.py
 htmlcov
 *token
 .python-version
+
+.vscode/

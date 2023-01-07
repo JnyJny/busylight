@@ -1,6 +1,6 @@
 ![BusyLight Project Logo][1]
 
-## Luxafor Flag 
+## Luxafor Flag
 
 The [Luxafor][0] line of products includes three USB connected presence
 lights: the Flag, the Mute and the Orb.
@@ -23,10 +23,12 @@ port, which can be used with the supplied adhesive-backed magnet to
 
 #### Luxafor Orb
 
+#### Luxafor Bluetooth
+
 ### Basic Human Interface Device Info
 
 - Vendor ID values:
-  - 0x04d8, 0xf372: Flag, Mute, Orb
+  - 0x04d8, 0xf372: Flag, Mute, Orb and Bluetooth
 - I/O Interface: `HID` write
 - Command Length: 8-bytes
 
@@ -34,8 +36,8 @@ port, which can be used with the supplied adhesive-backed magnet to
 
 The Luxafor family of lights are [USB HID][H] accessible devices whose
 attributes are controlled by writing an 8 byte packet to the device.
-All three devices share the same product/vendor identifier so they
-are discerned by the embedded product string; Flag, Mute or Orb.
+All four devices share the same product/vendor identifier so they
+are discerned by the embedded product string; Flag, Mute, Orb or BT.
 
 #### Steady Color Command
 ```C
