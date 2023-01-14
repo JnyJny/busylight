@@ -2,7 +2,7 @@
 name = "anyio"
 version = "3.6.2"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6.2"
 
@@ -145,9 +145,9 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "fastapi"
-version = "0.88.0"
+version = "0.89.1"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -157,15 +157,15 @@ starlette = "0.22.0"
 
 [package.extras]
 all = ["email-validator (>=1.1.1)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "python-multipart (>=0.0.5)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
-dev = ["pre-commit (>=2.17.0,<3.0.0)", "ruff (==0.0.138)", "uvicorn[standard] (>=0.12.0,<0.19.0)"]
-doc = ["mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-markdownextradata-plugin (>=0.1.7,<0.3.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "pyyaml (>=5.3.1,<7.0.0)", "typer[all] (>=0.6.1,<0.7.0)"]
-test = ["anyio[trio] (>=3.2.1,<4.0.0)", "black (==22.10.0)", "coverage[toml] (>=6.5.0,<7.0)", "databases[sqlite] (>=0.3.2,<0.7.0)", "email-validator (>=1.1.1,<2.0.0)", "flask (>=1.1.2,<3.0.0)", "httpx (>=0.23.0,<0.24.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.982)", "orjson (>=3.2.1,<4.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "peewee (>=3.13.3,<4.0.0)", "pytest (>=7.1.3,<8.0.0)", "python-jose[cryptography] (>=3.3.0,<4.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "pyyaml (>=5.3.1,<7.0.0)", "ruff (==0.0.138)", "sqlalchemy (>=1.3.18,<=1.4.41)", "types-orjson (==3.6.2)", "types-ujson (==5.5.0)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)"]
+dev = ["pre-commit (>=2.17.0,<3.0.0)", "ruff (==0.0.138)", "uvicorn[standard] (>=0.12.0,<0.21.0)"]
+doc = ["mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-markdownextradata-plugin (>=0.1.7,<0.3.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "pyyaml (>=5.3.1,<7.0.0)", "typer[all] (>=0.6.1,<0.8.0)"]
+test = ["anyio[trio] (>=3.2.1,<4.0.0)", "black (==22.10.0)", "coverage[toml] (>=6.5.0,<8.0)", "databases[sqlite] (>=0.3.2,<0.7.0)", "email-validator (>=1.1.1,<2.0.0)", "flask (>=1.1.2,<3.0.0)", "httpx (>=0.23.0,<0.24.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.982)", "orjson (>=3.2.1,<4.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "peewee (>=3.13.3,<4.0.0)", "pytest (>=7.1.3,<8.0.0)", "python-jose[cryptography] (>=3.3.0,<4.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "pyyaml (>=5.3.1,<7.0.0)", "ruff (==0.0.138)", "sqlalchemy (>=1.3.18,<1.4.43)", "types-orjson (==3.6.2)", "types-ujson (==5.6.0.0)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)"]
 
 [[package]]
 name = "h11"
 version = "0.14.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -225,7 +225,7 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 name = "idna"
 version = "3.4"
 description = "Internationalized Domain Names in Applications (IDNA)"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.5"
 
@@ -366,7 +366,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 name = "pydantic"
 version = "1.10.4"
 description = "Data validation and settings management using python type hints"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -487,7 +487,7 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 name = "sniffio"
 version = "1.3.0"
 description = "Sniff out which async library your code is running under"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -503,7 +503,7 @@ python-versions = "*"
 name = "starlette"
 version = "0.22.0"
 description = "The little ASGI library that shines."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -589,7 +589,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 name = "uvicorn"
 version = "0.20.0"
 description = "The lightning-fast ASGI server."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
@@ -633,12 +633,12 @@ docs = ["furo", "jaraco.packaging (>=9)", "jaraco.tidelift (>=1.4)", "rst.linker
 testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools", "more-itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.3)", "pytest-flake8", "pytest-mypy (>=0.9.1)"]
 
 [extras]
-webapi = ["fastapi", "uvicorn"]
+webapi = []
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "775a57426dee08bbf10eb13a9a9c89635f67e5a52cd7e2c59e3a45715cb86cdc"
+content-hash = "3a01039eca57210443013b149f3f04e96d6d82d80e30f53507abb2d540da8b6e"
 
 [metadata.files]
 anyio = [
@@ -897,8 +897,8 @@ exceptiongroup = [
     {file = "exceptiongroup-1.1.0.tar.gz", hash = "sha256:bcb67d800a4497e1b404c2dd44fca47d3b7a5e5433dbab67f96c1a685cdfdf23"},
 ]
 fastapi = [
-    {file = "fastapi-0.88.0-py3-none-any.whl", hash = "sha256:263b718bb384422fe3d042ffc9a0c8dece5e034ab6586ff034f6b4b1667c3eee"},
-    {file = "fastapi-0.88.0.tar.gz", hash = "sha256:915bf304180a0e7c5605ec81097b7d4cd8826ff87a02bb198e336fb9f3b5ff02"},
+    {file = "fastapi-0.89.1-py3-none-any.whl", hash = "sha256:f9773ea22290635b2f48b4275b2bf69a8fa721fda2e38228bed47139839dc877"},
+    {file = "fastapi-0.89.1.tar.gz", hash = "sha256:15d9271ee52b572a015ca2ae5c72e1ce4241dd8532a534ad4f7ec70c376a580f"},
 ]
 h11 = [
     {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
