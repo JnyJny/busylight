@@ -1,4 +1,4 @@
-"""
+""" Test initializing instances of Light subclasses
 """
 
 import pytest
@@ -12,14 +12,16 @@ import busylight.lights.embrava.blynclight_mini
 import busylight.lights.embrava.blynclight_plus
 import busylight.lights.kuando.busylight_alpha
 import busylight.lights.kuando.busylight_omega
+import busylight.lights.luxafor.bluetooth
 import busylight.lights.luxafor.flag
 import busylight.lights.luxafor.mute
 import busylight.lights.luxafor.orb
-import busylight.lights.luxafor.bluetooth
+
 
 from . import BOGUS_DEVICE_ID, PHYSICAL_LIGHT_SUBCLASSES, LightType, MockDevice
 
 
+# EJO this test is broken and needs some love.
 @pytest.mark.xfail
 @pytest.mark.parametrize("subclass", PHYSICAL_LIGHT_SUBCLASSES)
 def test_light_instance_init_known_good_lights(subclass: LightType, mocker) -> None:

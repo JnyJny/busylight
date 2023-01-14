@@ -94,6 +94,12 @@ HID_LIGHTS = [
         "vendor_id": 0x04D8,
         "product_id": 0xF372,
         "path": b"/fake/path",
+        "product_string": "BT",
+    },
+    {
+        "vendor_id": 0x04D8,
+        "product_id": 0xF372,
+        "path": b"/fake/path",
         "product_string": "Flag",
     },
     {
@@ -107,12 +113,6 @@ HID_LIGHTS = [
         "product_id": 0xF372,
         "path": b"/fake/path",
         "product_string": "Orb",
-    },
-    {
-        "vendor_id": 0x04D8,
-        "product_id": 0xF372,
-        "path": b"/fake/path",
-        "product_string": "BT",
     },
     {
         "vendor_id": 0x16C0,

@@ -37,7 +37,7 @@ port, which can be used with the supplied adhesive-backed magnet to
 The Luxafor family of lights are [USB HID][H] accessible devices whose
 attributes are controlled by writing an 8 byte packet to the device.
 All four devices share the same product/vendor identifier so they
-are discerned by the embedded product string; Flag, Mute, Orb or BT.
+are discerned by the embedded product string; BT, Flag, Mute, or Orb.
 
 #### Steady Color Command
 ```C

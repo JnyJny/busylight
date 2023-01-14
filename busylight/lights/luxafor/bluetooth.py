@@ -1,5 +1,6 @@
 """ Luxafor Bluetooth
 """
+
 from typing import Dict, Tuple
 
 from .flag import Flag

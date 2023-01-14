@@ -39,7 +39,7 @@ Human Interface Device (HID) application programming interface
 - [Compulab fit-statUSB][9]
 - [Embrava Blynclight Family][2]
 - [Kuando BusyLight Family][3]
-- [Luxafor Flag, Orb, Mute and Bluetooth][4]
+- [Luxafor Bluetooth, Flag, Orb, and Mute][4]
 - [MuteMe MuteMe][7]
 - [MuteSync MuteSync][8]
 - [Plantronics Status Indicator][2]

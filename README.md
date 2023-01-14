@@ -1,4 +1,4 @@
-<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor flag mute orb thingM blink(1) muteme mutesync compulab fit-statusb -->
+<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor bluetooth bt flag mute orb thingM blink(1) muteme mutesync compulab fit-statusb -->
 ![BusyLight Project Logo][LOGO]
 <br>
 ![version][pypi-version]
@@ -39,8 +39,8 @@ Blynclight Plus<sup>14</sup>
 - Control lights via a [Web API][WEBAPI].
 - Import `busylight` into your own Python project.
 - Supported on MacOS and Linux
-- Windows not currently supported.
-- Supports _nine_ vendors & fifteen devices:
+- Windows support is untested but there are reports that it is working.
+- Supports _nine_ vendors & sixteen devices:
 
 | **Vendor** | | | |
 |------------:|---|---|---|
@@ -48,12 +48,11 @@ Blynclight Plus<sup>14</sup>
 | [**Compulab**][8] | fit-statUSB |
 | [**Embrava**][3] | Blynclight | Blynclight Mini | Blynclight Plus |
 | [**Kuando**][4] | Busylight Alpha | BusyLight Omega |
-| [**Luxafor**][5] | Flag | Mute | Orb |
+| [**Luxafor**][5] | Bluetooth | Flag | Mute | Orb |
 | [**Plantronics**][3] | Status Indicator |
 | [**MuteMe**][7] | MuteMe Original | Mute Mini |
 | [**MuteSync**][9] | MuteSync |
 | [**ThingM**][6] | Blink(1) |
-
 
 If you have a USB light that's not on this list open an issue with:
  - the make and model device you want supported

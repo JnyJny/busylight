@@ -1,10 +1,9 @@
 """ Luxafor Flag, Mute and Orb Support
 """
 
+from .bluetooth import Bluetooth
 from .flag import Flag
 from .mute import Mute
 from .orb import Orb
-from .bluetooth import Bluetooth
 
-
-__all__ = ["Flag", "Mute", "Orb", "Bluetooth"]
+__all__ = ["Bluetooth", "Flag", "Mute", "Orb"]
