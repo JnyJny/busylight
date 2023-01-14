@@ -109,6 +109,12 @@ HID_LIGHTS = [
         "product_string": "Orb",
     },
     {
+        "vendor_id": 0x04D8,
+        "product_id": 0xF372,
+        "path": b"/fake/path",
+        "product_string": "BT",
+    },
+    {
         "vendor_id": 0x16C0,
         "product_id": 0x27DB,
         "path": b"/fake/path",

@@ -33,13 +33,13 @@ The following is a technical review of each family of USB-connected
 lights; their capabilties, and difficulties encountered while adding
 support for them. These devices are accessible via the USB
 Human Interface Device (HID) application programming interface
-(API) or via a more traditional USB serial interface. 
+(API) or via a more traditional USB serial interface.
 
 - [Agile Innovative BlinkStick Family][6]
 - [Compulab fit-statUSB][9]
 - [Embrava Blynclight Family][2]
 - [Kuando BusyLight Family][3]
-- [Luxafor Flag, Orb and Mute][4]
+- [Luxafor Flag, Orb, Mute and Bluetooth][4]
 - [MuteMe MuteMe][7]
 - [MuteSync MuteSync][8]
 - [Plantronics Status Indicator][2]
