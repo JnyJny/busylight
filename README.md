@@ -42,8 +42,8 @@ Blynclight Plus<sup>14</sup>
 - Windows support is untested but there are reports that it is working.
 - Supports _nine_ vendors & sixteen devices:
 
-| **Vendor** | | | |
-|------------:|---|---|---|
+| **Vendor** | | | | |
+|------------:|---|---|---|---|
 | [**Agile Innovative**][2] | BlinkStick Square |
 | [**Compulab**][8] | fit-statUSB |
 | [**Embrava**][3] | Blynclight | Blynclight Mini | Blynclight Plus |
