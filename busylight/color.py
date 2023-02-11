@@ -59,20 +59,19 @@ def parse_color_string(value: str, scale: float = 1.0) -> Tuple[int, int, int]:
 
 
 def colortuple_to_name(color: Tuple[int, int, int]) -> str:
-    """Returns a string name of the given Tuple[int, int, int] if found.
+    """Returns a string name of the given Tuple[int, int, int] if found,
+    otherwise returns a normalized string represetnation of a 24-bit
+    hexadecimal number prefaced with an octothorpe.
 
     :color: Tuple[int, int, int]
     :return: str
-
-    Raises:
-    - ColorLookupError
     """
     try:
         return webcolors.rgb_to_name(color)
-    except ValueError as error:
-        logger.error(f"{color} -> {error}")
+    except ValueError:
+        logger.debug(f"No match found for {color}")
 
-    raise ColorLookupError(f"No color mapping for {color}")
+    return webcolors.rgb_to_hex(color)
 
 
 def scale_color(
