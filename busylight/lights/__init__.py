@@ -50,6 +50,8 @@ abc.ABC.__subclasses__ machinery will not find them and your
 new lights will not be recognized.
 """
 
+from loguru import logger
+
 from .light import Light
 from .hidlight import HIDLight
 from .seriallight import SerialLight
@@ -96,3 +98,5 @@ __all__ = [
     "Orb",
     "Status_Indicator",
 ]
+
+logger.disable("busylight.lights")

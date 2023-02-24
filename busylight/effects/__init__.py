@@ -1,6 +1,8 @@
 """Color Effect Generators
 """
 
+from loguru import logger
+
 from .effect import BaseEffect as Effects
 
 from .blink import Blink
@@ -15,3 +17,5 @@ __all__ = [
     "Spectrum",
     "Steady",
 ]
+
+logger.disable("busylight.effects")
