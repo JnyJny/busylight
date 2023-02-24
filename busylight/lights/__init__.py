@@ -76,7 +76,6 @@ __all__ = [
     "Light",
     "HIDLight",
     "SerialLight",
-    "LightNotFound",
     "LightUnavailable",
     "LightUnsupported",
     "NoLightsFound",
