@@ -16,7 +16,7 @@ import busylight.lights.luxafor.bluetooth
 import busylight.lights.luxafor.flag
 import busylight.lights.luxafor.mute
 import busylight.lights.luxafor.orb
-
+import busylight.lights.freemansoft.adafruit_trinkey_neo
 
 from . import BOGUS_DEVICE_ID, PHYSICAL_LIGHT_SUBCLASSES, LightType, MockDevice
 

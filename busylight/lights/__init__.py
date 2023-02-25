@@ -72,6 +72,7 @@ from .muteme import MuteMe, MuteMe_Mini
 from .mutesync import MuteSync
 from .plantronics import Status_Indicator
 from .thingm import Blink1
+from .freemansoft import Adafruit_TrinkeyNeo
 
 
 __all__ = [
@@ -97,6 +98,7 @@ __all__ = [
     "MuteSync",
     "Orb",
     "Status_Indicator",
+    "Adafruit_TrinkeyNeo",
 ]
 
 logger.disable("busylight.lights")

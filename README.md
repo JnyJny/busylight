@@ -4,7 +4,7 @@
 ![version][pypi-version]
 ![monthly-downloads][monthly-downloads]
 ![visits][visits]
-![supported python versions][python-versions] 
+![supported python versions][python-versions]
 ![license][license]
 ![Code style: black][code-style-black]
 <br>
@@ -31,7 +31,7 @@ BlinkStick Square<sup>9</sup>,
 Blynclight Mini<sup>10</sup>,
 MuteMe Original<sup>11</sup>,
 fit-statUSB<sup>12</sup>,
-MuteSync<sup>13</sup>, 
+MuteSync<sup>13</sup>,
 Blynclight Plus<sup>14</sup>
 
 ## Features
@@ -58,7 +58,7 @@ If you have a USB light that's not on this list open an issue with:
  - the make and model device you want supported
  - where I can get one
  - any public hardware documentation you are aware of
- 
+
 Or even better, open a pull request!
 
 ### Gratitude
@@ -72,7 +72,7 @@ Installs only the command-line `busylight` tool and associated
 modules.
 
 ```console
-$ python3 -m pip install busylight-for-humans 
+$ python3 -m pip install busylight-for-humans
 ```
 
 ## Web API Install
@@ -95,7 +95,7 @@ I use the tool [poetry][poetry-docs] to manage various aspects of this project, 
 - publishing packages to PyPi
 
 ```console
-$ python3 -m pip install poetry 
+$ python3 -m pip install poetry
 $ cd path/to/busylight
 $ poetry shell
 <venv> $ poetry install -E webapi
@@ -214,7 +214,7 @@ Adding light support to your own python applications is easy!
 ### Simple Case: Turn On a Single Light
 
 In this example, we pick an Embrava Blynclight to activate with
-the color white. 
+the color white.
 
 ```python
 from busylight.lights.embrava import Blynclight
@@ -224,7 +224,7 @@ light = Blynclight.first_light()
 light.on((255, 255, 255))
 ```
 
-Not sure what light you've got? 
+Not sure what light you've got?
 
 ```python
 from busylight.lights import USBLight
@@ -247,7 +247,7 @@ from busylight.effects import Effects
 manager = LightManager()
 for light in manager.lights:
    print(light.name)
-   
+
 rainbow = Effects.for_name("spectrum")(duty_cycle=0.05)
 
 manager.apply_effect(rainbow)
