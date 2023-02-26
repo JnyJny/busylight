@@ -12,7 +12,7 @@ class Adafruit_TrinkeyNeo(SerialLight):
     @staticmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
-            (0x239A, 0x0080): "Adafruit-TrinkeyNeo",
+            (0x239A, 0x80f0): "Adafruit-TrinkeyNeo",
         }
 
     @staticmethod
