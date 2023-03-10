@@ -39,7 +39,7 @@ httpx = "^0.23.2"
 pytest-mock = "^3.9.0"
 
 [tool.poetry.group.webapi.dependencies]
-uvicorn = "^0.20.0"
+uvicorn = ">=0.20,<0.22"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
