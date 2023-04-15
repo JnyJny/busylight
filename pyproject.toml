@@ -29,6 +29,45 @@ anyio = {extras = ["trio"], version = "^3.6.2"}
 busylight="busylight.__main__:cli"
 busyserve="busylight.__main__:webcli"
 
+[tool.poe.tasks]
+
+# testing
+_generate_coverage = "pytest --cov=./busylight --cov-report=html"
+_open_report = "open htmlcov/index.html"
+coverage = [ "_generate_coverage", "_open_report"]
+
+mypy = "mypy --config-file pyproject.toml busylight"
+
+# update
+
+_patch_bump = "poetry version patch"
+_minor_bump = "poetry version minor"
+_major_bump = "poetry version major"
+
+_tag = { shell = "git tag `poetry version -s`" }
+_add = "git add pyproject.tml"
+_commit = {shell = "git commit -m `poetry version -s`"}
+_push = "git push --all"
+
+_update_git = ["_tag", "_add", "_commit", "_push"]
+
+_patch_update = ["_patch_bump", "_update_git"]
+_minor_update = ["_minor_bump", "_update_git"]
+_major_update = ["_major_bump", "_update_git"]
+
+# publish
+
+_publish = "poetry publish"
+
+publish_patch = ["_patch_update", "_publish"]
+publish_minor = ["_minor_update", "_publish"]
+publish_major = ["_major_update", "_publish"]
+
+# clean
+[[tool.poe.tasks.clean]]
+cmd = "rm -rf htmlcov dist busylight.egg-info *.log"
+
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^7"
 black = ">=22.12,<24.0"
@@ -37,12 +76,14 @@ mypy = ">=0.991,<1.3"
 requests = "^2.28.1"
 httpx = ">=0.23.2,<0.25.0"
 pytest-mock = "^3.9.0"
+poethepoet = "^0.19.0"
 
 [tool.poetry.group.webapi.dependencies]
 uvicorn = ">=0.20,<0.22"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
