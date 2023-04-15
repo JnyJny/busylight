@@ -38,11 +38,21 @@ coverage = [ "_generate_coverage", "_open_report"]
 
 mypy = "mypy --config-file pyproject.toml busylight"
 
+# requirements
+
+
+requirements = [
+ { cmd = "poetry export -o requirements.txt" },
+ { cmd = "git add requirements.txt" },
+ { cmd = "git commit -m 'requirements.txt updated from poetry.lock'"},
+]
+
 # update
 
 _patch_bump = "poetry version patch"
 _minor_bump = "poetry version minor"
 _major_bump = "poetry version major"
+
 
 _tag = { shell = "git tag `poetry version -s`" }
 _add = "git add pyproject.tml"
@@ -62,6 +72,7 @@ _publish = "poetry publish"
 publish_patch = ["_patch_update", "_publish"]
 publish_minor = ["_minor_update", "_publish"]
 publish_major = ["_major_update", "_publish"]
+
 
 # clean
 [[tool.poe.tasks.clean]]
