@@ -16,7 +16,7 @@ pyserial = "^3.5"
 importlib-metadata = {version = ">=4.11.3,<7.0.0", python = "<3.8"}
 loguru = ">=0.6,<0.8"
 typer = ">=0.7,<0.10"
-fastapi = ">=0.95.2,<0.97.0"
+fastapi = ">=0.95.2,<0.98.0"
 hidapi = "^0.14.0"
 
 [tool.poetry.extras]
