@@ -1144,4 +1144,4 @@ webapi = ["fastapi"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.7"
-content-hash = "b0001410668a186edcde84f6d0a1bf215cf42d1a12e2161fe3daaf6c8f3eff05"
+content-hash = "ec939b5f59e05bb4b7e660dfa8a4aa364f051f8e06f73ab23fa2aa00070352d9"
