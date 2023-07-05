@@ -22,7 +22,7 @@ hidapi = "^0.14.0"
 webapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.dev-dependencies]
-anyio = {extras = ["trio"], version = "^3.6.2"}
+anyio = {extras = ["trio"], version = "^3.7.1"}
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
