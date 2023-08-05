@@ -111,6 +111,7 @@ class BusylightAPI(FastAPI):
         lights = self.lights if light_id is None else [self.lights[light_id]]
 
         for light in lights:
+            light.cancel_tasks()
             light.off()
 
     async def apply_effect(self, effect: Effects, light_id: int = None) -> None:
