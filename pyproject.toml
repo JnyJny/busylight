@@ -15,14 +15,14 @@ webcolors = "^1.11.1"
 pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 typer = ">=0.7,<0.10"
-fastapi = ">=0.95.2,<0.99.0"
+fastapi = ">=0.95.2,<0.101.0"
 hidapi = "^0.14.0"
 
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.dev-dependencies]
-anyio = {extras = ["trio"], version = "^3.6.2"}
+anyio = {extras = ["trio"], version = "^3.7.1"}
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
