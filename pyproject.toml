@@ -15,7 +15,7 @@ webcolors = "^1.11.1"
 pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 typer = ">=0.7,<0.10"
-fastapi = ">=0.95.2,<0.101.0"
+fastapi = ">=0.95.2,<0.102.0"
 hidapi = "^0.14.0"
 
 [tool.poetry.extras]
