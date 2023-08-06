@@ -53,7 +53,7 @@ _major_bump = "poetry version major"
 
 # add, commit, tag and commit updated pyproject
 
-_add = "git add pyproject.tml"
+_add = "git add pyproject.toml"
 _commit = {shell = "git commit -m `poetry version -s`"}
 _tag = { shell = "git tag `poetry version -s`" }
 _push = "git push --all"
