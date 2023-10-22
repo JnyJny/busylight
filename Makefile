@@ -1,11 +1,10 @@
+# EJO - 22 Oct 2023: deprecated, please use poe rules in pyproject.toml
 
 TARGET=busylight
-
 
 PYPROJECT= pyproject.toml
 
 .PHONY: docs/busylight.1.md \
-        docs/busyserve.1.md \
 	docs \
         MAJOR MINOR PATCH \
         major minor patch \
@@ -38,16 +37,11 @@ PATCH:
 	@poetry version patch
 
 
-docs: docs/busylight.1.md docs/busyserve.1.md
+docs: docs/busylight.1.md
 
 docs/busylight.1.md:
 	@typer $(TARGET).__main__ utils docs --name busylight --output $@
 	@sed -i '' -e  "s///g" $@
-
-docs/busyserve.1.md:
-	@typer --app webapi $(TARGET).__main__ utils docs --name busyserve --output $@
-	@sed -i '' -e  "s///g" $@
-
 
 update:
 	@git add $(PYPROJECT)
