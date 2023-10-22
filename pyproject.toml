@@ -25,7 +25,6 @@ anyio = {extras = ["trio"], version = "^3.7.1"}
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
-busyserve="busylight.__main__:webcli"
 
 [tool.poe.tasks]
 
