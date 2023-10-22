@@ -20,9 +20,6 @@ hidapi = "^0.14.0"
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
 
-[tool.poetry.dev-dependencies]
-anyio = {extras = ["trio"], version = "^3.7.1"}
-
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
 
@@ -85,6 +82,7 @@ pytest-cov = ">=3,<5"
 mypy = ">=0.991,<1.5"
 pytest-mock = "^3.9.0"
 poethepoet = "^0.19.0"
+anyio = "^3.7"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
