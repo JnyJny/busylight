@@ -9,16 +9,13 @@ repository = "https://github.com/JnyJny/busylight.git"
 packages = [ {include = "busylight"} ]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 bitvector-for-humans = "^0.14.0"
 webcolors = "^1.11.1"
 pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 typer = ">=0.7,<0.10"
 hidapi = "^0.14.0"
-
-[tool.poetry.extras]
-webapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
