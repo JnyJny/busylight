@@ -14,8 +14,8 @@ from pydantic import ValidationError
     "path,expected_exception",
     [
         ("foo", None),
-        (1, None),
-        (3.145, None),
+        (1, ValidationError),
+        (3.145, ValidationError),
         ({"foo": 1}, ValidationError),
         (None, ValidationError),
         ([], ValidationError),
