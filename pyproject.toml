@@ -66,8 +66,9 @@ _add = "git add pyproject.toml"
 _commit = {shell = "git commit -m `poetry version -s`"}
 _tag = { shell = "git tag `poetry version -s`" }
 _push = "git push --all"
+_push_tags = "git push --tags"
 
-_update_pyproject = ["_add", "_commit", "_tag", "_push"]
+_update_pyproject = ["_add", "_commit", "_tag", "_push_tags", "_push"]
 
 _patch_update = ["_patch_bump", "_update_pyproject"]
 _minor_update = ["_minor_bump", "_update_pyproject"]
