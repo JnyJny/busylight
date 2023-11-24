@@ -16,8 +16,13 @@ pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 typer = ">=0.7,<0.10"
 hidapi = "^0.14.0"
-fastapi = {version = "^0.104.1", extras = ["webapi"]}
-uvicorn = {version = "^0.24.0.post1", extras = ["webapi"]}
+
+[tool.poetry.group.webapi]
+optional = true
+
+[tool.poetry.group.webapi.dependencies]
+fastapi = "^0.104.1"
+uvicorn = "^0.24.0.post1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7"
