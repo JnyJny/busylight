@@ -7,6 +7,8 @@ import hid
 
 from loguru import logger
 
+from .hid import enumerate as hid_enumerate
+from .hid import Device as hid_device
 from .light import Light, LightInfo
 
 from .exceptions import LightUnavailable
@@ -34,7 +36,7 @@ class HIDLight(Light):
     def available_lights(cls) -> List[LightInfo]:
 
         available = []
-        for hidinfo in hid.enumerate():
+        for hidinfo in hid_enumerate():
             try:
                 hidinfo["device_id"] = (hidinfo["vendor_id"], hidinfo["product_id"])
             except KeyError as error:
@@ -76,17 +78,18 @@ class HIDLight(Light):
         return rules
 
     @property
-    def device(self) -> hid.device:
-        """A hid.device instance configured for use with this device.
+    def device(self):
+        """A busylight.lights.hid.Device instance configured for use
+        with this device.
 
-        The device is not necessarily open until the acquire method
-        has been called successfully.
+        The device is not open until the acquire method has been
+        called successfully.
         """
         try:
             return self._device
         except AttributeError:
             pass
-        self._device: hid.device = hid.device(*self.device_id)
+        self._device: hid_device = hid_device()
         return self._device
 
     @property
