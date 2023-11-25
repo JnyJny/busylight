@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "busylight-for-humans"
-version = "0.26.1"
+version = "0.27.6"
 description = "Control USB connected LED lights, like a human."
 authors = ["JnyJny <erik.oshaughnessy@gmail.com>"]
 license = "Apache-2.0"
@@ -16,6 +16,22 @@ pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 typer = ">=0.7,<0.10"
 hidapi = "^0.14.0"
+fastapi = { version = "^0.104.1", optional = true}
+uvicorn = { version = "^0.24.0.post1", optional = true }
+
+[tool.poetry.extras]
+webapi = ["fastapi", "uvicorn"]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7"
+black = ">=22.12,<24.0"
+pytest-cov = ">=3,<5"
+mypy = ">=0.991,<1.5"
+requests = "^2.28.1"
+httpx = ">=0.23.2,<0.25.0"
+pytest-mock = "^3.9.0"
+poethepoet = "^0.19.0"
+anyio = {extras = ["trio"], version = "^3.7.1"}
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
@@ -49,20 +65,24 @@ _add = "git add pyproject.toml"
 _commit = {shell = "git commit -m `poetry version -s`"}
 _tag = { shell = "git tag `poetry version -s`" }
 _push = "git push --all"
+_push_tags = "git push --tags"
 
-_update_pyproject = ["_add", "_commit", "_tag", "_push"]
+_update_pyproject = ["_add", "_commit", "_tag", "_push_tags", "_push"]
 
 _patch_update = ["_patch_bump", "_update_pyproject"]
 _minor_update = ["_minor_bump", "_update_pyproject"]
 _major_update = ["_major_bump", "_update_pyproject"]
 
+# build
+_build = "poetry build"
+
 # publish
 
 _publish = "poetry publish"
 
-publish_patch = ["_patch_update", "_publish"]
-publish_minor = ["_minor_update", "_publish"]
-publish_major = ["_major_update", "_publish"]
+publish_patch = ["_patch_update", "_build", "_publish"]
+publish_minor = ["_minor_update", "_build", "_publish"]
+publish_major = ["_major_update", "_build", "_publish"]
 
 publish = {ref = "publish_patch"}
 
@@ -71,15 +91,6 @@ publish = {ref = "publish_patch"}
 [[tool.poe.tasks.clean]]
 cmd = "rm -rf htmlcov dist busylight.egg-info *.log"
 
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7"
-black = ">=22.12,<24.0"
-pytest-cov = ">=3,<5"
-mypy = ">=0.991,<1.5"
-pytest-mock = "^3.9.0"
-poethepoet = "^0.19.0"
-anyio = "^3.7"
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings"
