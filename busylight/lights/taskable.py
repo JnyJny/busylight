@@ -5,6 +5,8 @@ import asyncio
 
 from typing import Any, Awaitable, Dict, Optional
 
+from loguru import logger
+
 
 class TaskableMixin:
     """This mixin class is designed to associate and manage
@@ -18,7 +20,13 @@ class TaskableMixin:
             return self._event_loop
         except AttributeError:
             pass
-        self._event_loop = asyncio.get_event_loop()
+        try:
+            self._event_loop = asyncio.get_event_loop()
+        except Exception as error:
+            logger.debug("get_event_loop raised {error}")
+            self._event_loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self._event_loop)
+
         return self._event_loop
 
     @property
