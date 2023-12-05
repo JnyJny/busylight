@@ -484,39 +484,40 @@ setuptools = ">=19.0"
 
 [[package]]
 name = "httpcore"
-version = "0.17.3"
+version = "1.0.2"
 description = "A minimal low-level HTTP client."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "httpcore-0.17.3-py3-none-any.whl", hash = "sha256:c2789b767ddddfa2a5782e3199b2b7f6894540b17b16ec26b2c4d8e103510b87"},
-    {file = "httpcore-0.17.3.tar.gz", hash = "sha256:a6f30213335e34c1ade7be6ec7c47f19f50c56db36abef1a9dfa3815b1cb3888"},
+    {file = "httpcore-1.0.2-py3-none-any.whl", hash = "sha256:096cc05bca73b8e459a1fc3dcf585148f63e534eae4339559c9b8a8d6399acc7"},
+    {file = "httpcore-1.0.2.tar.gz", hash = "sha256:9fc092e4799b26174648e54b74ed5f683132a464e95643b226e00c2ed2fa6535"},
 ]
 
 [package.dependencies]
-anyio = ">=3.0,<5.0"
 certifi = "*"
 h11 = ">=0.13,<0.15"
-sniffio = "==1.*"
 
 [package.extras]
+asyncio = ["anyio (>=4.0,<5.0)"]
 http2 = ["h2 (>=3,<5)"]
 socks = ["socksio (==1.*)"]
+trio = ["trio (>=0.22.0,<0.23.0)"]
 
 [[package]]
 name = "httpx"
-version = "0.24.1"
+version = "0.25.2"
 description = "The next generation HTTP client."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "httpx-0.24.1-py3-none-any.whl", hash = "sha256:06781eb9ac53cde990577af654bd990a4949de37a28bdb4a230d434f3a30b9bd"},
-    {file = "httpx-0.24.1.tar.gz", hash = "sha256:5853a43053df830c20f8110c5e69fe44d035d850b2dfe795e196f00fdb774bdd"},
+    {file = "httpx-0.25.2-py3-none-any.whl", hash = "sha256:a05d3d052d9b2dfce0e3896636467f8a5342fb2b902c819428e1ac65413ca118"},
+    {file = "httpx-0.25.2.tar.gz", hash = "sha256:8b8fcaa0c8ea7b05edd69a094e63a2094c4efcb48129fb757361bc423c0ad9e8"},
 ]
 
 [package.dependencies]
+anyio = "*"
 certifi = "*"
-httpcore = ">=0.15.0,<0.18.0"
+httpcore = "==1.*"
 idna = "*"
 sniffio = "*"
 
@@ -528,13 +529,13 @@ socks = ["socksio (==1.*)"]
 
 [[package]]
 name = "idna"
-version = "3.4"
+version = "3.6"
 description = "Internationalized Domain Names in Applications (IDNA)"
 optional = false
 python-versions = ">=3.5"
 files = [
-    {file = "idna-3.4-py3-none-any.whl", hash = "sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2"},
-    {file = "idna-3.4.tar.gz", hash = "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4"},
+    {file = "idna-3.6-py3-none-any.whl", hash = "sha256:c05567e9c24a6b9faaa835c4821bad0590fbb9d5779e7caa6e1cc4978e7eb24f"},
+    {file = "idna-3.6.tar.gz", hash = "sha256:9ecdbbd083b06798ae1e86adcbfe8ab1479cf864e4ee30fe4e46a003d12491ca"},
 ]
 
 [[package]]
@@ -672,13 +673,13 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "4.0.0"
+version = "4.1.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "platformdirs-4.0.0-py3-none-any.whl", hash = "sha256:118c954d7e949b35437270383a3f2531e99dd93cf7ce4dc8340d3356d30f173b"},
-    {file = "platformdirs-4.0.0.tar.gz", hash = "sha256:cb633b2bcf10c51af60beb0ab06d2f1d69064b43abf4c185ca6b28865f3f9731"},
+    {file = "platformdirs-4.1.0-py3-none-any.whl", hash = "sha256:11c8f37bcca40db96d8144522d925583bdb7a31f7b0e37e3ed4318400a8e2380"},
+    {file = "platformdirs-4.1.0.tar.gz", hash = "sha256:906d548203468492d432bcb294d4bc2fff751bf84971fbb2c10918cc206ee420"},
 ]
 
 [package.extras]
@@ -1146,4 +1147,4 @@ webapi = ["fastapi", "uvicorn"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "8f2747c182ad592644900861376d038d09e21dbf31c13cceb81dcf420188a7e4"
+content-hash = "9bed6e0d42c2850906e271f68cd3530e3d60abdc5124edcce92dacf3bab80fe0"
