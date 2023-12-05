@@ -31,10 +31,10 @@ black = ">=22.12,<24.0"
 pytest-cov = ">=3,<5"
 mypy = ">=0.991,<1.5"
 requests = "^2.28.1"
-httpx = ">=0.23.2,<0.25.0"
 pytest-mock = "^3.9.0"
 poethepoet = "^0.19.0"
 anyio = {extras = ["trio"], version = "^3.7.1"}
+httpx = "^0.25.2"
 
 [tool.poe.tasks]
 
