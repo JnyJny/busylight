@@ -16,8 +16,8 @@ import hid
 # not the same.
 #
 # I picked the trezor/cython-hidapi package for HID support because it
-# does not require the user additional non-Python software.  The
-# pyhidapi package is a ctypes interface to the hidapi shared object
+# does not require the user to install additional non-Python software.
+# The pyhidapi package is a ctypes interface to the hidapi shared object
 # which the user must install in an operation separate from the `pip
 # install`.
 #
