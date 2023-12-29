@@ -1,7 +1,7 @@
 """
 """
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import hid
 
@@ -45,7 +45,7 @@ class Device:
         self,
         vendor_id: int,
         product_id: int,
-        serial_number: str = None,
+        serial_number: Optional[str] = None,
     ) -> None:
         """Open the first device matching vendor_id and product_id or serial number."""
         if self._handle:
@@ -69,7 +69,7 @@ class Device:
         except AttributeError:
             raise IOError("device not open") from None
 
-    def read(self, nbytes: int, timeout_ms: int = None) -> List[int]:
+    def read(self, nbytes: int, timeout_ms: Optional[int] = None) -> List[int]:
         """Read nbytes from the device, returns a list of ints."""
         try:
             return self._handle.read(nbytes, timeout_ms)

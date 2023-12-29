@@ -2,7 +2,7 @@
 """
 
 from enum import IntEnum
-from typing import Tuple
+from typing import Tuple, Optional
 
 from bitvector import BitField, BitVector
 
@@ -68,7 +68,7 @@ class Instruction(BitVector):
     def Jump(
         cls,
         target: int = 0,
-        color: Tuple[int, int, int] = None,
+        color: Optional[Tuple[int, int, int]] = None,
         repeat: int = 0,
         on_time: int = 0,
         off_time: int = 0,

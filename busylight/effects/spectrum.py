@@ -4,7 +4,7 @@
 import math
 
 from itertools import cycle
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from ..color import scale_color
 from .effect import BaseEffect
@@ -18,8 +18,8 @@ class Spectrum(BaseEffect):
         duty_cycle: float,
         scale: float = 1.0,
         steps: int = 64,
-        frequency: Tuple[float, float, float] = None,
-        phase: Tuple[int, int, int] = None,
+        frequency: Optional[Tuple[float, float, float]] = None,
+        phase: Optional[Tuple[int, int, int]] = None,
         center: int = 128,
         width: int = 127,
     ) -> None:

@@ -42,7 +42,7 @@ class BaseEffect(abc.ABC):
         """
         casefolded_name = name.casefold()
         for subclass in cls.subclasses():
-            if subclass.__name__.casefold() == casefolded_name:
+            if subclass.__class__.__name__.casefold() == casefolded_name:
                 return subclass
         else:
             raise ValueError(f"Unknown effect {name}")

@@ -78,7 +78,7 @@ class HIDLight(Light):
         return rules
 
     @property
-    def device(self):
+    def device(self) -> hid_device:
         """A busylight.lights.hid.Device instance configured for use
         with this device.
 

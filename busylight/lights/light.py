@@ -12,6 +12,7 @@ to know specifics of the particular device attached to the computer.
 
 """
 
+from __future__ import annotations
 
 import abc
 import asyncio
@@ -75,7 +76,7 @@ class Light(abc.ABC, TaskableMixin):
     def supported_lights(cls) -> Dict[str, List[str]]:
         """Returns a dictionary of supported light names organized by vendor."""
 
-        supported_lights = {}
+        supported_lights: Dict[str, List[str]] = {}
 
         if cls._is_physical():
             supported_lights.setdefault(cls.vendor(), cls.unique_device_names())
@@ -228,10 +229,10 @@ class Light(abc.ABC, TaskableMixin):
         if cls._is_physical():
             return list(set(cls.supported_device_ids().values()))
 
-        names = []
+        names: List[str] = []
         for subclass in cls.subclasses():
             names.extend(subclass.unique_device_names())
-        return names
+        return sorted(names)
 
     @staticmethod
     @abc.abstractmethod
@@ -244,10 +245,11 @@ class Light(abc.ABC, TaskableMixin):
     def udev_rules(cls, mode: int = 0o0666) -> List[str]:
         """Returns a list of Linux UDEV subsystem rules for supported devices."""
 
-        rules = []
+        rules: List[str] = []
 
         for subclass in cls.__subclasses__():
             rules.extend(subclass.udev_rules(mode=mode))
+
         return rules
 
     def __init__(
@@ -306,7 +308,13 @@ class Light(abc.ABC, TaskableMixin):
             self.reset()
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(..., reset={self._reset}, exclusive={self._exclusive})"
+
+        return "{}(light_info={!r}, reset={}, exclusive={})".format(
+            self.__class__.__name__,
+            self.info,
+            self._reset,
+            self._exclusive,
+        )
 
     def __str__(self) -> str:
         return self.name
@@ -516,7 +524,7 @@ class Light(abc.ABC, TaskableMixin):
             raise ValueError(f"unable to set color {new_value!r}: {error}") from None
 
     @contextmanager
-    def exclusive_access(self) -> None:
+    def exclusive_access(self) -> Generator[Light, None, None]:
         """If the light is NOT in exclusive mode:
         - acquires the device for I/O
         - performs the I/O
@@ -533,7 +541,7 @@ class Light(abc.ABC, TaskableMixin):
             self.acquire()
             logger.info(f"Acquired for {self}")
 
-        yield
+        yield self
 
         if not self._exclusive:
             logger.info(f"Releasing device for {self}")

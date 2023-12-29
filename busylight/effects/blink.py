@@ -2,7 +2,7 @@
 """
 
 from itertools import cycle
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from .effect import BaseEffect
 
@@ -12,7 +12,7 @@ class Blink(BaseEffect):
         self,
         on_color: Tuple[int, int, int],
         duty_cycle: float,
-        off_color: Tuple[int, int, int] = None,
+        off_color: Optional[Tuple[int, int, int]] = None,
     ) -> None:
         """This effect turns a light on and off with the specified color(s),
         pausing for `duty_cycle` seconds in between each operation.

@@ -22,7 +22,7 @@ class Mute(Flag):
     @property
     def button_on(self) -> bool:
 
-        results = self.read_strategy(8, 200)
+        results = self.read_strategy(8, timeout_ms=200)
 
         try:
             if results[0] == 66:

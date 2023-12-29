@@ -51,7 +51,7 @@ class MuteMe(HIDLight):
 
         # EJO No reason for eight, just a power of two.
         try:
-            nbytes = self.device.send_feature_report([0] * 8)
+            nbytes = self.device.send_feature_report(bytes([0] * 8))
             return nbytes == 8
         except ValueError:
             pass
