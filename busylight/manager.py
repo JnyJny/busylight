@@ -4,7 +4,7 @@
 import asyncio
 
 from contextlib import suppress
-from typing import Dict, List, Optional, Union, Tuple
+from typing import Dict, List, Optional, Union, Tuple, TypeVar
 from loguru import logger
 
 from .effects import Effects
@@ -43,7 +43,7 @@ class LightManager:
                         lights.append(int(target))
         return list(set(lights))
 
-    def __init__(self, greedy: bool = True, lightclass: type = None):
+    def __init__(self, greedy: bool = True, lightclass: Optional[type] = None):
         """
         :greedy: bool
         :lightclass: Light or subclass
@@ -89,7 +89,7 @@ class LightManager:
         self.release()
 
     @property
-    def lightclass(self) -> Light:
+    def lightclass(self) -> type[Light]:
         """Light subclass used to locate lights, read-only."""
         return getattr(self, "_lightclass", Light)
 
@@ -103,7 +103,7 @@ class LightManager:
         self._lights = list(self.lightclass.all_lights(reset=False))
         return self._lights
 
-    def selected_lights(self, indices: List[int] = None) -> List[Light]:
+    def selected_lights(self, indices: Optional[List[int]] = None) -> List[Light]:
         """Return a list of Lights matching the list of `indices`.
 
         If `indices` is empty, all managed lights are returned.
@@ -180,8 +180,8 @@ class LightManager:
     def on(
         self,
         color: Tuple[int, int, int],
-        light_ids: List[int] = None,
-        timeout: float = None,
+        light_ids: Optional[List[int]] = None,
+        timeout: Optional[float] = None,
     ) -> None:
         """Turn on all the lights whose indices are in the `lights` list.
 
@@ -199,8 +199,8 @@ class LightManager:
         self,
         color: Tuple[int, int, int],
         lights: List[Light],
-        timeout: float = None,
-        wait: bool = True,
+        timeout: Optional[float] = None,
+        wait: Optional[bool] = True,
     ) -> None:
         """Async monitor for activating specified lights with the given color.
 
@@ -225,8 +225,8 @@ class LightManager:
     def apply_effect(
         self,
         effect: Effects,
-        light_ids: List[int] = None,
-        timeout: float = None,
+        light_ids: Optional[List[int]] = None,
+        timeout: Optional[float] = None,
     ) -> None:
         """Applies the given `effect` to all of the lights whose indices are
         in the `lights` list.
@@ -246,8 +246,8 @@ class LightManager:
         self,
         effect: Effects,
         lights: List[Light],
-        timeout: float = None,
-        wait: bool = True,
+        timeout: Optional[float] = None,
+        wait: Optional[bool] = True,
     ) -> None:
         """Builds a list of awaitable coroutines to perform the given `effect`
         on each of the `lights` and awaits the exit of the coroutines (which
@@ -273,7 +273,7 @@ class LightManager:
             if pending:
                 raise TimeoutError(f"Effect {effect} timed out {timeout}")
 
-    def off(self, lights: List[int] = None) -> None:
+    def off(self, lights: Optional[List[int]] = None) -> None:
         """Turn off all the lights whose indices are in the `lights` list.
 
         :lights: List[int]
