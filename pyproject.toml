@@ -9,7 +9,8 @@ repository = "https://github.com/JnyJny/busylight.git"
 packages = [ {include = "busylight"} ]
 
 [tool.poetry.scripts]
-busylight="busylight.__main__:cli"
+busylight = "busylight.__main__:cli"
+
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -19,10 +20,8 @@ pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 typer = { version = ">=0.7,<0.10", optional = true }
 webcolors = {version = "^1.11.1", optional = true }
-fastapi = { version = "^0.104.1", optional = true}
 
 [tool.poetry.extras]
-webapi = ["fastapi", "uvicorn"]
 cli = ["typer", "webcolors"]
 
 [tool.poetry.group.dev.dependencies]
@@ -32,6 +31,7 @@ mypy = ">=0.991,<1.5"
 pytest-mock = "^3.9.0"
 poethepoet = "^0.24.4"
 black = "^23.12.1"
+
 
 [tool.poe.tasks]
 
