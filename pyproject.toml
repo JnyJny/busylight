@@ -15,23 +15,23 @@ webcolors = "^1.11.1"
 pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 hidapi = "^0.14.0"
-fastapi = { version = ">=0.104.1,<0.109.0", optional = true}
-uvicorn = { version = ">=0.24,<0.28", optional = true }
 typer = "^0.12.3"
+fastapi = { version = "^0.111.0", optional = true }
+uvicorn = { version = ">=0.24,<0.28", optional = true }
 
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7,<9"
-black = ">=22.12,<24.0"
 pytest-cov = ">=3,<5"
 mypy = ">=0.991,<1.9"
 requests = "^2.28.1"
 pytest-mock = "^3.9.0"
-anyio = {extras = ["trio"], version = ">=3.7.1,<5.0.0"}
 httpx = ">=0.25.2,<0.27.0"
-poethepoet = "^0.24.4"
+black = "^24.4.2"
+poethepoet = "^0.26.1"
+anyio = "^4.3.0"
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
