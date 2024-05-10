@@ -14,10 +14,10 @@ bitvector-for-humans = "^0.14.0"
 webcolors = "^1.11.1"
 pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
-typer = ">=0.7,<0.10"
 hidapi = "^0.14.0"
 fastapi = { version = ">=0.104.1,<0.109.0", optional = true}
 uvicorn = { version = ">=0.24,<0.28", optional = true }
+typer = "^0.12.3"
 
 [tool.poetry.extras]
 webapi = ["fastapi", "uvicorn"]
