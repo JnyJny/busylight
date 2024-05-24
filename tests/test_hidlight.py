@@ -95,8 +95,6 @@ def test_hidlight_first_light_offline_good(light_info, mocker) -> None:
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_hidlight_claims_offline_claimed(light_info) -> None:
 
-    light_info["device_id"] = (light_info["vendor_id"], light_info["product_id"])
-
     result = HIDLight.claims(light_info)
 
     assert result
@@ -105,9 +103,8 @@ def test_hidlight_claims_offline_claimed(light_info) -> None:
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_hidlight_claims_offline_not_claimed(light_info):
 
-    light_info["device_id"] = (light_info["vendor_id"], light_info["product_id"])
-
     result = HIDLight.claims(light_info)
+
     assert not result
 
 

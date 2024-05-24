@@ -11,7 +11,7 @@ from busylight.lights import NoLightsFound
 
 from serial.tools.list_ports_common import ListPortInfo
 
-from . import HID_LIGHTS, SERIAL_LIGHTS, MockDevice
+from . import HID_LIGHTS, SERIAL_LIGHTS, NOT_A_LIGHT, MockDevice
 
 
 def listportinfo(light_info: dict) -> ListPortInfo:
@@ -130,19 +130,16 @@ def test_seriallight_first_light_offline_good(light_info, mocker) -> None:
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_claims_offline_claimed(light_info) -> None:
 
-    light_info["device_id"] = (light_info["vendor_id"], light_info["product_id"])
-
     result = SerialLight.claims(light_info)
 
     assert result
 
 
-@pytest.mark.parametrize("light_info", HID_LIGHTS)
+@pytest.mark.parametrize("light_info", HID_LIGHTS + NOT_A_LIGHT)
 def test_seriallight_claims_offline_not_claimed(light_info):
 
-    light_info["device_id"] = (light_info["vendor_id"], light_info["product_id"])
-
     result = SerialLight.claims(light_info)
+
     assert not result
 
 
