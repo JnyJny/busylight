@@ -8,7 +8,7 @@ import busylight.lights.hidlight
 from busylight.lights.hidlight import HIDLight
 from busylight.lights import NoLightsFound
 
-from . import HID_LIGHTS, SERIAL_LIGHTS, MockDevice
+from . import HID_LIGHTS, SERIAL_LIGHTS, NOT_A_LIGHT, MockDevice
 
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
@@ -100,7 +100,7 @@ def test_hidlight_claims_offline_claimed(light_info) -> None:
     assert result
 
 
-@pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
+@pytest.mark.parametrize("light_info", SERIAL_LIGHTS + NOT_A_LIGHT)
 def test_hidlight_claims_offline_not_claimed(light_info):
 
     result = HIDLight.claims(light_info)
