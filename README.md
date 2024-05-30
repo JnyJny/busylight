@@ -222,7 +222,7 @@ Adding light support to your own python applications is easy!
 
 In this example, we pick an Embrava Blynclight to activate with
 the color white. Colors are specified as a three-tuple of integers
-that range from 0 to 255 and represent the red, green, and blue
+that range from 0 to 255 and represent red, green, and blue
 in that order.
 
 ```python
