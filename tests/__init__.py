@@ -90,6 +90,20 @@ HID_LIGHTS = [
     },
     {
         "vendor_id": 0x27BB,
+        "product_id": 0x3BCB,
+        "device_id": (0x27BB, 0x3BCA),
+        "path": b"/fake/path",
+        "product_string": "Busylight Alpha",
+    },
+    {
+        "vendor_id": 0x27BB,
+        "product_id": 0x3BCE,
+        "device_id": (0x27BB, 0x3BCA),
+        "path": b"/fake/path",
+        "product_string": "Busylight Alpha",
+    },
+    {
+        "vendor_id": 0x27BB,
         "product_id": 0x3BCD,
         "device_id": (0x27BB, 0x3BCD),
         "path": b"/fake/path",
