@@ -157,39 +157,46 @@ Now you can use the web API endpoints which return JSON payloads:
 ```console
   $ curl -s http://localhost:8000/lights/status | jq
   ...
+  
   $ curl -s http://localhost:8000/light/0/status | jq
   ...
+  
   $ curl -s http://localhost:8000/light/0/on | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "green",
-	"rgb": [0, 128, 0]
+    "rgb": [0, 128, 0]
   }
+  
   $ curl -s http://localhost:8000/light/0/off | jq
   {
     "light_id": 0,
     "action": "off"
   }
+  
   $ curl -s http://localhost:8000/light/0/on?color=purple | jq
   {
     "light_id": 0,
     "action": "on",
     "color": "purple",
-	"rgb": [128, 0, 128]
+    "rgb": [128, 0, 128]
   }
+  
   $ curl -s http://localhost:8000/lights/on | jq
   {
     "light_id": "all",
     "action": "on",
     "color": "green",
-	"rgb", [0, 128, 0]
+    "rgb", [0, 128, 0]
   }
+  
   $ curl -s http://localhost:8000/lights/off | jq
   {
     "light_id": "all",
     "action": "off"
   }
+  
   $ curl -s http://localhost:8000/lights/rainbow | jq
   {
     "light_id": "all",
@@ -214,7 +221,9 @@ Adding light support to your own python applications is easy!
 ### Simple Case: Turn On a Single Light
 
 In this example, we pick an Embrava Blynclight to activate with
-the color white. 
+the color white. Colors are specified as a three-tuple of integers
+that range from 0 to 255 and represent the red, green, and blue
+in that order.
 
 ```python
 from busylight.lights.embrava import Blynclight
@@ -222,16 +231,20 @@ from busylight.lights.embrava import Blynclight
 light = Blynclight.first_light()
 
 light.on((255, 255, 255))
+
+light.off()
 ```
 
-Not sure what light you've got? 
+Not sure what light you've got? No problem!
 
 ```python
-from busylight.lights import USBLight
+from busylight.lights import Light
 
-light = USBLight.first_light()
+light = Light.first_light()
 
 light.on((0xff, 0, 0xff))
+
+light.off()
 ```
 
 ### Slightly More Complicated
