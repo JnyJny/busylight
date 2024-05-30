@@ -19,8 +19,8 @@ class Busylight_Alpha(HIDLight):
         return {
             (0x04D8, 0xF848): "Busylight Alpha",
             (0x27BB, 0x3BCA): "Busylight Alpha",
-            (0x27BB, 0x3BCE): "Busylight Alpha",
             (0x27BB, 0x3BCB): "Busylight Alpha",
+            (0x27BB, 0x3BCE): "Busylight Alpha",
         }
 
     @staticmethod
