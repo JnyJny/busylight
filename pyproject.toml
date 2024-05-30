@@ -24,7 +24,7 @@ webapi = ["fastapi", "uvicorn"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7,<9"
-pytest-cov = ">=3,<5"
+pytest-cov = ">=3,<6"
 mypy = ">=0.991,<1.9"
 requests = "^2.28.1"
 pytest-mock = "^3.9.0"
