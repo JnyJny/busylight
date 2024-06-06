@@ -11,7 +11,7 @@ packages = [ {include = "busylight"} ]
 [tool.poetry.dependencies]
 python = "^3.8"
 bitvector-for-humans = "^0.14.0"
-webcolors = "^1.11.1"
+webcolors = ">=1.11.1,<25.0.0"
 pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 hidapi = "^0.14.0"
