@@ -2,7 +2,6 @@
 """
 
 import asyncio
-
 from typing import Any, Awaitable, Dict, Optional
 
 
@@ -44,8 +43,6 @@ class TaskableMixin:
             return task
         except KeyError:
             pass
-
-        name += f"-{id(self)}"
 
         # >py3.7, create_task takes a `name` parameter
         self.tasks[name] = self.event_loop.create_task(coroutine(self))
