@@ -12,22 +12,12 @@ to know specifics of the particular device attached to the computer.
 
 """
 
-
 import abc
 import asyncio
-
+import platform
 from contextlib import contextmanager
 from functools import lru_cache
-from typing import (
-    Any,
-    Callable,
-    Generator,
-    Dict,
-    List,
-    Tuple,
-    Type,
-    Union,
-)
+from typing import Any, Callable, Dict, Generator, List, Tuple, Type, Union
 
 from loguru import logger
 
@@ -37,7 +27,6 @@ from .exceptions import (
     LightUnsupported,
     NoLightsFound,
 )
-
 from .taskable import TaskableMixin
 
 LightType = Type["Light"]
@@ -549,7 +538,10 @@ class Light(abc.ABC, TaskableMixin):
         - LightUnavailable
         """
 
-        data = bytes(self)
+        if platform.system() == "Windows":
+            data = bytes([0x00]) + bytes(self)
+        else:
+            data = bytes(self)
 
         with self.exclusive_access():
             try:
