@@ -15,7 +15,7 @@ webcolors = ">=1.11.1,<25.0.0"
 pyserial = "^3.5"
 loguru = ">=0.6,<0.8"
 hidapi = "^0.14.0"
-typer = ">=0.12.3,<0.15.0"
+typer = ">=0.12.3,<0.16.0"
 fastapi = { version = ">=0.111,<0.116", optional = true }
 uvicorn = { version = ">=0.24,<0.33", optional = true }
 
