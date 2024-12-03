@@ -354,6 +354,16 @@ class Light(abc.ABC, TaskableMixin):
         self.cancel_tasks()
 
     @property
+    def platform(self) -> str:
+        """The operating system name."""
+        try:
+            return self._platform
+        except AttributeError:
+            pass
+        self._platform: str = platform.system()
+        return self._platform
+
+    @property
     def device_id(self) -> Tuple[int, int]:
         """A tuple of integer vendor and product identfiers."""
         try:
@@ -538,7 +548,7 @@ class Light(abc.ABC, TaskableMixin):
         - LightUnavailable
         """
 
-        if platform.system() == "Windows":
+        if self.platform == "Windows":
             data = bytes([0x00]) + bytes(self)
         else:
             data = bytes(self)
