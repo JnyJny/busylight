@@ -2,22 +2,18 @@
 """
 
 import pytest
-
-from busylight.effects import Effects
-from busylight.effects import Blink
-from busylight.effects import Gradient
-from busylight.effects import Spectrum
-from busylight.effects import Steady
+from busylight.effects import Blink, Effects, Gradient, Spectrum, Steady
 
 
 def test_effects_classmethod_subclasses():
 
     subclasses = Effects.subclasses()
-    assert isinstance(subclasses, list)
-    for subclass in subclasses:
+    assert isinstance(subclasses, dict)
+    for name, subclass in subclasses.items():
+        assert name == subclass.__name__.casefold()
         assert issubclass(subclass, Effects)
         result = subclass.subclasses()
-        assert isinstance(result, list)
+        assert isinstance(result, dict)
 
 
 @pytest.mark.parametrize(
