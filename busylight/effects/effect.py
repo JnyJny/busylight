@@ -1,12 +1,11 @@
 """
 """
 
-
 import abc
 import asyncio
-
+from functools import lru_cache
 from itertools import cycle
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 from loguru import logger
 
@@ -14,20 +13,25 @@ from ..lights import Light
 
 
 class BaseEffect(abc.ABC):
+
     @classmethod
-    def subclasses(cls) -> List["BaseEffect"]:
-        """Returns a list of Effect subclasses."""
-        subclasses = []
+    @lru_cache
+    def subclasses(cls) -> Dict[str, "BaseEffect"]:
+        """Returns a dictionary of Effect subclasses, keyed by name."""
+        subclasses = {}
         if cls is BaseEffect:
             for subclass in cls.__subclasses__():
-                subclasses.extend(subclass.subclasses())
+                subclasses.update(subclass.subclasses())
             logger.info(f"{cls.__name__} found {len(subclasses)}")
             return subclasses
 
-        subclasses.append(cls)
+        subclasses.setdefault(cls.__name__.casefold(), cls)
+
         for subclass in cls.__subclasses__():
-            subclasses.extend(subclass.subclasses())
+            subclasses.update(subclass.subclasses())
+
         logger.info(f"{cls.__name__} found {len(subclasses)}")
+
         return subclasses
 
     @classmethod
@@ -40,12 +44,11 @@ class BaseEffect(abc.ABC):
         Raises:
         - ValueError for unknown effect names.
         """
-        casefolded_name = name.casefold()
-        for subclass in cls.subclasses():
-            if subclass.__name__.casefold() == casefolded_name:
-                return subclass
-        else:
-            raise ValueError(f"Unknown effect {name}")
+
+        try:
+            return cls.subclasses()[name.casefold()]
+        except KeyError:
+            raise ValueError(f"Unknown effect {name}") from None
 
     def __repr__(self) -> str:
 
