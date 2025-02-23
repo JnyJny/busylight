@@ -40,7 +40,7 @@ Blynclight Plus<sup>14</sup>
 - Import `busylight` into your own Python project.
 - Supported on MacOS and Linux
 - Windows support is untested but there are reports that it is working.
-- Supports _ten vendors & seventeen devices:
+- Supports _ten_ vendors & seventeen devices:
 
 | **Vendor** | | | | |
 |------------:|---|---|---|---|
