@@ -40,11 +40,12 @@ Blynclight Plus<sup>14</sup>
 - Import `busylight` into your own Python project.
 - Supported on MacOS and Linux
 - Windows support is untested but there are reports that it is working.
-- Supports _nine_ vendors & sixteen devices:
+- Supports _ten vendors & seventeen devices:
 
 | **Vendor** | | | | |
 |------------:|---|---|---|---|
 | [**Agile Innovative**][2] | BlinkStick Square |
+| [**Busy Tag**][10] | Busy Tag |
 | [**Compulab**][8] | fit-statUSB |
 | [**Embrava**][3] | Blynclight | Blynclight Mini | Blynclight Plus |
 | [**Kuando**][4] | Busylight Alpha | BusyLight Omega |
@@ -280,6 +281,7 @@ manager.off()
 [7]: https://github.com/JnyJny/busylight/blob/master/docs/devices/muteme.md
 [8]: https://github.com/JnyJny/busylight/blob/master/docs/devices/compulab.md
 [9]: https://github.com/JnyJny/busylight/blob/master/docs/devices/mutesync.md
+[10]: https://github.com/JnyJny/busylight/blob/master/docs/devices/busytag.md
 
 [LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightForHumans.png
 [HELP]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
