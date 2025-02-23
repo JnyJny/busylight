@@ -64,6 +64,7 @@ from .exceptions import (
 )
 
 from .agile_innovative import BlinkStick
+from .busytag import BusyTag
 from .compulab import Fit_StatUSB
 from .embrava import Blynclight, Blynclight_Mini, Blynclight_Plus
 from .kuando import Busylight_Alpha, Busylight_Omega
@@ -72,7 +73,6 @@ from .muteme import MuteMe, MuteMe_Mini
 from .mutesync import MuteSync
 from .plantronics import Status_Indicator
 from .thingm import Blink1
-from .siabusytag import SiaBusyTag
 
 
 __all__ = [
@@ -90,6 +90,7 @@ __all__ = [
     "Blynclight_Plus",
     "Busylight_Alpha",
     "Busylight_Omega",
+    "BusyTag",
     "Fit_StatUSB",
     "Flag",
     "Mute",
@@ -97,7 +98,6 @@ __all__ = [
     "MuteMe_Mini",
     "MuteSync",
     "Orb",
-    "SiaBusyTag",
     "Status_Indicator",
 ]
 
