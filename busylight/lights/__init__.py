@@ -72,6 +72,7 @@ from .muteme import MuteMe, MuteMe_Mini
 from .mutesync import MuteSync
 from .plantronics import Status_Indicator
 from .thingm import Blink1
+from .siabusytag import SiaBusyTag
 
 
 __all__ = [
@@ -96,6 +97,7 @@ __all__ = [
     "MuteMe_Mini",
     "MuteSync",
     "Orb",
+    "SiaBusyTag",
     "Status_Indicator",
 ]
 
