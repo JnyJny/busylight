@@ -4,6 +4,6 @@ https://www.busy-tag.com/
 
 """
 
-from .busy_tag import BusyTag
+from .busytag import BusyTag
 
 __all__ = ["BusyTag"]
