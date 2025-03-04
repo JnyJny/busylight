@@ -361,6 +361,8 @@ class Light(abc.ABC, TaskableMixin):
         except AttributeError:
             pass
         self._platform: str = platform.system()
+        if self._platform == "Windows":
+            self._platform += f"_{platform.release()}"
         return self._platform
 
     @property
@@ -548,10 +550,9 @@ class Light(abc.ABC, TaskableMixin):
         - LightUnavailable
         """
 
-        if self.platform == "Windows":
-            data = bytes([0x00]) + bytes(self)
-        else:
-            data = bytes(self)
+        data = bytes(self)
+        if self.platform in ["Windows_10"]:
+            data = bytes([0x00]) + data
 
         with self.exclusive_access():
             try:
