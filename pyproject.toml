@@ -9,7 +9,7 @@ repository = "https://github.com/JnyJny/busylight.git"
 packages = [ {include = "busylight"} ]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.9,<4.0"
 bitvector-for-humans = "^0.14.0"
 webcolors = ">=1.11.1,<25.0.0"
 pyserial = "^3.5"
@@ -33,6 +33,7 @@ poethepoet = ">=0.26.1,<0.31.0"
 anyio = "^4.3.0"
 isort = "^5.13.2"
 httpx = "^0.28.0"
+poetry-plugin-shell = "^1.0.1"
 
 [tool.poetry.scripts]
 busylight="busylight.__main__:cli"
