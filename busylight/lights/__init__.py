@@ -73,6 +73,7 @@ from .muteme import MuteMe, MuteMe_Mini
 from .mutesync import MuteSync
 from .plantronics import Status_Indicator
 from .thingm import Blink1
+from .epos import EPOSBusylight
 
 
 __all__ = [
@@ -99,6 +100,7 @@ __all__ = [
     "MuteSync",
     "Orb",
     "Status_Indicator",
+    "EPOSBusylight"
 ]
 
 logger.disable("busylight.lights")
