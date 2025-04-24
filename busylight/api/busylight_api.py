@@ -397,6 +397,7 @@ async def blink_light(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    count: int | None = None,
 ) -> Dict[str, Any]:
     """Start blinking the specified light: color and off.
 
@@ -405,11 +406,13 @@ async def blink_light(
 
     The `color` can be a color name or a hexadecimal string: red,
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
+
+    `count` is the number of times to blink the light.
     """
 
     rgb = parse_color_string(color, dim)
 
-    effect = Effects.for_name("blink")(rgb, speed.duty_cycle)
+    effect = Effects.for_name("blink")(rgb, speed.duty_cycle, count=count)
 
     await busylightapi.apply_effect(effect, light_id)
 
@@ -420,6 +423,7 @@ async def blink_light(
         "rgb": rgb,
         "speed": speed,
         "dim": dim,
+        "count": count,
     }
 
 
@@ -431,6 +435,7 @@ async def blink_lights(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    count: int | None = None,
 ) -> Dict[str, Any]:
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
@@ -438,7 +443,7 @@ async def blink_lights(
 
     rgb = parse_color_string(color, dim)
 
-    blink = Effects.for_name("blink")(rgb, speed.duty_cycle)
+    blink = Effects.for_name("blink")(rgb, speed.duty_cycle, count=count)
 
     await busylightapi.apply_effect(blink)
 
@@ -449,6 +454,7 @@ async def blink_lights(
         "rgb": rgb,
         "speed": speed,
         "dim": dim,
+        "count": count,
     }
 
 
@@ -514,17 +520,20 @@ async def flash_light_impressively(
     color_b: str = "blue",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    count: int | None = None,
 ) -> Dict[str, Any]:
     """Flash the specified light impressively [default: red/blue].
 
     `light_id` is an integer value identifying a light and ranges
     between zero and number_of_lights-1.
+
+    `count` is the number of times to blink the light.
     """
 
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
+    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count)
 
     await busylightapi.apply_effect(fli, light_id)
 
@@ -535,6 +544,7 @@ async def flash_light_impressively(
         "speed": speed,
         "color": color_a,
         "dim": dim,
+        "count": count,
     }
 
 
@@ -547,13 +557,14 @@ async def flash_lights_impressively(
     color_b: str = "blue",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    count: int | None = None,
 ):
     """Flash all lights impressively [default: red/blue]"""
 
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b)
+    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count)
 
     await busylightapi.apply_effect(fli)
 
@@ -564,6 +575,7 @@ async def flash_lights_impressively(
         "speed": speed,
         "color": color_a,
         "dim": dim,
+        "count": count,
     }
 
 
@@ -576,15 +588,18 @@ async def pulse_light(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    count: int | None = None,
 ) -> Dict[str, Any]:
     """Pulse a light with a specified color [default: red].
 
     `light_id` is an integer value identifying a light and ranges
     between zero and number_of_lights-1.
+
+    `count` is the number of times to blink the light.
     """
     rgb = parse_color_string(color, dim)
 
-    throb = Effects.for_name("Gradient")(rgb, speed.duty_cycle / 16, 8)
+    throb = Effects.for_name("Gradient")(rgb, speed.duty_cycle / 16, 8, count=count)
 
     await busylightapi.apply_effect(throb, light_id)
 
@@ -596,6 +611,7 @@ async def pulse_light(
         "rgb": rgb,
         "speed": speed,
         "dim": dim,
+        "count": count,
     }
 
 
@@ -607,12 +623,13 @@ async def pulse_lights(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    count: int | None = None,
 ):
     """Pulse all lights with a color [default: red]."""
 
     rgb = parse_color_string(color, dim)
 
-    throb = Effects.for_name("Gradient")(rgb, speed.duty_cycle / 16, 8)
+    throb = Effects.for_name("Gradient")(rgb, speed.duty_cycle / 16, 8, count=count)
 
     await busylightapi.apply_effect(throb)
 
@@ -624,4 +641,5 @@ async def pulse_lights(
         "speed": speed,
         "rgb": rgb,
         "dim": dim,
+        "count": count,
     }

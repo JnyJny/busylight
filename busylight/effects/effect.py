@@ -4,7 +4,7 @@
 import abc
 import asyncio
 from functools import lru_cache
-from itertools import cycle
+from itertools import cycle, islice
 from typing import Dict, List, Tuple
 
 from loguru import logger
@@ -73,6 +73,15 @@ class BaseEffect(abc.ABC):
         self._duty_cycle = seconds
 
     @property
+    def count(self) -> int | None:
+        """Number of cycles to run the effect for [default: infinite]."""
+        return getattr(self, "_count", None)
+
+    @count.setter
+    def count(self, count: int | None) -> None:
+        self._count = count
+
+    @property
     @abc.abstractmethod
     def colors(self) -> List[Tuple[int, int, int]]:
         """A list of color tuples."""
@@ -82,6 +91,8 @@ class BaseEffect(abc.ABC):
 
         :param light: Light
         """
-        for color in cycle(self.colors):
+        cycle_count = self.count * len(self.colors) if self.count is not None else None
+        for color in islice(cycle(self.colors), cycle_count):
             light.on(color)
             await asyncio.sleep(self.duty_cycle)
+        light.off()

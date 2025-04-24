@@ -176,11 +176,14 @@ def blink_lights(
         Speed.Slow,
         show_default=True,
     ),
+    count: int | None = typer.Argument(
+        None, show_default="no limit"
+    ),
 ) -> None:
     """Blink light on and off."""
     logger.info("blinking lights")
 
-    blink = Effects.for_name("blink")(color, speed.duty_cycle)
+    blink = Effects.for_name("blink")(color, speed.duty_cycle, count=count)
 
     try:
         manager.apply_effect(blink, ctx.obj.lights, timeout=ctx.obj.timeout)
@@ -219,10 +222,13 @@ def pulse_lights(
         "red", callback=string_to_scaled_color, show_default=True
     ),
     speed: Speed = typer.Argument(Speed.Slow, show_default=True),
+    count: int | None = typer.Argument(
+        None, show_default="no limit"
+    ),
 ) -> None:
     """Pulse light on and off."""
     logger.info("applying gradient effect")
-    throb = Effects.for_name("gradient")(color, speed.duty_cycle / 16, 8)
+    throb = Effects.for_name("gradient")(color, speed.duty_cycle / 16, 8, count=count)
     try:
         manager.apply_effect(throb, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
@@ -246,10 +252,13 @@ def flash_lights_impressively(
         show_default=True,
     ),
     speed: Speed = typer.Argument(Speed.Slow),
+    count: int | None = typer.Argument(
+        None, show_default="no limit"
+    ),
 ) -> None:
     """Flash lights impressively between two colors."""
     logger.info("applying fli effect")
-    fli = Effects.for_name("blink")(color_a, speed.duty_cycle / 10, off_color=color_b)
+    fli = Effects.for_name("blink")(color_a, speed.duty_cycle / 10, off_color=color_b, count=count)
 
     try:
         manager.apply_effect(fli, ctx.obj.lights, timeout=ctx.obj.timeout)
