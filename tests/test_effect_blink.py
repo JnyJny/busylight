@@ -7,15 +7,15 @@ from busylight.effects import Blink
 
 
 @pytest.mark.parametrize(
-    "on_color,duty_cycle,off_color",
+    "on_color,duty_cycle,off_color,count",
     [
-        ((255, 255, 255), 0.22, None),
-        ((128, 255, 32), 0.22, (32, 32, 32)),
+        ((255, 255, 255), 0.22, None, 3),
+        ((128, 255, 32), 0.22, (32, 32, 32), None),
     ],
 )
-def test_blink_init(on_color, duty_cycle, off_color) -> None:
+def test_blink_init(on_color, duty_cycle, off_color, count) -> None:
 
-    instance = Blink(on_color, duty_cycle, off_color)
+    instance = Blink(on_color, duty_cycle, off_color, count)
 
     assert instance.name == "Blink"
 
@@ -25,6 +25,7 @@ def test_blink_init(on_color, duty_cycle, off_color) -> None:
     assert isinstance(instance, Blink)
     assert instance.on_color == on_color
     assert instance.duty_cycle == duty_cycle
+    assert instance.count == count
 
     assert on_color in instance.colors
     assert repr(on_color) in repr_result

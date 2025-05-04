@@ -11,7 +11,8 @@ from .effect import BaseEffect
 class Gradient(BaseEffect):
     """This effect will produce a color range from black to the
     given color and then back to black again with the given number
-    of steps between off and on.
+    of steps between off and on. If count is given (and is not None),
+    the light will go through this sequence count times.
     """
 
     def __init__(
@@ -19,11 +20,13 @@ class Gradient(BaseEffect):
         color: Tuple[int, int, int],
         duty_cycle: float,
         step: int = 1,
+        count = None,
     ) -> None:
         """
         :param color: Tuple[int,int,int]
         :param duty_cycle: float
         :param step: int
+        :param count: int defaults to None, indicating no limit.
         """
 
         self.color = color
@@ -31,6 +34,7 @@ class Gradient(BaseEffect):
         # XXX need to choose steps that make sense for scaled colors
         #     where the max(color) << 255
         self.step = max(0, min(step, 255))
+        self.count = count
 
     @property
     def colors(self) -> List[Tuple[int, int, int]]:

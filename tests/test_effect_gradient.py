@@ -7,14 +7,14 @@ from busylight.effects import Gradient
 
 
 @pytest.mark.parametrize(
-    "color,duty_cycle,step",
+    "color,duty_cycle,step,count",
     [
-        ((255, 255, 255), 0.5, 1),
+        ((255, 255, 255), 0.5, 1, None),
     ],
 )
-def test_effect_gradient_init(color, duty_cycle, step) -> None:
+def test_effect_gradient_init(color, duty_cycle, step, count) -> None:
 
-    instance = Gradient(color, duty_cycle, step)
+    instance = Gradient(color, duty_cycle, step, count)
 
     repr_result = repr(instance)
     str_result = str(instance)
@@ -24,6 +24,7 @@ def test_effect_gradient_init(color, duty_cycle, step) -> None:
 
     assert instance.duty_cycle == duty_cycle
     assert instance.step == step
+    assert instance.count == count
 
     assert instance.name in repr_result
     assert instance.name in str_result
