@@ -31,7 +31,7 @@ pytest-mock = "^3.9.0"
 black = "^24.4.2"
 poethepoet = ">=0.26.1,<0.31.0"
 anyio = "^4.3.0"
-isort = "^5.13.2"
+isort = ">=5.13.2,<7.0.0"
 httpx = "^0.28.0"
 poetry-plugin-shell = "^1.0.1"
 
