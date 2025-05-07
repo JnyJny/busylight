@@ -73,13 +73,17 @@ class BaseEffect(abc.ABC):
         self._duty_cycle = seconds
 
     @property
-    def count(self) -> int | None:
-        """Number of cycles to run the effect for [default: infinite]."""
-        return getattr(self, "_count", None)
+    def count(self) -> int:
+        """Number of cycles to run the effect.
+
+        A count less than or equal to zero means run indefinitely.
+        """
+        return getattr(self, "_count", 0)
 
     @count.setter
-    def count(self, count: int | None) -> None:
-        self._count = count
+    def count(self, count: int) -> None:
+        self._count = int(count)
+
 
     @property
     @abc.abstractmethod
@@ -91,8 +95,14 @@ class BaseEffect(abc.ABC):
 
         :param light: Light
         """
-        cycle_count = self.count * len(self.colors) if self.count is not None else None
+
+        if self.count > 0:
+            cycle_count = self.count * len(self.colors)
+        else:
+            cycle_count = None
+        
         for color in islice(cycle(self.colors), cycle_count):
             light.on(color)
             await asyncio.sleep(self.duty_cycle)
+            
         light.off()

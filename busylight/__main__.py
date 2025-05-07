@@ -7,17 +7,14 @@ from os import environ
 from typing import List, Optional, Tuple
 
 import typer
-
 from loguru import logger
 
-from .speed import Speed
-from .lights import NoLightsFound
+from . import __version__
 from .color import ColorLookupError, parse_color_string
 from .effects import Effects
+from .lights import Light, NoLightsFound
 from .manager import LightManager
-from . import __version__
-
-from .lights import Light
+from .speed import Speed
 
 cli = typer.Typer()
 
@@ -170,14 +167,17 @@ def turn_lights_off(ctx: typer.Context) -> None:
 def blink_lights(
     ctx: typer.Context,
     color: Optional[str] = typer.Argument(
-        "red", callback=string_to_scaled_color, show_default=True
+        "red",
+        callback=string_to_scaled_color,
+        show_default=True,
     ),
     speed: Speed = typer.Argument(
         Speed.Slow,
         show_default=True,
     ),
-    count: int | None = typer.Argument(
-        None, show_default="no limit"
+    count: int = typer.Argument(
+        0,
+        show_default="no limit",
     ),
 ) -> None:
     """Blink light on and off."""
@@ -219,11 +219,17 @@ def rainbow_lights(
 def pulse_lights(
     ctx: typer.Context,
     color: Optional[str] = typer.Argument(
-        "red", callback=string_to_scaled_color, show_default=True
+        "red",
+        callback=string_to_scaled_color,
+        show_default=True,
     ),
-    speed: Speed = typer.Argument(Speed.Slow, show_default=True),
-    count: int | None = typer.Argument(
-        None, show_default="no limit"
+    speed: Speed = typer.Argument(
+        Speed.Slow,
+        show_default=True,
+    ),
+    count: int = typer.Argument(
+        0,
+        show_default="no limit",
     ),
 ) -> None:
     """Pulse light on and off."""
@@ -251,14 +257,24 @@ def flash_lights_impressively(
         callback=string_to_scaled_color,
         show_default=True,
     ),
-    speed: Speed = typer.Argument(Speed.Slow),
-    count: int | None = typer.Argument(
-        None, show_default="no limit"
+    speed: Speed = typer.Argument(
+        Speed.Slow,
+        show_default=True,
+    ),
+    count: int = typer.Argument(
+        0,
+        show_default="no limit",
     ),
 ) -> None:
     """Flash lights impressively between two colors."""
     logger.info("applying fli effect")
-    fli = Effects.for_name("blink")(color_a, speed.duty_cycle / 10, off_color=color_b, count=count)
+
+    fli = Effects.for_name("blink")(
+        color_a,
+        speed.duty_cycle / 10,
+        off_color=color_b,
+        count=count,
+    )
 
     try:
         manager.apply_effect(fli, ctx.obj.lights, timeout=ctx.obj.timeout)
@@ -342,7 +358,7 @@ def list_supported_lights(
             for (vid, pid), name in subclass.supported_device_ids().items()
         ]
 
-        for (vid, pid, name) in sorted(devices, key=lambda entry: entry[2]):
+        for vid, pid, name in sorted(devices, key=lambda entry: entry[2]):
             typer.secho("  - ", nl=False)
             typer.secho(f"0x{vid:04x}:0x{pid:04x}", fg="blue", nl=False)
             typer.secho(f" {name}", fg="green")

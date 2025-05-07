@@ -1,32 +1,31 @@
 """a smooth color gradient for a given color.
 """
 
-
 from itertools import cycle
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from .effect import BaseEffect
 
 
 class Gradient(BaseEffect):
-    """This effect will produce a color range from black to the
-    given color and then back to black again with the given number
-    of steps between off and on. If count is given (and is not None),
-    the light will go through this sequence count times.
+    """This effect will produce a color range from black to the given
+    color and then back to black again with the given number of steps
+    between off and on. If count is given and is greater than zero the
+    light will cycle thru the sequence count times.
     """
 
     def __init__(
         self,
         color: Tuple[int, int, int],
         duty_cycle: float,
-        step: int = 1,
-        count = None,
+        step: Optional[int] = 1,
+        count: Optional[int] = 0,
     ) -> None:
         """
         :param color: Tuple[int,int,int]
         :param duty_cycle: float
-        :param step: int
-        :param count: int defaults to None, indicating no limit.
+        :param step: int defaults to 1.
+        :param count: int defaults to 0, indicating no limit.
         """
 
         self.color = color

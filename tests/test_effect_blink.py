@@ -10,7 +10,7 @@ from busylight.effects import Blink
     "on_color,duty_cycle,off_color,count",
     [
         ((255, 255, 255), 0.22, None, 3),
-        ((128, 255, 32), 0.22, (32, 32, 32), None),
+        ((128, 255, 32), 0.22, (32, 32, 32), 0),
     ],
 )
 def test_blink_init(on_color, duty_cycle, off_color, count) -> None:

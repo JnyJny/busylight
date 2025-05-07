@@ -2,14 +2,14 @@
 """
 
 import pytest
-
 from busylight.effects import Gradient
 
 
 @pytest.mark.parametrize(
     "color,duty_cycle,step,count",
     [
-        ((255, 255, 255), 0.5, 1, None),
+        ((255, 255, 255), 0.5, 1, 0),
+        ((255, 255, 255), 0.5, 1, 1),
     ],
 )
 def test_effect_gradient_init(color, duty_cycle, step, count) -> None:
