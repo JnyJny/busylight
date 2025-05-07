@@ -201,10 +201,14 @@ def rainbow_lights(
         Speed.Slow,
         show_default=True,
     ),
+    count: int = typer.Argument(
+        0,
+        show_default="no limit",
+    ),
 ) -> None:
     """Display rainbow colors on specified lights."""
     logger.info("applying rainbow effect")
-    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=ctx.obj.dim)
+    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=ctx.obj.dim, count=count)
 
     try:
         manager.apply_effect(rainbow, ctx.obj.lights, timeout=ctx.obj.timeout)
