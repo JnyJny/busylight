@@ -1,29 +1,24 @@
 """BusyLight API
 """
 
+from json import loads as json_loads
 from os import environ
 from secrets import compare_digest
-from typing import Callable, List, Dict, Any
+from typing import Any, Callable, Dict, List
 
 from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from json import loads as json_loads
 from loguru import logger
 
 from .. import __version__
 from ..__main__ import GlobalOptions
-
-from ..color import parse_color_string, colortuple_to_name, ColorLookupError
+from ..color import ColorLookupError, colortuple_to_name, parse_color_string
 from ..effects import Effects
-from ..lights import Light
-from ..lights import LightUnavailable, NoLightsFound
+from ..lights import Light, LightUnavailable, NoLightsFound
 from ..speed import Speed
-
-
-from .models import LightOperation, LightDescription, EndPoint
-
+from .models import EndPoint, LightDescription, LightOperation
 
 __description__ = """
 <!-- markdown formatted for HTML rendering -->
@@ -155,6 +150,7 @@ class BusylightAPI(FastAPI):
 
 
 busylightapi = BusylightAPI()
+
 
 ## Startup & Shutdown
 ##
@@ -397,7 +393,7 @@ async def blink_light(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
-    count: int | None = None,
+    count: int = 0,
 ) -> Dict[str, Any]:
     """Start blinking the specified light: color and off.
 
@@ -435,7 +431,7 @@ async def blink_lights(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
-    count: int | None = None,
+    count: int = 0,
 ) -> Dict[str, Any]:
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
@@ -520,7 +516,7 @@ async def flash_light_impressively(
     color_b: str = "blue",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
-    count: int | None = None,
+    count: int = 0,
 ) -> Dict[str, Any]:
     """Flash the specified light impressively [default: red/blue].
 
@@ -533,7 +529,9 @@ async def flash_light_impressively(
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count)
+    fli = Effects.for_name("blink")(
+        rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count
+    )
 
     await busylightapi.apply_effect(fli, light_id)
 
@@ -557,14 +555,16 @@ async def flash_lights_impressively(
     color_b: str = "blue",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
-    count: int | None = None,
+    count: int = 0,
 ):
     """Flash all lights impressively [default: red/blue]"""
 
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
-    fli = Effects.for_name("blink")(rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count)
+    fli = Effects.for_name("blink")(
+        rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count
+    )
 
     await busylightapi.apply_effect(fli)
 
@@ -588,7 +588,7 @@ async def pulse_light(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
-    count: int | None = None,
+    count: int = 0,
 ) -> Dict[str, Any]:
     """Pulse a light with a specified color [default: red].
 
@@ -623,7 +623,7 @@ async def pulse_lights(
     color: str = "red",
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
-    count: int | None = None,
+    count: int = 0,
 ):
     """Pulse all lights with a color [default: red]."""
 
