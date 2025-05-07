@@ -2,7 +2,7 @@
 """
 
 from itertools import cycle
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 from .effect import BaseEffect
 
@@ -18,8 +18,8 @@ class Gradient(BaseEffect):
         self,
         color: Tuple[int, int, int],
         duty_cycle: float,
-        step: Optional[int] = 1,
-        count: Optional[int] = 0,
+        step: int = 1,
+        count: int = 0,
     ) -> None:
         """
         :param color: Tuple[int,int,int]

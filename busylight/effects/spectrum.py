@@ -1,8 +1,8 @@
 """ rainbows are fun!
 
 """
-import math
 
+import math
 from itertools import cycle
 from typing import List, Tuple
 
@@ -22,6 +22,7 @@ class Spectrum(BaseEffect):
         phase: Tuple[int, int, int] = None,
         center: int = 128,
         width: int = 127,
+        count: int = 0,
     ) -> None:
         """
         The `scale` parameter scales the intensity of the generated colors.
@@ -42,6 +43,7 @@ class Spectrum(BaseEffect):
         self.phase = phase or (0, 2, 4)
         self.center = center
         self.width = width
+        self.count = count
 
     @property
     def colors(self) -> List[Tuple[int, int, int]]:

@@ -13,7 +13,7 @@ class Blink(BaseEffect):
         on_color: Tuple[int, int, int],
         duty_cycle: float,
         off_color: Optional[Tuple[int, int, int]] = None,
-        count: Optional[int] = 0,
+        count: int = 0,
     ) -> None:
         """This effect turns a light on and off with the specified color(s),
         pausing for `duty_cycle` seconds in between each operation. If count is
