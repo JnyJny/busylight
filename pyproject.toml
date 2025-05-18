@@ -17,6 +17,25 @@ dependencies = [
     "typer>=0.15.4",
     "webcolors>=24.11.1",
 ]
+[project]
+...
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Development Status :: 4 - Beta",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Developers",
+  "Intended Audience :: End Users/Desktop",
+  "Environment :: Console",
+  "Topic :: System :: Hardware",
+  "Topic :: Utilities",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",  
+]
 
 [project.scripts]
 busylight = "busylight.__main__:cli"
