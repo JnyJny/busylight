@@ -33,7 +33,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/busylight"]
+packages = ["busylight"]
 
 [dependency-groups]
 dev = [
@@ -62,22 +62,22 @@ mypy = "mypy --config-file pyproject.toml src/busylight"
 # requirements
 
 requirements = [
- { cmd = "poetry export -o requirements.txt" },
+ { cmd = "uv -q export --output-file requirements.txt" },
  { cmd = "git add requirements.txt" },
- { cmd = "git commit -m 'requirements.txt updated from poetry.lock'"},
+ { cmd = "git commit -m 'requirements.txt updated from uv.lock'"},
 ]
 
 # update version in pyproject
 
-_patch_bump = "poetry version patch"
-_minor_bump = "poetry version minor"
-_major_bump = "poetry version major"
+_patch_bump = "uv version --bump patch"
+_minor_bump = "uv version --bump minor"
+_major_bump = "uv version --bump major"
 
 # add, commit, tag and commit updated pyproject
 
 _add = "git add pyproject.toml"
-_commit = {shell = "git commit -m `poetry version -s`"}
-_tag = { shell = "git tag `poetry version -s`" }
+_commit = {shell = "git commit -m `uv version --short`"}
+_tag = { shell = "git tag `uv version --short`" }
 _push = "git push --all"
 _push_tags = "git push --tags"
 
@@ -88,18 +88,17 @@ _minor_update = ["_minor_bump", "_update_pyproject"]
 _major_update = ["_major_bump", "_update_pyproject"]
 
 # build
-_build = "poetry build"
+_build = "uv build"
 
 # publish
 
-_publish = "poetry publish"
+_publish = "uv publish"
 
 publish_patch = ["_patch_update", "_build", "_publish"]
 publish_minor = ["_minor_update", "_build", "_publish"]
 publish_major = ["_major_update", "_build", "_publish"]
 
 publish = {ref = "publish_patch"}
-
 
 # clean
 [[tool.poe.tasks.clean]]
