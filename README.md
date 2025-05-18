@@ -2,7 +2,7 @@
 ![BusyLight Project Logo][LOGO]
 <br>
 
-[![Test & Publish](https://github.com/JnyJny/busylight/actions/workflows/release.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/release.yaml)
+[![Test & Publish][release-badge]][release]
 ![Version][pypi-version]
 ![Release Date][release-date]
 ![Python Version][python-version]
