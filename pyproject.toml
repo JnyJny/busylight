@@ -57,7 +57,7 @@ _generate_coverage = "pytest --cov=./busylight --cov-report=html"
 _open_report = "open htmlcov/index.html"
 coverage = [ "_generate_coverage", "_open_report"]
 
-mypy = "mypy --config-file pyproject.toml src/busylight"
+mypy = "mypy --config-file pyproject.toml busylight"
 
 # requirements
 
@@ -73,30 +73,19 @@ _patch_bump = "uv version --bump patch"
 _minor_bump = "uv version --bump minor"
 _major_bump = "uv version --bump major"
 
-# add, commit, tag and commit updated pyproject
+# add, commit, tag and commit pyproject updated by bump
 
 _add = "git add pyproject.toml"
-_commit = {shell = "git commit -m `uv version --short`"}
-_tag = { shell = "git tag `uv version --short`" }
+_commit = {shell = "git commit -m v`uv version --short`"}
+_tag = { shell = "git tag v`uv version --short`" }
 _push = "git push --all"
 _push_tags = "git push --tags"
 
 _update_pyproject = ["_add", "_commit", "_tag", "_push_tags", "_push"]
 
-_patch_update = ["_patch_bump", "_update_pyproject"]
-_minor_update = ["_minor_bump", "_update_pyproject"]
-_major_update = ["_major_bump", "_update_pyproject"]
-
-# build
-_build = "uv build"
-
-# publish
-
-_publish = "uv publish"
-
-publish_patch = ["_patch_update", "_build", "_publish"]
-publish_minor = ["_minor_update", "_build", "_publish"]
-publish_major = ["_major_update", "_build", "_publish"]
+publish_patch= ["_patch_bump", "_update_pyproject"]
+publish_minor= ["_minor_bump", "_update_pyproject"]
+publish_major= ["_major_bump", "_update_pyproject"]
 
 publish = {ref = "publish_patch"}
 
