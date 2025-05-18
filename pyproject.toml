@@ -75,7 +75,7 @@ _major_bump = "uv version --bump major"
 
 # add, commit, tag and commit pyproject updated by bump
 
-_add = "git add pyproject.toml"
+_add = "git add pyproject.toml uv.lock"
 _commit = {shell = "git commit -m v`uv version --short`"}
 _tag = { shell = "git tag v`uv version --short`" }
 _push = "git push --all"
