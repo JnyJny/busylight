@@ -17,8 +17,6 @@ dependencies = [
     "typer>=0.15.4",
     "webcolors>=24.11.1",
 ]
-[project]
-...
 classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Development Status :: 4 - Beta",
