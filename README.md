@@ -4,10 +4,10 @@
 
 [![Test & Publish](https://github.com/JnyJny/busylight/actions/workflows/release.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/release.yaml)
 ![version][pypi-version]
-![monthly-downloads][monthly-downloads]
-![supported python versions][python-versions] 
+![Python Version from PEP 621 TOML][python-version]
 ![license][license]
 ![Code style: black][code-style-black]
+![monthly-downloads][monthly-downloads]
 <br>
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
@@ -307,7 +307,7 @@ manager.off()
 
 [code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
-[python-versions]: https://img.shields.io/pypi/pyversions/busylight-for-humans
+[python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmaster%2Fpyproject.toml
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
