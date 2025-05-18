@@ -86,8 +86,10 @@ $ python3 -m pip install busylight-for-humans[webapi]
 
 ## Development Install
 
-I use the tool [poetry][poetry-docs] to manage various aspects of this project, including:
-- dependencies
+I am in the process of switching from [poetry][poetry-docs] to the new hotness [uv][uv-docs].
+
+Like `poetry`, I use `uv` for:
+- dependency management
 - pytest configuration
 - versioning
 - optional dependencies
@@ -95,16 +97,22 @@ I use the tool [poetry][poetry-docs] to manage various aspects of this project, 
 - building packages
 - publishing packages to PyPi
 
+
 ```console
-$ python3 -m pip install poetry 
+$ python3 -m pip install uv
 $ cd path/to/busylight
-$ poetry shell
-<venv> $ poetry install -E webapi
+$ uv venv .venv
+$ source .venv/bin/activate
+<venv> $ uv sync --all-extras
 <venv> $ which busylight
 <venv> $ which busyserve
+<venv> $ pytest
 ```
 
-After installing into the virtual environment, the project is now available in editable mode.  Changes made in the source will be reflected in the runtime behavior when running in the poetry initiated shell.
+After installing into the virtual environment, the project is now
+available in editable mode.  Changes made in the source will be
+reflected in the runtime behavior when running in the poetry initiated
+shell.
 
 ## Linux Post-Install Activities
 
@@ -271,7 +279,6 @@ manager.off()
 
 [0]: https://github.com/JnyJny/busylight
 
-
 <!-- doc links -->
 [2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
 [3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
@@ -287,12 +294,15 @@ manager.off()
 [HELP]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
 [WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
 
+
 <!-- [DEMO]: demo/demo-updated.gif -->
 [DEMO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/HerdOfLights.png
 
+<!-- Miscellaneous -->
 [BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
-
+[poetry-docs]: https://python-poetry.org/docs/
+[uv-docs]: https://docs.astral.sh/uv/
 [todbot]: https://github.com/todbot
 [thingm]: https://thingm.com
 
@@ -304,5 +314,4 @@ manager.off()
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
-[poetry-docs]: https://python-poetry.org/docs/
 [visits]: https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FJnyJny%2Fbusylight&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=Visits&edge_flat=false

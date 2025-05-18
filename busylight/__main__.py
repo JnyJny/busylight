@@ -1,6 +1,4 @@
-"""Busylight command-line interface
-
-"""
+"""Busylight command-line interface"""
 
 from dataclasses import dataclass, field
 from os import environ
@@ -65,7 +63,6 @@ def precommand_callback(
         False,
         "--debug",
         "-D",
-        is_flag=True,
         help="Enable debugging output.",
     ),
     targets: str = typer.Option(
@@ -98,7 +95,6 @@ def precommand_callback(
     version: bool = typer.Option(
         False,
         "--version",
-        is_flag=True,
         is_eager=True,
         callback=report_version,
     ),
@@ -208,7 +204,9 @@ def rainbow_lights(
 ) -> None:
     """Display rainbow colors on specified lights."""
     logger.info("applying rainbow effect")
-    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=ctx.obj.dim, count=count)
+    rainbow = Effects.for_name("spectrum")(
+        speed.duty_cycle / 4, scale=ctx.obj.dim, count=count
+    )
 
     try:
         manager.apply_effect(rainbow, ctx.obj.lights, timeout=ctx.obj.timeout)
@@ -296,7 +294,6 @@ def list_available_lights(
         False,
         "--verbose",
         "-v",
-        is_flag=True,
         help="Shows additional information about each light.",
     ),
 ) -> None:
@@ -333,7 +330,6 @@ def list_supported_lights(
         False,
         "--verbose",
         "-v",
-        is_flag=True,
         help="Print vendor and product identifiers.",
     ),
 ) -> None:
@@ -394,7 +390,7 @@ def generate_udev_rules(
 
 @webcli.command()
 def serve_http_api(
-    debug: bool = typer.Option(False, "--debug", "-D", is_flag=True),
+    debug: bool = typer.Option(False, "--debug", "-D"),
     host: str = typer.Option(
         "0.0.0.0",
         "--host",

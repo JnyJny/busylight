@@ -16,7 +16,7 @@ import abc
 import asyncio
 import platform
 from contextlib import contextmanager
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from typing import Any, Callable, Dict, Generator, List, Tuple, Type, Union
 
 from loguru import logger
@@ -35,21 +35,22 @@ LightInfo = Dict[str, Union[bytes, int, str, Tuple[int, int]]]
 
 
 class Light(abc.ABC, TaskableMixin):
-    """A USB connected device implementing a light, indicator lamp and/or button.
+    """A USB connected device implementing a light, indicator lamp
+    and/or button.
 
-    The Light class supports a very simple device that can be acquired, released,
-    toggled on with a color, toggled off, or queried for it's plugged in state.
+    The Light class supports a very simple device that can be
+    acquired, released, toggled on with a color, toggled off, or
+    queried for it's plugged in state.
 
-    Lists of Light subclasses can be sorted, collating by; vendor name, product
-    name and device path. This generally results in a stable sort until new
-    devices are plugged in.
-
+    Lists of Light subclasses can be sorted, collating by; vendor
+    name, product name and device path. This generally results in a
+    stable sort until new devices are plugged in.
     """
 
     @classmethod
     @lru_cache(maxsize=None)
     def subclasses(cls) -> List[LightType]:
-        """Return a list of Light subclasses implementing support for a physical light."""
+        """Return a list of Light subclasses implementing a physical light."""
 
         subclasses = []
 
@@ -353,61 +354,37 @@ class Light(abc.ABC, TaskableMixin):
         self.off()
         self.cancel_tasks()
 
-    @property
+    @cached_property
     def platform(self) -> str:
         """The operating system name."""
-        try:
-            return self._platform
-        except AttributeError:
-            pass
-        self._platform: str = platform.system()
-        if self._platform == "Windows":
-            self._platform += f"_{platform.release()}"
-        return self._platform
+        _platform = platform.system()
+        if _platform == "Windows":
+            _platform += f"_{platform.release()}"
+        return _platform
 
-    @property
+    @cached_property
     def device_id(self) -> Tuple[int, int]:
         """A tuple of integer vendor and product identfiers."""
-        try:
-            return self._device_id
-        except AttributeError:
-            pass
-        self._device_id: Tuple[int, int] = self.info["device_id"]
-        return self._device_id
+        return self.info["device_id"]
 
-    @property
+    @cached_property
     def path(self) -> str:
         """An operating system specific filesystem path for this device."""
-        try:
-            return self._path
-        except AttributeError:
-            pass
-        self._path: str = str(self.info["path"])
-        return self._path
+        return str(self.info["path"])
 
-    @property
+    @cached_property
     def vendor_id(self) -> int:
         """An integer vendor identifier for this device."""
-        try:
-            return self._vendor_id
-        except AttributeError:
-            pass
-        self._vendor_id: int = self.info["vendor_id"]
-        return self._vendor_id
+        return self.info["vendor_id"]
 
-    @property
+    @cached_property
     def product_id(self) -> int:
         """An integer product identifier for this device."""
-        try:
-            return self._product_id
-        except AttributeError:
-            pass
-        self._product_id: int = self.info["product_id"]
-        return self._product_id
+        return self.info["product_id"]
 
     @contextmanager
     def batch_update(self) -> Generator[None, None, None]:
-        """Writes the software state to the device when the context manager exits."""
+        """Writes the software state to the device on context manager exit."""
         yield
         self.update()
 
@@ -421,15 +398,10 @@ class Light(abc.ABC, TaskableMixin):
         """Turn the light off."""
         self.on((0, 0, 0))
 
-    @property
+    @cached_property
     def name(self) -> str:
         """The product name for this device."""
-        try:
-            return self._name
-        except AttributeError:
-            pass
-        self._name: str = self.supported_device_ids()[self.device_id]
-        return self._name
+        return self.supported_device_ids()[self.device_id]
 
     @property
     @abc.abstractmethod
