@@ -1,16 +1,14 @@
 <!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor bluetooth bt flag mute orb thingM blink(1) muteme mutesync compulab fit-statusb -->
 ![BusyLight Project Logo][LOGO]
 <br>
+
+[![Test & Publish](https://github.com/JnyJny/busylight/actions/workflows/release.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/release.yaml)
 ![version][pypi-version]
 ![monthly-downloads][monthly-downloads]
 ![visits][visits]
 ![supported python versions][python-versions] 
 ![license][license]
 ![Code style: black][code-style-black]
-<br>
-[![pytest-linux](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-linux.yaml)
-[![MacOS](https://github.com/JnyJny/busylight/actions/workflows/pytest-macos.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-macos.yaml)
-[![pytest-windows](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml/badge.svg)](https://github.com/JnyJny/busylight/actions/workflows/pytest-windows.yaml)
 <br>
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
@@ -111,8 +109,8 @@ $ source .venv/bin/activate
 
 After installing into the virtual environment, the project is now
 available in editable mode.  Changes made in the source will be
-reflected in the runtime behavior when running in the poetry initiated
-shell.
+reflected in the runtime behavior when running in the uv managed
+virtual environment.
 
 ## Linux Post-Install Activities
 
