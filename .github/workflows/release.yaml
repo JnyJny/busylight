@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   test:
-    name: Test on Linux/MacOS/Window
+    name: Test
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
