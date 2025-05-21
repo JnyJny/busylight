@@ -1,7 +1,7 @@
-""" Asynchronous task support for animating lights.
-"""
+"""Asynchronous task support for animating lights."""
 
 import asyncio
+from functools import cached_property
 from typing import Any, Awaitable, Dict, Optional
 
 
@@ -10,25 +10,15 @@ class TaskableMixin:
     asynchronous tasks. Tasks can be added and cancelled.
     """
 
-    @property
+    @cached_property
     def event_loop(self):
         """The default event loop."""
-        try:
-            return self._event_loop
-        except AttributeError:
-            pass
-        self._event_loop = asyncio.get_event_loop()
-        return self._event_loop
+        return asyncio.get_event_loop()
 
-    @property
+    @cached_property
     def tasks(self) -> Dict[str, asyncio.Task]:
         """Active tasks that are associated with this class."""
-        try:
-            return self._tasks
-        except AttributeError:
-            pass
-        self._tasks: Dict[str, asyncio.Task] = {}
-        return self._tasks
+        return {}
 
     def add_task(self, name: str, coroutine: Awaitable) -> asyncio.Task:
         """Create a new task using coroutine as the body and stash it in
