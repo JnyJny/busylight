@@ -1,24 +1,19 @@
-""" Describe how often to change colors.
-"""
+"""Describe how often to change colors."""
 
-from enum import Enum
+from enum import Enum, auto
+from functools import cached_property
 
 
-class Speed(str, Enum):
-    Slow = "slow"
-    Medium = "medium"
-    Fast = "fast"
+class Speed(int, Enum):
+    Slow = auto(0)
+    Medium = auto()
+    Fast = auto()
 
-    @property
+    @cached_property
     def duty_cycle(self) -> float:
         """Duty cycle in seconds."""
-        try:
-            return self._duty_cycle
-        except AttributeError:
-            pass
-        self._duty_cycle: float = {0: 0.75, 1: 0.5, 2: 0.25}.get(self.rate, 0)
-        return self._duty_cycle
-
-    @property
-    def rate(self) -> int:
-        return ["slow", "medium", "fast"].index(self.name.lower())
+        return {
+            "Slow": 0.75,
+            "Medium": 0.5,
+            "Fast": 0.25,
+        }.get(self.name, 0.75)
