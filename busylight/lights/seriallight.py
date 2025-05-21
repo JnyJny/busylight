@@ -1,17 +1,16 @@
-""" USB Serial Light Support
-"""
+"""USB Serial Light Support"""
 
+from functools import cached_property
 from typing import List
 
 from loguru import logger
-
 from serial import Serial
+from serial.serialutil import SerialException
 from serial.tools import list_ports
 from serial.tools.list_ports_common import ListPortInfo
-from serial.serialutil import SerialException
 
-from .light import Light, LightInfo
 from .exceptions import LightUnavailable
+from .light import Light, LightInfo
 
 
 class _UnrecognizedDevice(Exception):
@@ -96,15 +95,9 @@ class SerialLight(Light):
         The device is not necessarily open until the acquire method
         has been called successfully.
         """
-        try:
-            return self._device
-        except AttributeError:
-            pass
-
-        self._device: Serial = Serial(timeout=1)
-        self._device.port = self.path
-
-        return self._device
+        device: Serial = Serial(timeout=1)
+        device.port = self.path
+        return device
 
     @property
     def is_pluggedin(self) -> bool:
