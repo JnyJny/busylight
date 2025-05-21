@@ -1,6 +1,7 @@
 """ Agile Innovative BlinkStick implementation details.
 """
 
+from functools import cached_property
 from enum import IntEnum
 
 from loguru import logger
@@ -94,11 +95,7 @@ class BlinkStickType(IntEnum):
                 "Unknown {self.__class__.__name__} value {self.value}"
             ) from None
 
-    @property
+    @cached_property
     def report(self) -> Report:
-        try:
-            return self._report
-        except AttributeError:
-            pass
-        self._report: Report = Report.from_nleds(self.nleds)
-        return self._report
+        return Report.from_nleds(self.nleds)
+

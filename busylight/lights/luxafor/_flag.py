@@ -1,7 +1,6 @@
-"""
-"""
+""" """
 
-from enum import IntEnum
+from enum import IntEnum, auto
 
 
 class Command(IntEnum):
@@ -25,21 +24,21 @@ class LEDS(IntEnum):
 
 
 class Pattern(IntEnum):
-    Off = 0
-    TrafficLight = 1
-    Random1 = 2
-    Random2 = 3
-    Random3 = 4
-    Police = 5
-    Random4 = 6
-    Random5 = 7
-    Rainbow = 8
+    Off = auto()
+    TrafficLight = auto()
+    Random1 = auto()
+    Random2 = auto()
+    Random3 = auto()
+    Police = auto()
+    Random4 = auto()
+    Random5 = auto()
+    Rainbow = auto()
 
 
 class Wave(IntEnum):
-    Off = 0
-    Short = 1
-    Long = 2
-    ShortOverLapping = 3
-    LongOverlapping = 4
-    WAVE5 = 5
+    Off = auto()
+    Short = auto()
+    Long = auto()
+    ShortOverLapping = auto()
+    LongOverlapping = auto()
+    WAVE5 = auto()
