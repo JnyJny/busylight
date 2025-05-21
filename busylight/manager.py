@@ -1,16 +1,14 @@
-""" a Manager for controlling multiple Lights.
-"""
+"""a Manager for controlling multiple Lights."""
 
 import asyncio
-
 from contextlib import suppress
-from typing import Dict, List, Optional, Union, Tuple
+from functools import cached_property
+from typing import Dict, List, Optional, Tuple, Union
+
 from loguru import logger
 
 from .effects import Effects
-
-from .lights import LightUnavailable, NoLightsFound, Light
-
+from .lights import Light, LightUnavailable, NoLightsFound
 from .speed import Speed
 
 
@@ -64,7 +62,7 @@ class LightManager:
             self._lightclass = Light
         else:
             if not issubclass(lightclass, Light):
-                raise TypeError("Not a Light subclass")
+                raise TypeError(f"Not a Light subclass: {lightclass!r}")
             self._lightclass = lightclass
 
     def __repr__(self) -> str:
@@ -93,15 +91,10 @@ class LightManager:
         """Light subclass used to locate lights, read-only."""
         return getattr(self, "_lightclass", Light)
 
-    @property
+    @cached_property
     def lights(self) -> List[Light]:
         """List of managed lights."""
-        try:
-            return self._lights
-        except AttributeError:
-            pass
-        self._lights = list(self.lightclass.all_lights(reset=False))
-        return self._lights
+        return list(self.lightclass.all_lights(reset=False))
 
     def selected_lights(self, indices: List[int] = None) -> List[Light]:
         """Return a list of Lights matching the list of `indices`.
