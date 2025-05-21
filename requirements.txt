@@ -5,9 +5,9 @@ anyio==4.9.0 \
     --hash=sha256:673c0c244e15788651a4ff38710fea9675823028a6f08a5eda409e0c9840a028 \
     --hash=sha256:9f76d541cad6e36af7beb62e978876f3b41e3e04f2c1fbf0884604c0a9c4d93c
     # via httpx
-bitvector-for-humans==0.14.1 \
-    --hash=sha256:41bd430cc698f3712e36b32c1ac0d4420ceb230d8fdbf6c3489243f470457305 \
-    --hash=sha256:7e9fe5e3d82f3c12c9da7271870564c721be18949bc42113ba46e16811da40c7
+bitvector-for-humans==0.14.4 \
+    --hash=sha256:60c0eba8e5566082013006cc735eac5695fd8d89a114d39a692d108d073d7c2f \
+    --hash=sha256:df33ad1011c272faa11c1aa4d6bd6bee26b91438c1b59b72b762b43b4697b950
     # via busylight-for-humans
 black==25.1.0 \
     --hash=sha256:030b9759066a4ee5e5aca28c3c77f9c64789cdd4de8ac1df642c40b708be6171 \
