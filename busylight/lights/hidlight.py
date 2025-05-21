@@ -1,17 +1,16 @@
-"""USB Human Interface Device (HID) Light Support
-"""
+"""USB Human Interface Device (HID) Light Support"""
 
+from functools import cached_property
 from typing import Any, Dict, List, Union
-
-import hid
 
 from loguru import logger
 
-from .hid import enumerate as hid_enumerate
-from .hid import Device as hid_device
-from .light import Light, LightInfo
+import hid
 
 from .exceptions import LightUnavailable
+from .hid import Device as hid_device
+from .hid import enumerate as hid_enumerate
+from .light import Light, LightInfo
 
 
 class HIDLight(Light):
@@ -77,7 +76,7 @@ class HIDLight(Light):
 
         return rules
 
-    @property
+    @cached_property
     def device(self):
         """A busylight.lights.hid.Device instance configured for use
         with this device.
@@ -85,12 +84,7 @@ class HIDLight(Light):
         The device is not open until the acquire method has been
         called successfully.
         """
-        try:
-            return self._device
-        except AttributeError:
-            pass
-        self._device: hid_device = hid_device()
-        return self._device
+        return hid_device()
 
     @property
     def is_pluggedin(self) -> bool:
