@@ -6,7 +6,7 @@
 ![Version][pypi-version]
 ![Release Date][release-date]
 ![Python Version][python-version]
-![LLicense][license]
+![License][license]
 ![Code Style: black][code-style-black]
 ![Monthly Downloads][monthly-downloads]
 <br>
