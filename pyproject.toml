@@ -71,11 +71,11 @@ dev = [
 [tool.poe.tasks]
 
 # testing
-_generate_coverage = "pytest --cov=./busylight --cov-report=html"
+_generate_coverage = "pytest --cov=./src/busylight --cov-report=html"
 _open_report = "open htmlcov/index.html"
 coverage = [ "_generate_coverage", "_open_report"]
 
-mypy = "mypy --config-file pyproject.toml busylight"
+mypy = "mypy --config-file pyproject.toml src/busylight"
 
 # requirements
 
