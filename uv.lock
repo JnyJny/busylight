@@ -96,6 +96,7 @@ webapi = [
 dev = [
     { name = "anyio" },
     { name = "black" },
+    { name = "coverage" },
     { name = "httpx" },
     { name = "isort" },
     { name = "mypy" },
@@ -124,6 +125,7 @@ provides-extras = ["webapi"]
 dev = [
     { name = "anyio", specifier = ">=4.9.0" },
     { name = "black", specifier = ">=25.1.0" },
+    { name = "coverage", specifier = ">=7.8.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "isort", specifier = ">=6.0.1" },
     { name = "mypy", specifier = ">=1.15.0" },
