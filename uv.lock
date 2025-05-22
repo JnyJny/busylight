@@ -28,11 +28,11 @@ wheels = [
 
 [[package]]
 name = "bitvector-for-humans"
-version = "0.14.1"
+version = "0.14.4"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/af/22/4ff53a67b9a2deb3a134fbc805dfd902f9dfc14b8f16df40b22560051272/bitvector-for-humans-0.14.1.tar.gz", hash = "sha256:7e9fe5e3d82f3c12c9da7271870564c721be18949bc42113ba46e16811da40c7", size = 10703, upload-time = "2021-01-10T02:28:59.795Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/30/e7/dcadb4fbb22eee67b601ded3ecf7c25a5407023897d5007cfa350bae3809/bitvector_for_humans-0.14.4.tar.gz", hash = "sha256:df33ad1011c272faa11c1aa4d6bd6bee26b91438c1b59b72b762b43b4697b950", size = 40226, upload-time = "2025-05-21T17:12:53.497Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fb/d2/343bfccdc20e8e9c0e00fb8357befd42f177e52b421d389dbf7cdcbceb18/bitvector_for_humans-0.14.1-py3-none-any.whl", hash = "sha256:41bd430cc698f3712e36b32c1ac0d4420ceb230d8fdbf6c3489243f470457305", size = 10541, upload-time = "2021-01-10T02:29:01.136Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/fb/35c95328c4abd3b7f15c44fa109088504c835d98771842ba179179d4dc7c/bitvector_for_humans-0.14.4-py3-none-any.whl", hash = "sha256:60c0eba8e5566082013006cc735eac5695fd8d89a114d39a692d108d073d7c2f", size = 10469, upload-time = "2025-05-21T17:12:51.758Z" },
 ]
 
 [[package]]
@@ -109,7 +109,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "bitvector-for-humans", specifier = ">=0.14.1" },
+    { name = "bitvector-for-humans", specifier = ">=0.14.4" },
     { name = "fastapi", marker = "extra == 'webapi'", specifier = ">=0.115.12" },
     { name = "hidapi", specifier = ">=0.14.0.post4" },
     { name = "loguru", specifier = ">=0.7.3" },
