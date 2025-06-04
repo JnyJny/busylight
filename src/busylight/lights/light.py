@@ -523,7 +523,7 @@ class Light(abc.ABC, TaskableMixin):
         """
 
         data = bytes(self)
-        if self.platform in ["Windows_10"]:
+        if self.platform in ["Windows_10","Windows_11"]:
             data = bytes([0x00]) + data
 
         with self.exclusive_access():
