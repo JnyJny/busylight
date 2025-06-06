@@ -5,7 +5,7 @@ from functools import cached_property
 
 
 class Speed(int, Enum):
-    Slow = auto(0)
+    Slow = auto()
     Medium = auto()
     Fast = auto()
 
