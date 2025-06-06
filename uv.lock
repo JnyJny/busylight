@@ -75,7 +75,7 @@ wheels = [
 
 [[package]]
 name = "busylight-for-humans"
-version = "0.35.3"
+version = "0.35.4"
 source = { editable = "." }
 dependencies = [
     { name = "bitvector-for-humans" },
