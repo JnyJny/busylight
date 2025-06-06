@@ -1,6 +1,4 @@
-""" MuteMe Device Support
-"""
-
+"""MuteMe Device Support"""
 
 from .muteme import MuteMe
 from .muteme_mini import MuteMe_Mini

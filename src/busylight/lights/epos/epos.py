@@ -1,13 +1,9 @@
-""" EPOS Busylight Support
-"""
+"""EPOS Busylight Support"""
 
-from typing import Callable, Dict, Tuple
-
-from loguru import logger
+from typing import Dict, Tuple
 
 from ..hidlight import HIDLight
 from ..light import LightInfo
-
 from ._epos import Command
 
 
@@ -28,13 +24,11 @@ class EPOSBusylight(HIDLight):
         reset: bool = True,
         exclusive: bool = True,
     ) -> None:
-
         self.command = Command()
 
         super().__init__(light_info, reset=reset, exclusive=exclusive)
 
     def __bytes__(self) -> bytes:
-
         return self.command.bytes
 
     def on(self, color: Tuple[int, int, int]) -> None:

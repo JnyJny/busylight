@@ -1,5 +1,4 @@
-""" Busylight Omega Support
-"""
+"""Busylight Omega Support"""
 
 from typing import Dict, Tuple
 

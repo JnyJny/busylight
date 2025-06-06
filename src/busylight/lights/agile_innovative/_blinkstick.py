@@ -1,8 +1,7 @@
-""" Agile Innovative BlinkStick implementation details.
-"""
+"""Agile Innovative BlinkStick implementation details."""
 
-from functools import cached_property
 from enum import IntEnum
+from functools import cached_property
 
 from loguru import logger
 
@@ -48,12 +47,12 @@ class BlinkStickType(IntEnum):
             return cls(int(light_info["serial_number"].split("-")[-1].split(".")[0]))
         except KeyError as error:
             logger.error(
-                f"serial_number missing from light_info -> {error} {light_info}"
+                f"serial_number missing from light_info -> {error} {light_info}",
             )
             raise LightUnsupported(light_info) from None
         except IndexError as error:
             logger.error(
-                f"failed to parse major number in {light_info['serial_number']}: {error}"
+                f"failed to parse major number in {light_info['serial_number']}: {error}",
             )
             raise LightUnsupported(light_info) from None
         except ValueError:
@@ -92,10 +91,9 @@ class BlinkStickType(IntEnum):
             }[self.value]
         except KeyError:
             raise ValueError(
-                "Unknown {self.__class__.__name__} value {self.value}"
+                "Unknown {self.__class__.__name__} value {self.value}",
             ) from None
 
     @cached_property
     def report(self) -> Report:
         return Report.from_nleds(self.nleds)
-

@@ -1,13 +1,9 @@
-""" ThingM blink(1) Support
-"""
+"""ThingM blink(1) Support"""
 
 from typing import Callable, Dict, Tuple
 
-from loguru import logger
-
 from ..hidlight import HIDLight
 from ..light import LightInfo
-
 from ._blink1 import Command
 
 
@@ -28,17 +24,14 @@ class Blink1(HIDLight):
         reset: bool = True,
         exclusive: bool = True,
     ) -> None:
-
         self.command = Command()
 
         super().__init__(light_info, reset=reset, exclusive=exclusive)
 
     def __bytes__(self) -> bytes:
-
         return self.command.bytes
 
     def on(self, color: Tuple[int, int, int]) -> None:
-
         with self.batch_update():
             self.command.fade_to_color(color)
 

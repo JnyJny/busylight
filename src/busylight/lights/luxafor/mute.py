@@ -1,9 +1,6 @@
-""" Luxafor Mute
-"""
+"""Luxafor Mute"""
 
 from typing import Dict, Tuple
-
-from loguru import logger
 
 from .flag import Flag
 
@@ -21,7 +18,6 @@ class Mute(Flag):
 
     @property
     def button_on(self) -> bool:
-
         results = self.read_strategy(8, 200)
 
         try:

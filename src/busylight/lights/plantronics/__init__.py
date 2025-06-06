@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from .status_indicator import Status_Indicator
 

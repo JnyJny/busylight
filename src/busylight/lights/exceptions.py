@@ -1,5 +1,4 @@
-""" raised by busylight.lights.light.Light and subclasses
-"""
+"""raised by busylight.lights.light.Light and subclasses"""
 
 
 class _BaseLightException(Exception):
@@ -16,7 +15,8 @@ class LightUnavailable(_BaseLightException):
 
 class LightUnsupported(_BaseLightException):
     """The dictionary passed to an __init__ method of a subclass of Light
-    does not describe a light supported by the subclass."""
+    does not describe a light supported by the subclass.
+    """
 
 
 class NoLightsFound(_BaseLightException):

@@ -1,9 +1,6 @@
-"""
-"""
+""" """
 
 from typing import Dict, Tuple
-
-from loguru import logger
 
 from ..seriallight import SerialLight
 
@@ -20,7 +17,6 @@ class Fit_StatUSB(SerialLight):
         return "CompuLab"
 
     def __bytes__(self) -> bytes:
-
         buf = f"B#{self.red:02x}{self.green:02x}{self.blue:02x}\n"
 
         return buf.encode()

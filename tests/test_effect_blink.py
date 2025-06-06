@@ -1,8 +1,6 @@
-"""
-"""
+""" """
 
 import pytest
-
 from busylight.effects import Blink
 
 
@@ -14,7 +12,6 @@ from busylight.effects import Blink
     ],
 )
 def test_blink_init(on_color, duty_cycle, off_color, count) -> None:
-
     instance = Blink(on_color, duty_cycle, off_color, count)
 
     assert instance.name == "Blink"

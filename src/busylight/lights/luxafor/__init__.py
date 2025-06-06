@@ -1,5 +1,4 @@
-""" Luxafor Flag, Mute and Orb Support
-"""
+"""Luxafor Flag, Mute and Orb Support"""
 
 from .bluetooth import Bluetooth
 from .flag import Flag

@@ -1,8 +1,9 @@
 """Asynchronous task support for animating lights."""
 
 import asyncio
+from collections.abc import Awaitable
 from functools import cached_property
-from typing import Any, Awaitable, Dict, Optional
+from typing import Dict, Optional
 
 
 class TaskableMixin:
@@ -51,7 +52,7 @@ class TaskableMixin:
             del self.tasks[name]
             task.cancel()
             return task
-        except (KeyError, AttributeError) as error:
+        except (KeyError, AttributeError):
             pass
 
         return None

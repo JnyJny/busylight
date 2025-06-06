@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import abc
 import asyncio
@@ -13,7 +12,6 @@ from ..lights import Light
 
 
 class BaseEffect(abc.ABC):
-
     @classmethod
     @lru_cache
     def subclasses(cls) -> Dict[str, "BaseEffect"]:
@@ -43,19 +41,17 @@ class BaseEffect(abc.ABC):
 
         Raises:
         - ValueError for unknown effect names.
-        """
 
+        """
         try:
             return cls.subclasses()[name.casefold()]
         except KeyError:
             raise ValueError(f"Unknown effect {name}") from None
 
     def __repr__(self) -> str:
-
         return f"{self.name}(...)"
 
     def __str__(self) -> str:
-
         return f"{self.name} duty_cycle={self.duty_cycle}"
 
     @property
@@ -84,7 +80,6 @@ class BaseEffect(abc.ABC):
     def count(self, count: int) -> None:
         self._count = int(count)
 
-
     @property
     @abc.abstractmethod
     def colors(self) -> List[Tuple[int, int, int]]:
@@ -95,14 +90,13 @@ class BaseEffect(abc.ABC):
 
         :param light: Light
         """
-
         if self.count > 0:
             cycle_count = self.count * len(self.colors)
         else:
             cycle_count = None
-        
+
         for color in islice(cycle(self.colors), cycle_count):
             light.on(color)
             await asyncio.sleep(self.duty_cycle)
-            
+
         light.off()

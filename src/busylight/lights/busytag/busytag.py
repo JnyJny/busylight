@@ -1,9 +1,6 @@
-"""
-"""
+""" """
 
 from typing import Dict, Tuple
-
-from loguru import logger
 
 from ..seriallight import SerialLight
 
@@ -12,7 +9,7 @@ class BusyTag(SerialLight):
     @staticmethod
     def supported_device_ids() -> Dict[Tuple[int, int], str]:
         return {
-            (0x303a, 0x81df): "Busy Tag",
+            (0x303A, 0x81DF): "Busy Tag",
         }
 
     @staticmethod
@@ -20,8 +17,7 @@ class BusyTag(SerialLight):
         return "Busy Tag"
 
     def __bytes__(self) -> bytes:
-
-        # Change Color using AT Serial Commands 
+        # Change Color using AT Serial Commands
         # See for reference:
         # https://luxafor.helpscoutdocs.com/article/47-busy-tag-usb-cdc-command-reference-guide
         # AT+SC=127,<hex color>

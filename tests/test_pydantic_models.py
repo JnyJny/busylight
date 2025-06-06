@@ -1,12 +1,9 @@
-"""
-"""
+""" """
 
 from typing import Any, Dict, List, Tuple, Union
 
 import pytest
-
 from busylight.api.models import EndPoint, LightDescription, LightOperation
-
 from pydantic import ValidationError
 
 
@@ -24,7 +21,6 @@ from pydantic import ValidationError
     ],
 )
 def test_model_endpoint(path, expected_exception) -> None:
-
     if expected_exception:
         with pytest.raises(expected_exception):
             endpoint = EndPoint(path=path)

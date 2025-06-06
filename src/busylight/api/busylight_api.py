@@ -1,5 +1,4 @@
-"""BusyLight API
-"""
+"""BusyLight API"""
 
 from json import loads as json_loads
 from os import environ
@@ -33,10 +32,9 @@ busylightapi_security = HTTPBasic()
 
 class BusylightAPI(FastAPI):
     def __init__(self):
-
         # Get and save the debug flag
         global_options = GlobalOptions(debug=environ.get("BUSYLIGHT_DEBUG", False))
-        logger.info("Debug: {debug_value}".format(debug_value=global_options.debug))
+        logger.info(f"Debug: {global_options.debug}")
 
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
@@ -53,7 +51,7 @@ class BusylightAPI(FastAPI):
 
         # Get and save the CORS Access-Control-Allow-Origin header
         logger.info(
-            "Set up CORS Access-Control-Allow-Origin header, if environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST is set."
+            "Set up CORS Access-Control-Allow-Origin header, if environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST is set.",
         )
         self.origins = json_loads(environ.get("BUSYLIGHT_API_CORS_ORIGINS_LIST", "[]"))
 
@@ -62,22 +60,18 @@ class BusylightAPI(FastAPI):
             not isinstance(item, str) for item in self.origins
         ):
             logger.warning(
-                "BUSYLIGHT_API_CORS_ORIGINS_LIST is invalid: {origins_list}".format(
-                    origins_list=self.origins
-                )
+                f"BUSYLIGHT_API_CORS_ORIGINS_LIST is invalid: {self.origins}",
             )
             logger.info("Will NOT set the CORS Access-Control-Allow-Origin header.")
             self.origins = None
 
         logger.info(
-            "CORS Access-Control-Allow-Origin list: {origins_list}".format(
-                origins_list=self.origins
-            )
+            f"CORS Access-Control-Allow-Origin list: {self.origins}",
         )
 
         if (global_options.debug == True) and (self.origins == None):
             logger.info(
-                'However, debug mode is enabled! Using debug mode CORS allowed origins: \'["http://localhost", "http://127.0.0.1"]\''
+                'However, debug mode is enabled! Using debug mode CORS allowed origins: \'["http://localhost", "http://127.0.0.1"]\'',
             )
             self.origins = ["http://localhost", "http://127.0.0.1"]
 
@@ -91,18 +85,15 @@ class BusylightAPI(FastAPI):
         self.endpoints: List[str] = []
 
     def update(self) -> None:
-
         self.lights.extend(Light.all_lights())
 
     def release(self) -> None:
-
         for light in self.lights:
             light.release()
 
         self.lights.clear()
 
     async def off(self, light_id: int = None) -> None:
-
         lights = self.lights if light_id is None else [self.lights[light_id]]
 
         for light in lights:
@@ -110,7 +101,6 @@ class BusylightAPI(FastAPI):
             light.off()
 
     async def apply_effect(self, effect: Effects, light_id: int = None) -> None:
-
         lights = self.lights if light_id is None else [self.lights[light_id]]
 
         for light in lights:
@@ -137,7 +127,8 @@ class BusylightAPI(FastAPI):
         return super().get(path, **kwargs)
 
     def authenticate_user(
-        self, credentials: HTTPBasicCredentials = Depends(busylightapi_security)
+        self,
+        credentials: HTTPBasicCredentials = Depends(busylightapi_security),
     ) -> None:
         username_correct = compare_digest(credentials.username, self.username)
         password_correct = compare_digest(credentials.password, self.password)
@@ -164,7 +155,7 @@ async def startup():
 async def shutdown():
     try:
         await busylightapi.off()
-    except Exception as error:
+    except Exception:
         logger.debug("problem during shutdown: {error}")
 
 
@@ -223,7 +214,6 @@ async def color_lookup_error_handler(
 @busylightapi.middleware("http")
 async def light_manager_update(request: Request, call_next):
     """Check for plug/unplug events and update the light manager."""
-
     busylightapi.update()
 
     return await call_next(request)
@@ -249,7 +239,7 @@ async def available_endpoints() -> List[Dict[str, str]]:
     response_model=LightDescription,
 )
 async def light_status(
-    light_id: int = Path(..., title="Numeric light identifier", ge=0)
+    light_id: int = Path(..., title="Numeric light identifier", ge=0),
 ) -> Dict[str, Any]:
     """Information about the light selected by `light_id`."""
     light = busylightapi.lights[light_id]
@@ -283,7 +273,7 @@ async def lights_status() -> List[Dict[str, Any]]:
                 "is_on": light.is_on,
                 "color": colortuple_to_name(light.color),
                 "rgb": light.color,
-            }
+            },
         )
     return result
 
@@ -305,7 +295,6 @@ async def light_on(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-
     rgb = parse_color_string(color, dim)
     steady = Effects.for_name("steady")(rgb)
     await busylightapi.apply_effect(steady, light_id)
@@ -332,7 +321,6 @@ async def lights_on(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-
     rgb = parse_color_string(color, dim)
     steady = Effects.for_name("steady")(rgb)
     await busylightapi.apply_effect(steady)
@@ -351,7 +339,7 @@ async def lights_on(
     response_model=LightOperation,
 )
 async def light_off(
-    light_id: int = Path(..., title="Numeric light identifier", ge=0)
+    light_id: int = Path(..., title="Numeric light identifier", ge=0),
 ) -> Dict[str, Any]:
     """Turn off the specified light.
     `light_id` is an integer value identifying a light and ranges
@@ -360,7 +348,6 @@ async def light_off(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-
     await busylightapi.off(light_id)
 
     return {
@@ -375,7 +362,6 @@ async def light_off(
 )
 async def lights_off() -> Dict[str, Any]:
     """Turn off all lights."""
-
     await busylightapi.off()
 
     return {
@@ -405,7 +391,6 @@ async def blink_light(
 
     `count` is the number of times to blink the light.
     """
-
     rgb = parse_color_string(color, dim)
 
     effect = Effects.for_name("blink")(rgb, speed.duty_cycle, count=count)
@@ -436,7 +421,6 @@ async def blink_lights(
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
     """
-
     rgb = parse_color_string(color, dim)
 
     blink = Effects.for_name("blink")(rgb, speed.duty_cycle, count=count)
@@ -468,7 +452,6 @@ async def rainbow_light(
     `light_id` is an integer value identifying a light and ranges
     between zero and number_of_lights-1.
     """
-
     rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=dim)
 
     await busylightapi.apply_effect(rainbow, light_id)
@@ -493,7 +476,6 @@ async def rainbow_lights(
     """Start a rainbow animation on all lights.
     <p><em>Note:</em> lights will not be synchronized.</p>
     """
-
     rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=dim)
 
     await busylightapi.apply_effect(rainbow)
@@ -525,12 +507,14 @@ async def flash_light_impressively(
 
     `count` is the number of times to blink the light.
     """
-
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
     fli = Effects.for_name("blink")(
-        rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count
+        rgb_a,
+        speed.duty_cycle / 10,
+        off_color=rgb_b,
+        count=count,
     )
 
     await busylightapi.apply_effect(fli, light_id)
@@ -558,12 +542,14 @@ async def flash_lights_impressively(
     count: int = 0,
 ):
     """Flash all lights impressively [default: red/blue]"""
-
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
     fli = Effects.for_name("blink")(
-        rgb_a, speed.duty_cycle / 10, off_color=rgb_b, count=count
+        rgb_a,
+        speed.duty_cycle / 10,
+        off_color=rgb_b,
+        count=count,
     )
 
     await busylightapi.apply_effect(fli)
@@ -626,7 +612,6 @@ async def pulse_lights(
     count: int = 0,
 ):
     """Pulse all lights with a color [default: red]."""
-
     rgb = parse_color_string(color, dim)
 
     throb = Effects.for_name("Gradient")(rgb, speed.duty_cycle / 16, 8, count=count)

@@ -50,7 +50,9 @@ class Device:
             self._handle.open(vendor_id, product_id, serial_number)
         else:
             self._handle = hid.Device(
-                vid=vendor_id, pid=product_id, serial=serial_number
+                vid=vendor_id,
+                pid=product_id,
+                serial=serial_number,
             )
 
     def open_path(self, path: bytes) -> None:
@@ -65,32 +67,32 @@ class Device:
         try:
             self._handle.close()
         except AttributeError:
-            raise IOError("device not open") from None
+            raise OSError("device not open") from None
 
     def read(self, nbytes: int, timeout_ms: Optional[int] = None) -> List[int]:
         """Read nbytes from the device, returns a list of ints."""
         try:
             return self._handle.read(nbytes, timeout_ms)
         except AttributeError:
-            raise IOError("device not open") from None
+            raise OSError("device not open") from None
 
     def write(self, buf: bytes) -> int:
         """Write bytes in buf to the device."""
         try:
             return self._handle.write(buf)
         except AttributeError:
-            raise IOError("device not open") from None
+            raise OSError("device not open") from None
 
     def get_feature_report(self, report: int, nbytes: int) -> List[int]:
         """Read a nbytes feature report from the device."""
         try:
             return self._handle.get_feature_report(report, nbytes)
         except AttributeError:
-            raise IOError("device not open") from None
+            raise OSError("device not open") from None
 
     def send_feature_report(self, buf: bytes) -> int:
         """Write bytes in buf as a device feature report."""
         try:
             return self._handle.send_feature_report(buf)
         except AttributeError:
-            raise IOError("device not open") from None
+            raise OSError("device not open") from None

@@ -1,7 +1,6 @@
-"""API Response Models
-"""
+"""API Response Models"""
 
-from typing import Dict, Tuple, Union, Optional
+from typing import Dict, Optional, Tuple, Union
 
 from pydantic import BaseModel
 

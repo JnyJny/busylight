@@ -76,7 +76,12 @@ _generate_coverage = "pytest --cov=./src/busylight --cov-report=html"
 _open_report = "open htmlcov/index.html"
 coverage = [ "_generate_coverage", "_open_report"]
 
+# code quality
+
 mypy = "mypy --config-file pyproject.toml src/busylight"
+
+sort = "ruff check --select I --fix src/busylight tests"
+format = "ruff format src/busylight tests"
 
 # requirements
 

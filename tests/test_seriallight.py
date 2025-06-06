@@ -1,21 +1,15 @@
-"""test busylight.lights.SerialLight class
-"""
-
-import pytest
+"""test busylight.lights.SerialLight class"""
 
 import busylight.lights.seriallight
-
-from busylight.lights.seriallight import SerialLight
-
+import pytest
 from busylight.lights import NoLightsFound
-
+from busylight.lights.seriallight import SerialLight
 from serial.tools.list_ports_common import ListPortInfo
 
-from . import HID_LIGHTS, SERIAL_LIGHTS, NOT_A_LIGHT, MockDevice
+from . import HID_LIGHTS, NOT_A_LIGHT, SERIAL_LIGHTS, MockDevice
 
 
 def listportinfo(light_info: dict) -> ListPortInfo:
-
     port_info = ListPortInfo(light_info["path"], skip_link_detection=True)
 
     port_info.vid = light_info["vendor_id"]
@@ -29,7 +23,6 @@ def listportinfo(light_info: dict) -> ListPortInfo:
 
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_available_offline_good(light_info, mocker) -> None:
-
     mocker.patch(
         "serial.tools.list_ports.comports",
         return_value=[listportinfo(light_info)],
@@ -48,7 +41,6 @@ def test_seriallight_available_offline_good(light_info, mocker) -> None:
 
 
 def test_seriallight_available_offline_no_lights(mocker) -> None:
-
     mocker.patch(
         "serial.tools.list_ports.comports",
         return_value=[],
@@ -69,7 +61,6 @@ KNOWN_BAD_LIGHTS = [
 
 
 def test_seriallight_available_offline_malformed(mocker) -> None:
-
     portinfos = [
         ListPortInfo("/bogus/path", skip_link_detection=True),
         ListPortInfo("/fake/path", skip_link_detection=True),
@@ -88,7 +79,6 @@ def test_seriallight_available_offline_malformed(mocker) -> None:
 
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_all_lights_offline_good(light_info, mocker) -> None:
-
     mocker.patch(
         "serial.tools.list_ports.comports",
         return_value=[listportinfo(light_info)],
@@ -105,7 +95,6 @@ def test_seriallight_all_lights_offline_good(light_info, mocker) -> None:
 
 
 def test_seriallight_first_light_offline_no_lights(mocker) -> None:
-
     mocker.patch("serial.tools.list_ports.comports", return_value=[])
 
     with pytest.raises(NoLightsFound):
@@ -114,7 +103,6 @@ def test_seriallight_first_light_offline_no_lights(mocker) -> None:
 
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_first_light_offline_good(light_info, mocker) -> None:
-
     mocker.patch(
         "serial.tools.list_ports.comports",
         return_value=[listportinfo(light_info)],
@@ -129,7 +117,6 @@ def test_seriallight_first_light_offline_good(light_info, mocker) -> None:
 
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_claims_offline_claimed(light_info) -> None:
-
     result = SerialLight.claims(light_info)
 
     assert result
@@ -137,14 +124,12 @@ def test_seriallight_claims_offline_claimed(light_info) -> None:
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS + NOT_A_LIGHT)
 def test_seriallight_claims_offline_not_claimed(light_info):
-
     result = SerialLight.claims(light_info)
 
     assert not result
 
 
 def test_seriallight_supported_lights() -> None:
-
     result = SerialLight.supported_lights()
 
     assert isinstance(result, dict)
@@ -156,14 +141,12 @@ def test_seriallight_supported_lights() -> None:
 
 
 def test_seriallight__is_abstract() -> None:
-
     result = SerialLight._is_abstract()
 
     assert result
 
 
 def test_seriallight__is_physical() -> None:
-
     result = SerialLight._is_physical()
 
     assert not result
@@ -171,6 +154,5 @@ def test_seriallight__is_physical() -> None:
 
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS)
 def test_seriallight_init_fails_for_abc(light_info, mocker) -> None:
-
     with pytest.raises(TypeError):
         SerialLight(light_info, reset=True, exclusive=True)

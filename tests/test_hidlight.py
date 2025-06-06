@@ -1,19 +1,15 @@
-"""test busylight.lights.HIDLight class
-"""
-
-import pytest
+"""test busylight.lights.HIDLight class"""
 
 import busylight.lights.hidlight
-
-from busylight.lights.hidlight import HIDLight
+import pytest
 from busylight.lights import NoLightsFound
+from busylight.lights.hidlight import HIDLight
 
-from . import HID_LIGHTS, SERIAL_LIGHTS, NOT_A_LIGHT, MockDevice
+from . import HID_LIGHTS, NOT_A_LIGHT, SERIAL_LIGHTS, MockDevice
 
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_hidlight_available_offline_good(light_info, mocker) -> None:
-
     mocker.patch("hid.enumerate", return_value=[light_info])
 
     result = HIDLight.available_lights()
@@ -29,7 +25,6 @@ def test_hidlight_available_offline_good(light_info, mocker) -> None:
 
 
 def test_hidlight_available_offline_no_lights(mocker) -> None:
-
     mocker.patch("hid.enumerate", return_value=[])
 
     result = HIDLight.available_lights()
@@ -48,7 +43,6 @@ KNOWN_BAD_LIGHTS = [
 
 @pytest.mark.parametrize("light_info", KNOWN_BAD_LIGHTS)
 def test_hidlight_available_offline_malformed(light_info, mocker) -> None:
-
     mocker.patch("hid.enumerate", return_value=[light_info])
 
     result = HIDLight.available_lights()
@@ -59,7 +53,6 @@ def test_hidlight_available_offline_malformed(light_info, mocker) -> None:
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_hidlight_all_lights_offline_good(light_info, mocker) -> None:
-
     mocker.patch("hid.enumerate", return_value=[light_info])
 
     mocker.patch("busylight.lights.hidlight.HIDLight.device", MockDevice)
@@ -73,7 +66,6 @@ def test_hidlight_all_lights_offline_good(light_info, mocker) -> None:
 
 
 def test_hidlight_first_light_offline_no_lights(mocker) -> None:
-
     mocker.patch("hid.enumerate", return_value=[])
 
     with pytest.raises(NoLightsFound):
@@ -82,7 +74,6 @@ def test_hidlight_first_light_offline_no_lights(mocker) -> None:
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_hidlight_first_light_offline_good(light_info, mocker) -> None:
-
     mocker.patch("hid.enumerate", return_value=[light_info])
 
     mocker.patch("busylight.lights.hidlight.HIDLight.device", MockDevice)
@@ -94,7 +85,6 @@ def test_hidlight_first_light_offline_good(light_info, mocker) -> None:
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_hidlight_claims_offline_claimed(light_info) -> None:
-
     result = HIDLight.claims(light_info)
 
     assert result
@@ -102,14 +92,12 @@ def test_hidlight_claims_offline_claimed(light_info) -> None:
 
 @pytest.mark.parametrize("light_info", SERIAL_LIGHTS + NOT_A_LIGHT)
 def test_hidlight_claims_offline_not_claimed(light_info):
-
     result = HIDLight.claims(light_info)
 
     assert not result
 
 
 def test_hidlight_supported_lights() -> None:
-
     result = HIDLight.supported_lights()
 
     assert isinstance(result, dict)
@@ -121,14 +109,12 @@ def test_hidlight_supported_lights() -> None:
 
 
 def test_hidlight__is_abstract() -> None:
-
     result = HIDLight._is_abstract()
 
     assert result
 
 
 def test_hidlight__is_physical() -> None:
-
     result = HIDLight._is_physical()
 
     assert not result
@@ -136,6 +122,5 @@ def test_hidlight__is_physical() -> None:
 
 @pytest.mark.parametrize("light_info", HID_LIGHTS)
 def test_hidlight_init_fails_for_abc(light_info, mocker) -> None:
-
     with pytest.raises(TypeError):
         HIDLight(light_info, reset=True, exclusive=True)

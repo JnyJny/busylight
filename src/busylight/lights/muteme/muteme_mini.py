@@ -1,5 +1,4 @@
-""" MuteMe Mini Support
-"""
+"""MuteMe Mini Support"""
 
 from typing import Dict, Tuple
 

@@ -1,20 +1,17 @@
-""" Test Light classmethods
-"""
+"""Test Light classmethods"""
 
 from typing import List
 
 import busylight.lights.light
-
-from busylight.lights import NoLightsFound, InvalidLightInfo
-
 import pytest
+from busylight.lights import InvalidLightInfo, NoLightsFound
 
 from . import (
-    LightType,
     ABSTRACT_LIGHT_SUBCLASSES,
     ALL_LIGHT_SUBCLASSES,
-    PHYSICAL_LIGHT_SUBCLASSES,
     BOGUS_DEVICE_ID,
+    PHYSICAL_LIGHT_SUBCLASSES,
+    LightType,
 )
 
 
@@ -183,7 +180,6 @@ def test_light_subclass_is_physical(subclass: LightType) -> None:
 
 @pytest.mark.parametrize("subclass", ALL_LIGHT_SUBCLASSES)
 def test_light_subclass_unique_device_names(subclass: LightType) -> None:
-
     names = subclass.unique_device_names()
 
     assert isinstance(names, list)

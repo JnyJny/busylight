@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import pytest
 from busylight.effects import Gradient
@@ -13,7 +12,6 @@ from busylight.effects import Gradient
     ],
 )
 def test_effect_gradient_init(color, duty_cycle, step, count) -> None:
-
     instance = Gradient(color, duty_cycle, step, count)
 
     repr_result = repr(instance)

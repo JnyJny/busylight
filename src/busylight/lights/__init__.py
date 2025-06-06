@@ -52,55 +52,52 @@ new lights will not be recognized.
 
 from loguru import logger
 
-from .light import Light
-from .hidlight import HIDLight
-from .seriallight import SerialLight
-
+from .agile_innovative import BlinkStick
+from .busytag import BusyTag
+from .compulab import Fit_StatUSB
+from .embrava import Blynclight, Blynclight_Mini, Blynclight_Plus
+from .epos import EPOSBusylight
 from .exceptions import (
     InvalidLightInfo,
     LightUnavailable,
     LightUnsupported,
     NoLightsFound,
 )
-
-from .agile_innovative import BlinkStick
-from .busytag import BusyTag
-from .compulab import Fit_StatUSB
-from .embrava import Blynclight, Blynclight_Mini, Blynclight_Plus
+from .hidlight import HIDLight
 from .kuando import Busylight_Alpha, Busylight_Omega
+from .light import Light
 from .luxafor import Bluetooth, Flag, Mute, Orb
 from .muteme import MuteMe, MuteMe_Mini
 from .mutesync import MuteSync
 from .plantronics import Status_Indicator
+from .seriallight import SerialLight
 from .thingm import Blink1
-from .epos import EPOSBusylight
-
 
 __all__ = [
-    "Light",
-    "HIDLight",
-    "SerialLight",
-    "LightUnavailable",
-    "LightUnsupported",
-    "NoLightsFound",
     "Blink1",
     "BlinkStick",
     "Bluetooth",
     "Blynclight",
     "Blynclight_Mini",
     "Blynclight_Plus",
+    "BusyTag",
     "Busylight_Alpha",
     "Busylight_Omega",
-    "BusyTag",
+    "EPOSBusylight",
     "Fit_StatUSB",
     "Flag",
+    "HIDLight",
+    "Light",
+    "LightUnavailable",
+    "LightUnsupported",
     "Mute",
     "MuteMe",
     "MuteMe_Mini",
     "MuteSync",
+    "NoLightsFound",
     "Orb",
+    "SerialLight",
     "Status_Indicator",
-    "EPOSBusylight"
 ]
 
 logger.disable("busylight.lights")

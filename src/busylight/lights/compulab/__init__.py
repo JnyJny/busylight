@@ -1,5 +1,4 @@
-"""CompuLab Fit-statUSB Support
-"""
+"""CompuLab Fit-statUSB Support"""
 
 from .fit_statusb import Fit_StatUSB
 

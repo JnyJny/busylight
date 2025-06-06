@@ -1,14 +1,14 @@
-""" Test Color Handling
-"""
+"""Test Color Handling"""
 
 from typing import List, Tuple
 
 import pytest
-
-from busylight.color import ColorLookupError
-from busylight.color import parse_color_string
-from busylight.color import colortuple_to_name
-from busylight.color import scale_color
+from busylight.color import (
+    ColorLookupError,
+    colortuple_to_name,
+    parse_color_string,
+    scale_color,
+)
 
 
 @pytest.mark.parametrize(
@@ -48,7 +48,6 @@ def test_parse_color_string(value: str, expected: Tuple[int, int, int]) -> None:
     ],
 )
 def test_parse_color_string_invalid(value: str) -> None:
-
     with pytest.raises(ColorLookupError):
         parse_color_string(value)
 
@@ -74,7 +73,6 @@ def test_colortuple_to_name(value: Tuple[int, int, int], expected: str) -> None:
 def test_colortuple_to_name_unknown_color(
     color: Tuple[int, int, int], expected
 ) -> None:
-
     result = colortuple_to_name(color)
     assert result == expected
 

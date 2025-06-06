@@ -1,5 +1,4 @@
-""" EPOS Busylight Support
-"""
+"""EPOS Busylight Support"""
 
 from .epos import EPOSBusylight
 

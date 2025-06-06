@@ -1,5 +1,4 @@
-""" Luxafor Bluetooth
-"""
+"""Luxafor Bluetooth"""
 
 from typing import Dict, Tuple
 

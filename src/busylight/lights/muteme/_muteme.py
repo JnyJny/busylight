@@ -1,11 +1,8 @@
-""" MuteMe Implementation Details
-"""
+"""MuteMe Implementation Details"""
 
 from typing import Tuple
 
-from bitvector import BitVector, BitField, ReadOnlyBitField
-
-from loguru import logger
+from bitvector import BitField, BitVector, ReadOnlyBitField
 
 
 class Header(ReadOnlyBitField):

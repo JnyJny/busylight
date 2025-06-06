@@ -1,6 +1,4 @@
-"""Embrava Blynclight Mini Support
-
-"""
+"""Embrava Blynclight Mini Support"""
 
 from typing import Dict, Tuple
 

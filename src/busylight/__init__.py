@@ -1,6 +1,4 @@
-"""Control USB Attached Lights with Style!
-
-"""
+"""Control USB Attached Lights with Style!"""
 
 try:
     from importlib.metadata import distribution

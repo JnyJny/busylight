@@ -1,9 +1,6 @@
-"""
-"""
+""" """
 
 from typing import Dict, Tuple
-
-from loguru import logger
 
 from ..seriallight import SerialLight
 
@@ -22,7 +19,6 @@ class MuteSync(SerialLight):
     @classmethod
     def claims(cls, light_info: dict) -> bool:
         """Returns True if the light_info describes a MuteSync Button."""
-
         # Addresses issue #356 where MuteSync claims another device with
         # a SiliconLabs CP2102 USB to Serial controller that is not a MuteSync
         # device.
@@ -34,7 +30,6 @@ class MuteSync(SerialLight):
         return claim and product
 
     def __bytes__(self) -> bytes:
-
         buf = [65] + [*self.color] * 4
 
         return bytes(buf)

@@ -1,6 +1,4 @@
-""" Agile Innovative BlinkStick Support
-"""
-
+"""Agile Innovative BlinkStick Support"""
 
 from .blinkstick import BlinkStick
 

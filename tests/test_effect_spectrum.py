@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import pytest
 from busylight.effects import Spectrum
@@ -21,8 +20,9 @@ def test_spectrum_init(
     width,
     count,
 ) -> None:
-
-    instance = Spectrum(duty_cycle, scale, steps, frequency, phase, center, width, count)
+    instance = Spectrum(
+        duty_cycle, scale, steps, frequency, phase, center, width, count
+    )
 
     assert instance.name == "Spectrum"
 

@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from enum import IntEnum
 from typing import Tuple
@@ -116,7 +115,6 @@ class Instruction(BitVector):
 
         :return: Instruction
         """
-
         instruction = cls()
         instruction.cmd_hi = OpCode.Boot
         return instruction
@@ -158,7 +156,8 @@ class Instruction(BitVector):
     @property
     def color(self) -> Tuple[int, int, int]:
         r, g, b = map(
-            lambda v: int((v / 100) * 0xFF), (self.red, self.green, self.blue)
+            lambda v: int((v / 100) * 0xFF),
+            (self.red, self.green, self.blue),
         )
         return (r, g, b)
 

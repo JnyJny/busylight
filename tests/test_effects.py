@@ -1,12 +1,10 @@
-"""
-"""
+""" """
 
 import pytest
 from busylight.effects import Blink, Effects, Gradient, Spectrum, Steady
 
 
 def test_effects_classmethod_subclasses():
-
     subclasses = Effects.subclasses()
     assert isinstance(subclasses, dict)
     for name, subclass in subclasses.items():
@@ -29,13 +27,11 @@ def test_effects_classmethod_subclasses():
     ],
 )
 def test_effects_classmethod_for_name(name, expected) -> None:
-
     result = Effects.for_name(name)
     assert result == expected
 
 
 @pytest.mark.parametrize("name", ["foo", "bar", "baz"])
 def test_effects_classmethod_for_name_unknown(name) -> None:
-
     with pytest.raises(ValueError):
         result = Effects.for_name(name)

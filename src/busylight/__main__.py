@@ -41,10 +41,9 @@ def string_to_scaled_color(ctx: typer.Context, value: str) -> Tuple[int, int, in
     :param value: str
     :return: Tuple[int, int, int]
     """
-
     try:
         return parse_color_string(value, ctx.obj.dim)
-    except ColorLookupError as error:
+    except ColorLookupError:
         typer.secho(f"No color match for '{value}'", fg="red")
         raise typer.Exit(code=1) from None
 
@@ -100,7 +99,6 @@ def precommand_callback(
     ),
 ) -> None:
     """Control USB connected presense lights."""
-
     (logger.enable if debug else logger.disable)("busylight")
 
     options = ctx.ensure_object(GlobalOptions)
@@ -144,7 +142,7 @@ def turn_lights_on(
         manager.on(color, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound as error:
+    except NoLightsFound:
         typer.secho("No lights to turn on.", fg="red")
         raise typer.Exit() from None
 
@@ -155,7 +153,7 @@ def turn_lights_off(ctx: typer.Context) -> None:
     logger.info("deactivating lights")
     try:
         manager.off(ctx.obj.lights)
-    except NoLightsFound as error:
+    except NoLightsFound:
         typer.secho("No lights to turn off.", fg="red")
 
 
@@ -185,7 +183,7 @@ def blink_lights(
         manager.apply_effect(blink, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound as error:
+    except NoLightsFound:
         typer.secho("Unable to blink lights.", fg="red")
         raise typer.Exit(code=1) from None
 
@@ -205,15 +203,17 @@ def rainbow_lights(
     """Display rainbow colors on specified lights."""
     logger.info("applying rainbow effect")
     rainbow = Effects.for_name("spectrum")(
-        speed.duty_cycle / 4, scale=ctx.obj.dim, count=count
+        speed.duty_cycle / 4,
+        scale=ctx.obj.dim,
+        count=count,
     )
 
     try:
         manager.apply_effect(rainbow, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound as error:
-        typer.secho(f"No rainbow for you.", fg="red")
+    except NoLightsFound:
+        typer.secho("No rainbow for you.", fg="red")
         raise typer.Exit(code=1) from None
 
 
@@ -241,8 +241,8 @@ def pulse_lights(
         manager.apply_effect(throb, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound as error:
-        typer.secho(f"Unable to pulse lights.", fg="red")
+    except NoLightsFound:
+        typer.secho("Unable to pulse lights.", fg="red")
         raise typer.Exit(code=1) from None
 
 
@@ -282,8 +282,8 @@ def flash_lights_impressively(
         manager.apply_effect(fli, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound as error:
-        typer.secho(f"Unable to flash lights impressively.", fg="red")
+    except NoLightsFound:
+        typer.secho("Unable to flash lights impressively.", fg="red")
         raise typer.Exit(code=1) from None
 
 
@@ -319,8 +319,8 @@ def list_available_lights(
                         typer.secho(v.decode("utf-8"), fg="red")
                         continue
                     typer.secho(v, fg="green")
-    except NoLightsFound as error:
-        typer.secho(f"No lights detected.", fg="red")
+    except NoLightsFound:
+        typer.secho("No lights detected.", fg="red")
         raise typer.Exit(code=1) from None
 
 
@@ -339,7 +339,6 @@ def list_supported_lights(
     supported_lights = Light.supported_lights()
 
     if not verbose:
-
         for vendor in sorted(Light.supported_lights()):
             typer.secho(vendor, fg="blue")
             for name in sorted(supported_lights[vendor]):
@@ -376,7 +375,6 @@ def generate_udev_rules(
     Users are encouraged to tailor these rules to suit their security
     needs.
     """
-
     logger.info(f"generating udev rules: {output}")
 
     rules = Light.udev_rules()
@@ -405,7 +403,6 @@ def serve_http_api(
     ),
 ) -> None:
     """Serve a HTTP API to access available lights."""
-
     environ["BUSYLIGHT_DEBUG"] = str(debug)
 
     (logger.enable if debug else logger.disable)("busylight")

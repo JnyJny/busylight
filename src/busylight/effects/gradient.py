@@ -1,7 +1,5 @@
-"""a smooth color gradient for a given color.
-"""
+"""a smooth color gradient for a given color."""
 
-from itertools import cycle
 from typing import List, Tuple
 
 from .effect import BaseEffect
@@ -21,13 +19,11 @@ class Gradient(BaseEffect):
         step: int = 1,
         count: int = 0,
     ) -> None:
-        """
-        :param color: Tuple[int,int,int]
+        """:param color: Tuple[int,int,int]
         :param duty_cycle: float
         :param step: int defaults to 1.
         :param count: int defaults to 0, indicating no limit.
         """
-
         self.color = color
         self.duty_cycle = duty_cycle
         # XXX need to choose steps that make sense for scaled colors

@@ -1,9 +1,6 @@
-""" rainbows are fun!
-
-"""
+"""rainbows are fun!"""
 
 import math
-from itertools import cycle
 from typing import List, Tuple
 
 from ..color import scale_color
@@ -24,8 +21,7 @@ class Spectrum(BaseEffect):
         width: int = 127,
         count: int = 0,
     ) -> None:
-        """
-        The `scale` parameter scales the intensity of the generated colors.
+        """The `scale` parameter scales the intensity of the generated colors.
 
         :param duty_cycle: float
         :param scale: optional float
@@ -35,7 +31,6 @@ class Spectrum(BaseEffect):
         :param center: optional int
         :param width: optional int
         """
-
         self.duty_cycle = duty_cycle
         self.scale = max(0, min(scale, 1.0))
         self.steps = steps

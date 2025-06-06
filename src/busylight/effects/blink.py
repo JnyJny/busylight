@@ -1,7 +1,5 @@
-"""change a light between two colors with a short interval.
-"""
+"""change a light between two colors with a short interval."""
 
-from itertools import cycle
 from typing import List, Optional, Tuple
 
 from .effect import BaseEffect
@@ -24,7 +22,6 @@ class Blink(BaseEffect):
         :param off_color: Tuple[int,int,int] defaults to black.
         :param count: int defaults to 0, indicating no limit.
         """
-
         self.on_color = on_color
         self.off_color = off_color or (0, 0, 0)
         self.duty_cycle = duty_cycle

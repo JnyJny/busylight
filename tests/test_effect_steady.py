@@ -1,8 +1,6 @@
-"""
-"""
+""" """
 
 import pytest
-
 from busylight.effects import Steady
 
 
@@ -13,7 +11,6 @@ from busylight.effects import Steady
     ],
 )
 def test_effect_steady_init(color) -> None:
-
     instance = Steady(color)
 
     assert isinstance(instance, Steady)

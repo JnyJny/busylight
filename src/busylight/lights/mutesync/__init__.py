@@ -1,5 +1,4 @@
-""" MuteSync Device Support
-"""
+"""MuteSync Device Support"""
 
 from .mutesync import MuteSync
 

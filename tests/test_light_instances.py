@@ -1,9 +1,4 @@
-""" Test initializing instances of Light subclasses
-"""
-
-import pytest
-
-from busylight.lights import LightUnsupported
+"""Test initializing instances of Light subclasses"""
 
 import busylight.lights.agile_innovative.blinkstick
 import busylight.lights.compulab.fit_statusb
@@ -16,7 +11,8 @@ import busylight.lights.luxafor.bluetooth
 import busylight.lights.luxafor.flag
 import busylight.lights.luxafor.mute
 import busylight.lights.luxafor.orb
-
+import pytest
+from busylight.lights import LightUnsupported
 
 from . import BOGUS_DEVICE_ID, PHYSICAL_LIGHT_SUBCLASSES, LightType, MockDevice
 

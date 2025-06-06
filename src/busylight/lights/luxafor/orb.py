@@ -1,5 +1,5 @@
-""" Luxafor Orb
-"""
+"""Luxafor Orb"""
+
 from typing import Dict, Tuple
 
 from .flag import Flag

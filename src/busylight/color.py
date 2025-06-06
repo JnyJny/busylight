@@ -1,10 +1,8 @@
-"""
-"""
+""" """
 
-from typing import List, Tuple
+from typing import Tuple
 
 import webcolors
-
 from loguru import logger
 
 
@@ -32,12 +30,11 @@ def parse_color_string(value: str, scale: float = 1.0) -> Tuple[int, int, int]:
 
     Raises:
     - ColorLookupError
-    """
 
+    """
     scale = max(0.0, min(scale, 1.0))
 
     try:
-
         r, g, b = webcolors.name_to_rgb(value)
         return scale_color((r, g, b), scale)
     except ValueError as error:
@@ -88,6 +85,5 @@ def scale_color(
     :param scale: float
     :return: Tuple[int, int, int]
     """
-
     r, g, b = [max(0, min(255, round(v * scale))) for v in color]
     return (r, g, b)

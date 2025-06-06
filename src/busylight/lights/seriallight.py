@@ -1,6 +1,5 @@
 """USB Serial Light Support"""
 
-from functools import cached_property
 from typing import List
 
 from loguru import logger
@@ -50,8 +49,8 @@ class SerialLight(Light):
 
         Raises:
         - _UnrecognizedDevice
-        """
 
+        """
         if not device.vid and not device.pid:
             raise _UnrecognizedDevice(device)
 
@@ -67,7 +66,6 @@ class SerialLight(Light):
 
     @classmethod
     def available_lights(cls) -> List[LightInfo]:
-
         available = []
 
         for device in list_ports.comports():
@@ -101,7 +99,6 @@ class SerialLight(Light):
 
     @property
     def is_pluggedin(self) -> bool:
-
         if not self.device.isOpen():
             return False
 
@@ -113,7 +110,6 @@ class SerialLight(Light):
         return False
 
     def acquire(self) -> None:
-
         try:
             self.device.open()
             logger.info(f"{self} open() succeeded")
@@ -122,6 +118,5 @@ class SerialLight(Light):
             raise LightUnavailable(self.path) from None
 
     def release(self) -> None:
-
         self.device.close()
         logger.info(f"{self} close succeeded")

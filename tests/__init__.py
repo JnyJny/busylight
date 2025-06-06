@@ -1,9 +1,8 @@
-"""
-"""
+""" """
 
 from typing import List, Tuple, Type, TypeVar
 
-from busylight.lights import Light, HIDLight, SerialLight
+from busylight.lights import HIDLight, Light, SerialLight
 
 LightType = Type[Light]
 LightTypes = List[LightType]

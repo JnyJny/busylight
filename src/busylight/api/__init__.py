@@ -1,5 +1,4 @@
-""" Web API for Busylight for Humans™
-"""
+"""Web API for Busylight for Humans™"""
 
 from loguru import logger
 

@@ -1,6 +1,4 @@
-"""Plantronics Status Indicator
-"""
-
+"""Plantronics Status Indicator"""
 
 from typing import Dict, Tuple
 

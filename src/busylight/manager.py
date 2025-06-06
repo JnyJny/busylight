@@ -3,13 +3,12 @@
 import asyncio
 from contextlib import suppress
 from functools import cached_property
-from typing import Dict, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 from loguru import logger
 
 from .effects import Effects
 from .lights import Light, LightUnavailable, NoLightsFound
-from .speed import Speed
 
 
 class LightManager:
@@ -25,7 +24,6 @@ class LightManager:
 
         :return: list[int]
         """
-
         if targets is None:
             return [0]
 
@@ -36,14 +34,12 @@ class LightManager:
                     start, _, end = target.partition(sep)
                     lights.extend(list(range(int(start), int(end) + 1)))
                     break
-                else:
-                    with suppress(ValueError):
-                        lights.append(int(target))
+                with suppress(ValueError):
+                    lights.append(int(target))
         return list(set(lights))
 
     def __init__(self, greedy: bool = True, lightclass: type = None):
-        """
-        :greedy: bool
+        """:greedy: bool
         :lightclass: Light or subclass
 
         If `greedy` is True, the default, then calls to the update
@@ -55,7 +51,6 @@ class LightManager:
         manage lights returned by `lightclass.all_lights()`. If the
         user does not supply a class, the default is `Light`.
         """
-
         self.greedy = greedy
 
         if lightclass is None:
@@ -71,12 +66,12 @@ class LightManager:
                 f"{self.__class__.__name__}(",
                 f"greedy={self.greedy}, ",
                 f"lightclass={self.lightclass!r})",
-            ]
+            ],
         )
 
     def __str__(self) -> str:
         return "\n".join(
-            [f"{n:3d} {light.name}" for n, light in enumerate(self.lights)]
+            [f"{n:3d} {light.name}" for n, light in enumerate(self.lights)],
         )
 
     def __len__(self) -> int:
@@ -108,9 +103,10 @@ class LightManager:
 
         Raises:
         - NoLightsFound
+
         """
         if not indices:
-            indices = range(0, len(self.lights))
+            indices = range(len(self.lights))
 
         selected_lights = []
         for index in indices:
@@ -153,7 +149,6 @@ class LightManager:
 
     def release(self) -> None:
         """Release managed lights."""
-
         # EJO Is this better than calling self._lights.clear()?
         #     This implementation forces the finalization of each
         #     light and adds some logging. I'm not sure it's
@@ -184,8 +179,8 @@ class LightManager:
 
         Raises:
         - NoLightsFound
-        """
 
+        """
         asyncio.run(self.on_supervisor(color, self.selected_lights(light_ids), timeout))
 
     async def on_supervisor(
@@ -204,6 +199,7 @@ class LightManager:
 
         Raises:
         - TimeoutError
+
         """
         awaitables = []
         for light in lights:
@@ -230,9 +226,10 @@ class LightManager:
 
         Raises:
         - NoLightsFound
+
         """
         asyncio.run(
-            self.effect_supervisor(effect, self.selected_lights(light_ids), timeout)
+            self.effect_supervisor(effect, self.selected_lights(light_ids), timeout),
         )
 
     async def effect_supervisor(
@@ -253,8 +250,8 @@ class LightManager:
 
         Raises:
         - TimoutError if a timeout is specified and effects are still running.
-        """
 
+        """
         awaitables = []
         for light in lights:
             light.cancel_tasks()
@@ -276,10 +273,10 @@ class LightManager:
 
         *Note*: This method is not asynchronnous as all known lights
                 deactive without excessive software mediation and drama.
-        """
 
+        """
         for light in self.selected_lights(lights):
             try:
                 light.off()
-            except LightUnavailable as error:
+            except LightUnavailable:
                 logger.debug("{light} is {error}")

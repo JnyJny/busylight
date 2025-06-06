@@ -1,11 +1,9 @@
-""" Embrava Blynclight Support
-"""
+"""Embrava Blynclight Support"""
 
 from typing import Dict, Tuple
 
 from ..hidlight import HIDLight
 from ..light import LightInfo
-
 from ._blynclight import Command
 
 
@@ -28,13 +26,11 @@ class Blynclight(HIDLight):
         reset: bool = True,
         exclusive: bool = True,
     ) -> None:
-
         self.command = Command()
 
         super().__init__(light_info, reset=reset, exclusive=exclusive)
 
     def on(self, color: Tuple[int, int, int]) -> None:
-
         with self.batch_update():
             self.command.off = 0
             self.color = color

@@ -1,6 +1,6 @@
-""" Embrava Blynclight Implementation Details
-"""
-from bitvector import BitVector, BitField, ReadOnlyBitField
+"""Embrava Blynclight Implementation Details"""
+
+from bitvector import BitField, BitVector, ReadOnlyBitField
 
 
 class Header(ReadOnlyBitField):

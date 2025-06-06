@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 from enum import IntEnum
 from typing import Tuple
@@ -10,8 +9,10 @@ from bitvector import BitField, BitVector
 class Action(IntEnum):
     SetColor = 0x1202
 
+
 class Report(IntEnum):
     One = 1
+
 
 class ReportField(BitField):
     """An 8-bit report field."""
@@ -24,8 +25,10 @@ class ActionField(BitField):
 class ColorField(BitField):
     """An 8-bit color value."""
 
+
 class OnField(BitField):
     """A 1-bit field that toggles the light on."""
+
 
 class Command(BitVector):
     """"""
@@ -46,7 +49,6 @@ class Command(BitVector):
     blue2 = ColorField(8, 8)
 
     on = OnField(0, 8)
-    
 
     def set_color(
         self,
@@ -57,8 +59,8 @@ class Command(BitVector):
         self.report = Report.One
         self.action = Action.SetColor
         self.color = color
-        self.on = 0 if color == (0,0,0) else 1
-        
+        self.on = 0 if color == (0, 0, 0) else 1
+
     @property
     def color(self) -> Tuple[int, int, int]:
         return (self.red, self.green, self.blue)

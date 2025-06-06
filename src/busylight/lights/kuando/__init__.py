@@ -1,5 +1,4 @@
-""" Kuando Busylight Support
-"""
+"""Kuando Busylight Support"""
 
 from .busylight_alpha import Busylight_Alpha
 from .busylight_omega import Busylight_Omega

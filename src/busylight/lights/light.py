@@ -13,11 +13,11 @@ to know specifics of the particular device attached to the computer.
 """
 
 import abc
-import asyncio
 import platform
+from collections.abc import Generator
 from contextlib import contextmanager
-from functools import cached_property, lru_cache
-from typing import Any, Callable, Dict, Generator, List, Tuple, Type, Union
+from functools import cache, cached_property
+from typing import Any, Callable, Dict, List, Tuple, Type, Union
 
 from loguru import logger
 
@@ -48,10 +48,9 @@ class Light(abc.ABC, TaskableMixin):
     """
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @cache
     def subclasses(cls) -> List[LightType]:
         """Return a list of Light subclasses implementing a physical light."""
-
         subclasses = []
 
         for subclass in cls.__subclasses__():
@@ -64,7 +63,6 @@ class Light(abc.ABC, TaskableMixin):
     @classmethod
     def supported_lights(cls) -> Dict[str, List[str]]:
         """Returns a dictionary of supported light names organized by vendor."""
-
         supported_lights = {}
 
         if cls._is_physical():
@@ -86,7 +84,6 @@ class Light(abc.ABC, TaskableMixin):
 
         If the returned list is empty, no supported lights were found.
         """
-
         # Note: Light's subclasses, HIDLight and SerialLight for now,
         #       are expected to implement device-specific
         #       available_light classmethods.
@@ -105,8 +102,8 @@ class Light(abc.ABC, TaskableMixin):
 
         Raises:
         busylight.lights.exceptions.InvalidLightInfo
-        """
 
+        """
         if cls._is_abstract():
             for subclass in cls.subclasses():
                 if subclass.claims(light_info):
@@ -134,7 +131,6 @@ class Light(abc.ABC, TaskableMixin):
         :return: List[Light]
 
         """
-
         all_lights = []
 
         if cls._is_abstract():
@@ -169,7 +165,6 @@ class Light(abc.ABC, TaskableMixin):
         busylight.lights.exceptions.NoLightsFound
 
         """
-
         if cls._is_abstract():
             for subclass in cls.subclasses():
                 for light_info in subclass.available_lights():
@@ -211,10 +206,9 @@ class Light(abc.ABC, TaskableMixin):
         raise NotImplementedError("supported_device_ids")
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @cache
     def unique_device_names(cls) -> List[str]:
         """A list of unique device names supported by this class."""
-
         if cls._is_physical():
             return list(set(cls.supported_device_ids().values()))
 
@@ -233,7 +227,6 @@ class Light(abc.ABC, TaskableMixin):
     @abc.abstractmethod
     def udev_rules(cls, mode: int = 0o0666) -> List[str]:
         """Returns a list of Linux UDEV subsystem rules for supported devices."""
-
         rules = []
 
         for subclass in cls.__subclasses__():
@@ -246,8 +239,7 @@ class Light(abc.ABC, TaskableMixin):
         reset: bool = True,
         exclusive: bool = True,
     ) -> None:
-        """
-        :light_info: dict Describes hardware details of light.
+        """:light_info: dict Describes hardware details of light.
         :reset:      bool Quiesce the light when acquired.
         :exclusive:  bool Light is owned exclusively by process.
 
@@ -277,8 +269,8 @@ class Light(abc.ABC, TaskableMixin):
         Raises:
         - InvalidLightInfo
         - LightUnsupported
-        """
 
+        """
         if not self.claims(light_info):
             raise LightUnsupported(light_info)
 
@@ -308,8 +300,8 @@ class Light(abc.ABC, TaskableMixin):
 
         Raises:
         - NotImplemented for non-Light subclasses
-        """
 
+        """
         if not isinstance(other, Light):
             return NotImplemented
 
@@ -318,7 +310,7 @@ class Light(abc.ABC, TaskableMixin):
                 self.vendor() == other.vendor(),
                 self.name == other.name,
                 str(self.path) == str(other.path),
-            ]
+            ],
         )
 
     def __lt__(self, other: object) -> bool:
@@ -329,8 +321,8 @@ class Light(abc.ABC, TaskableMixin):
 
         Raises:
         - NotImplemented for non-Light subclasses
-        """
 
+        """
         if not isinstance(other, Light):
             return NotImplemented
 
@@ -350,7 +342,6 @@ class Light(abc.ABC, TaskableMixin):
 
     def reset(self) -> None:
         """Turn off the light and cancel any running async tasks."""
-
         self.off()
         self.cancel_tasks()
 
@@ -390,7 +381,6 @@ class Light(abc.ABC, TaskableMixin):
 
     def on(self, color: Tuple[int, int, int]) -> None:
         """Activate the light with the supplied red, green, blue color tuple."""
-
         with self.batch_update():
             self.color = color
 
@@ -520,10 +510,10 @@ class Light(abc.ABC, TaskableMixin):
 
         Raises:
         - LightUnavailable
-        """
 
+        """
         data = bytes(self)
-        if self.platform in ["Windows_10","Windows_11"]:
+        if self.platform in ["Windows_10", "Windows_11"]:
             data = bytes([0x00]) + data
 
         with self.exclusive_access():
@@ -548,7 +538,9 @@ class Light(abc.ABC, TaskableMixin):
         """Acquire the device for use.
 
         Raises
+        ------
         - LightUnavailable
+
         """
 
     @abc.abstractmethod

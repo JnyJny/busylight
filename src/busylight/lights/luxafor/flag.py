@@ -1,5 +1,4 @@
-""" Luxafor Flag
-"""
+"""Luxafor Flag"""
 
 from typing import Dict, Tuple
 
@@ -7,8 +6,7 @@ from loguru import logger
 
 from ..hidlight import HIDLight
 from ..light import LightInfo
-
-from ._flag import Command, LEDS, Pattern, Wave
+from ._flag import LEDS, Command, Pattern, Wave
 
 
 class Flag(HIDLight):
@@ -24,7 +22,6 @@ class Flag(HIDLight):
 
     @classmethod
     def claims(cls, light_info: LightInfo) -> bool:
-
         if not super().claims(light_info):
             return False
 
@@ -42,7 +39,6 @@ class Flag(HIDLight):
         reset: bool = True,
         exclusive: bool = True,
     ) -> None:
-
         self.command = Command.Color
         self.leds = LEDS.All
         self.fade = 0
@@ -53,7 +49,6 @@ class Flag(HIDLight):
         super().__init__(light_info, reset=reset, exclusive=exclusive)
 
     def __bytes__(self) -> bytes:
-
         if self.command in [Command.Color, Command.Fade]:
             data = [
                 self.command,

@@ -1,11 +1,9 @@
 """USB Human Interface Device (HID) Light Support"""
 
 from functools import cached_property
-from typing import Any, Dict, List, Union
+from typing import List
 
 from loguru import logger
-
-import hid
 
 from .exceptions import LightUnavailable
 from .hid import Device as hid_device
@@ -33,7 +31,6 @@ class HIDLight(Light):
 
     @classmethod
     def available_lights(cls) -> List[LightInfo]:
-
         available = []
         for hidinfo in hid_enumerate():
             try:
@@ -53,7 +50,6 @@ class HIDLight(Light):
 
     @classmethod
     def udev_rules(cls, mode: int = 0o0666) -> List[str]:
-
         rules = []
 
         if cls._is_abstract():
@@ -88,7 +84,6 @@ class HIDLight(Light):
 
     @property
     def is_pluggedin(self) -> bool:
-
         try:
             results = self.read_strategy(8, timeout_ms=100)
             return True
@@ -97,7 +92,6 @@ class HIDLight(Light):
         return False
 
     def acquire(self) -> None:
-
         try:
             self.device.open_path(self.info["path"])
             logger.info(f"{self} open_path({self.path}) succeeded")
@@ -106,6 +100,5 @@ class HIDLight(Light):
             raise LightUnavailable(self.path) from None
 
     def release(self) -> None:
-
         self.device.close()
         logger.info(f"{self} close succeeded")
