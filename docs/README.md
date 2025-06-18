@@ -36,6 +36,7 @@ Human Interface Device (HID) application programming interface
 (API) or via a more traditional USB serial interface.
 
 - [Agile Innovative BlinkStick Family][6]
+- [BusyTag][10]
 - [Compulab fit-statUSB][9]
 - [Embrava Blynclight Family][2]
 - [Kuando BusyLight Family][3]
@@ -61,3 +62,4 @@ Human Interface Device (HID) application programming interface
 [7]: devices/muteme.md
 [8]: devices/mutesync.md
 [9]: devices/compulab.md
+[10]: devices/busytag.md
