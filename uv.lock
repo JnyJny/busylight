@@ -64,16 +64,16 @@ wheels = [
 
 [[package]]
 name = "busylight-core"
-version = "0.3.0"
+version = "0.3.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "hidapi" },
     { name = "loguru" },
     { name = "pyserial" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cc/e6/762ad82f26bd2cc52be9537bcaf251575a150eb1ab025b7255b398a1e950/busylight_core-0.3.0.tar.gz", hash = "sha256:7c6b9f25fb5983731bd97a50d5d4a15ea5d3695666cffd9da59cfaca4b28ecdf", size = 22561, upload-time = "2025-07-17T02:40:10.117Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/86/57/db3d506809e8aa922a8d07ffec4919220ee95c5166fbe7635ed0397a9e6c/busylight_core-0.3.3.tar.gz", hash = "sha256:65ca374867e978232d4943abe1042a102cf2736eb66862deb06badaa60014525", size = 22479, upload-time = "2025-07-17T17:37:53.617Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/df/b5/29dab516d99eae4077b8169a0262f548b734e9508a316a01236141bd13ab/busylight_core-0.3.0-py3-none-any.whl", hash = "sha256:4bc4e4ad22fba56d14a459a8cd10d2beb312b6d0ea4bd4f45abc33b7c743c568", size = 40244, upload-time = "2025-07-17T02:40:09.025Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/d0/d81af7cb60cff0382db46d613ef6d8e5a746395059ba5ed374d5756e8432/busylight_core-0.3.3-py3-none-any.whl", hash = "sha256:ace44058165955c5e83321a3af072e25bf536466710c6294d542de65e592a116", size = 40163, upload-time = "2025-07-17T17:37:52.343Z" },
 ]
 
 [[package]]
@@ -119,7 +119,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "bitvector-for-humans", specifier = ">=0.14.4" },
-    { name = "busylight-core", specifier = ">=0.3.0" },
+    { name = "busylight-core", specifier = ">=0.3.3" },
     { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.115.14" },
     { name = "fastapi", marker = "extra == 'webapi'", specifier = ">=0.115.12" },
     { name = "hidapi", specifier = ">=0.14.0.post4" },
