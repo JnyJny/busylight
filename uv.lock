@@ -91,6 +91,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+web = [
+    { name = "fastapi" },
+]
 webapi = [
     { name = "fastapi" },
     { name = "uvicorn" },
@@ -117,6 +120,7 @@ dev = [
 requires-dist = [
     { name = "bitvector-for-humans", specifier = ">=0.14.4" },
     { name = "busylight-core", specifier = ">=0.3.0" },
+    { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.115.14" },
     { name = "fastapi", marker = "extra == 'webapi'", specifier = ">=0.115.12" },
     { name = "hidapi", specifier = ">=0.14.0.post4" },
     { name = "loguru", specifier = ">=0.7.3" },
@@ -125,7 +129,7 @@ requires-dist = [
     { name = "uvicorn", marker = "extra == 'webapi'", specifier = ">=0.34.2" },
     { name = "webcolors", specifier = ">=24.11.1" },
 ]
-provides-extras = ["webapi"]
+provides-extras = ["webapi", "web"]
 
 [package.metadata.requires-dev]
 dev = [

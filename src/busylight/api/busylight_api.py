@@ -5,6 +5,7 @@ from os import environ
 from secrets import compare_digest
 from typing import Any, Callable, Dict, List
 
+from busylight_core import Light, LightUnavailableError, NoLightsFoundError
 from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -15,7 +16,6 @@ from .. import __version__
 from ..__main__ import GlobalOptions
 from ..color import ColorLookupError, colortuple_to_name, parse_color_string
 from ..effects import Effects
-from ..lights import Light, LightUnavailable, NoLightsFound
 from ..speed import Speed
 from .models import EndPoint, LightDescription, LightOperation
 
@@ -161,10 +161,10 @@ async def shutdown():
 
 ## Exception Handlers
 ##
-@busylightapi.exception_handler(LightUnavailable)
+@busylightapi.exception_handler(LightUnavailableError)
 async def light_unavailable_handler(
     request: Request,
-    error: LightUnavailable,
+    error: LightUnavailableError,
 ) -> JSONResponse:
     """Handle lights which are unavailable."""
     return JSONResponse(
@@ -173,10 +173,10 @@ async def light_unavailable_handler(
     )
 
 
-@busylightapi.exception_handler(NoLightsFound)
+@busylightapi.exception_handler(NoLightsFoundError)
 async def light_not_found_handler(
     request: Request,
-    error: NoLightsFound,
+    error: NoLightsFoundError,
 ) -> JSONResponse:
     """Handle light not found."""
     return JSONResponse(

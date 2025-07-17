@@ -45,6 +45,9 @@ webapi = [
     "fastapi>=0.115.12",
     "uvicorn>=0.34.2",
 ]
+web = [
+    "fastapi>=0.115.14",
+]
 
 [build-system]
 requires = ["hatchling"]
