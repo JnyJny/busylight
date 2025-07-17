@@ -5,12 +5,12 @@ from os import environ
 from typing import List, Optional, Tuple
 
 import typer
+from busylight_core import Light, NoLightsFoundError
 from loguru import logger
 
 from . import __version__
 from .color import ColorLookupError, parse_color_string
 from .effects import Effects
-from .lights import Light, NoLightsFound
 from .manager import LightManager
 from .speed import Speed
 

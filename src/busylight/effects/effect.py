@@ -6,9 +6,8 @@ from functools import lru_cache
 from itertools import cycle, islice
 from typing import Dict, List, Tuple
 
+from busylight_core import Light
 from loguru import logger
-
-from ..lights import Light
 
 
 class BaseEffect(abc.ABC):

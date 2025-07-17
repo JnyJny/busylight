@@ -8,9 +8,10 @@ authors = [
     { name = "JnyJny", email = "erik.oshaughnessy@gmail.com" }
 ]
 repository = "https://github.com/JnyJny/busylight.git"
-requires-python = ">=3.9,<4.0"
+requires-python = ">=3.11,<4.0"
 dependencies = [
     "bitvector-for-humans>=0.14.4",
+    "busylight-core>=0.3.0",
     "hidapi>=0.14.0.post4",
     "loguru>=0.7.3",
     "pyserial>=3.5",

@@ -5,10 +5,10 @@ from contextlib import suppress
 from functools import cached_property
 from typing import List, Optional, Tuple
 
+from busylight_core import Light, LightUnavailableError, NoLightsFoundError
 from loguru import logger
 
 from .effects import Effects
-from .lights import Light, LightUnavailable, NoLightsFound
 
 
 class LightManager:
