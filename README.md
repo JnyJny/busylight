@@ -12,9 +12,10 @@
 <br>
 
 [BusyLight for Humans™][0] gives you control of USB attached LED
-lights from a variety of vendors. Lights can be controlled via
-the command-line, using a HTTP API or imported directly into your own
-Python project.
+lights from a variety of vendors. Lights can be controlled via the
+command-line or using a HTTP API. Please consider [Busylight Core][1]
+if you'd like to integrate USB light control into your own Python
+application.
 
 ![All Supported Lights][DEMO]
 Flag<sup>1</sup>,
@@ -33,24 +34,22 @@ MuteSync<sup>13</sup>,
 Blynclight Plus<sup>14</sup>
 
 ## Features
-- Control lights from the [command-line][HELP].
-- Control lights via a [Web API][WEBAPI].
-- Import `busylight` into your own Python project.
+- Control lights from the command-line.
+- Control lights via HTTP API.
 - Supported on MacOS and Linux
-- Windows support is untested but there are reports that it is working.
-- Supports _ten_ vendors & seventeen devices:
+- Windows support is in progress.
+- Support for twenty-three devices from nine vendors:
 
-| **Vendor** | | | | |
-|------------:|---|---|---|---|
-| [**Agile Innovative**][2] | BlinkStick Square |
-| [**Busy Tag**][10] | Busy Tag |
+| **Vendor** |  **Models** |
+|------------|-------------|
+| [**Agile Innovative**][2] | BlinkStick, BlinkStick Pro, BlinkStick Square, BlinkStick Strip, BlinkStick Nano, BlickStick Flex |
 | [**Compulab**][8] | fit-statUSB |
-| [**Embrava**][3] | Blynclight | Blynclight Mini | Blynclight Plus |
-| [**Kuando**][4] | Busylight Alpha | BusyLight Omega |
-| [**Luxafor**][5] | Bluetooth | Flag | Mute | Orb |
+| [**EPOS**][11] | Busylight |
+| [**Embrava**][3] | Blynclight, Blynclight Mini, Blynclight Plus |
+| [**Kuando**][4] | Busylight Alpha, BusyLight Omega |
+| [**Luxafor**][5] | Bluetooth, Flag, Mute, Orb, Busy Tag |
 | [**Plantronics**][3] | Status Indicator |
-| [**MuteMe**][7] | MuteMe Original | Mute Mini |
-| [**MuteSync**][9] | MuteSync |
+| [**MuteMe**][7] | MuteMe Original, Mute Mini, MuteSync |
 | [**ThingM**][6] | Blink(1) |
 
 If you have a USB light that's not on this list open an issue with:
@@ -70,38 +69,47 @@ graciously and unexpectedly gifted me with two `blink(1) mk3` lights!
 Installs only the command-line `busylight` tool and associated
 modules.
 
+### **uvx**
 ```console
-$ python3 -m pip install busylight-for-humans 
+uvx --from busylight-for-humans busylight list
+```
+
+### **pip**
+```console
+python3 -m pip install busylight-for-humans 
 ```
 
 ## Web API Install
 
 Installs `uvicorn` and `FastAPI` in addition to `busylight`:
 
+### **uvx**
 ```console
-$ python3 -m pip install busylight-for-humans[webapi]
+uvx --from "busylight-for-humans[webapi] busyserve
+```
+
+### **pip**
+```console
+python3 -m pip install busylight-for-humans[webapi]
 ```
 
 ## Development Install
 
-I am in the process of switching from [poetry][poetry-docs] to the new hotness [uv][uv-docs].
-
-Like `poetry`, I use `uv` for:
+This project is managed using [uv][uv-docs] for:
 - dependency management
 - pytest configuration
 - versioning
 - optional dependencies
 - virtual environment creation
 - building packages
-- publishing packages to PyPi
+- publishing packages to PyPi via GitHub Actions
 
 
 ```console
 $ python3 -m pip install uv
 $ cd path/to/busylight
-$ uv venv .venv
+$ uv sync --all-extras
 $ source .venv/bin/activate
-<venv> $ uv sync --all-extras
 <venv> $ which busylight
 <venv> $ which busyserve
 <venv> $ pytest
@@ -221,63 +229,12 @@ for all API requests, set the `BUSYLIGHT_API_USER` and
 
 > :warning: **SECURITY WARNING**: HTTP Basic Auth sends usernames and passwords in *cleartext* (i.e., unencrypted). Use of SSL is highly recommended!
 
-## Code Examples
 
-Adding light support to your own python applications is easy!
-
-### Simple Case: Turn On a Single Light
-
-In this example, we pick an Embrava Blynclight to activate with
-the color white. Colors are specified as a three-tuple of integers
-that range from 0 to 255 and represent red, green, and blue
-in that order.
-
-```python
-from busylight.lights.embrava import Blynclight
-
-light = Blynclight.first_light()
-
-light.on((255, 255, 255))
-
-light.off()
-```
-
-Not sure what light you've got? No problem!
-
-```python
-from busylight.lights import Light
-
-light = Light.first_light()
-
-light.on((0xff, 0, 0xff))
-
-light.off()
-```
-
-### Slightly More Complicated
-
-The `busylight` package includes a manager class that's great for
-working with multiple lights or lights that require a little
-more direct intervention like the Kuando Busylight family.
-
-```python
-from busylight.manager import LightManager
-from busylight.effects import Effects
-
-manager = LightManager()
-for light in manager.lights:
-   print(light.name)
-   
-rainbow = Effects.for_name("spectrum")(duty_cycle=0.05)
-
-manager.apply_effect(rainbow)
-...
-manager.off()
-```
-
+<!-- End Links -->
 [0]: https://github.com/JnyJny/busylight
+[1]: https://github.com/JnyJny/busylight-core
 
-<!-- doc links -->
+<!-- Doc links -->
 [2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
 [3]: https://github.com/JnyJny/busylight/blob/master/docs/devices/embrava.md
 [4]: https://github.com/JnyJny/busylight/blob/master/docs/devices/kuando.md
@@ -287,11 +244,9 @@ manager.off()
 [8]: https://github.com/JnyJny/busylight/blob/master/docs/devices/compulab.md
 [9]: https://github.com/JnyJny/busylight/blob/master/docs/devices/mutesync.md
 [10]: https://github.com/JnyJny/busylight/blob/master/docs/devices/busytag.md
+[11]: https://github.com/JnyJny/busylight/blob/master/docs/devices/epos.md
 
 [LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightForHumans.png
-[HELP]: https://github.com/JnyJny/busylight/blob/master/docs/busylight.1.md
-[WEBAPI]: https://github.com/JnyJny/busylight/blob/master/docs/busylight_api.pdf
-
 
 <!-- [DEMO]: demo/demo-updated.gif -->
 [DEMO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/HerdOfLights.png
