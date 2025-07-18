@@ -354,7 +354,7 @@ def list_supported_lights(
 
         devices = [
             (vid, pid, name)
-            for (vid, pid), name in subclass.supported_device_ids().items()
+            for (vid, pid), name in subclass.supported_device_ids.items()
         ]
 
         for vid, pid, name in sorted(devices, key=lambda entry: entry[2]):
