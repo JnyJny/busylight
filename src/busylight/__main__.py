@@ -142,7 +142,7 @@ def turn_lights_on(
         manager.on(color, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound:
+    except NoLightsFoundError:
         typer.secho("No lights to turn on.", fg="red")
         raise typer.Exit() from None
 
@@ -153,7 +153,7 @@ def turn_lights_off(ctx: typer.Context) -> None:
     logger.info("deactivating lights")
     try:
         manager.off(ctx.obj.lights)
-    except NoLightsFound:
+    except NoLightsFoundError:
         typer.secho("No lights to turn off.", fg="red")
 
 
@@ -183,7 +183,7 @@ def blink_lights(
         manager.apply_effect(blink, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound:
+    except NoLightsFoundError:
         typer.secho("Unable to blink lights.", fg="red")
         raise typer.Exit(code=1) from None
 
@@ -212,7 +212,7 @@ def rainbow_lights(
         manager.apply_effect(rainbow, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound:
+    except NoLightsFoundError:
         typer.secho("No rainbow for you.", fg="red")
         raise typer.Exit(code=1) from None
 
@@ -241,7 +241,7 @@ def pulse_lights(
         manager.apply_effect(throb, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound:
+    except NoLightsFoundError:
         typer.secho("Unable to pulse lights.", fg="red")
         raise typer.Exit(code=1) from None
 
@@ -282,7 +282,7 @@ def flash_lights_impressively(
         manager.apply_effect(fli, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         manager.off(ctx.obj.lights)
-    except NoLightsFound:
+    except NoLightsFoundError:
         typer.secho("Unable to flash lights impressively.", fg="red")
         raise typer.Exit(code=1) from None
 
@@ -304,22 +304,14 @@ def list_available_lights(
         for light in manager.selected_lights(ctx.obj.lights):
             typer.secho(f"{manager.lights.index(light):3d} ", nl=False, fg="red")
             typer.secho(light.name, fg="green")
-            if not verbose:
-                continue
-            for k, v in light.info.items():
-                if k == "device_id":
-                    continue
+            if verbose:
+                for key, value in light.hardware.__dict__.items():
+                    if key == "handle":
+                        continue
+                    typer.secho(f"    {key}: ", nl=False, fg="black")
+                    typer.secho(f"{value}", fg="blue")
 
-                if v:
-                    typer.secho(f"   {k:>20s}:", nl=False)
-                    if isinstance(v, int):
-                        typer.secho(f"{v:04x}", fg="blue")
-                        continue
-                    if isinstance(v, bytes):
-                        typer.secho(v.decode("utf-8"), fg="red")
-                        continue
-                    typer.secho(v, fg="green")
-    except NoLightsFound:
+    except NoLightsFoundError:
         typer.secho("No lights detected.", fg="red")
         raise typer.Exit(code=1) from None
 
@@ -336,31 +328,27 @@ def list_supported_lights(
     """List supported lights."""
     logger.info("listing supported lights")
 
-    supported_lights = Light.supported_lights()
-
     if not verbose:
-        for vendor in sorted(Light.supported_lights()):
+        for vendor, names in Light.supported_lights().items():
             typer.secho(vendor, fg="blue")
-            for name in sorted(supported_lights[vendor]):
+            for name in names:
                 typer.secho("  - ", nl=False)
                 typer.secho(name, fg="green")
         raise typer.Exit()
 
-    prev_vendor = ""
+    supported_lights = {}
     for subclass in Light.subclasses():
-        if prev_vendor != subclass.vendor():
+        supported_lights.setdefault(subclass.vendor(), []).append(subclass)
+
+    for vendor, subclasses in supported_lights.items():
+        for subclass in subclasses:
+            if subclass.supported_device_ids is None:
+                continue
             typer.secho(subclass.vendor(), fg="blue")
-        prev_vendor = subclass.vendor()
-
-        devices = [
-            (vid, pid, name)
-            for (vid, pid), name in subclass.supported_device_ids.items()
-        ]
-
-        for vid, pid, name in sorted(devices, key=lambda entry: entry[2]):
-            typer.secho("  - ", nl=False)
-            typer.secho(f"0x{vid:04x}:0x{pid:04x}", fg="blue", nl=False)
-            typer.secho(f" {name}", fg="green")
+            for (vid, pid), name in subclass.supported_device_ids.items():
+                typer.secho("  - ", nl=False)
+                typer.secho(f"0x{vid:04x}:0x{pid:04x} ", fg="red", nl=False)
+                typer.secho(name, fg="green")
 
 
 @cli.command(name="udev-rules")

@@ -52,22 +52,10 @@ class LightManager:
         user does not supply a class, the default is `Light`.
         """
         self.greedy = greedy
-
-        if lightclass is None:
-            self._lightclass = Light
-        else:
-            if not issubclass(lightclass, Light):
-                raise TypeError(f"Not a Light subclass: {lightclass!r}")
-            self._lightclass = lightclass
+        self.lightclass = lightclass or Light
 
     def __repr__(self) -> str:
-        return "".join(
-            [
-                f"{self.__class__.__name__}(",
-                f"greedy={self.greedy}, ",
-                f"lightclass={self.lightclass!r})",
-            ],
-        )
+        return f"{self.__class__.__name__}(greedy={self.greedy}, lightclass={self.lightclass!r}"
 
     def __str__(self) -> str:
         return "\n".join(
@@ -86,10 +74,17 @@ class LightManager:
         """Light subclass used to locate lights, read-only."""
         return getattr(self, "_lightclass", Light)
 
+    @lightclass.setter
+    def lightclass(self, value: type[Light]) -> None:
+        if not isinstance(value, type):
+            msg = f"lightclass must be a Light subclass, not {value!r}"
+            raise ValueError(msg)
+        self._lightclass = value
+
     @cached_property
     def lights(self) -> List[Light]:
         """List of managed lights."""
-        return list(self.lightclass.all_lights(reset=False))
+        return sorted(self.lightclass.all_lights(reset=False))
 
     def selected_lights(self, indices: List[int] = None) -> List[Light]:
         """Return a list of Lights matching the list of `indices`.
@@ -102,11 +97,12 @@ class LightManager:
         :return: List[Light]
 
         Raises:
-        - NoLightsFound
+        - NoLightsFoundError
 
         """
+
         if not indices:
-            indices = range(len(self.lights))
+            return self.lights
 
         selected_lights = []
         for index in indices:
@@ -118,7 +114,7 @@ class LightManager:
         if selected_lights:
             return selected_lights
 
-        raise NoLightsFound(indices)
+        raise NoLightsFoundError(indices)
 
     def update(self) -> Tuple[int, int, int]:
         """Updates managed lights list.
@@ -178,7 +174,7 @@ class LightManager:
         :timeout: float seconds
 
         Raises:
-        - NoLightsFound
+        - NoLightsFoundError
 
         """
         asyncio.run(self.on_supervisor(color, self.selected_lights(light_ids), timeout))
@@ -225,7 +221,7 @@ class LightManager:
         :timeout: float seconds
 
         Raises:
-        - NoLightsFound
+        - NoLightsFoundError
 
         """
         asyncio.run(
@@ -269,7 +265,7 @@ class LightManager:
         :lights: List[int]
 
         Raises:
-        - NoLightsFound
+        - NoLightsFoundError
 
         *Note*: This method is not asynchronnous as all known lights
                 deactive without excessive software mediation and drama.
@@ -278,5 +274,5 @@ class LightManager:
         for light in self.selected_lights(lights):
             try:
                 light.off()
-            except LightUnavailable:
+            except LightUnavailableError:
                 logger.debug("{light} is {error}")
