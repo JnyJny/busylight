@@ -10,12 +10,11 @@ authors = [
 repository = "https://github.com/JnyJny/busylight.git"
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "bitvector-for-humans>=0.14.4",
     "busylight-core>=0.4.0",
     "hidapi>=0.14.0.post4",
     "loguru>=0.7.3",
     "pyserial>=3.5",
-    "typer>=0.15.4",
+    "typer>=0.16.0",
     "webcolors>=24.11.1",
 ]
 classifiers = [
@@ -42,7 +41,7 @@ busyserve = "busylight.__main__:webcli"
 
 [project.optional-dependencies]
 webapi = [
-    "fastapi>=0.115.12",
+    "fastapi>=0.115.14",
     "uvicorn>=0.34.2",
 ]
 web = [
@@ -59,18 +58,14 @@ packages = ["src/busylight"]
 [dependency-groups]
 dev = [
     "anyio>=4.9.0",
-    "black>=25.1.0",
     "coverage>=7.8.0",
     "httpx>=0.28.1",
-    "isort>=6.0.1",
-    "mypy>=1.15.0",
     "poethepoet>=0.34.0",
     "pytest>=8.3.5",
     "pytest-cov>=6.1.1",
     "pytest-mock>=3.14.0",
-    "requests>=2.32.3",
-    "ruff>=0.11.13",
-    "ty>=0.0.1a5",
+    "ruff>=0.12.4",
+    "ty>=0.0.1a15",
 ]
 
 [tool.poe.tasks]
@@ -82,10 +77,11 @@ coverage = [ "_generate_coverage", "_open_report"]
 
 # code quality
 
-mypy = "mypy --config-file pyproject.toml src/busylight"
+check.cmd = "ruff check src tests"
+format.cmd = "ruff format src tests"
 
-sort = "ruff check --select I --fix src/busylight tests"
-format = "ruff format src/busylight tests"
+ruff.sequence = [ "check", "format"]
+
 
 # requirements
 
