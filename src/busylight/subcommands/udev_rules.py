@@ -2,6 +2,7 @@
 
 import typer
 from busylight_core import Light
+from loguru import logger
 
 udev_rules_cli = typer.Typer(help="Generate udev rules for supported lights.")
 

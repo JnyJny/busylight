@@ -41,14 +41,10 @@ def pulse_lights(
 
     logger.info("Applying pulse effect.")
 
-    effect = Effects.for_name("gradient")(
-        speed.duty_cycle / 4,
-        scale=ctx.obj.dim,
-        count=count,
-    )
+    effect = Effects.for_name("gradient")(color, speed.duty_cycle / 16, 8, count=count)
 
     try:
-        ctx.obj.manager.apply(effect, ctx.obj.lights, timeout=ctx.obj.timeout)
+        ctx.obj.manager.apply_effect(effect, ctx.obj.lights, timeout=ctx.obj.timeout)
     except (KeyboardInterrupt, TimeoutError):
         ctx.obj.manager.off(ctx.obj.lights)
     except NoLightsFoundError:

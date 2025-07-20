@@ -32,8 +32,16 @@ def parse_color_string(value: str, scale: float = 1.0) -> tuple[int, int, int]:
     """
     scale = max(0.0, min(scale, 1.0))
 
-    if value.startswith("0x"):
+    if value.startswith("0x") or value.startswith("0X"):
         value = f"#{value[2:]}"
+
+    if value.startswith("#"):
+        try:
+            rgb = webcolors.hex_to_rgb(value)
+            return scale_color(rgb, scale)
+        except ValueError as error:
+            logger.debug(f"No match found for {value} -> {error}")
+            raise ColorLookupError(f"No color mapping for {value}") from error
 
     for spec in [
         webcolors.CSS3,
@@ -46,16 +54,6 @@ def parse_color_string(value: str, scale: float = 1.0) -> tuple[int, int, int]:
             return scale_color(rgb, scale)
         except ValueError as error:
             logger.info(f"name_to_rgb[{spec}] {value} ->  {error}")
-
-    for parse_color in [
-        webcolors.html5_parse_legacy_color,
-        webcolors.html5_parse_simple_color,
-    ]:
-        try:
-            rgb = parse_color(value)
-            return scale_color(rgb, scale)
-        except ValueError as error:
-            loggerinfo(f"[parse] {value} -> {error}")
 
     raise ColorLookupError(f"No color mapping for {value}")
 
