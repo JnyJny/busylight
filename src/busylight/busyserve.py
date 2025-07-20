@@ -3,6 +3,7 @@
 from os import environ
 
 import typer
+from loguru import logger
 
 try:
     import uvicorn
