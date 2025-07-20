@@ -37,7 +37,7 @@ classifiers = [
 
 [project.scripts]
 busylight = "busylight.__main__:cli"
-busyserve = "busylight.__main__:webcli"
+busyserve = "busylight.busyserve:busyserve_cli"
 
 [project.optional-dependencies]
 webapi = [

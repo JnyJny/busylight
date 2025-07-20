@@ -1,7 +1,5 @@
 """ """
 
-from typing import Tuple
-
 import webcolors
 from loguru import logger
 
@@ -10,7 +8,7 @@ class ColorLookupError(Exception):
     pass
 
 
-def parse_color_string(value: str, scale: float = 1.0) -> Tuple[int, int, int]:
+def parse_color_string(value: str, scale: float = 1.0) -> tuple[int, int, int]:
     """Convert a string to a 24-bit three channel (RGB) color.
 
     String values can be:
@@ -34,34 +32,43 @@ def parse_color_string(value: str, scale: float = 1.0) -> Tuple[int, int, int]:
     """
     scale = max(0.0, min(scale, 1.0))
 
-    try:
-        r, g, b = webcolors.name_to_rgb(value)
-        return scale_color((r, g, b), scale)
-    except ValueError as error:
-        logger.info(f"name_to_rgb {value} -> {error}")
+    if value.startswith("0x"):
+        value = f"#{value[2:]}"
 
-    value = value.lower().replace("0x", "#")
+    for spec in [
+        webcolors.CSS3,
+        webcolors.CSS2,
+        webcolors.CSS21,
+        webcolors.HTML4,
+    ]:
+        try:
+            rgb = webcolors.name_to_rgb(value, spec=spec)
+            return scale_color(rgb, scale)
+        except ValueError as error:
+            logger.info(f"name_to_rgb[{spec}] {value} ->  {error}")
 
-    if not value.startswith("#"):
-        value = "#" + value
-
-    try:
-        r, g, b = webcolors.hex_to_rgb(value)
-        return scale_color((r, g, b), scale)
-
-    except ValueError as error:
-        logger.error(f"{value} -> {error}")
+    for parse_color in [
+        webcolors.html5_parse_legacy_color,
+        webcolors.html5_parse_simple_color,
+    ]:
+        try:
+            rgb = parse_color(value)
+            return scale_color(rgb, scale)
+        except ValueError as error:
+            loggerinfo(f"[parse] {value} -> {error}")
 
     raise ColorLookupError(f"No color mapping for {value}")
 
 
-def colortuple_to_name(color: Tuple[int, int, int]) -> str:
-    """Returns a string name of the given Tuple[int, int, int] if found,
-    otherwise returns a normalized string represetnation of a 24-bit
-    hexadecimal number prefaced with an octothorpe.
+def colortuple_to_name(color: tuple[int, int, int]) -> str:
+    """Return a string name of the given tuple[int, int, int].
 
-    :color: Tuple[int, int, int]
-    :return: str
+    A RGB tuple is returned if found otherwise returns a normalized
+    string represetnation of a 24-bit hexadecimal number prefaced with
+    an octothorpe.
+
+    :param color: tuple[int, int, int]
+
     """
     try:
         return webcolors.rgb_to_name(color)
@@ -72,18 +79,24 @@ def colortuple_to_name(color: Tuple[int, int, int]) -> str:
 
 
 def scale_color(
-    color: Tuple[int, int, int],
+    color: tuple[int, int, int],
     scale: float = 1.0,
-) -> Tuple[int, int, int]:
-    """Returns a Tuple[int, int, int] whose color intensity scaled by the given value.
+) -> tuple[int, int, int]:
+    """Returns a tuple[int, int, int] whose color intensity scaled by the given value.
 
-    Each of the component values of the Tuple[int, int, int] are multiplied by scale
+    Each of the component values of the tuple[int, int, int] are multiplied by scale
     which is assumed to range from 0.0 to 1.0 corresponding to 0% to 100%
     intensitity.
 
-    :param color: Tuple[int, int, int]
-    :param scale: float
-    :return: Tuple[int, int, int]
+    :param color: tuple[int, int, int]
     """
+
+    if scale == 1.0:
+        return color
+
+    if scale == 0.0:
+        return (0, 0, 0)
+
     r, g, b = [max(0, min(255, round(v * scale))) for v in color]
+
     return (r, g, b)

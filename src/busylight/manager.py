@@ -3,7 +3,7 @@
 import asyncio
 from contextlib import suppress
 from functools import cached_property
-from typing import List, Optional, Tuple
+from typing import Optional
 
 from busylight_core import Light, LightUnavailableError, NoLightsFoundError
 from loguru import logger
@@ -13,7 +13,7 @@ from .effects import Effects
 
 class LightManager:
     @staticmethod
-    def parse_target_lights(targets: Optional[str]) -> List[int]:
+    def parse_target_lights(targets: Optional[str]) -> list[int]:
         """Parses the `targets` string to produce a list of indicies.
 
         The targets string may be:
@@ -38,24 +38,21 @@ class LightManager:
                     lights.append(int(target))
         return list(set(lights))
 
-    def __init__(self, greedy: bool = True, lightclass: type = None):
-        """:greedy: bool
-        :lightclass: Light or subclass
+    def __init__(self, lightclass: type = None):
+        """Initializes the LightManager.
 
-        If `greedy` is True, the default, then calls to the update
-        method will look for lights that have been plugged in since
-        the last update.
+        :param lightclass: Light or subclass
 
         If the caller supplies a `lightclass`, which is expected to
         be Light or a subclass, the light manager will only
         manage lights returned by `lightclass.all_lights()`. If the
         user does not supply a class, the default is `Light`.
         """
-        self.greedy = greedy
+
         self.lightclass = lightclass or Light
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(greedy={self.greedy}, lightclass={self.lightclass!r}"
+        return f"{self.__class__.__name__}(lightclass={self.lightclass!r}"
 
     def __str__(self) -> str:
         return "\n".join(
@@ -81,20 +78,23 @@ class LightManager:
             raise ValueError(msg)
         self._lightclass = value
 
-    @cached_property
-    def lights(self) -> List[Light]:
+    @property
+    def lights(self) -> list[Light]:
         """List of managed lights."""
-        return sorted(self.lightclass.all_lights(reset=False))
+        try:
+            return self._lights
+        except AttributeError:
+            self._lights = sorted(self.lightclass.all_lights(reset=False))
+            return self._lights
 
-    def selected_lights(self, indices: List[int] = None) -> List[Light]:
+    def selected_lights(self, indices: list[int] = None) -> list[Light]:
         """Return a list of Lights matching the list of `indices`.
 
         If `indices` is empty, all managed lights are returned.
 
         If there are no lights with matching indices, an empty list is returned.
 
-        :indices: List[int]
-        :return: List[Light]
+        :param indices: list[int]
 
         Raises:
         - NoLightsFoundError
@@ -116,11 +116,11 @@ class LightManager:
 
         raise NoLightsFoundError(indices)
 
-    def update(self) -> Tuple[int, int, int]:
+    def update(self, greedy: bool = True) -> tuple[int, int, int]:
         """Updates managed lights list.
 
         This method looks for newly plugged in lights if the greedy
-        property is True. It then surveys known lights, building a
+        argument is True. It then surveys known lights, building a
         count of plugged in lights and unplugged lights. New lights
         are appended to the end of the `lights` property in order to
         keep the light index order stable over the lifetime of the
@@ -131,7 +131,7 @@ class LightManager:
 
         :return: Tuple[# new lights, # active lights, # inactive lights]
         """
-        if self.greedy:
+        if greedy:
             new_lights = self.lightclass.all_lights()
             logger.debug(f"{len(new_lights)} new {new_lights}")
 
@@ -152,6 +152,8 @@ class LightManager:
         try:
             while self._lights:
                 light = self._lights.pop()
+                light.reset()
+                light.release()
                 del light
         except (IndexError, AttributeError) as error:
             logger.error(f"during release {error}")
@@ -163,14 +165,14 @@ class LightManager:
 
     def on(
         self,
-        color: Tuple[int, int, int],
-        light_ids: List[int] = None,
+        color: tuple[int, int, int],
+        light_ids: list[int] = None,
         timeout: float = None,
     ) -> None:
         """Turn on all the lights whose indices are in the `lights` list.
 
-        :color: Tuple[int,int,int]
-        :lights: List[int]
+        :color: tuple[int,int,int]
+        :lights: list[int]
         :timeout: float seconds
 
         Raises:
@@ -181,14 +183,14 @@ class LightManager:
 
     async def on_supervisor(
         self,
-        color: Tuple[int, int, int],
-        lights: List[Light],
+        color: tuple[int, int, int],
+        lights: list[Light],
         timeout: float = None,
         wait: bool = True,
     ) -> None:
         """Async monitor for activating specified lights with the given color.
 
-        :param color: Tuple[int, int, int]
+        :param color: tuple[int, int, int]
         :param lights: list[Light]
         :param timeout: float
         :param wait: bool
@@ -210,14 +212,14 @@ class LightManager:
     def apply_effect(
         self,
         effect: Effects,
-        light_ids: List[int] = None,
+        light_ids: list[int] = None,
         timeout: float = None,
     ) -> None:
         """Applies the given `effect` to all of the lights whose indices are
         in the `lights` list.
 
         :effect: FrameGenerator
-        :lights: List[int]
+        :lights: list[int]
         :timeout: float seconds
 
         Raises:
@@ -231,7 +233,7 @@ class LightManager:
     async def effect_supervisor(
         self,
         effect: Effects,
-        lights: List[Light],
+        lights: list[Light],
         timeout: float = None,
         wait: bool = True,
     ) -> None:
@@ -259,7 +261,7 @@ class LightManager:
             if pending:
                 raise TimeoutError(f"Effect {effect} timed out {timeout}")
 
-    def off(self, lights: List[int] = None) -> None:
+    def off(self, lights: list[int] = None) -> None:
         """Turn off all the lights whose indices are in the `lights` list.
 
         :lights: List[int]
@@ -274,5 +276,5 @@ class LightManager:
         for light in self.selected_lights(lights):
             try:
                 light.off()
-            except LightUnavailableError:
+            except LightUnavailableError as error:
                 logger.debug("{light} is {error}")
