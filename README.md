@@ -53,11 +53,8 @@ Blynclight Plus<sup>14</sup>
 | [**MuteMe**][7] | MuteMe Original, Mute Mini, MuteSync |
 | [**ThingM**][6] | Blink(1) |
 
-If you have a USB light that's not on this list [open an issue][busylight-core-issues] with:
- - the make and model device you want supported.
- - where one can be obtained.
- - public hardware documentation if any.
-
+Request support for a new device by [opening anissue][busylight-core-issues]
+in the Busylight Core project.
 
 ## Basic Install
 
@@ -234,7 +231,7 @@ graciously and unexpectedly gifted me with two `blink(1) mk3` lights!
 <!-- End Links -->
 [busylight-for-humans]: https://github.com/JnyJny/busylight
 [busylight-core]: https://github.com/JnyJny/busylight-core
-[busylight-core-issues]: https://github.com/JnyJny/busylight-core/issues
+[busylight-core-issues]: https://github.com/JnyJny/busylight-core/issues/new?template=4_new_device_request.yaml
 
 <!-- Doc links -->
 [2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
