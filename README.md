@@ -1,4 +1,5 @@
-<!-- USB HID API embrava blynclight agile innovative blinkstick kuando busylight omega alpha plantronics luxafor bluetooth bt flag mute orb thingM blink(1) muteme mutesync compulab fit-statusb -->
+<!-- agile-innovative blink(1) blinkstick bluetooth blynclight bt busylight busylight-alpha busylight-omega compulab embrava epos fit-statusb flag hid kuando luxafor mute muteme mutesync omega orb plantronics serial thingM usb --> 
+
 ![BusyLight Project Logo][LOGO]
 <br>
 
@@ -7,15 +8,15 @@
 ![Release Date][release-date]
 ![Python Version][python-version]
 ![License][license]
-![Code Style: black][code-style-black]
+![Code Style: ruff][code-style]
 ![Monthly Downloads][monthly-downloads]
 <br>
 
-[BusyLight for Humans™][0] gives you control of USB attached LED
-lights from a variety of vendors. Lights can be controlled via the
-command-line or using a HTTP API. Please consider [Busylight Core][1]
-if you'd like to integrate USB light control into your own Python
-application.
+[BusyLight for Humans™][busylight-for-humans] gives you control of USB
+attached LED lights from a variety of vendors. Lights can be
+controlled via the command-line or using a HTTP API. Please consider
+[Busylight Core][busylight-core] if you'd like to integrate USB light
+control into your own Python application.
 
 ![All Supported Lights][DEMO]
 Flag<sup>1</sup>,
@@ -52,17 +53,11 @@ Blynclight Plus<sup>14</sup>
 | [**MuteMe**][7] | MuteMe Original, Mute Mini, MuteSync |
 | [**ThingM**][6] | Blink(1) |
 
-If you have a USB light that's not on this list open an issue with:
- - the make and model device you want supported
- - where I can get one
- - any public hardware documentation you are aware of
- 
-Or even better, open a pull request!
+If you have a USB light that's not on this list [open an issue][busylight-core-issues] with:
+ - the make and model device you want supported.
+ - where one can be obtained.
+ - public hardware documentation if any.
 
-### Gratitude
-
-Thank you to [@todbot][todbot] and the very nice people at [ThingM][thingm] who
-graciously and unexpectedly gifted me with two `blink(1) mk3` lights!
 
 ## Basic Install
 
@@ -85,7 +80,7 @@ Installs `uvicorn` and `FastAPI` in addition to `busylight`:
 
 ### **uvx**
 ```console
-uvx --from "busylight-for-humans[webapi] busyserve
+uvx --from "busylight-for-humans[webapi]" busyserve
 ```
 
 ### **pip**
@@ -229,10 +224,17 @@ for all API requests, set the `BUSYLIGHT_API_USER` and
 
 > :warning: **SECURITY WARNING**: HTTP Basic Auth sends usernames and passwords in *cleartext* (i.e., unencrypted). Use of SSL is highly recommended!
 
+### Gratitude
+
+Thank you to [@todbot][todbot] and the very nice people at [ThingM][thingm] who
+graciously and unexpectedly gifted me with two `blink(1) mk3` lights!
+
+<hr>
 
 <!-- End Links -->
-[0]: https://github.com/JnyJny/busylight
-[1]: https://github.com/JnyJny/busylight-core
+[busylight-for-humans]: https://github.com/JnyJny/busylight
+[busylight-core]: https://github.com/JnyJny/busylight-core
+[busylight-core-issues]: https://github.com/JnyJny/busylight-core/issues
 
 <!-- Doc links -->
 [2]: https://github.com/JnyJny/busylight/blob/master/docs/devices/agile_innovative.md
@@ -246,28 +248,27 @@ for all API requests, set the `BUSYLIGHT_API_USER` and
 [10]: https://github.com/JnyJny/busylight/blob/master/docs/devices/busytag.md
 [11]: https://github.com/JnyJny/busylight/blob/master/docs/devices/epos.md
 
-[LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightForHumans.png
+<!-- Asset links -->
 
-<!-- [DEMO]: demo/demo-updated.gif -->
+[LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightForHumans.png
 [DEMO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/HerdOfLights.png
 
 <!-- Miscellaneous -->
 [BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
 [UDEV]: https://en.wikipedia.org/wiki/Udev
-[poetry-docs]: https://python-poetry.org/docs/
 [uv-docs]: https://docs.astral.sh/uv/
 [todbot]: https://github.com/todbot
 [thingm]: https://thingm.com
 
 <!-- badges -->
 
-[code-style-black]: https://img.shields.io/badge/code%20style-black-000000.svg
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmaster%2Fpyproject.toml
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
+[code-style]: https://img.shields.io/badge/ruff-yellow?style=flat-square&label=Style&link=https%3A%2F%2Fastral.sh%2Fruff
+
 [dependencies]: https://img.shields.io/librariesio/github/JnyJny/busylight
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
 [release-date]: https://img.shields.io/github/release-date/JnyJny/busylight
-
 [release-badge]: https://github.com/JnyJny/busylight/actions/workflows/release.yaml/badge.svg
 [release]: https://github.com/JnyJny/busylight/actions/workflows/release.yaml
