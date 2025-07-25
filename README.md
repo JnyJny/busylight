@@ -53,7 +53,7 @@ Blynclight Plus<sup>14</sup>
 | [**MuteMe**][7] | MuteMe Original, Mute Mini, MuteSync |
 | [**ThingM**][6] | Blink(1) |
 
-Request support for a new device by [opening anissue][busylight-core-issues]
+Request support for a new device by [opening an issue][busylight-core-issues]
 in the Busylight Core project.
 
 ## Basic Install
