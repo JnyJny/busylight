@@ -82,15 +82,6 @@ format.cmd = "ruff format src tests"
 
 ruff.sequence = [ "check", "format"]
 
-
-# requirements
-
-requirements = [
- { cmd = "uv -q export --output-file requirements.txt" },
- { cmd = "git add requirements.txt" },
- { cmd = "git commit -m 'requirements.txt updated from uv.lock'"},
-]
-
 # update version in pyproject
 
 _patch_bump = "uv version --bump patch"
@@ -117,20 +108,3 @@ publish = {ref = "publish_patch"}
 [[tool.poe.tasks.clean]]
 cmd = "rm -rf htmlcov dist busylight.egg-info *.log"
 
-[mypy]
-[mypy-webcolors]
-ignore_missing_imports = true
-[mypy-hid]
-ignore_missing_imports = true
-[mypy-fastapi]
-ignore_missing_imports = true
-[mypy-pydantic]
-ignore_missing_imports = true
-[mypy-uvicorn]
-ignore_missing_imports = true
-[mypy-loguru]
-ignore_missing_imports = true
-[mypy-bitvector]
-ignore_missing_imports = true
-[mypy-fastapi.responses]
-ignore_missing_imports = true
