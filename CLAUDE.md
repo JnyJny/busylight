@@ -1,116 +1,79 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working with this repository.
+
+## Overview
+
+User interfaces for USB LED lights via [busylight-core][busylight-core].
+Core handles device communication; this provides CLI and HTTP API.
 
 ## Development Commands
 
-### Environment Setup
+### Setup
 ```bash
-# Install uv package manager
 python3 -m pip install uv
-
-# Set up development environment
-uv venv .venv
-source .venv/bin/activate
-uv sync --all-extras
+uv venv .venv && source .venv/bin/activate && uv sync --all-extras
 ```
 
 ### Testing
 ```bash
-# Run all tests
-pytest
-
-# Run tests with coverage
-pytest --cov=./src/busylight --cov-report=html
-
-# Run specific test file
-pytest tests/test_manager.py
-
-# Run specific test function
-pytest tests/test_manager.py::test_function_name
+pytest                           # all tests
+poe coverage                     # tests with coverage + open report
+pytest tests/test_manager.py     # specific file
 ```
 
 ### Code Quality
 ```bash
-# Format code
-ruff format src/busylight tests
-
-# Fix import sorting
-ruff check --select I --fix src/busylight tests
-
-# Type checking
-mypy --config-file pyproject.toml src/busylight
-
-# Run all linting
-ruff check src/busylight tests
+poe format                       # format code
+poe check                        # lint code
+poe ruff                         # check + format
 ```
 
-### Build and Distribution
+### Build & Release
 ```bash
-# Build package
-uv build
-
-# Clean build artifacts
-rm -rf htmlcov dist busylight.egg-info *.log
+uv build                         # build package
+poe clean                        # clean artifacts
+poe requirements                 # update requirements.txt
+poe publish                      # patch version + publish
 ```
 
-### Project Scripts
-The project includes two main CLI tools:
-- `busylight` - Main CLI for controlling lights
-- `busyserve` - Web API server for HTTP control
+### Scripts
+- `busylight` - CLI for controlling lights
+- `busyserve` - Web API server
 
-## Architecture Overview
+## Architecture
 
-### Core Components
+Interface layer for [busylight-core][busylight-core] (handles device I/O).
 
-1. **Light Abstraction System**: The project uses an ABC-based system where `Light` is the base abstract class that all physical light implementations inherit from. Light subclasses are automatically discovered via `__subclasses__()`.
+### Components
 
-2. **Device Categories**: 
-   - **HIDLight**: USB HID-based devices (most common)
-   - **SerialLight**: Serial port-based devices
-   - Physical light classes inherit from these base classes
+#### Core Integration
+`busylight-core` handles device discovery, USB/Serial communication, vendor protocols
 
-3. **Vendor Support**: Each vendor has its own package under `src/busylight/lights/` with device-specific implementations:
-   - `embrava/` - Blynclight series
-   - `kuando/` - Busylight Alpha/Omega
-   - `luxafor/` - Flag, Mute, Orb, Bluetooth
-   - `thingm/` - Blink(1) devices
-   - `agile_innovative/` - BlinkStick
-   - `muteme/`, `mutesync/`, `compulab/`, `plantronics/`, `busytag/`
+#### Interfaces
+CLI (`busylight`) and HTTP API (`busyserve`) 
 
-4. **Effects System**: `BaseEffect` abstract class with implementations for:
-   - `Steady` - solid color
-   - `Blink` - on/off blinking
-   - `Spectrum` - rainbow cycling
-   - `Gradient` - color transitions
+#### Effects
+Steady, Blink, Spectrum, Gradient
 
-5. **Manager System**: `LightManager` handles multiple lights with:
-   - Device discovery and enumeration
-   - Async task management via `TaskableMixin`
-   - Batch operations across multiple devices
-   - Device state monitoring (plugged/unplugged)
+#### Manager
+`LightManager` coordinates multiple lights, async tasks, batching
 
-6. **Web API**: FastAPI-based REST interface in `api/` directory with Pydantic models for validation.
+#### Web API
+FastAPI + Pydantic in `api/`
 
-### Key Design Patterns
+### Patterns
+- Facade/Adapter for busylight-core
+- Async effects for non-blocking operation
 
-- **Factory Pattern**: `Light.first_light()` and `Light.all_lights()` for device discovery
-- **Strategy Pattern**: Different read/write strategies for HID vs Serial devices
-- **Context Manager**: `exclusive_access()` and `batch_update()` for device I/O
-- **Async/Await**: Effects run as async tasks for non-blocking operation
-- **Plugin Architecture**: Vendor-specific implementations auto-discovered via inheritance
+### Platform
+- macOS/Linux (primary), Windows (untested)
+- Linux needs udev rules
 
-### Platform Support
-- Primary: macOS and Linux
-- Windows: Untested but reported working
-- Linux requires udev rules for USB device access
+### Config
+- `pyproject.toml` + `uv`
+- Core: `busylight-core`
+- Optional: `webapi` group
+- Colors: RGB tuples, named colors, hex
 
-### Color System
-- RGB tuples: `(red, green, blue)` with values 0-255
-- Support for named colors via `webcolors` library
-- Hex color support: `#RRGGBB` format
-
-### Configuration
-- Uses `pyproject.toml` with `uv` for dependency management
-- Development dependencies include testing, linting, and type checking tools
-- Optional `webapi` dependency group for HTTP server functionality
+[busylight-core]: https://github.com/JnyJny/busylight-core
