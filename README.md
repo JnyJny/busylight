@@ -134,7 +134,7 @@ $ busylight on
 $ busylight on               # light turns on green
 $ busylight on red           # now it's shining a friendly red
 $ busylight on 0xff0000      # still red
-$ busylight on #00ff00       # now it's blue!
+$ busylight on #0000ff       # now it's blue!
 $ busylight blink            # it's slowly blinking on and off with a red color
 $ busylight blink green fast # blinking faster green and off
 $ busylight --all on         # turn all lights on green
