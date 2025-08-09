@@ -8,7 +8,6 @@ from loguru import logger
 from . import __version__
 from .busyserve import busyserve_cli
 from .callbacks import string_to_scaled_color
-from .effects import Effects
 from .global_options import GlobalOptions
 from .manager import LightManager
 from .speed import Speed

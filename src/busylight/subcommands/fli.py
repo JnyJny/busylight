@@ -49,13 +49,17 @@ def flash_lights_impressively(
 
     effect = Effects.for_name("blink")(
         on_color,
-        speed.duty_cycle / 10,
         off_color=off_color,
         count=count,
     )
 
     try:
-        ctx.obj.manager.apply_effect(effect, ctx.obj.lights, timeout=ctx.obj.timeout)
+        ctx.obj.manager.apply_effect(
+            effect,
+            duty_cycle=speed.duty_cycle / 10,
+            light_ids=ctx.obj.lights,
+            timeout=ctx.obj.timeout,
+        )
     except (KeyboardInterrupt, TimeoutError):
         ctx.obj.manager.off(ctx.obj.lights)
     except NoLightsFoundError:
