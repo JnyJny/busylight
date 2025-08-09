@@ -2,7 +2,7 @@
 
 import asyncio
 from contextlib import suppress
-from functools import cached_property
+from functools import cached_property, partial
 from typing import Optional
 
 from busylight_core import Light, LightUnavailableError, NoLightsFoundError
@@ -261,11 +261,10 @@ class LightManager:
 
         for light in lights:
             light.cancel_tasks()
-            effect.reset()
 
             task = light.add_task(
                 name=task_name,
-                func=effect.execute,
+                func=partial(effect.execute, light),
                 priority=effect.priority,
                 replace=True,
                 interval=interval if interval > 0 else None,
@@ -274,13 +273,17 @@ class LightManager:
 
         logger.debug(f"Started {len(awaitables)} effect tasks")
 
-        if awaitables and wait and timeout:
-            logger.debug("Waiting with timeout.")
-            done, pending = await asyncio.wait(awaitables, timeout=timeout)
-            if pending:
-                for task in pending:
-                    task.cancel()
-                raise TimeoutError(f"Effect {effect} timed out after {timeout}s")
+        if awaitables and wait:
+            if timeout:
+                logger.debug("Waiting with timeout.")
+                done, pending = await asyncio.wait(awaitables, timeout=timeout)
+                if pending:
+                    for task in pending:
+                        task.cancel()
+                    raise TimeoutError(f"Effect {effect} timed out after {timeout}s")
+            else:
+                logger.debug("Waiting indefinitely for tasks.")
+                await asyncio.wait(awaitables)
 
     def off(self, lights: list[int] = None) -> None:
         """Turn off all the lights whose indices are in the `lights` list.
