@@ -264,10 +264,10 @@ class LightManager:
 
             task = light.add_task(
                 name=task_name,
-                func=partial(effect.execute, light),
+                func=partial(effect.execute, light, interval),
                 priority=effect.priority,
                 replace=True,
-                interval=interval if interval > 0 else None,
+                interval=None,  # Effects handle their own timing internally
             )
             awaitables.append(task)
 

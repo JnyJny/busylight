@@ -97,28 +97,29 @@ class BaseEffect(abc.ABC):
     def default_interval(self) -> float:
         """Default interval between color changes in seconds."""
 
-    async def execute(self, light: "Light") -> None:
+    async def execute(self, light: "Light", interval: float | None = None) -> None:
         """Execute this effect on the given light.
 
-        This method is called by TaskableMixin and should handle
-        one iteration of the effect. TaskableMixin manages the
-        scheduling and repetition.
+        This method runs the full effect cycle similar to the original
+        generator-based approach but as a single long-running async function.
 
         :param light: Light instance with TaskableMixin capabilities
+        :param interval: Override default interval between color changes
         """
-        if not hasattr(self, "_color_cycle"):
-            if self.count > 0:
-                cycle_count = self.count * len(self.colors)
-                self._color_cycle = islice(cycle(self.colors), cycle_count)
-            else:
-                self._color_cycle = cycle(self.colors)
+        sleep_interval = interval if interval is not None else self.default_interval
+        
+        if self.count > 0:
+            cycle_count = self.count * len(self.colors)
+            color_iterator = islice(cycle(self.colors), cycle_count)
+        else:
+            color_iterator = cycle(self.colors)
 
         try:
-            color = next(self._color_cycle)
-            light.on(color)
-        except StopIteration:
+            for color in color_iterator:
+                light.on(color)
+                await asyncio.sleep(sleep_interval)
+        finally:
             light.off()
-            light.cancel_task(self.name.lower())
 
     def reset(self) -> None:
         """Reset the effect's internal state."""

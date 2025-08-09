@@ -26,7 +26,7 @@ class Steady(BaseEffect):
     def default_interval(self) -> float:
         return 0.0
 
-    async def execute(self, light: "Light") -> None:
+    async def execute(self, light: "Light", interval: float | None = None) -> None:
         """Execute steady color effect - just set the color once."""
         light.on(self.color)
-        light.cancel_task(self.name.lower())
+        # Steady effect doesn't loop, just sets color and exits
