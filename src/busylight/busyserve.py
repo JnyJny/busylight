@@ -5,15 +5,14 @@ from os import environ
 import typer
 from loguru import logger
 
+# Check if webapi dependencies are available, fail import if not
 try:
     import uvicorn
 except ImportError as error:
-    logger.error(f"import uvicorn failed: {error}")
-    typer.secho(
-        "The package `uvicorn` is missing, unable to serve the busylight API.",
-        fg="red",
-    )
-    raise typer.Exit(code=1) from None
+    raise ImportError(
+        "The package `uvicorn` is missing, unable to serve the busylight API. "
+        "Install with webapi extras: pip install busylight-for-humans[webapi]"
+    ) from error
 
 busyserve_cli = typer.Typer()
 
