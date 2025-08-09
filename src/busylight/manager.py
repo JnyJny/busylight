@@ -262,9 +262,15 @@ class LightManager:
         for light in lights:
             light.cancel_tasks()
 
+            # Create a wrapper function that matches TaskableMixin signature
+            def create_effect_task(target_light, effect_instance, effect_interval):
+                async def effect_task(taskable_instance):
+                    return await effect_instance.execute(target_light, effect_interval)
+                return effect_task
+
             task = light.add_task(
                 name=task_name,
-                func=partial(effect.execute, light, interval),
+                func=create_effect_task(light, effect, interval),
                 priority=effect.priority,
                 replace=True,
                 interval=None,  # Effects handle their own timing internally
