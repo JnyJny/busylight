@@ -7,7 +7,7 @@ from busylight_core import LightUnavailableError, NoLightsFoundError
 from loguru import logger
 
 from busylight.callbacks import string_to_scaled_color
-from busylight.effects import Effects
+from busylight.effects import Spectrum
 from busylight.speed import Speed
 
 rainbow_cli = typer.Typer()
@@ -34,14 +34,18 @@ def rainbow_lights(
     """LEDs lights love rainbows."""
     logger.info("Applying rainbow effect.")
 
-    effect = Effects.for_name("spectrum")(
-        speed.duty_cycle / 4,
+    effect = Spectrum(
         scale=ctx.obj.dim,
         count=count,
     )
 
     try:
-        ctx.obj.manager.apply_effect(effect, ctx.obj.lights, timeout=ctx.obj.timeout)
+        ctx.obj.manager.apply_effect(
+            effect,
+            duty_cycle=speed.duty_cycle / 4,
+            light_ids=ctx.obj.lights,
+            timeout=ctx.obj.timeout,
+        )
     except (KeyboardInterrupt, TimeoutError):
         ctx.obj.manager.off(ctx.obj.lights)
     except NoLightsFoundError:

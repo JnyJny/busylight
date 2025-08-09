@@ -2,7 +2,7 @@
 
 import asyncio
 from contextlib import suppress
-from functools import cached_property
+from functools import cached_property, partial
 from typing import Optional
 
 from busylight_core import Light, LightUnavailableError, NoLightsFoundError
@@ -152,10 +152,9 @@ class LightManager:
         try:
             while self._lights:
                 light = self._lights.pop()
-                light.reset()
                 light.release()
                 del light
-        except (IndexError, AttributeError) as error:
+        except (IndexError, AttributeError, LightUnavailableError) as error:
             logger.error(f"during release {error}")
 
         try:
@@ -212,54 +211,85 @@ class LightManager:
     def apply_effect(
         self,
         effect: Effects,
-        light_ids: list[int] = None,
-        timeout: float = None,
+        duty_cycle: float | None = None,
+        light_ids: list[int] | None = None,
+        timeout: float | None = None,
     ) -> None:
-        """Applies the given `effect` to all of the lights whose indices are
-        in the `lights` list.
+        """Apply the given effect to specified lights.
 
-        :effect: FrameGenerator
-        :lights: list[int]
-        :timeout: float seconds
+        :param effect: Effect instance to apply
+        :param duty_cycle: Override interval between effect iterations
+        :param light_ids: List of light indices to target, None for all
+        :param timeout: Maximum time to run effect in seconds
 
         Raises:
         - NoLightsFoundError
 
         """
+        interval = duty_cycle if duty_cycle is not None else effect.default_interval
+        logger.debug(
+            f"Applying {effect} with interval={interval} to lights {light_ids}"
+        )
+
         asyncio.run(
-            self.effect_supervisor(effect, self.selected_lights(light_ids), timeout),
+            self.effect_supervisor(
+                effect, interval, self.selected_lights(light_ids), timeout
+            )
         )
 
     async def effect_supervisor(
         self,
         effect: Effects,
+        interval: float,
         lights: list[Light],
-        timeout: float = None,
+        timeout: float | None = None,
         wait: bool = True,
     ) -> None:
-        """Builds a list of awaitable coroutines to perform the given `effect`
-        on each of the `lights` and awaits the exit of the coroutines (which
-        typically do not exit). If a timeout in seconds is specified, the
-        effect will stop at the end of the period.
+        """Apply effect to multiple lights using TaskableMixin.
 
-        :effect:
-        :lights: List[Light]
-        :timeout: float seconds
+        :param effect: Effect to apply
+        :param interval: Time interval between effect iterations
+        :param lights: List of lights to control
+        :param timeout: Optional timeout in seconds
+        :param wait: Whether to wait for completion
 
         Raises:
-        - TimoutError if a timeout is specified and effects are still running.
-
+        - TimeoutError if timeout exceeded
         """
         awaitables = []
+        task_name = effect.name.lower()
+
         for light in lights:
             light.cancel_tasks()
-            light.add_task(effect.name, effect)
-            awaitables.extend(light.tasks.values())
+
+            # Create a wrapper function that matches TaskableMixin signature
+            def create_effect_task(target_light, effect_instance, effect_interval):
+                async def effect_task(taskable_instance):
+                    return await effect_instance.execute(target_light, effect_interval)
+                return effect_task
+
+            task = light.add_task(
+                name=task_name,
+                func=create_effect_task(light, effect, interval),
+                priority=effect.priority,
+                replace=True,
+                interval=None,  # Effects handle their own timing internally
+            )
+            awaitables.append(task)
+
+        logger.debug(f"Started {len(awaitables)} effect tasks")
 
         if awaitables and wait:
-            done, pending = await asyncio.wait(awaitables, timeout=timeout)
-            if pending:
-                raise TimeoutError(f"Effect {effect} timed out {timeout}")
+            if timeout:
+                logger.debug("Waiting with timeout.")
+                done, pending = await asyncio.wait(awaitables, timeout=timeout)
+                if pending:
+                    for task in pending:
+                        task.cancel()
+                    raise TimeoutError(f"Effect {effect} timed out after {timeout}s")
+            else:
+                logger.debug("Waiting indefinitely for tasks.")
+                await asyncio.wait(awaitables)
 
     def off(self, lights: list[int] = None) -> None:
         """Turn off all the lights whose indices are in the `lights` list.

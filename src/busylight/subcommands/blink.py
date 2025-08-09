@@ -40,10 +40,15 @@ def blink_lights(
     """Blink lights."""
     logger.info("Blinking lights with color: {}", color)
 
-    effect = Effects.for_name("blink")(color, speed.duty_cycle, count=count)
+    effect = Effects.for_name("blink")(color, count=count)
 
     try:
-        ctx.obj.manager.apply_effect(effect, ctx.obj.lights, timeout=ctx.obj.timeout)
+        ctx.obj.manager.apply_effect(
+            effect,
+            duty_cycle=speed.duty_cycle,
+            light_ids=ctx.obj.lights,
+            timeout=ctx.obj.timeout,
+        )
     except (KeyboardInterrupt, TimeoutError):
         ctx.obj.manager.off(ctx.obj.lights)
     except NoLightsFoundError:

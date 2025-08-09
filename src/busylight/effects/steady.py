@@ -1,30 +1,32 @@
-""" """
+"""Steady color effect."""
 
-from typing import List, Tuple
+from typing import TYPE_CHECKING
+
+from busylight_core.mixins.taskable import TaskPriority
 
 from .effect import BaseEffect
 
+if TYPE_CHECKING:
+    from busylight_core import Light
+
 
 class Steady(BaseEffect):
-    def __init__(self, color: Tuple[int, int, int]) -> None:
+    def __init__(self, color: tuple[int, int, int]) -> None:
         self.color = color
+        self.priority = TaskPriority.NORMAL
 
     def __repr__(self) -> str:
         return f"{self.name}(color={self.color!r})"
 
     @property
-    def duty_cycle(self) -> float:
-        return 86400
-
-    @duty_cycle.setter
-    def duty_cycle(self, new_value) -> None:
-        pass
+    def colors(self) -> list[tuple[int, int, int]]:
+        return [self.color]
 
     @property
-    def colors(self) -> List[Tuple[int, int, int]]:
-        try:
-            return self._colors
-        except AttributeError:
-            pass
-        self._colors: List[Tuple[int, int, int]] = [self.color]
-        return self._colors
+    def default_interval(self) -> float:
+        return 0.0
+
+    async def execute(self, light: "Light", interval: float | None = None) -> None:
+        """Execute steady color effect - just set the color once."""
+        light.on(self.color)
+        # Steady effect doesn't loop, just sets color and exits

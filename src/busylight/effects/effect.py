@@ -1,19 +1,22 @@
-""" """
+"""Base class for all effects."""
 
 import abc
 import asyncio
-from functools import lru_cache
+from functools import cache
 from itertools import cycle, islice
-from typing import Dict, List, Tuple
+from typing import TYPE_CHECKING
 
-from busylight_core import Light
+from busylight_core.mixins.taskable import TaskPriority
 from loguru import logger
+
+if TYPE_CHECKING:
+    from busylight_core import Light
 
 
 class BaseEffect(abc.ABC):
     @classmethod
-    @lru_cache
-    def subclasses(cls) -> Dict[str, "BaseEffect"]:
+    @cache
+    def subclasses(cls) -> dict[str, "BaseEffect"]:
         """Returns a dictionary of Effect subclasses, keyed by name."""
         subclasses = {}
         if cls is BaseEffect:
@@ -33,7 +36,7 @@ class BaseEffect(abc.ABC):
 
     @classmethod
     def for_name(cls, name: str) -> "BaseEffect":
-        """Finds an effect subclass with the given name.
+        """Return an effect subclass with the given name.
 
         :param name: str
         :return: BaseEffect or subclass
@@ -47,25 +50,21 @@ class BaseEffect(abc.ABC):
         except KeyError:
             raise ValueError(f"Unknown effect {name}") from None
 
+    @classmethod
+    def effects(cls) -> list[str]:
+        """Return a list of effect names."""
+        return list(cls.subclasses().keys())
+
     def __repr__(self) -> str:
         return f"{self.name}(...)"
 
     def __str__(self) -> str:
-        return f"{self.name} duty_cycle={self.duty_cycle}"
+        return f"{self.name} count={self.count}"
 
     @property
     def name(self) -> str:
         """The name of this effect."""
         return self.__class__.__name__
-
-    @property
-    def duty_cycle(self) -> float:
-        """Interval in seconds for current frame of the effect to be displayed."""
-        return getattr(self, "_duty_cycle", 0)
-
-    @duty_cycle.setter
-    def duty_cycle(self, seconds: float) -> None:
-        self._duty_cycle = seconds
 
     @property
     def count(self) -> int:
@@ -80,22 +79,49 @@ class BaseEffect(abc.ABC):
         self._count = int(count)
 
     @property
+    def priority(self) -> TaskPriority:
+        """Task priority for this effect."""
+        return getattr(self, "_priority", TaskPriority.NORMAL)
+
+    @priority.setter
+    def priority(self, priority: TaskPriority) -> None:
+        self._priority = priority
+
+    @property
     @abc.abstractmethod
-    def colors(self) -> List[Tuple[int, int, int]]:
+    def colors(self) -> list[tuple[int, int, int]]:
         """A list of color tuples."""
 
-    async def __call__(self, light: Light) -> None:
-        """Apply this effect to the given light.
+    @property
+    @abc.abstractmethod
+    def default_interval(self) -> float:
+        """Default interval between color changes in seconds."""
 
-        :param light: Light
+    async def execute(self, light: "Light", interval: float | None = None) -> None:
+        """Execute this effect on the given light.
+
+        This method runs the full effect cycle similar to the original
+        generator-based approach but as a single long-running async function.
+
+        :param light: Light instance with TaskableMixin capabilities
+        :param interval: Override default interval between color changes
         """
+        sleep_interval = interval if interval is not None else self.default_interval
+        
         if self.count > 0:
             cycle_count = self.count * len(self.colors)
+            color_iterator = islice(cycle(self.colors), cycle_count)
         else:
-            cycle_count = None
+            color_iterator = cycle(self.colors)
 
-        for color in islice(cycle(self.colors), cycle_count):
-            light.on(color)
-            await asyncio.sleep(self.duty_cycle)
+        try:
+            for color in color_iterator:
+                light.on(color)
+                await asyncio.sleep(sleep_interval)
+        finally:
+            light.off()
 
-        light.off()
+    def reset(self) -> None:
+        """Reset the effect's internal state."""
+        if hasattr(self, "_color_cycle"):
+            delattr(self, "_color_cycle")

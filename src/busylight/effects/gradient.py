@@ -1,53 +1,61 @@
-"""a smooth color gradient for a given color."""
+"""A smooth color gradient for a given color."""
 
-from typing import List, Tuple
+from typing import TYPE_CHECKING
+
+from busylight_core.mixins.taskable import TaskPriority
 
 from .effect import BaseEffect
 
+if TYPE_CHECKING:
+    from busylight_core import Light
+
 
 class Gradient(BaseEffect):
-    """This effect will produce a color range from black to the given
-    color and then back to black again with the given number of steps
-    between off and on. If count is given and is greater than zero the
-    light will cycle thru the sequence count times.
+    """This effect produces a smooth color gradient from black to the given
+    color and then back to black again with the given number of steps.
+    If count is given and is greater than zero the light will cycle through
+    the sequence count times.
     """
 
     def __init__(
         self,
-        color: Tuple[int, int, int],
-        duty_cycle: float,
+        color: tuple[int, int, int],
         step: int = 1,
+        step_max: int = 255,
         count: int = 0,
     ) -> None:
-        """:param color: Tuple[int,int,int]
-        :param duty_cycle: float
-        :param step: int defaults to 1.
-        :param count: int defaults to 0, indicating no limit.
+        """Initialize gradient effect.
+
+        :param color: Target RGB color for the gradient
+        :param step: Step size for gradient calculation
+        :param step_max: Maximum step value, determines gradient smoothness
+        :param count: Number of gradient cycles, 0 means infinite
         """
         self.color = color
-        self.duty_cycle = duty_cycle
-        # XXX need to choose steps that make sense for scaled colors
-        #     where the max(color) << 255
-        self.step = max(0, min(step, 255))
+        self.step = max(1, min(step, step_max))
+        self.step_max = step_max
         self.count = count
+        self.priority = TaskPriority.LOW
 
     @property
-    def colors(self) -> List[Tuple[int, int, int]]:
-        try:
+    def colors(self) -> list[tuple[int, int, int]]:
+        if hasattr(self, "_colors"):
             return self._colors
-        except AttributeError:
-            pass
 
         red, green, blue = self.color
-
         colors = []
-        for i in range(1, 256, self.step):
-            scale = i / 255
+
+        for i in range(self.step, self.step_max + 1, self.step):
+            scale = i / self.step_max
             r = round(scale * red)
             g = round(scale * green)
             b = round(scale * blue)
             colors.append((r, g, b))
 
-        self._colors: List[Tuple[int, int, int]] = colors + list(reversed(colors[:-1]))
-
+        ramp_down = list(reversed(colors[:-1]))
+        self._colors: list[tuple[int, int, int]] = colors + ramp_down
         return self._colors
+
+    @property
+    def default_interval(self) -> float:
+        return 0.1
