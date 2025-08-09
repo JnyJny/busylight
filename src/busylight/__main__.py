@@ -6,7 +6,6 @@ import typer
 from loguru import logger
 
 from . import __version__
-from .busyserve import busyserve_cli
 from .callbacks import string_to_scaled_color
 from .global_options import GlobalOptions
 from .manager import LightManager
@@ -18,7 +17,13 @@ cli = typer.Typer()
 for subcommand in subcommands:
     cli.add_typer(subcommand)
 
-cli.add_typer(busyserve_cli)
+# Conditionally add busyserve CLI if webapi dependencies are available
+try:
+    from .busyserve import busyserve_cli
+    cli.add_typer(busyserve_cli)
+except ImportError:
+    # webapi extras not installed, skip busyserve functionality
+    pass
 
 webcli = typer.Typer()
 
