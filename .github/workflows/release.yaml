@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
   id-token: write
+  pull-requests: read
 
 jobs:
   test:
@@ -82,19 +83,20 @@ jobs:
       !endsWith(github.ref, '-test') &&
       success()
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: Auto-generate Changelog
-        uses: BobAnkh/auto-generate-changelog@v1.2.5
+          fetch-depth: 100  # Limit history fetch for performance
+      - name: Auto-generate Changelog  
+        uses: BobAnkh/auto-generate-changelog@v1.2.5  # Latest available version
         with:
           REPO_NAME: 'JnyJny/busylight'
           ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PATH: 'CHANGELOG.md'
           COMMIT_MESSAGE: 'docs(CHANGELOG): update release notes'
-          TYPE: 'feat:Feature,bug:Bug Fixes,fix:Bug Fixes,docs:Documentation,refactor:Refactor,perf:Performance Improvements'
+          TYPE: 'feat:Feature,fix:Bug Fixes,docs:Documentation,refactor:Refactor,perf:Performance Improvements'
 
   github-release:
     name: Create GitHub Release
@@ -105,12 +107,13 @@ jobs:
       !endsWith(github.ref, '-test') &&
       success()
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 50  # Limit history for performance
 
       - name: Install uv
         uses: astral-sh/setup-uv@v6
@@ -127,27 +130,24 @@ jobs:
           # Get the tag name
           TAG_NAME=${GITHUB_REF#refs/tags/}
           
-          # Get the previous tag
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${TAG_NAME}^ 2>/dev/null || echo "")
+          # Get the previous tag (limit to recent tags for performance)
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | head -n 2 | tail -n 1 2>/dev/null || echo "")
           
-          # Generate changelog
-          if [[ -n "$PREVIOUS_TAG" ]]; then
+          # Generate changelog with limited commits (last 50)
+          if [[ -n "$PREVIOUS_TAG" && "$PREVIOUS_TAG" != "$TAG_NAME" ]]; then
             echo "## Changes since $PREVIOUS_TAG" >> release_notes.md
             echo "" >> release_notes.md
-            git log --pretty=format:"- %s (%h)" ${PREVIOUS_TAG}..${TAG_NAME} >> release_notes.md
+            git log --max-count=50 --pretty=format:"- %s (%h)" ${PREVIOUS_TAG}..${TAG_NAME} >> release_notes.md
           else
-            echo "## Initial Release" >> release_notes.md
+            echo "## Release $TAG_NAME" >> release_notes.md
             echo "" >> release_notes.md
-            echo "- Initial release of busylight" >> release_notes.md
+            git log --max-count=20 --pretty=format:"- %s (%h)" >> release_notes.md
           fi
           
-          # Check if there's a CHANGELOG.md file
-          if [[ -f "CHANGELOG.md" ]]; then
-            echo "" >> release_notes.md
-            echo "## Full Changelog" >> release_notes.md
-            echo "" >> release_notes.md
-            echo "See [CHANGELOG.md](CHANGELOG.md) for complete release notes." >> release_notes.md
-          fi
+          # Add footer
+          echo "" >> release_notes.md
+          echo "---" >> release_notes.md
+          echo "**Full Changelog**: https://github.com/JnyJny/busylight/compare/${PREVIOUS_TAG}...${TAG_NAME}" >> release_notes.md
 
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
