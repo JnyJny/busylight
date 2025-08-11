@@ -5,6 +5,7 @@ from busylight_core import LightUnavailableError, NoLightsFoundError
 from loguru import logger
 
 from ..callbacks import string_to_scaled_color
+from .helpers import get_light_selection
 
 off_cli = typer.Typer()
 
@@ -16,6 +17,7 @@ def deactivate_lights(ctx: typer.Context) -> None:
     logger.info("Deactivating lights")
 
     try:
-        ctx.obj.manager.off(ctx.obj.lights)
+        selection = get_light_selection(ctx)
+        selection.turn_off()
     except NoLightsFoundError:
         typer.secho("No lights to turn off.", fg="red")

@@ -9,6 +9,7 @@ from loguru import logger
 from busylight.callbacks import string_to_scaled_color
 from busylight.effects import Effects
 from busylight.speed import Speed
+from .helpers import get_light_selection
 
 blink_cli = typer.Typer()
 
@@ -40,17 +41,12 @@ def blink_lights(
     """Blink lights."""
     logger.info("Blinking lights with color: {}", color)
 
-    effect = Effects.for_name("blink")(color, count=count)
-
     try:
-        ctx.obj.manager.apply_effect(
-            effect,
-            duty_cycle=speed.duty_cycle,
-            light_ids=ctx.obj.lights,
-            timeout=ctx.obj.timeout,
-        )
+        selection = get_light_selection(ctx)
+        selection.blink(color, count=count, speed=speed.name.lower())
     except (KeyboardInterrupt, TimeoutError):
-        ctx.obj.manager.off(ctx.obj.lights)
+        selection = get_light_selection(ctx)
+        selection.turn_off()
     except NoLightsFoundError:
         typer.secho("Unable to blink lights.", fg="red")
         raise typer.Exit(code=1)

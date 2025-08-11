@@ -9,6 +9,7 @@ from loguru import logger
 from busylight.callbacks import string_to_scaled_color
 from busylight.effects import Spectrum
 from busylight.speed import Speed
+from .helpers import get_light_selection
 
 rainbow_cli = typer.Typer()
 
@@ -40,14 +41,11 @@ def rainbow_lights(
     )
 
     try:
-        ctx.obj.manager.apply_effect(
-            effect,
-            duty_cycle=speed.duty_cycle / 4,
-            light_ids=ctx.obj.lights,
-            timeout=ctx.obj.timeout,
-        )
+        selection = get_light_selection(ctx)
+        selection.apply_effect(effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 4)
     except (KeyboardInterrupt, TimeoutError):
-        ctx.obj.manager.off(ctx.obj.lights)
+        selection = get_light_selection(ctx)
+        selection.turn_off()
     except NoLightsFoundError:
         typer.secho("Unable to rainbow lights.", fg="red")
         raise typer.Exit(code=1)

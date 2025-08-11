@@ -6,6 +6,8 @@ import typer
 from busylight_core import Light, LightUnavailableError, NoLightsFoundError
 from loguru import logger
 
+from .helpers import get_light_selection
+
 display_cli = typer.Typer()
 
 
@@ -24,7 +26,8 @@ def list_lights(
 
     logger.info("Listing connected lights.")
     try:
-        lights = ctx.obj.manager.selected_lights(ctx.obj.lights)
+        selection = get_light_selection(ctx)
+        lights = selection.lights
     except NoLightsFoundError:
         typer.secho("No lights detected.", fg="red")
         raise typer.Exit(code=1) from None

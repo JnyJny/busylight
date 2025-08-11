@@ -7,6 +7,7 @@ from busylight_core import LightUnavailableError, NoLightsFoundError
 from loguru import logger
 
 from busylight.callbacks import string_to_scaled_color
+from .helpers import get_light_selection
 
 on_cli = typer.Typer()
 
@@ -24,9 +25,11 @@ def activate_lights(
     logger.info("Activating lights with color: {}", color)
 
     try:
-        ctx.obj.manager.on(color, ctx.obj.lights, timeout=ctx.obj.timeout)
+        selection = get_light_selection(ctx)
+        selection.turn_on(color)
     except (KeyboardInterrupt, TimeoutError):
-        ctx.obj.manager.off(ctx.obj.lights)
+        selection = get_light_selection(ctx)
+        selection.turn_off()
     except NoLightsFoundError:
         typer.secho("No lights found.", fg="red")
         raise typer.Exit(code=1)

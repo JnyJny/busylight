@@ -8,7 +8,6 @@ from loguru import logger
 from . import __version__
 from .callbacks import string_to_scaled_color
 from .global_options import GlobalOptions
-from .manager import LightManager
 from .speed import Speed
 from .subcommands import subcommands
 
@@ -17,12 +16,11 @@ cli = typer.Typer()
 for subcommand in subcommands:
     cli.add_typer(subcommand)
 
-# Conditionally add busyserve CLI if webapi dependencies are available
 try:
     from .busyserve import busyserve_cli
+
     cli.add_typer(busyserve_cli)
 except ImportError:
-    # webapi extras not installed, skip busyserve functionality
     pass
 
 webcli = typer.Typer()
@@ -78,7 +76,14 @@ def precommand_callback(
     if ctx.invoked_subcommand == "list" and targets is None:
         all_lights = True
 
-    options.lights.extend(LightManager.parse_target_lights(targets))
+    # Parse light targets - simple conversion for now
+    if targets:
+        # Convert comma-separated string to list of indices
+        try:
+            options.lights = [int(x.strip()) for x in targets.split(',')]
+        except ValueError:
+            # If parsing fails, use empty list (all lights)
+            options.lights = []
 
     logger.info(f"version {__version__}")
     logger.info(f"timeout={options.timeout}")

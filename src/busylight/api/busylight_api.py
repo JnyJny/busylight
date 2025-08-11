@@ -13,8 +13,8 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from loguru import logger
 
 from .. import __version__
-from ..__main__ import GlobalOptions
 from ..color import ColorLookupError, colortuple_to_name, parse_color_string
+from ..controller import LightController
 from ..effects import Effects
 from ..speed import Speed
 from .models import EndPoint, LightDescription, LightOperation
@@ -33,8 +33,8 @@ busylightapi_security = HTTPBasic()
 class BusylightAPI(FastAPI):
     def __init__(self):
         # Get and save the debug flag
-        global_options = GlobalOptions(debug=environ.get("BUSYLIGHT_DEBUG", False))
-        logger.info(f"Debug: {global_options.debug}")
+        debug = environ.get("BUSYLIGHT_DEBUG", False)
+        logger.info(f"Debug: {debug}")
 
         dependencies = []
         logger.info("Set up authentication, if environment variables set.")
@@ -69,7 +69,7 @@ class BusylightAPI(FastAPI):
             f"CORS Access-Control-Allow-Origin list: {self.origins}",
         )
 
-        if (global_options.debug == True) and (self.origins == None):
+        if (debug == True) and (self.origins == None):
             logger.info(
                 'However, debug mode is enabled! Using debug mode CORS allowed origins: \'["http://localhost", "http://127.0.0.1"]\'',
             )
@@ -81,34 +81,32 @@ class BusylightAPI(FastAPI):
             version=__version__,
             dependencies=dependencies,
         )
-        self.lights: List[Light] = []
+        self.controller = LightController()
         self.endpoints: List[str] = []
 
+    @property
+    def lights(self) -> List[Light]:
+        """Get all lights for compatibility."""
+        return self.controller.lights
+
     def update(self) -> None:
-        self.lights.extend(Light.all_lights())
+        # Force refresh of lights in controller
+        _ = self.controller.lights
 
     def release(self) -> None:
-        for light in self.lights:
-            light.release()
-
-        self.lights.clear()
+        self.controller.release_lights()
 
     async def off(self, light_id: int = None) -> None:
-        lights = self.lights if light_id is None else [self.lights[light_id]]
-
-        for light in lights:
-            light.cancel_tasks()
-            light.off()
+        if light_id is None:
+            self.controller.all().turn_off()
+        else:
+            self.controller.by_index(light_id).turn_off()
 
     async def apply_effect(self, effect: Effects, light_id: int = None) -> None:
-        lights = self.lights if light_id is None else [self.lights[light_id]]
-
-        for light in lights:
-            # EJO cancel_tasks will cancel any keepalive tasks, but that's ok
-            #     since we are going to drive the light with an active effect
-            #     which will re-start any keepalive tasks if necessary.
-            light.cancel_tasks()
-            light.add_task(effect.name, effect)
+        if light_id is None:
+            self.controller.all().apply_effect(effect)
+        else:
+            self.controller.by_index(light_id).apply_effect(effect)
 
     def get(self, path: str, **kwargs) -> Callable:
         self.endpoints.append(path)
