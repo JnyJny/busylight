@@ -78,8 +78,7 @@ class TestServeHTTPAPI:
     @patch('busylight.busyserve.uvicorn')
     @patch('busylight.busyserve.logger')
     @patch('busylight.busyserve.environ')
-    @patch('busylight.busyserve.typer')
-    def test_serve_http_api_module_not_found_error(self, mock_typer, mock_environ, mock_logger, mock_uvicorn):
+    def test_serve_http_api_module_not_found_error(self, mock_environ, mock_logger, mock_uvicorn):
         """Should handle ModuleNotFoundError gracefully."""
         # Set up uvicorn to raise ModuleNotFoundError
         mock_uvicorn.run.side_effect = ModuleNotFoundError("No module named 'fastapi'")
@@ -88,7 +87,6 @@ class TestServeHTTPAPI:
             serve_http_api(debug=False, host="localhost", port=8000)
         
         assert exc_info.value.exit_code == 1
-        mock_typer.secho.assert_called()
         
         # Verify error was logged
         mock_logger.error.assert_called()

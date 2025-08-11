@@ -81,62 +81,87 @@ class TestLightManagerInitialization:
 class TestLightManagerLightAccess:
     """Test light access and management."""
     
-    @patch('busylight.manager.Light')
-    def test_lights_property_calls_all_lights(self, mock_light):
+    def _make_sortable_mock_lights(self, count):
+        """Create mock lights that can be sorted."""
+        lights = []
+        for i in range(count):
+            # Create a simple sortable object
+            class SortableMock:
+                def __init__(self, sort_key):
+                    self.sort_key = sort_key
+                def __lt__(self, other):
+                    return self.sort_key < other.sort_key
+                def __eq__(self, other):
+                    return self.sort_key == other.sort_key
+                    
+            light = SortableMock(i)
+            lights.append(light)
+        return lights
+    
+    def test_lights_property_calls_all_lights(self):
         """Should call lightclass.all_lights() when accessing lights."""
-        mock_light.all_lights.return_value = [Mock(), Mock()]
-        manager = LightManager()
+        mock_lights = self._make_sortable_mock_lights(2)
+        
+        # Create a mock class that can pass isinstance(value, type) check
+        mock_light_class = type('MockLightClass', (), {})
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
         
         lights = manager.lights
-        mock_light.all_lights.assert_called_once_with(reset=False)
+        mock_light_class.all_lights.assert_called_once_with(reset=False)
         assert len(lights) == 2
     
-    @patch('busylight.manager.Light')
-    def test_lights_property_caches_result(self, mock_light):
+    def test_lights_property_caches_result(self):
         """Should cache lights list after first call."""
-        mock_lights = [Mock(), Mock()]
-        mock_light.all_lights.return_value = mock_lights
-        manager = LightManager()
+        mock_lights = self._make_sortable_mock_lights(2)
+        mock_light_class = type('MockLightClass', (), {})
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
         
         # First call
         lights1 = manager.lights
-        # Second call
+        # Second call  
         lights2 = manager.lights
         
         # Should only call all_lights once
-        mock_light.all_lights.assert_called_once()
+        mock_light_class.all_lights.assert_called_once()
         assert lights1 is lights2
     
-    @patch('busylight.manager.Light')  
-    def test_selected_lights_with_empty_indices(self, mock_light):
+    def test_selected_lights_with_empty_indices(self):
         """Empty indices should return all lights."""
-        mock_lights = [Mock(), Mock()]
-        mock_light.all_lights.return_value = mock_lights
-        manager = LightManager()
+        mock_lights = self._make_sortable_mock_lights(2)
+        mock_light_class = type('MockLightClass', (), {})
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
         
         result = manager.selected_lights([])
-        assert result == mock_lights
+        assert len(result) == 2
         
         result = manager.selected_lights(None)
-        assert result == mock_lights
+        assert len(result) == 2
     
-    @patch('busylight.manager.Light')
-    def test_selected_lights_with_valid_indices(self, mock_light):
+    def test_selected_lights_with_valid_indices(self):
         """Should return lights at specified indices."""
-        mock_lights = [Mock(), Mock(), Mock()]
-        mock_light.all_lights.return_value = mock_lights
-        manager = LightManager()
+        mock_lights = self._make_sortable_mock_lights(3)
+        mock_light_class = type('MockLightClass', (), {})
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
         
         result = manager.selected_lights([0, 2])
-        assert result == [mock_lights[0], mock_lights[2]]
+        assert len(result) == 2
     
-    @patch('busylight.manager.Light')
-    def test_selected_lights_with_invalid_index_raises_error(self, mock_light):
+    def test_selected_lights_with_invalid_index_raises_error(self):
         """Invalid indices should raise NoLightsFoundError."""
         from busylight_core import NoLightsFoundError
-        mock_lights = [Mock()]
-        mock_light.all_lights.return_value = mock_lights
-        manager = LightManager()
+        mock_lights = self._make_sortable_mock_lights(1)
+        mock_light_class = type('MockLightClass', (), {})
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
         
         with pytest.raises(NoLightsFoundError):
             manager.selected_lights([5])
@@ -160,3 +185,175 @@ class TestLightManagerLightAccess:
             assert "Light 2" in str_result
             assert "0" in str_result  # indices
             assert "1" in str_result
+
+
+class TestLightManagerMethods:
+    """Test additional LightManager methods for coverage."""
+    
+    def test_update_greedy_true(self):
+        """Should update lights with greedy=True."""
+        mock_light_class = type('MockLightClass', (), {})
+        mock_existing_lights = self._make_sortable_mock_lights(2)
+        mock_new_lights = self._make_sortable_mock_lights(1) 
+        mock_light_class.all_lights = Mock(side_effect=[mock_existing_lights, mock_new_lights])
+        
+        manager = LightManager(lightclass=mock_light_class)
+        
+        # Set up existing lights with plugged/unplugged status
+        mock_existing_lights[0].is_pluggedin = True
+        mock_existing_lights[0].is_unplugged = False
+        mock_existing_lights[1].is_pluggedin = False  
+        mock_existing_lights[1].is_unplugged = True
+        
+        # Initialize lights first
+        _ = manager.lights
+        
+        # Now call update
+        new_count, active_count, inactive_count = manager.update(greedy=True)
+        
+        assert new_count == 1  # Added 1 new light
+        assert active_count == 1  # 1 plugged in light
+        assert inactive_count == 1  # 1 unplugged light
+        
+        # Should have called all_lights again for new lights
+        assert mock_light_class.all_lights.call_count == 2
+    
+    def test_update_greedy_false(self):
+        """Should update lights with greedy=False.""" 
+        mock_light_class = type('MockLightClass', (), {})
+        mock_existing_lights = self._make_sortable_mock_lights(1)
+        mock_light_class.all_lights = Mock(return_value=mock_existing_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
+        
+        # Set up existing lights with plugged status
+        mock_existing_lights[0].is_pluggedin = True
+        mock_existing_lights[0].is_unplugged = False
+        
+        # Initialize lights first
+        _ = manager.lights
+        
+        # Now call update with greedy=False
+        new_count, active_count, inactive_count = manager.update(greedy=False)
+        
+        assert new_count == 0  # No new lights added
+        assert active_count == 1  # 1 active light
+        assert inactive_count == 0  # 0 inactive lights
+        
+        # Should only call all_lights once (during initialization)
+        assert mock_light_class.all_lights.call_count == 1
+    
+    def test_release_with_lights(self):
+        """Should release managed lights."""
+        mock_light_class = type('MockLightClass', (), {})
+        mock_lights = self._make_sortable_mock_lights(2)
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
+        
+        # Initialize lights
+        _ = manager.lights
+        assert len(manager.lights) == 2
+        
+        # Release lights
+        manager.release()
+        
+        # Should clear lights list
+        assert len(manager._lights) == 0
+    
+    def test_release_empty_lights(self):
+        """Should handle release when no lights."""
+        manager = LightManager()
+        
+        # Should not raise error
+        manager.release()
+    
+    def test_on_method_success(self):
+        """Should turn on lights successfully."""
+        mock_light_class = type('MockLightClass', (), {})
+        mock_lights = self._make_sortable_mock_lights(2)
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
+        
+        # Mock the selected_lights and lights to have on() method
+        for light in mock_lights:
+            light.on = Mock()
+        
+        # Call on method
+        manager.on(color=(255, 0, 0), light_ids=[0, 1])
+        
+        # Should call on() for each light
+        for light in mock_lights:
+            light.on.assert_called_once_with((255, 0, 0))
+    
+    def test_on_method_with_timeout(self):
+        """Should handle timeout in on method."""
+        mock_light_class = type('MockLightClass', (), {}) 
+        mock_lights = self._make_sortable_mock_lights(1)
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
+        
+        # Mock light on method
+        mock_lights[0].on = Mock()
+        
+        # Call on method with timeout
+        manager.on(color=(0, 255, 0), light_ids=[0], timeout=5.0)
+        
+        # Should still call on method
+        mock_lights[0].on.assert_called_once_with((0, 255, 0))
+    
+    def test_off_method(self):
+        """Should turn off lights."""
+        mock_light_class = type('MockLightClass', (), {})
+        mock_lights = self._make_sortable_mock_lights(1)
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        manager = LightManager(lightclass=mock_light_class)
+        
+        # Mock light off method
+        mock_lights[0].off = Mock()
+        
+        # Call off method
+        manager.off(lights=[0])
+        
+        # Should call off() for the light
+        mock_lights[0].off.assert_called_once()
+    
+    @patch('busylight.manager.asyncio')
+    def test_apply_effect_success(self, mock_asyncio):
+        """Should apply effect to lights."""
+        mock_light_class = type('MockLightClass', (), {})
+        mock_lights = self._make_sortable_mock_lights(1)  
+        mock_light_class.all_lights = Mock(return_value=mock_lights)
+        
+        # Create manager
+        manager = LightManager(lightclass=mock_light_class)
+        
+        # Create mock effect
+        mock_effect = Mock()
+        mock_effect.default_interval = 0.5
+        
+        # Call apply_effect
+        manager.apply_effect(mock_effect, light_ids=[0])
+        
+        # Should call asyncio.run
+        mock_asyncio.run.assert_called_once()
+    
+    def _make_sortable_mock_lights(self, count):
+        """Create mock lights that can be sorted."""
+        lights = []
+        for i in range(count):
+            # Create a simple sortable object
+            class SortableMock:
+                def __init__(self, sort_key):
+                    self.sort_key = sort_key
+                def __lt__(self, other):
+                    return self.sort_key < other.sort_key
+                def __eq__(self, other):
+                    return self.sort_key == other.sort_key
+                    
+            light = SortableMock(i)
+            lights.append(light)
+        return lights

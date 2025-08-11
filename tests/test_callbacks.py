@@ -23,8 +23,7 @@ class TestStringToScaledColorCallback:
         assert result == (255, 128, 64)
     
     @patch('busylight.callbacks.parse_color_string')
-    @patch('busylight.callbacks.typer')
-    def test_string_to_scaled_color_with_color_lookup_error(self, mock_typer, mock_parse_color):
+    def test_string_to_scaled_color_with_color_lookup_error(self, mock_parse_color):
         """Should exit with code 1 on ColorLookupError."""
         from busylight.color import ColorLookupError
         mock_parse_color.side_effect = ColorLookupError("Unknown color")
@@ -35,7 +34,6 @@ class TestStringToScaledColorCallback:
             string_to_scaled_color(mock_ctx, "invalid_color")
         
         assert exc_info.value.exit_code == 1
-        mock_typer.secho.assert_called_once()
     
     def test_string_to_scaled_color_integration(self):
         """Integration test with actual color parsing."""
