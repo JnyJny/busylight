@@ -96,7 +96,7 @@ class BusylightAPI(FastAPI):
     def release(self) -> None:
         self.controller.release_lights()
 
-    async def off(self, light_id: int = None) -> None:
+    def off(self, light_id: int = None) -> None:
         if light_id is None:
             self.controller.all().turn_off()
         else:
@@ -146,13 +146,13 @@ busylightapi = BusylightAPI()
 @busylightapi.on_event("startup")
 async def startup():
     busylightapi.update()
-    await busylightapi.off()
+    busylightapi.off()
 
 
 @busylightapi.on_event("shutdown")
 async def shutdown():
     try:
-        await busylightapi.off()
+        busylightapi.off()
     except Exception:
         logger.debug("problem during shutdown: {error}")
 
@@ -365,7 +365,7 @@ async def light_off(
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
     """
-    await busylightapi.off(light_id)
+    busylightapi.off(light_id)
 
     return {
         "action": "off",
@@ -379,7 +379,7 @@ async def light_off(
 )
 async def lights_off() -> dict[str, Any]:
     """Turn off all lights."""
-    await busylightapi.off()
+    busylightapi.off()
 
     return {
         "action": "off",

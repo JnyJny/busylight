@@ -45,9 +45,14 @@ class LightSelection:
         """Turn off selected lights."""
         for light in self.lights:
             try:
+                # Cancel any running tasks (like blink) before turning off
+                light.cancel_tasks()
                 light.off()
             except LightUnavailableError as error:
                 logger.debug(f"Light unavailable during turn_off: {error}")
+            except AttributeError:
+                # Light doesn't support task cancellation, just turn off
+                light.off()
         return self
 
     def blink(
