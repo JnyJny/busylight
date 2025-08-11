@@ -244,7 +244,7 @@ async def light_status(
     return {
         "light_id": light_id,
         "name": light.name,
-        "info": light.info,
+        "info": light.hardware,
         "is_on": light.is_on,
         "color": colortuple_to_name(light.color),
         "rgb": light.color,
@@ -267,7 +267,7 @@ async def lights_status() -> List[Dict[str, Any]]:
             {
                 "light_id": light_id,
                 "name": light.name,
-                "info": light.info,
+                "info": light.hardware,
                 "is_on": light.is_on,
                 "color": colortuple_to_name(light.color),
                 "rgb": light.color,
