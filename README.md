@@ -12,9 +12,10 @@
 ![Monthly Downloads][monthly-downloads]
 <br>
 
-[BusyLight for Humans][busylight-for-humans] controls USB LED lights from multiple vendors. 
-Use the command-line interface or HTTP API to turn lights on/off, change colors, and apply effects.
-For Python integration, use [Busylight Core][busylight-core] directly in your applications.
+[BusyLight for Humans][busylight-for-humans] controls USB LED lights from
+multiple vendors. Use the command-line interface or HTTP API to turn lights
+on/off, change colors, and apply effects. For Python integration, use
+[Busylight Core][busylight-core] directly in your applications.
 
 ![All Supported Lights][DEMO]
 Flag<sup>1</sup>,
@@ -85,7 +86,8 @@ python3 -m pip install busylight-for-humans[webapi]
 
 ## Development Install
 
-This project uses [uv][uv-docs] for dependency management, virtual environments, and packaging.
+This project uses [uv][uv-docs] for dependency management, virtual
+environments, and packaging.
 
 ```console
 $ python3 -m pip install uv
@@ -97,7 +99,8 @@ $ source .venv/bin/activate
 <venv> $ pytest
 ```
 
-The project installs in editable mode. Source changes are reflected immediately when running in the virtual environment.
+The project installs in editable mode. Source changes are reflected
+immediately when running in the virtual environment.
 
 ## Linux Post-Install Activities
 
@@ -139,7 +142,8 @@ $ busylight off                     # turn off all LEDs (default)
 
 ## HTTP API Examples
 
-First start the `busylight` API server using the `busyserv` command line interface:
+First start the `busylight` API server using the `busyserv` command line
+interface:
 ```console
 $ busyserve -D
 INFO:     Started server process [40064]
@@ -215,14 +219,16 @@ $ curl -s "http://localhost:8000/light/0/blink?color=blue&led=2&count=5" | jq
 
 ## LED Parameter Reference
 
-For devices with multiple LEDs (like Blink1 mk2), use the `--led` option (CLI) or `led` parameter (API):
+For devices with multiple LEDs (like Blink1 mk2), use the `--led` option
+(CLI) or `led` parameter (API):
 
 - `led=0`: Control all LEDs (default behavior)
 - `led=1`: Control first/top LED  
 - `led=2`: Control second/bottom LED
 - `led=3+`: Control additional LEDs (BlinkStick variants)
 
-Single-LED devices ignore the LED parameter. Device-specific LED indexing varies by manufacturer.
+Single-LED devices ignore the LED parameter. Device-specific LED indexing
+varies by manufacturer.
 
 ### Authentication
 The API can be secured with a simple username and password through
@@ -231,7 +237,9 @@ for all API requests, set the `BUSYLIGHT_API_USER` and
 `BUSYLIGHT_API_PASS` environmental variables before running
 `busyserve`.
 
-> :warning: **SECURITY WARNING**: HTTP Basic Auth sends usernames and passwords in *cleartext* (i.e., unencrypted). Use of SSL is highly recommended!
+> :warning: **SECURITY WARNING**: HTTP Basic Auth sends usernames and
+> passwords in *cleartext* (i.e., unencrypted). Use of SSL is highly
+> recommended!
 
 ### Gratitude
 
