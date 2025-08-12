@@ -91,8 +91,10 @@ busylight blink blue      # Blinking blue
 busylight off             # Turn off
 
 # Multi-LED devices (Blink1 mk2, BlinkStick, etc.)
-busylight on red --led 1  # First LED only
-busylight on blue --led 2 # Second LED only
+busylight on red --led 1          # First LED only
+busylight on blue --led 2         # Second LED only
+busylight rainbow --led 1         # Rainbow on first LED
+busylight pulse green --led 2     # Pulse on second LED
 ```
 
 ### Web API
@@ -104,6 +106,10 @@ busyserve
 curl "http://localhost:8000/light/0/on?color=red"
 curl "http://localhost:8000/light/0/blink?color=blue&count=5"
 curl "http://localhost:8000/lights/off"
+
+# Multi-LED targeting
+curl "http://localhost:8000/lights/on?color=red&led=1"
+curl "http://localhost:8000/lights/rainbow?led=2"
 ```
 
 ## Documentation

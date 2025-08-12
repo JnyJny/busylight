@@ -42,6 +42,53 @@ busylight --dim 0.5 on red     # 50% brightness
 busylight --dim 0.1 on blue    # 10% brightness
 ```
 
+## Multi-LED Device Control
+
+For devices with multiple LEDs (like Blink1 mk2), you can target specific LEDs:
+
+### LED Targeting Basics
+
+```bash
+# Control all LEDs (default)
+busylight on red
+
+# Target specific LEDs
+busylight on red --led 1      # First/top LED only
+busylight on blue --led 2     # Second/bottom LED only
+
+# Different colors on different LEDs
+busylight on red --led 1      # Top LED red
+busylight on blue --led 2     # Bottom LED blue
+```
+
+### Multi-LED Effects
+
+```bash
+# Different effects on different LEDs
+busylight blink green --led 1 --count 3    # Top LED blinks
+busylight pulse orange --led 2             # Bottom LED pulses
+
+# Rainbow on specific LED
+busylight rainbow --led 1 --speed fast     # Top LED rainbow
+
+# LED-specific patterns
+busylight fli red blue --led 1 --count 5   # Flash top LED
+busylight pulse red --led 2 --speed slow   # Pulse bottom LED
+```
+
+### Sequential LED Programming
+
+```bash
+# Turn on LEDs one by one
+busylight on red --led 1
+sleep 1
+busylight on blue --led 2
+
+# Background effects
+busylight rainbow --led 1 &    # Top LED rainbow in background
+busylight pulse red --led 2    # Bottom LED pulse in foreground
+```
+
 ## Effects and Animation
 
 ### Blinking Patterns

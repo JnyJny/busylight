@@ -21,9 +21,14 @@ from busylight.effects import Steady
 effect = Steady(color=(255, 0, 0))
 ```
 
-**CLI Example:**
+**CLI Examples:**
 ```bash
+# All LEDs
 busylight on red
+
+# Target specific LED (for multi-LED devices)
+busylight on red --led 1    # First/top LED only
+busylight on blue --led 2   # Second/bottom LED only
 ```
 
 ### Blink
@@ -47,9 +52,14 @@ effect = Blink(
 )
 ```
 
-**CLI Example:**
+**CLI Examples:**
 ```bash
+# Blink all LEDs
 busylight blink red --count 5
+
+# Target specific LED for blinking
+busylight blink yellow --led 1 --count 3   # Top LED only
+busylight blink blue --led 2               # Bottom LED infinite
 ```
 
 ### Spectrum (Rainbow)
@@ -73,9 +83,14 @@ from busylight.effects import Spectrum
 effect = Spectrum(scale=0.8, steps=32, count=3)
 ```
 
-**CLI Example:**
+**CLI Examples:**
 ```bash
+# Rainbow on all LEDs
 busylight rainbow --count 3
+
+# Target specific LED for rainbow effect
+busylight rainbow --led 1 --speed fast     # Top LED only
+busylight rainbow --led 2 --count 1        # Bottom LED, one cycle
 ```
 
 ### Gradient
@@ -100,9 +115,108 @@ effect = Gradient(
 )
 ```
 
-**CLI Example:**
+**CLI Examples:**
 ```bash
+# Pulse all LEDs
 busylight pulse blue --count 2
+
+# Target specific LED for pulsing
+busylight pulse green --led 1 --speed slow   # Top LED only
+busylight pulse red --led 2 --count 5        # Bottom LED, 5 pulses
+```
+
+## LED Targeting for Multi-LED Devices
+
+BusyLight supports devices with multiple LEDs (like Blink1 mk2) through LED targeting. All effects can be applied to specific LEDs using the `--led` parameter.
+
+### LED Index Convention
+
+- **`0`**: All LEDs (default behavior)
+- **`1`**: First/top LED
+- **`2`**: Second/bottom LED  
+- **`3+`**: Additional LEDs (device-dependent)
+
+### Multi-LED Effect Examples
+
+#### Split LED Effects
+```bash
+# Different colors on different LEDs
+busylight on red --led 1      # Top LED red
+busylight on blue --led 2     # Bottom LED blue (simultaneously)
+
+# Different effects on different LEDs
+busylight blink green --led 1 --count 3    # Top LED blinks
+busylight pulse orange --led 2             # Bottom LED pulses
+```
+
+#### Sequential LED Programming
+```bash
+# Program LEDs one by one
+busylight on red --led 1 && sleep 1 && busylight on blue --led 2
+busylight rainbow --led 1 & busylight pulse red --led 2
+```
+
+#### Web API LED Targeting
+```bash
+# All LEDs
+curl "http://localhost:8000/lights/on?color=red"
+
+# Specific LED
+curl "http://localhost:8000/lights/on?color=blue&led=1"
+curl "http://localhost:8000/light/0/rainbow?led=2&speed=fast"
+curl "http://localhost:8000/lights/pulse?color=green&led=1&count=3"
+```
+
+### Python API LED Targeting
+
+```python
+from busylight.controller import LightController
+
+with LightController() as controller:
+    # All LEDs (default)
+    controller.all().turn_on("red")
+    
+    # Specific LED targeting using apply_effect
+    from busylight.effects import Blink, Spectrum, Gradient
+    
+    # LED-specific effects
+    controller.all().apply_effect(Blink((255, 0, 0), count=5), led=1)
+    controller.all().apply_effect(Spectrum(scale=0.8), led=2)
+    controller.all().apply_effect(Gradient((0, 255, 0)), led=1)
+    
+    # LED-specific basic operations
+    controller.all().turn_on((255, 0, 0), led=1)    # Top LED red
+    controller.all().turn_on((0, 0, 255), led=2)    # Bottom LED blue
+    controller.all().blink((255, 255, 0), led=1, count=3)  # Top LED blink yellow
+```
+
+### Device Compatibility
+
+**Known Multi-LED Devices:**
+- **Blink1 mk2**: 2 LEDs (top/bottom)
+- **Luxafor Flag**: Multiple LEDs in sequence
+
+**Single-LED Devices:** LED parameter is ignored safely
+- **Blynclight Plus, MuteMe Original, fit-statUSB**: `--led` parameter has no effect
+
+### Advanced LED Patterns
+
+```python
+# Create complex multi-LED effects
+async def multi_led_pattern():
+    controller = LightController()
+    
+    # Alternating pattern
+    controller.all().apply_effect(Blink((255, 0, 0)), led=1)  # Top red blink
+    await asyncio.sleep(0.5)
+    controller.all().apply_effect(Blink((0, 255, 0)), led=2)  # Bottom green blink
+    
+    # Synchronized different effects
+    tasks = [
+        controller.all().apply_effect(Spectrum(), led=1),      # Top rainbow
+        controller.all().apply_effect(Gradient((255, 0, 0)), led=2)  # Bottom pulse
+    ]
+    await asyncio.gather(*tasks)
 ```
 
 ## Effect Architecture
@@ -159,6 +273,7 @@ async def execute(self, light: "Light", interval: float | None = None) -> None:
 The base implementation handles:
 - Color cycling with proper count handling
 - Interval timing between color changes
+- LED targeting for multi-LED devices
 - Automatic cleanup (turning off light when done)
 
 ## Creating Custom Effects
@@ -275,11 +390,11 @@ For advanced effects, override the `execute()` method:
 
 ```python
 class CustomTimingEffect(BaseEffect):
-    async def execute(self, light: "Light", interval: float | None = None) -> None:
-        """Custom execution with variable timing."""
+    async def execute(self, light: "Light", interval: float | None = None, led: int = 0) -> None:
+        """Custom execution with variable timing and LED support."""
         try:
             for i, color in enumerate(self.colors):
-                light.on(color)
+                light.on(color, led=led)  # Pass LED parameter
                 
                 # Variable timing based on position
                 if i < len(self.colors) // 2:
@@ -288,7 +403,7 @@ class CustomTimingEffect(BaseEffect):
                     await asyncio.sleep(0.5)  # Slow second half
                     
         finally:
-            light.off()
+            light.off(led=led)  # Clean up specific LED
 ```
 
 ### Step 4: Register Your Effect

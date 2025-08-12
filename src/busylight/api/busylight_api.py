@@ -97,11 +97,11 @@ class BusylightAPI(FastAPI):
         else:
             self.controller.by_index(light_id).turn_off()
 
-    async def apply_effect(self, effect: Effects, light_id: int = None) -> None:
+    async def apply_effect(self, effect: Effects, light_id: int = None, led: int = 0) -> None:
         if light_id is None:
-            self.controller.all().apply_effect(effect)
+            self.controller.all().apply_effect(effect, led=led)
         else:
-            self.controller.by_index(light_id).apply_effect(effect)
+            self.controller.by_index(light_id).apply_effect(effect, led=led)
 
     def get(self, path: str, **kwargs) -> Callable:
         self.endpoints.append(path)
@@ -468,15 +468,20 @@ async def rainbow_light(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Start a rainbow animation on the specified light.
 
     `light_id` is an integer value identifying a light and ranges
     between zero and number_of_lights-1.
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rainbow = Effects.for_name("spectrum")(scale=dim)
 
-    await busylightapi.apply_effect(rainbow, light_id)
+    await busylightapi.apply_effect(rainbow, light_id, led=led)
 
     return {
         "action": "effect",
@@ -484,6 +489,7 @@ async def rainbow_light(
         "light_id": light_id,
         "speed": speed,
         "dim": dim,
+        "led": led,
     }
 
 
@@ -494,19 +500,25 @@ async def rainbow_light(
 async def rainbow_lights(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Start a rainbow animation on all lights.
     <p><em>Note:</em> lights will not be synchronized.</p>
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rainbow = Effects.for_name("spectrum")(scale=dim)
 
-    await busylightapi.apply_effect(rainbow)
+    await busylightapi.apply_effect(rainbow, led=led)
 
     return {
         "action": "effect",
         "name": "rainbow",
         "light_id": "all",
         "dim": dim,
+        "led": led,
     }
 
 
@@ -521,6 +533,7 @@ async def flash_light_impressively(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Flash the specified light impressively [default: red/blue].
 
@@ -528,6 +541,10 @@ async def flash_light_impressively(
     between zero and number_of_lights-1.
 
     `count` is the number of times to blink the light.
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
@@ -538,7 +555,7 @@ async def flash_light_impressively(
         count=count,
     )
 
-    await busylightapi.apply_effect(fli, light_id)
+    await busylightapi.apply_effect(fli, light_id, led=led)
 
     return {
         "action": "effect",
@@ -548,6 +565,7 @@ async def flash_light_impressively(
         "color": color_a,
         "dim": dim,
         "count": count,
+        "led": led,
     }
 
 
@@ -561,8 +579,14 @@ async def flash_lights_impressively(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ):
-    """Flash all lights impressively [default: red/blue]"""
+    """Flash all lights impressively [default: red/blue]
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
+    """
     rgb_a = parse_color_string(color_a, dim)
     rgb_b = parse_color_string(color_b, dim)
 
@@ -572,7 +596,7 @@ async def flash_lights_impressively(
         count=count,
     )
 
-    await busylightapi.apply_effect(fli)
+    await busylightapi.apply_effect(fli, led=led)
 
     return {
         "action": "effect",
@@ -582,6 +606,7 @@ async def flash_lights_impressively(
         "color": color_a,
         "dim": dim,
         "count": count,
+        "led": led,
     }
 
 
@@ -595,6 +620,7 @@ async def pulse_light(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Pulse a light with a specified color [default: red].
 
@@ -602,12 +628,16 @@ async def pulse_light(
     between zero and number_of_lights-1.
 
     `count` is the number of times to blink the light.
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
 
     throb = Effects.for_name("gradient")(rgb, step=8, count=count)
 
-    await busylightapi.apply_effect(throb, light_id)
+    await busylightapi.apply_effect(throb, light_id, led=led)
 
     return {
         "action": "effect",
@@ -618,6 +648,7 @@ async def pulse_light(
         "speed": speed,
         "dim": dim,
         "count": count,
+        "led": led,
     }
 
 
@@ -630,13 +661,19 @@ async def pulse_lights(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ):
-    """Pulse all lights with a color [default: red]."""
+    """Pulse all lights with a color [default: red].
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
+    """
     rgb = parse_color_string(color, dim)
 
     throb = Effects.for_name("gradient")(rgb, step=8, count=count)
 
-    await busylightapi.apply_effect(throb)
+    await busylightapi.apply_effect(throb, led=led)
 
     return {
         "action": "effect",
@@ -647,4 +684,5 @@ async def pulse_lights(
         "rgb": rgb,
         "dim": dim,
         "count": count,
+        "led": led,
     }

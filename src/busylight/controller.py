@@ -150,23 +150,22 @@ class LightSelection:
         except ValueError:
             speed_obj = Speed.slow
 
-        if led == 0:
-            effect = Effects.for_name("blink")(color, count=count)
-            return self.apply_effect(effect, interval=speed_obj.duty_cycle)
-        else:
-            return self._apply_led_blink(color, count, speed_obj.duty_cycle, led)
+        effect = Effects.for_name("blink")(color, count=count)
+        return self.apply_effect(effect, interval=speed_obj.duty_cycle, led=led)
 
     def apply_effect(
         self,
         effect: Effects,
         duration: float | None = None,
         interval: float | None = None,
+        led: int = 0,
     ) -> LightSelection:
         """Apply a custom effect to all lights in the selection.
 
         :param effect: The effect to apply to the lights
         :param duration: Maximum duration in seconds. None for no limit
         :param interval: Interval between effect updates. None uses effect default
+        :param led: LED index to target (0 = all LEDs, 1+ = specific LED)
 
         The effect runs asynchronously using asyncio. If no event loop is running,
         one will be created. The method handles keyboard interrupts gracefully.
@@ -179,7 +178,7 @@ class LightSelection:
                 light.cancel_tasks()
 
                 async def effect_task(target_light=light):
-                    return await effect.execute(target_light, actual_interval)
+                    return await effect.execute(target_light, actual_interval, led)
 
                 task = light.add_task(
                     name=effect.name.lower(),
@@ -215,67 +214,6 @@ class LightSelection:
 
         return self
 
-    def _apply_led_blink(
-        self,
-        color: tuple[int, int, int],
-        count: int,
-        interval: float,
-        led: int,
-    ) -> LightSelection:
-        """Apply LED-aware blink effect to all lights in the selection.
-
-        :param color: RGB color tuple for the blink effect
-        :param count: Number of blinks, 0 means infinite
-        :param interval: Interval between blinks in seconds
-        :param led: Target LED index for multi-LED devices
-        """
-
-        async def led_blink_supervisor():
-            tasks = []
-            for light in self.lights:
-                light.cancel_tasks()
-
-                async def led_blink_task(target_light=light):
-                    blink_count = 0
-                    try:
-                        while count == 0 or blink_count < count:
-                            target_light.on(color, led=led)
-                            await asyncio.sleep(interval)
-                            target_light.on((0, 0, 0), led=led)
-                            await asyncio.sleep(interval)
-                            blink_count += 1
-                    finally:
-                        target_light.on((0, 0, 0), led=led)
-
-                task = light.add_task(
-                    name="led_blink",
-                    func=led_blink_task,
-                    priority=1,
-                    replace=True,
-                )
-                tasks.append(task)
-
-            if tasks:
-                if count > 0:
-                    await asyncio.wait(tasks)
-                else:
-                    try:
-                        await asyncio.wait(tasks)
-                    except KeyboardInterrupt:
-                        for task in tasks:
-                            task.cancel()
-                        raise
-
-        try:
-            loop = asyncio.get_running_loop()
-            asyncio.create_task(led_blink_supervisor())
-        except RuntimeError:
-            try:
-                asyncio.run(led_blink_supervisor())
-            except KeyboardInterrupt:
-                pass
-
-        return self
 
 
 class LightController:
