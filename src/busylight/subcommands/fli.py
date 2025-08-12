@@ -9,6 +9,7 @@ from loguru import logger
 from busylight.callbacks import string_to_scaled_color
 from busylight.effects import Effects
 from busylight.speed import Speed
+
 from .helpers import get_light_selection
 
 fli_cli = typer.Typer()
@@ -56,7 +57,9 @@ def flash_lights_impressively(
 
     try:
         selection = get_light_selection(ctx)
-        selection.apply_effect(effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 10)
+        selection.apply_effect(
+            effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 10
+        )
     except (KeyboardInterrupt, TimeoutError):
         selection = get_light_selection(ctx)
         selection.turn_off()

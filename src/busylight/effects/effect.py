@@ -107,7 +107,7 @@ class BaseEffect(abc.ABC):
         :param interval: Override default interval between color changes
         """
         sleep_interval = interval if interval is not None else self.default_interval
-        
+
         if self.count > 0:
             cycle_count = self.count * len(self.colors)
             color_iterator = islice(cycle(self.colors), cycle_count)

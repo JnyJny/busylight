@@ -9,6 +9,7 @@ from loguru import logger
 from busylight.callbacks import string_to_scaled_color
 from busylight.effects import Spectrum
 from busylight.speed import Speed
+
 from .helpers import get_light_selection
 
 rainbow_cli = typer.Typer()
@@ -42,7 +43,9 @@ def rainbow_lights(
 
     try:
         selection = get_light_selection(ctx)
-        selection.apply_effect(effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 4)
+        selection.apply_effect(
+            effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 4
+        )
     except (KeyboardInterrupt, TimeoutError):
         selection = get_light_selection(ctx)
         selection.turn_off()

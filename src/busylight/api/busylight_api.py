@@ -6,7 +6,7 @@ from secrets import compare_digest
 from typing import Any, Callable
 
 from busylight_core import Light, LightUnavailableError, NoLightsFoundError
-from fastapi import Depends, FastAPI, HTTPException, Path, Request, status
+from fastapi import Depends, FastAPI, HTTPException, Path, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -144,13 +144,13 @@ busylightapi = BusylightAPI()
 ## Startup & Shutdown
 ##
 @busylightapi.on_event("startup")
-async def startup():
+async def startup() -> None:
     busylightapi.update()
     busylightapi.off()
 
 
 @busylightapi.on_event("shutdown")
-async def shutdown():
+async def shutdown() -> None:
     try:
         busylightapi.off()
     except Exception:
@@ -210,7 +210,7 @@ async def color_lookup_error_handler(
 ## Middleware Handlers
 ##
 @busylightapi.middleware("http")
-async def light_manager_update(request: Request, call_next):
+async def light_manager_update(request: Request, call_next: Callable) -> Response:
     """Check for plug/unplug events and update the light manager."""
     busylightapi.update()
 
@@ -223,7 +223,7 @@ async def light_manager_update(request: Request, call_next):
 async def available_endpoints() -> list[dict[str, str]]:
     """API endpoint listing.
 
-    list of valid endpoints recognized by this API.
+    List of valid endpoints recognized by this API.
     """
     return [{"path": endpoint} for endpoint in busylightapi.endpoints]
 
@@ -469,7 +469,7 @@ async def rainbow_light(
     `light_id` is an integer value identifying a light and ranges
     between zero and number_of_lights-1.
     """
-    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=dim)
+    rainbow = Effects.for_name("spectrum")(scale=dim)
 
     await busylightapi.apply_effect(rainbow, light_id)
 
@@ -493,7 +493,7 @@ async def rainbow_lights(
     """Start a rainbow animation on all lights.
     <p><em>Note:</em> lights will not be synchronized.</p>
     """
-    rainbow = Effects.for_name("spectrum")(speed.duty_cycle / 4, scale=dim)
+    rainbow = Effects.for_name("spectrum")(scale=dim)
 
     await busylightapi.apply_effect(rainbow)
 
@@ -529,7 +529,6 @@ async def flash_light_impressively(
 
     fli = Effects.for_name("blink")(
         rgb_a,
-        speed.duty_cycle / 10,
         off_color=rgb_b,
         count=count,
     )
@@ -564,7 +563,6 @@ async def flash_lights_impressively(
 
     fli = Effects.for_name("blink")(
         rgb_a,
-        speed.duty_cycle / 10,
         off_color=rgb_b,
         count=count,
     )
@@ -602,7 +600,7 @@ async def pulse_light(
     """
     rgb = parse_color_string(color, dim)
 
-    throb = Effects.for_name("Gradient")(rgb, speed.duty_cycle / 16, 8, count=count)
+    throb = Effects.for_name("gradient")(rgb, step=8, count=count)
 
     await busylightapi.apply_effect(throb, light_id)
 
@@ -631,7 +629,7 @@ async def pulse_lights(
     """Pulse all lights with a color [default: red]."""
     rgb = parse_color_string(color, dim)
 
-    throb = Effects.for_name("Gradient")(rgb, speed.duty_cycle / 16, 8, count=count)
+    throb = Effects.for_name("gradient")(rgb, step=8, count=count)
 
     await busylightapi.apply_effect(throb)
 
