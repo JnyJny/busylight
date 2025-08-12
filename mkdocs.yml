@@ -1,0 +1,69 @@
+site_name: BusyLight for Humans
+site_description: Control USB LED lights from the command line or web API
+site_url: https://jnyjny.github.io/busylight/
+repo_url: https://github.com/JnyJny/busylight
+repo_name: JnyJny/busylight
+edit_uri: edit/master/docs/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      type: date
+
+# Exclude hardware docs from MkDocs build (preserved for reference)
+exclude_docs: |
+  hardware/
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - tables
+  - attr_list
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - CLI:
+    - Overview: cli/index.md
+    - Commands: cli/commands.md
+    - Examples: cli/examples.md
+  - Web API:
+    - Overview: api/index.md
+    - Endpoints: api/endpoints.md
+    - Integration: api/integration.md
+  - Devices:
+    - Overview: devices/index.md
+    - LED Support: devices/led-support.md
+
+extra:
+  version:
+    provider: mike

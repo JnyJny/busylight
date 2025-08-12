@@ -267,8 +267,8 @@ graciously and unexpectedly gifted me with two `blink(1) mk3` lights!
 
 <!-- Asset links -->
 
-[LOGO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/BusyLightForHumans.png
-[DEMO]: https://github.com/JnyJny/busylight/blob/master/docs/assets/HerdOfLights.png
+[LOGO]: https://github.com/JnyJny/busylight/blob/master/assets/BusyLightForHumans.png
+[DEMO]: https://github.com/JnyJny/busylight/blob/master/assets/HerdOfLights.png
 
 <!-- Miscellaneous -->
 [BASICAUTH]: https://en.wikipedia.org/wiki/Basic_access_authentication
