@@ -1,10 +1,33 @@
-"""Busylight Display Command Line Interface"""
+"""Busylight Display Command Line Interface.
+
+This module implements display-related subcommands for listing and inspecting
+connected lights and supported devices. It provides both basic and verbose
+output modes for different use cases.
+
+The module includes:
+- Listing currently connected lights with optional verbose details
+- Displaying supported light devices and their identifiers
+- Hardware information display for connected devices
+
+Example:
+    List connected lights::
+
+        busylight list
+        busylight list --verbose
+
+    Show supported devices::
+
+        busylight supported
+        busylight supported --verbose
+"""
 
 from typing import Optional
 
 import typer
 from busylight_core import Light, LightUnavailableError, NoLightsFoundError
 from loguru import logger
+
+from .helpers import get_light_selection
 
 display_cli = typer.Typer()
 
@@ -20,11 +43,23 @@ def list_lights(
         show_default=True,
     ),
 ) -> None:
-    """List currently connected lights."""
+    """List currently connected lights.
+
+    :param ctx: Typer context containing global options and controller
+    :param verbose: Whether to show detailed hardware information
+
+    Displays all currently connected and accessible lights. In normal mode,
+    shows the index and name of each light. In verbose mode, additionally
+    shows hardware details like vendor ID, product ID, and other device
+    properties.
+
+    The command exits with an error if no lights are detected.
+    """
 
     logger.info("Listing connected lights.")
     try:
-        lights = ctx.obj.manager.selected_lights(ctx.obj.lights)
+        selection = get_light_selection(ctx)
+        lights = selection.lights
     except NoLightsFoundError:
         typer.secho("No lights detected.", fg="red")
         raise typer.Exit(code=1) from None
@@ -49,7 +84,18 @@ def list_supported_lights(
         help="Print vendor and product identifiers.",
     ),
 ) -> None:
-    """List supported lights."""
+    """List supported lights and devices.
+
+    :param verbose: Whether to show vendor/product IDs and technical details
+
+    Displays all light devices supported by the busylight-core library.
+    In normal mode, shows vendor names and device names organized by
+    manufacturer. In verbose mode, additionally shows vendor IDs, product
+    IDs, and other technical identifiers.
+
+    This command is useful for identifying which devices are compatible
+    before attempting to use them.
+    """
     logger.info("listing supported lights")
 
     if not verbose:

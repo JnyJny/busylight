@@ -4,10 +4,10 @@ from enum import Enum, auto
 from functools import cached_property
 
 
-class Speed(int, Enum):
-    Slow = auto()
-    Medium = auto()
-    Fast = auto()
+class Speed(str, Enum):
+    Slow = "slow"
+    Medium = "medium"
+    Fast = "fast"
 
     @cached_property
     def duty_cycle(self) -> float:
