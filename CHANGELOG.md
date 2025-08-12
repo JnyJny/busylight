@@ -1,26 +1,61 @@
 # CHANGELOG
 
-## [v0.41.3](https://github.com/JnyJny/busylight/releases/tag/v0.41.3) - 2025-08-10 17:19:41
+## [v0.42.0](https://github.com/JnyJny/busylight/releases/tag/v0.42.0) - 2025-08-12 03:52:48
 
-## Changes since v0.41.2
+## Release v0.42.0
 
+- v0.42.0 (7017a66)
+- Merge pull request #478 from JnyJny/features/improve-manager-usability (9dc04e3)
+- docs: Add comprehensive Sphinx-style docstrings and improve type hints (d2c64dc)
+- fix: correct web API off endpoints and add blink task cancellation (fb3dce1)
+- fix: update web API blink endpoints to use new LightController fluent API (9cecb36)
+- fix: update web API endpoints to use light.hardware instead of light.info (651dd45)
+- feat: replace LightManager with simplified fluent LightController (8c91e5b)
+- Merge pull request #477 from JnyJny/features/improve-test-coverage (7767ffb)
+- feat: improve test coverage from 59% to 77% (0eccc09)
+- feat: significantly improve test coverage (ba9ea92)
+- docs(CHANGELOG): update release notes (74d1f20)
+- fix: optimize release workflow to prevent hanging (3fa9aea)
 - v0.41.3 (f3cc6c4)
 - cicd: missing permission causes automatic release action fail. (401cfb7)
+- v0.41.2 (cf900b5)
+- v0.41.1 (87dc252)
+- Merge pull request #476 from JnyJny/features/fix-webapi-extras-optional (9caed64)
+- fix: make CLI work without webapi extras (67772d6)
+- v0.41.0 (f3a791c)
+- Merge pull request #475 from JnyJny/features/refactor-effects-taskmixin (ee4222c)
+---
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.42.0...v0.42.0
 
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.41.2...v0.41.3
+
+## What's Changed
+* Improve test coverage from 59% to 77% by @JnyJny in https://github.com/JnyJny/busylight/pull/477
+* feat: replace LightManager with simplified fluent LightController by @JnyJny in https://github.com/JnyJny/busylight/pull/478
+
+
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.41.3...v0.42.0
+
+### Feature
+
+- general:
+  - replace LightManager with simplified fluent LightController ([8c91e5b](https://github.com/JnyJny/busylight/commit/8c91e5b9dc65994e783cd77fdbc52d52eafd601d)) ([#478](https://github.com/JnyJny/busylight/pull/478))
+  - improve test coverage from 59% to 77% ([0eccc09](https://github.com/JnyJny/busylight/commit/0eccc09b96010467db5faf65930b1f4714a6aabe)) ([#477](https://github.com/JnyJny/busylight/pull/477))
+  - significantly improve test coverage ([ba9ea92](https://github.com/JnyJny/busylight/commit/ba9ea9283aa2d64645e4139fbd7ef8075e2d24c2)) ([#477](https://github.com/JnyJny/busylight/pull/477))
 
 ### Bug Fixes
 
 - general:
-  - make CLI work without webapi extras ([67772d6](https://github.com/JnyJny/busylight/commit/67772d6f81f3b1514c9fd35ddae6e41affb8daae)) ([#476](https://github.com/JnyJny/busylight/pull/476))
-  - correct TaskableMixin function signature ([e759dfd](https://github.com/JnyJny/busylight/commit/e759dfd74de8c4057b121451cf94636382b46822)) ([#475](https://github.com/JnyJny/busylight/pull/475))
-  - implement proper long-running effect execution ([5aed170](https://github.com/JnyJny/busylight/commit/5aed170facf3eb30c6c36c2e780780abbe90aaae)) ([#475](https://github.com/JnyJny/busylight/pull/475))
-  - ensure continuous effects wait indefinitely ([aa3eb8a](https://github.com/JnyJny/busylight/commit/aa3eb8a7cdd87b73b14508b987d334c10f19ccfe)) ([#475](https://github.com/JnyJny/busylight/pull/475))
+  - correct web API off endpoints and add blink task cancellation ([fb3dce1](https://github.com/JnyJny/busylight/commit/fb3dce1c2a89aa43b1e6701970e3795122463809)) ([#478](https://github.com/JnyJny/busylight/pull/478))
+  - update web API blink endpoints to use new LightController fluent API ([9cecb36](https://github.com/JnyJny/busylight/commit/9cecb3667681c531dfc433cdfcf490369e20390f)) ([#478](https://github.com/JnyJny/busylight/pull/478))
+  - update web API endpoints to use light.hardware instead of light.info ([651dd45](https://github.com/JnyJny/busylight/commit/651dd451be90f33fc4ca084a880ed0d94a40f17c)) ([#478](https://github.com/JnyJny/busylight/pull/478))
+  - optimize release workflow to prevent hanging ([3fa9aea](https://github.com/JnyJny/busylight/commit/3fa9aea560ae06bf60b242fe8c9007ba9fd63f4f))
 
-### Refactor
+### Documentation
 
 - general:
-  - modernize effects system with TaskableMixin integration ([78f1ed4](https://github.com/JnyJny/busylight/commit/78f1ed4387b47716836d16d5f875a780bc69a3b6)) ([#475](https://github.com/JnyJny/busylight/pull/475))
+  - Add comprehensive Sphinx-style docstrings and improve type hints ([d2c64dc](https://github.com/JnyJny/busylight/commit/d2c64dc5768e65fefb8cbf33be696da6da69f745)) ([#478](https://github.com/JnyJny/busylight/pull/478))
+
+## [v0.41.3](https://github.com/JnyJny/busylight/releases/tag/v0.41.3) - 2025-08-10 17:19:41
 
 ## [v0.37.0](https://github.com/JnyJny/busylight/releases/tag/v0.37.0) - 2025-07-18 21:31:45
 
@@ -43,32 +78,6 @@ Invisible Changes:
   - fixed mypy poe task to work with src layout ([5c2abca](https://github.com/JnyJny/busylight/commit/5c2abcad42a707aa0ebcbecd47b0f55d45505ba9))
 
 ## [v0.35.2](https://github.com/JnyJny/busylight/releases/tag/v0.35.2) - 2025-05-18 21:25:32
-
-## Updates for Release v0.35.2 
-- Switched development tooling from poetry to uv
-- Updated testing and publishing GitHub actions. 
-- A big thanks to @auno  who submitted a PR that added a count argument to subcommands:
-   - blink
-   - rainbow
-   - pulse
-   - fli
-
-## Still Broken
-- Windows still isn't working right, need to find a good heuristic to determine when to add an extra byte.
-
-### Bug Fixes
-
-- general:
-  - removed deprecated is_flag argument ([7243226](https://github.com/JnyJny/busylight/commit/7243226c5e1d510f0d38488d9b831dadef04f30c)) ([#446](https://github.com/JnyJny/busylight/pull/446))
-  - pydantic did not take kindly the to the type hinting of count. Note to self: need to add pydantic model testing ([2bdd1a6](https://github.com/JnyJny/busylight/commit/2bdd1a63d7ee7791639b6369579358622fe0e65c))
-
-### Refactor
-
-- general:
-  - combined testing with release workflow ([6ecc692](https://github.com/JnyJny/busylight/commit/6ecc6928945a263247b0825a6f3d8b25c02cf249)) ([#446](https://github.com/JnyJny/busylight/pull/446))
-  - refactored pyproject poe tasks to track with update testing and release workflows ([ce84972](https://github.com/JnyJny/busylight/commit/ce84972e7c55e7b72ae0eeb7c75b53adcf4dcc4e)) ([#446](https://github.com/JnyJny/busylight/pull/446))
-  - refactored test-all workflow ([c9e6911](https://github.com/JnyJny/busylight/commit/c9e6911c5b53c90fa25d711f4e423a33a7926b9f)) ([#446](https://github.com/JnyJny/busylight/pull/446))
-  - changed @property to @cached_property ([a380220](https://github.com/JnyJny/busylight/commit/a380220200458b64621031c0aabe4bc6c7d538b9)) ([#446](https://github.com/JnyJny/busylight/pull/446))
 
 ## [0.33.0](https://github.com/JnyJny/busylight/releases/tag/0.33.0) - 2024-12-03 17:18:07
 
@@ -254,11 +263,6 @@ Note: changes between versions 0.16 and 0.17 were mostly python version compatib
 ## [0.15.4](https://github.com/JnyJny/busylight/releases/tag/0.15.4) - 2022-03-30 21:36:13
 
 Barring unforeseen circumstances, this will be the finial version of Busylight For Humans™ utilizing a threaded model. The next version, provisionally 0.16.0, will use asynchronous I/O to implement features that previously used threads. The `hidapi` framework is single threaded, so it was basically lucky on my part that `busylight` worked as well as it did.
-
-## What's Changed
-* Bump typer from 0.3.2 to 0.4.1 by @dependabot in https://github.com/JnyJny/busylight/pull/126
-
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/0.15.3...0.15.4
 
 ## [0.14.0](https://github.com/JnyJny/busylight/releases/tag/0.14.0) - 2022-02-05 20:24:17
 
