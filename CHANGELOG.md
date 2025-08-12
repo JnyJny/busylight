@@ -1,59 +1,65 @@
 # CHANGELOG
 
-## [v0.42.0](https://github.com/JnyJny/busylight/releases/tag/v0.42.0) - 2025-08-12 03:52:48
+## [v0.43.1](https://github.com/JnyJny/busylight/releases/tag/v0.43.1) - 2025-08-12 23:11:16
 
-## Release v0.42.0
+## Release v0.43.1
 
-- v0.42.0 (7017a66)
-- Merge pull request #478 from JnyJny/features/improve-manager-usability (9dc04e3)
-- docs: Add comprehensive Sphinx-style docstrings and improve type hints (d2c64dc)
-- fix: correct web API off endpoints and add blink task cancellation (fb3dce1)
-- fix: update web API blink endpoints to use new LightController fluent API (9cecb36)
-- fix: update web API endpoints to use light.hardware instead of light.info (651dd45)
-- feat: replace LightManager with simplified fluent LightController (8c91e5b)
-- Merge pull request #477 from JnyJny/features/improve-test-coverage (7767ffb)
-- feat: improve test coverage from 59% to 77% (0eccc09)
-- feat: significantly improve test coverage (ba9ea92)
-- docs(CHANGELOG): update release notes (74d1f20)
-- fix: optimize release workflow to prevent hanging (3fa9aea)
-- v0.41.3 (f3cc6c4)
-- cicd: missing permission causes automatic release action fail. (401cfb7)
-- v0.41.2 (cf900b5)
-- v0.41.1 (87dc252)
-- Merge pull request #476 from JnyJny/features/fix-webapi-extras-optional (9caed64)
-- fix: make CLI work without webapi extras (67772d6)
-- v0.41.0 (f3a791c)
-- Merge pull request #475 from JnyJny/features/refactor-effects-taskmixin (ee4222c)
+- v0.43.1 (e2e68ee)
+- fix: update pulse command tests for LED parameter (d820410)
+- v0.43.0 (843d403)
+- Merge pull request #485 from JnyJny/features/led-aware-effects (0dec9e7)
+- feat: implement LED-aware effects for multi-LED device support (53f441e)
+- Merge branch 'features/consolidate-markdown-docs' (9b0f773)
+- fix: add pull-requests write permission to docs workflow (e319bfe)
+- Merge pull request #484 from JnyJny/features/consolidate-markdown-docs (dc1958f)
+- resolve: merge conflict in mkdocs.yml navigation (51ef57e)
+- feat: consolidate markdown documentation into docs structure (8fedfeb)
+- Merge pull request #483 from JnyJny/features/effects-developer-docs (badb1da)
+- feat: add comprehensive Effects system developer documentation (6ee1a7e)
+- feat: add comprehensive contributing documentation and streamline README (ac899bb)
+- fix: add workflow_dispatch trigger and remove committed site/ directory (f2058b6)
+- Merge pull request #482 from JnyJny/features/mkdocs-documentation (1fa1b5c)
+- feat: add comprehensive MkDocs documentation with GitHub Pages deployment (37a6fbd)
+- Moved hardware documentation to new directory (3978b42)
+- Merge pull request #481 from JnyJny/doc/update-readme (38ecc20)
+- Light editing to README.md (0f31053)
+- docs: enforce 80-column line widths in README (de80370)
 ---
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.42.0...v0.42.0
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.43.1...v0.43.1
 
 
-## What's Changed
-* Improve test coverage from 59% to 77% by @JnyJny in https://github.com/JnyJny/busylight/pull/477
-* feat: replace LightManager with simplified fluent LightController by @JnyJny in https://github.com/JnyJny/busylight/pull/478
-
-
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.41.3...v0.42.0
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.43.0...v0.43.1
 
 ### Feature
 
 - general:
-  - replace LightManager with simplified fluent LightController ([8c91e5b](https://github.com/JnyJny/busylight/commit/8c91e5b9dc65994e783cd77fdbc52d52eafd601d)) ([#478](https://github.com/JnyJny/busylight/pull/478))
-  - improve test coverage from 59% to 77% ([0eccc09](https://github.com/JnyJny/busylight/commit/0eccc09b96010467db5faf65930b1f4714a6aabe)) ([#477](https://github.com/JnyJny/busylight/pull/477))
-  - significantly improve test coverage ([ba9ea92](https://github.com/JnyJny/busylight/commit/ba9ea9283aa2d64645e4139fbd7ef8075e2d24c2)) ([#477](https://github.com/JnyJny/busylight/pull/477))
+  - implement LED-aware effects for multi-LED device support ([53f441e](https://github.com/JnyJny/busylight/commit/53f441e7801ce005604709140eede42076d7e65c)) ([#485](https://github.com/JnyJny/busylight/pull/485))
+  - consolidate markdown documentation into docs structure ([8fedfeb](https://github.com/JnyJny/busylight/commit/8fedfeb86dbd78b19fbf28a83fd19f5a583bdff8)) ([#484](https://github.com/JnyJny/busylight/pull/484))
+  - add comprehensive Effects system developer documentation ([6ee1a7e](https://github.com/JnyJny/busylight/commit/6ee1a7eadf2b77dc282928df9155969d1b826523)) ([#483](https://github.com/JnyJny/busylight/pull/483))
+  - add comprehensive contributing documentation and streamline README ([ac899bb](https://github.com/JnyJny/busylight/commit/ac899bb8369143c7449352cc5140347247657f16))
+  - add comprehensive MkDocs documentation with GitHub Pages deployment ([37a6fbd](https://github.com/JnyJny/busylight/commit/37a6fbdd697b5e90f78d1d106fce1ca3dd19b4c6)) ([#482](https://github.com/JnyJny/busylight/pull/482))
+  - add LED parameter support for multi-LED devices ([616443c](https://github.com/JnyJny/busylight/commit/616443cc243a75e967d499b3f5b9db749d27aae3)) ([#480](https://github.com/JnyJny/busylight/pull/480))
 
 ### Bug Fixes
 
 - general:
-  - correct web API off endpoints and add blink task cancellation ([fb3dce1](https://github.com/JnyJny/busylight/commit/fb3dce1c2a89aa43b1e6701970e3795122463809)) ([#478](https://github.com/JnyJny/busylight/pull/478))
-  - update web API blink endpoints to use new LightController fluent API ([9cecb36](https://github.com/JnyJny/busylight/commit/9cecb3667681c531dfc433cdfcf490369e20390f)) ([#478](https://github.com/JnyJny/busylight/pull/478))
-  - update web API endpoints to use light.hardware instead of light.info ([651dd45](https://github.com/JnyJny/busylight/commit/651dd451be90f33fc4ca084a880ed0d94a40f17c)) ([#478](https://github.com/JnyJny/busylight/pull/478))
-  - optimize release workflow to prevent hanging ([3fa9aea](https://github.com/JnyJny/busylight/commit/3fa9aea560ae06bf60b242fe8c9007ba9fd63f4f))
+  - update pulse command tests for LED parameter ([d820410](https://github.com/JnyJny/busylight/commit/d82041059a64e0294a2a8db0842c91be159b3e70))
+  - add pull-requests write permission to docs workflow ([e319bfe](https://github.com/JnyJny/busylight/commit/e319bfe67613d7e1d0373a25f566c1878a74a267))
+  - add workflow_dispatch trigger and remove committed site/ directory ([f2058b6](https://github.com/JnyJny/busylight/commit/f2058b62ee45e0939208e4e5b2d48a7b8bb2bf30))
+  - resolve test hanging and update subcommand tests for LED parameter ([722b552](https://github.com/JnyJny/busylight/commit/722b5520ec1a239afe7c374363d2606222de7030)) ([#480](https://github.com/JnyJny/busylight/pull/480))
 
 ### Documentation
 
 - general:
-  - Add comprehensive Sphinx-style docstrings and improve type hints ([d2c64dc](https://github.com/JnyJny/busylight/commit/d2c64dc5768e65fefb8cbf33be696da6da69f745)) ([#478](https://github.com/JnyJny/busylight/pull/478))
+  - enforce 80-column line widths in README ([de80370](https://github.com/JnyJny/busylight/commit/de803702d455b6f1a53545723e03b44c4485d090)) ([#481](https://github.com/JnyJny/busylight/pull/481))
+  - update README with current implementation details ([55681cf](https://github.com/JnyJny/busylight/commit/55681cff069ff8e2279708756dcb915065e17179)) ([#481](https://github.com/JnyJny/busylight/pull/481))
+
+### Refactor
+
+- general:
+  - improve code quality with Sphinx docstrings and clean formatting ([2765eff](https://github.com/JnyJny/busylight/commit/2765eff6c42dad8a0b39b4c91d595bc06b484ab8)) ([#480](https://github.com/JnyJny/busylight/pull/480))
+
+## [v0.42.0](https://github.com/JnyJny/busylight/releases/tag/v0.42.0) - 2025-08-12 03:52:48
 
 ## [v0.41.3](https://github.com/JnyJny/busylight/releases/tag/v0.41.3) - 2025-08-10 17:19:41
 
