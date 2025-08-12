@@ -150,8 +150,13 @@ class LightSelection:
         except ValueError:
             speed_obj = Speed.slow
 
-        # Use LED-aware blink implementation
-        return self._apply_led_blink(color, count, speed_obj.duty_cycle, led)
+        # For LED=0 (default/all LEDs), use original Effects system for compatibility
+        if led == 0:
+            effect = Effects.for_name("blink")(color, count=count)
+            return self.apply_effect(effect, interval=speed_obj.duty_cycle)
+        else:
+            # Use LED-aware blink implementation for specific LEDs
+            return self._apply_led_blink(color, count, speed_obj.duty_cycle, led)
 
     def apply_effect(
         self,
