@@ -176,3 +176,9 @@ The CLI provides clear error messages:
 
 For detailed troubleshooting, use the `--debug` flag to see diagnostic
 information.
+
+## Advanced Topics
+
+- **[Light Selection Guide](selection-guide.md)** - Comprehensive guide to targeting specific lights in multi-device setups
+- **[Command Reference](commands.md)** - Complete list of available commands and options  
+- **[Usage Examples](examples.md)** - Real-world integration scenarios and automation patterns
