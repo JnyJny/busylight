@@ -38,6 +38,12 @@ def pulse_lights(
         help="Number of pulses. 0 means infinite.",
         show_default=True,
     ),
+    led: int = typer.Option(
+        0,
+        "--led",
+        help="Target LED index (0=all LEDs, 1+=specific LED for multi-LED devices)",
+        show_default=True,
+    ),
 ) -> None:
     """Pulse lights with a specified color and speed."""
 
@@ -48,7 +54,7 @@ def pulse_lights(
     try:
         selection = get_light_selection(ctx)
         selection.apply_effect(
-            effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 16
+            effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 16, led=led
         )
     except (KeyboardInterrupt, TimeoutError):
         selection = get_light_selection(ctx)

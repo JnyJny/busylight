@@ -44,6 +44,12 @@ def flash_lights_impressively(
         help="Number of cycles. 0 means infinite.",
         show_default=True,
     ),
+    led: int = typer.Option(
+        0,
+        "--led",
+        help="Target LED index (0=all LEDs, 1+=specific LED for multi-LED devices)",
+        show_default=True,
+    ),
 ) -> None:
     """Flash Lights Impressively"""
 
@@ -58,7 +64,7 @@ def flash_lights_impressively(
     try:
         selection = get_light_selection(ctx)
         selection.apply_effect(
-            effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 10
+            effect, duration=ctx.obj.timeout, interval=speed.duty_cycle / 10, led=led
         )
     except (KeyboardInterrupt, TimeoutError):
         selection = get_light_selection(ctx)

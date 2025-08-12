@@ -68,6 +68,7 @@ nav:
   - Contributing:
     - Overview: contributing.md
     - Migration Guide: contributing/migration-guide.md
+    - LED-Aware Effects Migration: contributing/led-aware-effects-migration.md
     - Architecture Decisions: contributing/architecture-decisions.md
 
 extra:

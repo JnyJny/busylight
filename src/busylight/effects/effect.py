@@ -97,7 +97,7 @@ class BaseEffect(abc.ABC):
     def default_interval(self) -> float:
         """Default interval between color changes in seconds."""
 
-    async def execute(self, light: "Light", interval: float | None = None) -> None:
+    async def execute(self, light: "Light", interval: float | None = None, led: int = 0) -> None:
         """Execute this effect on the given light.
 
         This method runs the full effect cycle similar to the original
@@ -105,6 +105,7 @@ class BaseEffect(abc.ABC):
 
         :param light: Light instance with TaskableMixin capabilities
         :param interval: Override default interval between color changes
+        :param led: LED index to target (0 = all LEDs, 1+ = specific LED)
         """
         sleep_interval = interval if interval is not None else self.default_interval
 
@@ -116,10 +117,10 @@ class BaseEffect(abc.ABC):
 
         try:
             for color in color_iterator:
-                light.on(color)
+                light.on(color, led=led)
                 await asyncio.sleep(sleep_interval)
         finally:
-            light.off()
+            light.off(led=led)
 
     def reset(self) -> None:
         """Reset the effect's internal state."""
