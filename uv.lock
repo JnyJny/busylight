@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11, <4.0"
 
 [[package]]
@@ -41,7 +41,7 @@ wheels = [
 
 [[package]]
 name = "busylight-for-humans"
-version = "0.41.3"
+version = "0.42.0"
 source = { editable = "." }
 dependencies = [
     { name = "busylight-core" },
