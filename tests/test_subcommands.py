@@ -122,9 +122,9 @@ class TestOnSubcommand:
         mock_selection.lights = [mock_light]
         mock_get_selection.return_value = mock_selection
 
-        activate_lights(mock_ctx, color=(255, 0, 0))
+        activate_lights(mock_ctx, color=(255, 0, 0), led=0)
 
-        mock_selection.turn_on.assert_called_once_with((255, 0, 0))
+        mock_selection.turn_on.assert_called_once_with((255, 0, 0), led=0)
 
     @patch("busylight.subcommands.on.get_light_selection")
     @patch("busylight.subcommands.on.typer")
@@ -248,9 +248,9 @@ class TestBlinkSubcommand:
         mock_selection = Mock()
         mock_get_selection.return_value = mock_selection
 
-        blink_lights(mock_ctx, color=(255, 0, 0), speed=Speed.Fast, count=5)
+        blink_lights(mock_ctx, color=(255, 0, 0), speed=Speed.Fast, count=5, led=0)
 
-        mock_selection.blink.assert_called_once_with((255, 0, 0), count=5, speed="fast")
+        mock_selection.blink.assert_called_once_with((255, 0, 0), count=5, speed="fast", led=0)
 
     @patch("busylight.subcommands.blink.get_light_selection")
     def test_blink_lights_keyboard_interrupt(self, mock_get_selection):

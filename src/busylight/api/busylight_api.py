@@ -26,13 +26,11 @@ An API server for USB connected presence lights.
 [Source](https://github.com/JnyJny/busylight.git)
 """
 
-# FastAPI Security Scheme
 busylightapi_security = HTTPBasic()
 
 
 class BusylightAPI(FastAPI):
     def __init__(self):
-        # Get and save the debug flag
         debug = environ.get("BUSYLIGHT_DEBUG", False)
         logger.info(f"Debug: {debug}")
 
@@ -49,13 +47,11 @@ class BusylightAPI(FastAPI):
             self.username = None
             self.password = None
 
-        # Get and save the CORS Access-Control-Allow-Origin header
         logger.info(
             "Set up CORS Access-Control-Allow-Origin header, if environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST is set.",
         )
         self.origins = json_loads(environ.get("BUSYLIGHT_API_CORS_ORIGINS_LIST", "[]"))
 
-        # Validate that BUSYLIGHT_API_CORS_ORIGINS_LIST is a list of strings
         if (not isinstance(self.origins, list)) or any(
             not isinstance(item, str) for item in self.origins
         ):
@@ -90,7 +86,6 @@ class BusylightAPI(FastAPI):
         return self.controller.lights
 
     def update(self) -> None:
-        # Force refresh of lights in controller
         _ = self.controller.lights
 
     def release(self) -> None:
@@ -111,10 +106,6 @@ class BusylightAPI(FastAPI):
     def get(self, path: str, **kwargs) -> Callable:
         self.endpoints.append(path)
 
-        # CORS allowed origins (for the Access-Control-Allow-Origin header)
-        # are set through an environment variable BUSYLIGHT_API_CORS_ORIGINS_LIST
-        # e.g.: export BUSYLIGHT_API_CORS_ORIGINS_LIST='["http://localhost", "http://localhost:8080"]'
-        # (see https://fastapi.tiangolo.com/tutorial/cors/ for details)
         if self.origins:
             self.add_middleware(
                 CORSMiddleware,
@@ -141,8 +132,6 @@ class BusylightAPI(FastAPI):
 busylightapi = BusylightAPI()
 
 
-## Startup & Shutdown
-##
 @busylightapi.on_event("startup")
 async def startup() -> None:
     busylightapi.update()
@@ -157,8 +146,6 @@ async def shutdown() -> None:
         logger.debug("problem during shutdown: {error}")
 
 
-## Exception Handlers
-##
 @busylightapi.exception_handler(LightUnavailableError)
 async def light_unavailable_handler(
     request: Request,
@@ -207,8 +194,6 @@ async def color_lookup_error_handler(
     )
 
 
-## Middleware Handlers
-##
 @busylightapi.middleware("http")
 async def light_manager_update(request: Request, call_next: Callable) -> Response:
     """Check for plug/unplug events and update the light manager."""
@@ -217,8 +202,6 @@ async def light_manager_update(request: Request, call_next: Callable) -> Respons
     return await call_next(request)
 
 
-## GET API Routes
-##
 @busylightapi.get("/", response_model=list[EndPoint])
 async def available_endpoints() -> list[dict[str, str]]:
     """API endpoint listing.
@@ -303,6 +286,7 @@ async def light_on(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
     color: str = "green",
     dim: float = 1.0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Turn on the specified light with the given `color`.
 
@@ -311,10 +295,14 @@ async def light_on(
 
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
-    steady = Effects.for_name("steady")(rgb)
-    await busylightapi.apply_effect(steady, light_id)
+
+    busylightapi.controller.by_index(light_id).turn_on(rgb, led=led)
 
     return {
         "action": "on",
@@ -322,6 +310,7 @@ async def light_on(
         "color": color,
         "rgb": rgb,
         "dim": dim,
+        "led": led,
     }
 
 
@@ -332,15 +321,20 @@ async def light_on(
 async def lights_on(
     color: str = "green",
     dim: float = 1.0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Turn on all lights with the given `color`.
 
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
-    steady = Effects.for_name("steady")(rgb)
-    await busylightapi.apply_effect(steady)
+
+    busylightapi.controller.all().turn_on(rgb, led=led)
 
     return {
         "action": "on",
@@ -348,6 +342,7 @@ async def lights_on(
         "color": color,
         "rgb": rgb,
         "dim": dim,
+        "led": led,
     }
 
 
@@ -397,6 +392,7 @@ async def blink_light(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Start blinking the specified light: color and off.
 
@@ -407,12 +403,15 @@ async def blink_light(
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
 
     `count` is the number of times to blink the light.
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
 
-    # Use controller's fluent API
     selection = busylightapi.controller.by_index(light_id)
-    selection.blink(rgb, count=count, speed=speed.name.lower())
+    selection.blink(rgb, count=count, speed=speed.name.lower(), led=led)
 
     return {
         "action": "blink",
@@ -422,6 +421,7 @@ async def blink_light(
         "speed": speed,
         "dim": dim,
         "count": count,
+        "led": led,
     }
 
 
@@ -434,15 +434,19 @@ async def blink_lights(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
+
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
 
-    # Use controller's fluent API
     selection = busylightapi.controller.all()
-    selection.blink(rgb, count=count, speed=speed.name.lower())
+    selection.blink(rgb, count=count, speed=speed.name.lower(), led=led)
 
     return {
         "action": "blink",
@@ -452,6 +456,7 @@ async def blink_lights(
         "speed": speed,
         "dim": dim,
         "count": count,
+        "led": led,
     }
 
 

@@ -69,20 +69,29 @@ class LightSelection:
         """Return an iterator over the lights in this selection."""
         return iter(self.lights)
 
-    def turn_on(self, color: tuple[int, int, int]) -> LightSelection:
+    def turn_on(self, color: tuple[int, int, int], led: int = 0) -> LightSelection:
         """Turn on all lights in the selection with the specified color.
 
         :param color: RGB color tuple with values 0-255
+        :param led: Target LED index. 0 affects all LEDs, 1+ targets specific LEDs
+
+        For devices with multiple LEDs (like Blink1 mk2), use led parameter to control
+        individual LEDs. Single-LED devices ignore this parameter. LED indexing is
+        device-specific but typically: 0=all, 1=first/top, 2=second/bottom, etc.
 
         Example:
-            Turn lights red::
+            Turn all LEDs red::
 
-                selection.turn_on((255, 0, 0))
+                selection.turn_on((255, 0, 0))  # led=0 default
+
+            Turn only top LED of Blink1 mk2 blue::
+
+                selection.turn_on((0, 0, 255), led=1)
         """
 
         for light in self.lights:
             try:
-                light.on(color)
+                light.on(color, led=led)
             except LightUnavailableError as error:
                 logger.debug(f"Light unavailable during turn_on: {error}")
 
@@ -115,25 +124,37 @@ class LightSelection:
         color: tuple[int, int, int],
         count: int = 0,
         speed: str = "slow",
+        led: int = 0,
     ) -> LightSelection:
         """Apply blink effect to all lights in the selection.
 
         :param color: RGB color tuple with values 0-255
         :param count: Number of blinks. 0 means infinite blinking
         :param speed: Blink speed - "slow", "medium", or "fast"
+        :param led: Target LED index. 0 affects all LEDs, 1+ targets specific LEDs
+
+        For devices with multiple LEDs, use led parameter to blink specific LEDs.
+        Single-LED devices ignore this parameter.
 
         Example:
-            Blink lights green 5 times at fast speed::
+            Blink all LEDs green 5 times at fast speed::
 
                 selection.blink((0, 255, 0), count=5, speed="fast")
+
+            Blink only bottom LED of Blink1 mk2::
+
+                selection.blink((255, 0, 0), led=2)
         """
         try:
             speed_obj = Speed(speed)
         except ValueError:
             speed_obj = Speed.slow
 
-        effect = Effects.for_name("blink")(color, count=count)
-        return self.apply_effect(effect, interval=speed_obj.duty_cycle)
+        if led == 0:
+            effect = Effects.for_name("blink")(color, count=count)
+            return self.apply_effect(effect, interval=speed_obj.duty_cycle)
+        else:
+            return self._apply_led_blink(color, count, speed_obj.duty_cycle, led)
 
     def apply_effect(
         self,
@@ -189,6 +210,68 @@ class LightSelection:
         except RuntimeError:
             try:
                 asyncio.run(effect_supervisor())
+            except KeyboardInterrupt:
+                pass
+
+        return self
+
+    def _apply_led_blink(
+        self,
+        color: tuple[int, int, int],
+        count: int,
+        interval: float,
+        led: int,
+    ) -> LightSelection:
+        """Apply LED-aware blink effect to all lights in the selection.
+
+        :param color: RGB color tuple for the blink effect
+        :param count: Number of blinks, 0 means infinite
+        :param interval: Interval between blinks in seconds
+        :param led: Target LED index for multi-LED devices
+        """
+
+        async def led_blink_supervisor():
+            tasks = []
+            for light in self.lights:
+                light.cancel_tasks()
+
+                async def led_blink_task(target_light=light):
+                    blink_count = 0
+                    try:
+                        while count == 0 or blink_count < count:
+                            target_light.on(color, led=led)
+                            await asyncio.sleep(interval)
+                            target_light.on((0, 0, 0), led=led)
+                            await asyncio.sleep(interval)
+                            blink_count += 1
+                    finally:
+                        target_light.on((0, 0, 0), led=led)
+
+                task = light.add_task(
+                    name="led_blink",
+                    func=led_blink_task,
+                    priority=1,
+                    replace=True,
+                )
+                tasks.append(task)
+
+            if tasks:
+                if count > 0:
+                    await asyncio.wait(tasks)
+                else:
+                    try:
+                        await asyncio.wait(tasks)
+                    except KeyboardInterrupt:
+                        for task in tasks:
+                            task.cancel()
+                        raise
+
+        try:
+            loop = asyncio.get_running_loop()
+            asyncio.create_task(led_blink_supervisor())
+        except RuntimeError:
+            try:
+                asyncio.run(led_blink_supervisor())
             except KeyboardInterrupt:
                 pass
 
