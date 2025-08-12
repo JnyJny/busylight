@@ -15,3 +15,6 @@ htmlcov
 .direnv/
 .vscode/
 .envrc
+
+# MkDocs build output
+site/
