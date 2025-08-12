@@ -150,12 +150,10 @@ class LightSelection:
         except ValueError:
             speed_obj = Speed.slow
 
-        # For LED=0 (default/all LEDs), use original Effects system for compatibility
         if led == 0:
             effect = Effects.for_name("blink")(color, count=count)
             return self.apply_effect(effect, interval=speed_obj.duty_cycle)
         else:
-            # Use LED-aware blink implementation for specific LEDs
             return self._apply_led_blink(color, count, speed_obj.duty_cycle, led)
 
     def apply_effect(
@@ -225,12 +223,13 @@ class LightSelection:
         led: int,
     ) -> LightSelection:
         """Apply LED-aware blink effect to all lights in the selection.
-        
+
         :param color: RGB color tuple for the blink effect
         :param count: Number of blinks, 0 means infinite
         :param interval: Interval between blinks in seconds
         :param led: Target LED index for multi-LED devices
         """
+
         async def led_blink_supervisor():
             tasks = []
             for light in self.lights:
@@ -240,10 +239,8 @@ class LightSelection:
                     blink_count = 0
                     try:
                         while count == 0 or blink_count < count:
-                            # Turn on with LED parameter
                             target_light.on(color, led=led)
                             await asyncio.sleep(interval)
-                            # Turn off with LED parameter
                             target_light.on((0, 0, 0), led=led)
                             await asyncio.sleep(interval)
                             blink_count += 1
@@ -253,7 +250,7 @@ class LightSelection:
                 task = light.add_task(
                     name="led_blink",
                     func=led_blink_task,
-                    priority=1,  # Normal priority
+                    priority=1,
                     replace=True,
                 )
                 tasks.append(task)

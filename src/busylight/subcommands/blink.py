@@ -74,15 +74,15 @@ def blink_lights(
     This command applies a blinking effect to the selected lights using
     the specified color, speed, and count. For devices with multiple LEDs
     (like Blink1 mk2), use --led to target specific LEDs.
-    
+
     The effect runs asynchronously and can be interrupted with Ctrl+C.
     For infinite blinking (count=0), the command will continue until
     interrupted. For finite counts, the command exits after the specified
     number of blinks complete.
-    
+
     Example:
         Target specific LEDs::
-        
+
             busylight blink red --led 1 --count 3    # Top LED only
             busylight blink green --led 2            # Bottom LED infinite
     """

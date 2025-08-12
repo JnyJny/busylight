@@ -55,7 +55,7 @@ def activate_lights(
     This command turns on the selected lights with the specified color.
     For devices with multiple LEDs (like Blink1 mk2), use --led to target
     specific LEDs: 0=all LEDs, 1=first/top LED, 2=second/bottom LED, etc.
-    
+
     It includes special handling for Kuando lights which require keepalive
     tasks to maintain their USB connection. When Kuando lights are detected,
     the command will continue running until interrupted to keep the lights
@@ -70,9 +70,9 @@ def activate_lights(
             busylight on red
             busylight on "#ff0000"
             busylight on "rgb(255,0,0)"
-            
+
         Target specific LEDs on multi-LED devices::
-        
+
             busylight on red --led 1      # Top LED only
             busylight on blue --led 2     # Bottom LED only
             busylight on green --led 0    # All LEDs (default)

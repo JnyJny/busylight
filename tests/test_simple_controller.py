@@ -185,16 +185,16 @@ class TestLedFunctionality:
         """Test that turn_on passes LED parameter to individual lights."""
         mock_light1 = MockLight("Light1")
         mock_light2 = MockLight("Light2")
-        
+
         selection = LightSelection([mock_light1, mock_light2])
-        
+
         # Test default LED (all LEDs)
         selection.turn_on((255, 0, 0))
         assert mock_light1.current_color == (255, 0, 0)
         assert mock_light1.current_led == 0
         assert mock_light2.current_color == (255, 0, 0)
         assert mock_light2.current_led == 0
-        
+
         # Test specific LED
         selection.turn_on((0, 255, 0), led=1)
         assert mock_light1.current_color == (0, 255, 0)
@@ -206,12 +206,12 @@ class TestLedFunctionality:
         """Test that blink method accepts LED parameter."""
         mock_light = MockLight("TestLight")
         mock_light.add_task.return_value = Mock()
-        
+
         selection = LightSelection([mock_light])
-        
+
         # Test blink with LED parameter
-        with patch('asyncio.get_running_loop', side_effect=RuntimeError):
-            with patch('asyncio.run') as mock_run:
+        with patch("asyncio.get_running_loop", side_effect=RuntimeError):
+            with patch("asyncio.run") as mock_run:
                 selection.blink((255, 0, 0), count=3, led=2)
                 mock_run.assert_called_once()
 
@@ -220,12 +220,12 @@ class TestLedFunctionality:
         mock_lights = [MockLight("Blink1"), MockLight("Luxafor")]
         mock_light_class = Mock()
         mock_light_class.all_lights.return_value = mock_lights
-        
+
         controller = LightController(mock_light_class)
-        
+
         # Test turn_on with LED parameter via fluent interface
         controller.all().turn_on((0, 0, 255), led=1)
-        
+
         for light in mock_lights:
             assert light.current_color == (0, 0, 255)
             assert light.current_led == 1
@@ -234,11 +234,11 @@ class TestLedFunctionality:
         """Test that LED parameter handles edge cases correctly."""
         mock_light = MockLight("TestLight")
         selection = LightSelection([mock_light])
-        
+
         # Test negative LED (should still work, device will handle)
         selection.turn_on((255, 255, 255), led=-1)
         assert mock_light.current_led == -1
-        
+
         # Test large LED number (should still work, device will handle)
         selection.turn_on((128, 128, 128), led=999)
         assert mock_light.current_led == 999
