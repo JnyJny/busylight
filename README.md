@@ -12,11 +12,9 @@
 ![Monthly Downloads][monthly-downloads]
 <br>
 
-[BusyLight for Humans™][busylight-for-humans] gives you control of USB
-attached LED lights from a variety of vendors. Lights can be
-controlled via the command-line or using a HTTP API. Please consider
-[Busylight Core][busylight-core] if you'd like to integrate USB light
-control into your own Python application.
+[BusyLight for Humans][busylight-for-humans] controls USB LED lights from multiple vendors. 
+Use the command-line interface or HTTP API to turn lights on/off, change colors, and apply effects.
+For Python integration, use [Busylight Core][busylight-core] directly in your applications.
 
 ![All Supported Lights][DEMO]
 Flag<sup>1</sup>,
@@ -35,23 +33,23 @@ MuteSync<sup>13</sup>,
 Blynclight Plus<sup>14</sup>
 
 ## Features
-- Control lights from the command-line.
-- Control lights via HTTP API.
-- Supported on MacOS and Linux
-- Windows support is in progress.
-- Support for twenty-three devices from nine vendors:
+- Command-line interface with color, effect, and LED targeting options
+- HTTP API with full documentation and authentication support  
+- Individual LED control for multi-LED devices (Blink1 mk2, BlinkStick variants)
+- Cross-platform support: macOS and Linux (Windows in development)
+- Support for 23 devices from 9 vendors:
 
-| **Vendor** |  **Models** |
-|------------|-------------|
-| [**Agile Innovative**][2] | BlinkStick, BlinkStick Pro, BlinkStick Square, BlinkStick Strip, BlinkStick Nano, BlickStick Flex |
-| [**Compulab**][8] | fit-statUSB |
-| [**EPOS**][11] | Busylight |
-| [**Embrava**][3] | Blynclight, Blynclight Mini, Blynclight Plus |
-| [**Kuando**][4] | Busylight Alpha, BusyLight Omega |
-| [**Luxafor**][5] | Bluetooth, Flag, Mute, Orb, Busy Tag |
-| [**Plantronics**][3] | Status Indicator |
-| [**MuteMe**][7] | MuteMe Original, Mute Mini, MuteSync |
-| [**ThingM**][6] | Blink(1) |
+| **Vendor** |  **Models** | **LED Support** |
+|------------|-------------|-----------------|
+| [**Agile Innovative**][2] | BlinkStick, BlinkStick Pro, BlinkStick Square, BlinkStick Strip, BlinkStick Nano, BlinkStick Flex | Multi-LED targeting |
+| [**Compulab**][8] | fit-statUSB | Single LED |
+| [**EPOS**][11] | Busylight | Single LED |
+| [**Embrava**][3] | Blynclight, Blynclight Mini, Blynclight Plus | Single LED |
+| [**Kuando**][4] | Busylight Alpha, BusyLight Omega | Single LED |
+| [**Luxafor**][5] | Bluetooth, Flag, Mute, Orb, Busy Tag | Single LED |
+| [**Plantronics**][3] | Status Indicator | Single LED |
+| [**MuteMe**][7] | MuteMe Original, Mute Mini, MuteSync | Single LED |
+| [**ThingM**][6] | Blink(1), Blink(1) mk2 | Blink(1) mk2: Multi-LED |
 
 Request support for a new device by [opening an issue][busylight-core-issues]
 in the Busylight Core project.
@@ -87,15 +85,7 @@ python3 -m pip install busylight-for-humans[webapi]
 
 ## Development Install
 
-This project is managed using [uv][uv-docs] for:
-- dependency management
-- pytest configuration
-- versioning
-- optional dependencies
-- virtual environment creation
-- building packages
-- publishing packages to PyPi via GitHub Actions
-
+This project uses [uv][uv-docs] for dependency management, virtual environments, and packaging.
 
 ```console
 $ python3 -m pip install uv
@@ -107,10 +97,7 @@ $ source .venv/bin/activate
 <venv> $ pytest
 ```
 
-After installing into the virtual environment, the project is now
-available in editable mode.  Changes made in the source will be
-reflected in the runtime behavior when running in the uv managed
-virtual environment.
+The project installs in editable mode. Source changes are reflected immediately when running in the virtual environment.
 
 ## Linux Post-Install Activities
 
@@ -130,15 +117,24 @@ $ busylight on
 
 ## Command-Line Examples
 
+### Basic Usage
 ```console
 $ busylight on               # light turns on green
-$ busylight on red           # now it's shining a friendly red
-$ busylight on 0xff0000      # still red
-$ busylight on #0000ff       # now it's blue!
-$ busylight blink            # it's slowly blinking on and off with a red color
-$ busylight blink green fast # blinking faster green and off
+$ busylight on red           # turns red
+$ busylight on 0xff0000      # red using hex
+$ busylight on #0000ff       # blue using hex
+$ busylight blink            # slow red blinking
+$ busylight blink green fast # fast green blinking
 $ busylight --all on         # turn all lights on green
 $ busylight --all off        # turn all lights off
+```
+
+### LED Targeting (Multi-LED Devices)
+```console
+$ busylight on red --led 1          # turn on top LED only (Blink1 mk2)
+$ busylight on blue --led 2         # turn on bottom LED only  
+$ busylight blink green --led 1 --count 5  # blink top LED 5 times
+$ busylight off                     # turn off all LEDs (default)
 ```
 
 ## HTTP API Examples
@@ -161,56 +157,72 @@ The API is fully documented and available via these URLs:
 
 Now you can use the web API endpoints which return JSON payloads:
 
+### Basic Operations
 ```console
-  $ curl -s http://localhost:8000/lights/status | jq
-  ...
-  
-  $ curl -s http://localhost:8000/light/0/status | jq
-  ...
-  
-  $ curl -s http://localhost:8000/light/0/on | jq
-  {
-    "light_id": 0,
-    "action": "on",
-    "color": "green",
-    "rgb": [0, 128, 0]
-  }
-  
-  $ curl -s http://localhost:8000/light/0/off | jq
-  {
-    "light_id": 0,
-    "action": "off"
-  }
-  
-  $ curl -s http://localhost:8000/light/0/on?color=purple | jq
-  {
-    "light_id": 0,
-    "action": "on",
-    "color": "purple",
-    "rgb": [128, 0, 128]
-  }
-  
-  $ curl -s http://localhost:8000/lights/on | jq
-  {
-    "light_id": "all",
-    "action": "on",
-    "color": "green",
-    "rgb", [0, 128, 0]
-  }
-  
-  $ curl -s http://localhost:8000/lights/off | jq
-  {
-    "light_id": "all",
-    "action": "off"
-  }
-  
-  $ curl -s http://localhost:8000/lights/rainbow | jq
-  {
-    "light_id": "all",
-    "action": "effect",
-    "name": "rainbow"
-  }
+$ curl -s http://localhost:8000/lights/status | jq
+# Returns status of all lights
+
+$ curl -s http://localhost:8000/light/0/on | jq
+{
+  "light_id": 0,
+  "action": "on", 
+  "color": "green",
+  "rgb": [0, 128, 0],
+  "led": 0
+}
+
+$ curl -s http://localhost:8000/light/0/on?color=purple | jq
+{
+  "light_id": 0,
+  "action": "on",
+  "color": "purple", 
+  "rgb": [128, 0, 128],
+  "led": 0
+}
+
+$ curl -s http://localhost:8000/light/0/blink?color=red&count=3 | jq
+{
+  "light_id": 0,
+  "action": "blink",
+  "color": "red",
+  "rgb": [255, 0, 0],
+  "count": 3,
+  "led": 0
+}
 ```
+
+### LED Targeting (Multi-LED Devices)
+```console
+$ curl -s "http://localhost:8000/light/0/on?color=red&led=1" | jq
+{
+  "light_id": 0,
+  "action": "on",
+  "color": "red",
+  "rgb": [255, 0, 0],
+  "led": 1
+}
+
+$ curl -s "http://localhost:8000/light/0/blink?color=blue&led=2&count=5" | jq
+{
+  "light_id": 0,
+  "action": "blink", 
+  "color": "blue",
+  "rgb": [0, 0, 255],
+  "count": 5,
+  "led": 2
+}
+```
+
+## LED Parameter Reference
+
+For devices with multiple LEDs (like Blink1 mk2), use the `--led` option (CLI) or `led` parameter (API):
+
+- `led=0`: Control all LEDs (default behavior)
+- `led=1`: Control first/top LED  
+- `led=2`: Control second/bottom LED
+- `led=3+`: Control additional LEDs (BlinkStick variants)
+
+Single-LED devices ignore the LED parameter. Device-specific LED indexing varies by manufacturer.
 
 ### Authentication
 The API can be secured with a simple username and password through
