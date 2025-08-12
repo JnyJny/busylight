@@ -303,6 +303,7 @@ async def light_on(
     light_id: int = Path(..., title="Numeric light identifier", ge=0),
     color: str = "green",
     dim: float = 1.0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Turn on the specified light with the given `color`.
 
@@ -311,10 +312,15 @@ async def light_on(
 
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
+    
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
-    steady = Effects.for_name("steady")(rgb)
-    await busylightapi.apply_effect(steady, light_id)
+    
+    # Use controller's LED-aware turn_on method
+    busylightapi.controller.by_index(light_id).turn_on(rgb, led=led)
 
     return {
         "action": "on",
@@ -322,6 +328,7 @@ async def light_on(
         "color": color,
         "rgb": rgb,
         "dim": dim,
+        "led": led,
     }
 
 
@@ -332,15 +339,21 @@ async def light_on(
 async def lights_on(
     color: str = "green",
     dim: float = 1.0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Turn on all lights with the given `color`.
 
     `color` can be a color name or a hexadecimal string e.g. "red",
     "#ff0000", "#f00", "0xff0000", "0xf00", "f00", "ff0000"
+    
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
-    steady = Effects.for_name("steady")(rgb)
-    await busylightapi.apply_effect(steady)
+    
+    # Use controller's LED-aware turn_on method
+    busylightapi.controller.all().turn_on(rgb, led=led)
 
     return {
         "action": "on",
@@ -348,6 +361,7 @@ async def lights_on(
         "color": color,
         "rgb": rgb,
         "dim": dim,
+        "led": led,
     }
 
 
@@ -397,6 +411,7 @@ async def blink_light(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Start blinking the specified light: color and off.
 
@@ -407,12 +422,16 @@ async def blink_light(
     #ff0000, #f00, 0xff0000, 0xf00, f00, ff0000
 
     `count` is the number of times to blink the light.
+    
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
 
-    # Use controller's fluent API
+    # Use controller's fluent API with LED support
     selection = busylightapi.controller.by_index(light_id)
-    selection.blink(rgb, count=count, speed=speed.name.lower())
+    selection.blink(rgb, count=count, speed=speed.name.lower(), led=led)
 
     return {
         "action": "blink",
@@ -422,6 +441,7 @@ async def blink_light(
         "speed": speed,
         "dim": dim,
         "count": count,
+        "led": led,
     }
 
 
@@ -434,15 +454,20 @@ async def blink_lights(
     speed: Speed = Speed.Slow,
     dim: float = 1.0,
     count: int = 0,
+    led: int = 0,
 ) -> dict[str, Any]:
     """Start blinking all the lights: red and off
     <p>Note: lights will not be synchronized.</p>
+    
+    `led` parameter targets specific LEDs on multi-LED devices:
+    - 0 = all LEDs (default)
+    - 1+ = specific LED (1=first/top, 2=second/bottom, etc.)
     """
     rgb = parse_color_string(color, dim)
 
-    # Use controller's fluent API
+    # Use controller's fluent API with LED support
     selection = busylightapi.controller.all()
-    selection.blink(rgb, count=count, speed=speed.name.lower())
+    selection.blink(rgb, count=count, speed=speed.name.lower(), led=led)
 
     return {
         "action": "blink",
@@ -452,6 +477,7 @@ async def blink_lights(
         "speed": speed,
         "dim": dim,
         "count": count,
+        "led": led,
     }
 
 

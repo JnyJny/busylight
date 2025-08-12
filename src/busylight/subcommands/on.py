@@ -39,13 +39,23 @@ def activate_lights(
         callback=string_to_scaled_color,
         show_default=True,
     ),
+    led: int = typer.Option(
+        0,
+        "--led",
+        help="Target LED index (0=all LEDs, 1+=specific LED for multi-LED devices)",
+        show_default=True,
+    ),
 ) -> None:
     """Activate lights with a specified color.
 
     :param ctx: Typer context containing global options and controller
     :param color: Color specification (name, hex, or RGB tuple)
+    :param led: Target LED index for multi-LED devices
 
     This command turns on the selected lights with the specified color.
+    For devices with multiple LEDs (like Blink1 mk2), use --led to target
+    specific LEDs: 0=all LEDs, 1=first/top LED, 2=second/bottom LED, etc.
+    
     It includes special handling for Kuando lights which require keepalive
     tasks to maintain their USB connection. When Kuando lights are detected,
     the command will continue running until interrupted to keep the lights
@@ -60,6 +70,12 @@ def activate_lights(
             busylight on red
             busylight on "#ff0000"
             busylight on "rgb(255,0,0)"
+            
+        Target specific LEDs on multi-LED devices::
+        
+            busylight on red --led 1      # Top LED only
+            busylight on blue --led 2     # Bottom LED only
+            busylight on green --led 0    # All LEDs (default)
     """
     logger.info("Activating lights with color: {}", color)
 
@@ -77,7 +93,7 @@ def activate_lights(
             import asyncio
 
             async def turn_on_and_wait() -> None:
-                selection.turn_on(color)
+                selection.turn_on(color, led=led)
 
                 while True:
                     all_tasks = []
@@ -101,7 +117,7 @@ def activate_lights(
             )
             asyncio.run(turn_on_and_wait())
         else:
-            selection.turn_on(color)
+            selection.turn_on(color, led=led)
 
     except (KeyboardInterrupt, TimeoutError):
         selection = get_light_selection(ctx)

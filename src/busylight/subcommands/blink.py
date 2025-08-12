@@ -56,6 +56,12 @@ def blink_lights(
         show_default=True,
         help="Number of blinks. 0 means infinite.",
     ),
+    led: int = typer.Option(
+        0,
+        "--led",
+        help="Target LED index (0=all LEDs, 1+=specific LED for multi-LED devices)",
+        show_default=True,
+    ),
 ) -> None:
     """Create a blinking effect on selected lights.
 
@@ -63,20 +69,28 @@ def blink_lights(
     :param color: Color specification for the blink effect
     :param speed: Blink speed (slow, medium, or fast)
     :param count: Number of blinks. 0 means infinite blinking
+    :param led: Target LED index for multi-LED devices
 
     This command applies a blinking effect to the selected lights using
-    the specified color, speed, and count. The effect runs asynchronously
-    and can be interrupted with Ctrl+C.
-
+    the specified color, speed, and count. For devices with multiple LEDs
+    (like Blink1 mk2), use --led to target specific LEDs.
+    
+    The effect runs asynchronously and can be interrupted with Ctrl+C.
     For infinite blinking (count=0), the command will continue until
     interrupted. For finite counts, the command exits after the specified
     number of blinks complete.
+    
+    Example:
+        Target specific LEDs::
+        
+            busylight blink red --led 1 --count 3    # Top LED only
+            busylight blink green --led 2            # Bottom LED infinite
     """
     logger.info("Blinking lights with color: {}", color)
 
     try:
         selection = get_light_selection(ctx)
-        selection.blink(color, count=count, speed=speed.name.lower())
+        selection.blink(color, count=count, speed=speed.name.lower(), led=led)
     except (KeyboardInterrupt, TimeoutError):
         selection = get_light_selection(ctx)
         selection.turn_off()
