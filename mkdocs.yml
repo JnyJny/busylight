@@ -56,6 +56,7 @@ nav:
     - Overview: cli/index.md
     - Commands: cli/commands.md
     - Examples: cli/examples.md
+    - Selection Guide: cli/selection-guide.md
   - Web API:
     - Overview: api/index.md
     - Endpoints: api/endpoints.md
@@ -63,7 +64,10 @@ nav:
   - Devices:
     - Overview: devices/index.md
     - LED Support: devices/led-support.md
-  - Contributing: contributing.md
+  - Contributing:
+    - Overview: contributing.md
+    - Migration Guide: contributing/migration-guide.md
+    - Architecture Decisions: contributing/architecture-decisions.md
 
 extra:
   version:
