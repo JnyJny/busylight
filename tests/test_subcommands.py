@@ -324,7 +324,7 @@ class TestPulseSubcommand:
         mock_selection = Mock()
         mock_get_selection.return_value = mock_selection
 
-        pulse_lights(mock_ctx, color=(0, 255, 0), speed=Speed.Medium, count=3)
+        pulse_lights(mock_ctx, color=(0, 255, 0), speed=Speed.Medium, count=3, led=0)
 
         mock_effects.for_name.assert_called_once_with("gradient")
         mock_effects.for_name.return_value.assert_called_once_with(
@@ -332,7 +332,7 @@ class TestPulseSubcommand:
         )
 
         mock_selection.apply_effect.assert_called_once_with(
-            mock_effect_instance, duration=30.0, interval=Speed.Medium.duty_cycle / 16
+            mock_effect_instance, duration=30.0, interval=Speed.Medium.duty_cycle / 16, led=0
         )
 
     @patch("busylight.subcommands.pulse.get_light_selection")
@@ -350,7 +350,7 @@ class TestPulseSubcommand:
         mock_selection.apply_effect.side_effect = TimeoutError()
         mock_get_selection.return_value = mock_selection
 
-        pulse_lights(mock_ctx, color=(0, 0, 255), speed=Speed.Fast, count=0)
+        pulse_lights(mock_ctx, color=(0, 0, 255), speed=Speed.Fast, count=0, led=0)
 
         mock_selection.turn_off.assert_called_once()
 
@@ -366,7 +366,7 @@ class TestPulseSubcommand:
 
         with patch("busylight.subcommands.pulse.typer.secho") as mock_secho:
             with pytest.raises(typer.Exit) as exc_info:
-                pulse_lights(mock_ctx, color=(128, 128, 128), speed=Speed.Slow, count=2)
+                pulse_lights(mock_ctx, color=(128, 128, 128), speed=Speed.Slow, count=2, led=0)
 
         assert exc_info.value.exit_code == 1
         mock_secho.assert_called_with("Unable to pulse lights.", fg="red")
@@ -387,7 +387,7 @@ class TestPulseSubcommand:
 
         with patch("busylight.subcommands.pulse.typer.secho") as mock_secho:
             with pytest.raises(typer.Exit) as exc_info:
-                pulse_lights(mock_ctx, color=(64, 64, 64), speed=Speed.Medium, count=1)
+                pulse_lights(mock_ctx, color=(64, 64, 64), speed=Speed.Medium, count=1, led=0)
 
         assert exc_info.value.exit_code == 1
         mock_secho.assert_called_with("Error pulse lights: Pulse test error", fg="red")
