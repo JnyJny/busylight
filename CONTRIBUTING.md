@@ -168,6 +168,231 @@ busylight/
 - **Async/Await**: Non-blocking effects and concurrent operations
 - **Dependency Injection**: Testable components with clear interfaces
 
+## Effects Development
+
+The Effects system is the core of BusyLight's dynamic lighting capabilities.
+Understanding how to create and modify effects is essential for contributors.
+
+### Effects Architecture
+
+All effects inherit from `BaseEffect` in `src/busylight/effects/effect.py`:
+
+```python
+class BaseEffect(abc.ABC):
+    @property
+    @abc.abstractmethod
+    def colors(self) -> list[tuple[int, int, int]]:
+        """List of RGB color tuples defining the effect sequence."""
+    
+    @property
+    @abc.abstractmethod  
+    def default_interval(self) -> float:
+        """Default interval between color changes in seconds."""
+```
+
+### Built-in Effects
+
+- **`Steady`**: Static color display
+- **`Blink`**: Alternates between two colors
+- **`Spectrum`**: Rainbow color cycling with sine wave generation
+- **`Gradient`**: Smooth fade from black to color and back
+
+### Creating New Effects
+
+#### 1. Basic Effect Structure
+
+```python
+from typing import TYPE_CHECKING
+from busylight_core.mixins.taskable import TaskPriority
+from busylight.effects.effect import BaseEffect
+
+if TYPE_CHECKING:
+    from busylight_core import Light
+
+class MyEffect(BaseEffect):
+    def __init__(self, color: tuple[int, int, int]) -> None:
+        self.color = color
+        self.priority = TaskPriority.NORMAL
+    
+    @property
+    def colors(self) -> list[tuple[int, int, int]]:
+        # Return your color sequence
+        return [self.color, (0, 0, 0)]  # Color + black
+    
+    @property
+    def default_interval(self) -> float:
+        return 0.5  # 500ms between changes
+```
+
+#### 2. Color Generation Patterns
+
+**Static Sequences:**
+```python
+@property
+def colors(self) -> list[tuple[int, int, int]]:
+    return [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+```
+
+**Computed Sequences:**
+```python
+@property
+def colors(self) -> list[tuple[int, int, int]]:
+    if hasattr(self, "_colors"):
+        return self._colors
+    
+    # Generate color sequence
+    colors = []
+    for i in range(10):
+        intensity = int(255 * (i / 10))
+        colors.append((intensity, 0, 0))
+    
+    self._colors = colors  # Cache result
+    return self._colors
+```
+
+**Mathematical Functions:**
+```python
+import math
+
+@property  
+def colors(self) -> list[tuple[int, int, int]]:
+    colors = []
+    for i in range(50):
+        # Sine wave for smooth transitions
+        r = int(127 * math.sin(i * 0.1) + 128)
+        g = int(127 * math.cos(i * 0.1) + 128)
+        colors.append((r, g, 0))
+    return colors
+```
+
+#### 3. Advanced Execution Control
+
+For complex timing or custom logic, override `execute()`:
+
+```python
+async def execute(self, light: "Light", interval: float | None = None) -> None:
+    """Custom execution with variable timing."""
+    try:
+        for i, color in enumerate(self.colors):
+            light.on(color)
+            
+            # Variable timing based on position
+            if i % 2 == 0:
+                await asyncio.sleep(0.1)  # Fast
+            else:
+                await asyncio.sleep(0.5)  # Slow
+                
+    finally:
+        light.off()  # Always cleanup
+```
+
+### Effect Development Guidelines
+
+#### Performance Best Practices
+
+1. **Cache Color Calculations**: Use `self._colors` to avoid recomputation
+2. **Reasonable Sequence Length**: Keep under 1000 colors for performance
+3. **Appropriate Timing**: Balance smoothness with device capabilities
+4. **Memory Efficiency**: Generate colors lazily when possible
+
+#### Testing Effects
+
+**Unit Tests:**
+```python
+def test_effect_colors():
+    effect = MyEffect(color=(255, 0, 0))
+    colors = effect.colors
+    
+    assert len(colors) > 0
+    assert all(len(color) == 3 for color in colors)
+    assert all(0 <= c <= 255 for color in colors for c in color)
+
+async def test_effect_execution():
+    effect = MyEffect(color=(255, 0, 0))
+    mock_light = Mock()
+    
+    await effect.execute(mock_light)
+    assert mock_light.on.called
+    assert mock_light.off.called
+```
+
+**Integration Testing:**
+```bash
+# Test with actual hardware
+busylight --debug on red  # Test steady effect
+busylight --debug blink blue --count 3  # Test blink effect
+```
+
+#### Effect Registration
+
+Add new effects to `src/busylight/effects/__init__.py`:
+
+```python
+from .my_effect import MyEffect
+
+__all__ = [
+    "Blink",
+    "Effects",
+    "Gradient", 
+    "MyEffect",  # Add here
+    "Spectrum",
+    "Steady",
+]
+```
+
+#### CLI Integration
+
+Effects are automatically available via the discovery system:
+
+```python
+# In CLI code
+effect_class = BaseEffect.for_name("myeffect")
+effect = effect_class(color=(255, 0, 0))
+```
+
+### Effect Debugging
+
+#### Common Issues
+
+**Colors Not Displaying:**
+- Verify RGB values are 0-255
+- Check that `colors` property returns non-empty list
+- Ensure `default_interval` > 0
+
+**Performance Problems:**
+- Profile color generation with large sequences
+- Cache expensive computations in `_colors`
+- Use appropriate sleep intervals
+
+**Memory Leaks:**
+- Clear cached data in `reset()` method if needed
+- Avoid circular references in effect objects
+
+#### Debug Utilities
+
+```python
+# Add to effect class for debugging
+def debug_info(self) -> dict:
+    return {
+        "name": self.name,
+        "color_count": len(self.colors),
+        "interval": self.default_interval,
+        "priority": self.priority.name,
+    }
+```
+
+### Effect Examples
+
+See **[complete effects documentation][docs-effects]** for:
+- Detailed API reference
+- Advanced color generation techniques
+- Mathematical effect patterns
+- Performance optimization strategies
+- Integration examples
+
+Contributing new effects expands BusyLight's creative possibilities and
+benefits the entire community!
+
 ## Development Workflow
 
 ### 1. Issue First
@@ -489,6 +714,7 @@ control accessible to developers worldwide.
 [discussions]: https://github.com/JnyJny/busylight/discussions
 [device-request]: https://github.com/JnyJny/busylight-core/issues/new?template=4_new_device_request.yaml
 [docs]: https://jnyjny.github.io/busylight/
+[docs-effects]: https://jnyjny.github.io/busylight/effects/
 [semver]: https://semver.org/
 [sphinx-docstrings]: https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
 [coc]: https://www.contributor-covenant.org/version/2/1/code_of_conduct/
