@@ -63,6 +63,7 @@ nav:
   - Devices:
     - Overview: devices/index.md
     - LED Support: devices/led-support.md
+  - Effects: effects.md
   - Contributing: contributing.md
 
 extra:
