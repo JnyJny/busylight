@@ -36,7 +36,7 @@ Blynclight Plus<sup>14</sup>
 ## Features
 - Command-line interface with color, effect, and LED targeting options
 - HTTP API with full documentation and authentication support  
-- Individual LED control for multi-LED devices (Blink1 mk2, BlinkStick variants)
+- Individual LED control for multi-LED devices (Blink1 mk2, Flag variants, BlinkStick variants)
 - Cross-platform support: macOS and Linux (Windows in development)
 - Support for 23 devices from 9 vendors:
 
@@ -47,7 +47,7 @@ Blynclight Plus<sup>14</sup>
 | [**EPOS**][11] | Busylight | Single LED |
 | [**Embrava**][3] | Blynclight, Blynclight Mini, Blynclight Plus | Single LED |
 | [**Kuando**][4] | Busylight Alpha, BusyLight Omega | Single LED |
-| [**Luxafor**][5] | Bluetooth, Flag, Mute, Orb, Busy Tag | Single LED |
+| [**Luxafor**][5] | Bluetooth, Flag, Mute, Orb, Busy Tag | Multi-LED / Single LED |
 | [**Plantronics**][3] | Status Indicator | Single LED |
 | [**MuteMe**][7] | MuteMe Original, Mute Mini, MuteSync | Single LED |
 | [**ThingM**][6] | Blink(1), Blink(1) mk2 | Blink(1) mk2: Multi-LED |
@@ -134,10 +134,10 @@ $ busylight --all off        # turn all lights off
 
 ### LED Targeting (Multi-LED Devices)
 ```console
-$ busylight on red --led 1          # turn on top LED only (Blink1 mk2)
-$ busylight on blue --led 2         # turn on bottom LED only  
+$ busylight on red --led 1                 # turn on top LED only (Blink1 mk2)
+$ busylight on blue --led 2                # turn on bottom LED only  
 $ busylight blink green --led 1 --count 5  # blink top LED 5 times
-$ busylight off                     # turn off all LEDs (default)
+$ busylight off                            # turn off all LEDs (default)
 ```
 
 ## HTTP API Examples
@@ -223,12 +223,12 @@ For devices with multiple LEDs (like Blink1 mk2), use the `--led` option
 (CLI) or `led` parameter (API):
 
 - `led=0`: Control all LEDs (default behavior)
-- `led=1`: Control first/top LED  
-- `led=2`: Control second/bottom LED
-- `led=3+`: Control additional LEDs (BlinkStick variants)
+- `led=1`: Control first
+- `led=2`: Control second
+- `led=3+`: Control additional LEDs
 
-Single-LED devices ignore the LED parameter. Device-specific LED indexing
-varies by manufacturer.
+Single-LED devices ignore the LED parameter. Device-specific LED
+indexing varies by manufacturer.
 
 ### Authentication
 The API can be secured with a simple username and password through
