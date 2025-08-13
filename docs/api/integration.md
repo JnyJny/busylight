@@ -1,7 +1,7 @@
 # API Integration Guide
 
 Learn how to integrate the BusyLight Web API into your applications and
-services.
+services using both the modern v1 endpoints and compatibility endpoints.
 
 ## Server Setup
 
@@ -77,15 +77,163 @@ services:
 
 ## Client Libraries
 
-### Python Client
+### Modern Python Client (V1 API)
 
 ```python
 import requests
 import json
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
-class BusyLightClient:
-    """Python client for BusyLight API."""
+class ModernBusyLightClient:
+    """Python client using the modern v1 API endpoints."""
+    
+    def __init__(self, base_url: str = "http://localhost:8000", 
+                 auth: Optional[tuple] = None, use_v1: bool = True):
+        self.base_url = base_url.rstrip('/')
+        self.auth = auth
+        self.use_v1 = use_v1
+        self.session = requests.Session()
+        if auth:
+            self.session.auth = auth
+    
+    def _post_request(self, endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Make POST request with JSON data."""
+        url = f"{self.base_url}{endpoint}"
+        response = self.session.post(
+            url, 
+            json=data,
+            headers={'Content-Type': 'application/json'}
+        )
+        response.raise_for_status()
+        return response.json()
+    
+    def _get_request(self, endpoint: str) -> Dict[str, Any]:
+        """Make GET request."""
+        url = f"{self.base_url}{endpoint}"
+        response = self.session.get(url)
+        response.raise_for_status()
+        return response.json()
+    
+    def get_api_info(self) -> Dict[str, Any]:
+        """Get API information and available endpoints."""
+        return self._get_request("/")
+    
+    def get_system_health(self) -> Dict[str, Any]:
+        """Check system health and device availability."""
+        endpoint = "/api/v1/system/health" if self.use_v1 else "/system/health"
+        return self._get_request(endpoint)
+    
+    def list_lights(self) -> List[Dict[str, Any]]:
+        """Get status of all lights."""
+        endpoint = "/api/v1/lights" if self.use_v1 else "/lights"
+        return self._get_request(endpoint)
+    
+    def get_light(self, light_id: int) -> Dict[str, Any]:
+        """Get status of specific light."""
+        endpoint = f"/api/v1/lights/{light_id}/status" if self.use_v1 else f"/lights/{light_id}/status"
+        return self._get_request(endpoint)
+    
+    def turn_on(self, light_id: Optional[int] = None, color: str = "green", 
+                led: int = 0, dim: float = 1.0) -> Dict[str, Any]:
+        """Turn on light(s) using v1 API."""
+        if not self.use_v1:
+            raise ValueError("Use compatibility client for non-v1 endpoints")
+            
+        data = {"color": color, "led": led, "dim": dim}
+        
+        if light_id is not None:
+            endpoint = f"/api/v1/lights/{light_id}/on"
+        else:
+            endpoint = "/api/v1/lights/on"
+            
+        return self._post_request(endpoint, data)
+    
+    def turn_off(self, light_id: Optional[int] = None) -> Dict[str, Any]:
+        """Turn off light(s) using v1 API."""
+        if not self.use_v1:
+            raise ValueError("Use compatibility client for non-v1 endpoints")
+            
+        if light_id is not None:
+            endpoint = f"/api/v1/lights/{light_id}/off"
+        else:
+            endpoint = "/api/v1/lights/off"
+            
+        return self._post_request(endpoint, {})
+    
+    def blink(self, light_id: Optional[int] = None, color: str = "red", 
+              count: int = 0, speed: str = "slow", led: int = 0, 
+              dim: float = 1.0) -> Dict[str, Any]:
+        """Start blinking effect using v1 API."""
+        if not self.use_v1:
+            raise ValueError("Use compatibility client for non-v1 endpoints")
+            
+        data = {
+            "color": color, "count": count, "speed": speed, 
+            "led": led, "dim": dim
+        }
+        
+        if light_id is not None:
+            endpoint = f"/api/v1/lights/{light_id}/blink"
+        else:
+            endpoint = "/api/v1/lights/blink"
+            
+        return self._post_request(endpoint, data)
+    
+    def rainbow_effect(self, light_id: Optional[int] = None, 
+                      speed: str = "slow", dim: float = 1.0, 
+                      led: int = 0) -> Dict[str, Any]:
+        """Start rainbow effect using v1 API."""
+        if not self.use_v1:
+            raise ValueError("Use compatibility client for non-v1 endpoints")
+            
+        data = {"speed": speed, "dim": dim, "led": led}
+        
+        if light_id is not None:
+            endpoint = f"/api/v1/effects/{light_id}/rainbow"
+        else:
+            endpoint = "/api/v1/effects/rainbow"
+            
+        return self._post_request(endpoint, data)
+    
+    def pulse_effect(self, light_id: Optional[int] = None, color: str = "red",
+                    speed: str = "slow", dim: float = 1.0, count: int = 0,
+                    led: int = 0) -> Dict[str, Any]:
+        """Start pulse effect using v1 API."""
+        if not self.use_v1:
+            raise ValueError("Use compatibility client for non-v1 endpoints")
+            
+        data = {
+            "color": color, "speed": speed, "dim": dim, 
+            "count": count, "led": led
+        }
+        
+        if light_id is not None:
+            endpoint = f"/api/v1/effects/{light_id}/pulse"
+        else:
+            endpoint = "/api/v1/effects/pulse"
+            
+        return self._post_request(endpoint, data)
+
+# Usage example
+client = ModernBusyLightClient(auth=("admin", "password"))
+
+# Check system health
+health = client.get_system_health()
+print(f"System status: {health['status']}")
+
+# Turn first light red using v1 API
+response = client.turn_on(light_id=0, color="red", dim=0.8)
+print(f"Lights affected: {response['lights_affected']}")
+
+# Start rainbow effect on all lights
+client.rainbow_effect(speed="fast", dim=0.7)
+```
+
+### Compatibility Python Client
+
+```python
+class CompatibilityBusyLightClient:
+    """Python client for backwards compatibility with original API."""
     
     def __init__(self, base_url: str = "http://localhost:8000", 
                  auth: Optional[tuple] = None):
@@ -102,146 +250,203 @@ class BusyLightClient:
         response.raise_for_status()
         return response.json()
     
-    def list_lights(self) -> Dict[str, Any]:
-        """Get status of all lights."""
-        return self._request("/lights/status")
-    
-    def get_light(self, light_id: int) -> Dict[str, Any]:
-        """Get status of specific light."""
-        return self._request(f"/light/{light_id}/status")
-    
     def turn_on(self, light_id: int, color: str = "green", 
                 led: int = 0, dim: float = 1.0) -> Dict[str, Any]:
-        """Turn on specific light."""
+        """Turn on specific light using compatibility endpoint."""
         params = {"color": color, "led": led, "dim": dim}
         return self._request(f"/light/{light_id}/on", params)
     
     def turn_on_all(self, color: str = "green", 
                     led: int = 0, dim: float = 1.0) -> Dict[str, Any]:
-        """Turn on all lights."""
+        """Turn on all lights using compatibility endpoint."""
         params = {"color": color, "led": led, "dim": dim}
         return self._request("/lights/on", params)
     
-    def turn_off(self, light_id: int) -> Dict[str, Any]:
-        """Turn off specific light."""
-        return self._request(f"/light/{light_id}/off")
-    
-    def turn_off_all(self) -> Dict[str, Any]:
-        """Turn off all lights."""
-        return self._request("/lights/off")
-    
     def blink(self, light_id: int, color: str = "red", count: int = 0,
               speed: str = "slow", led: int = 0) -> Dict[str, Any]:
-        """Start blinking effect."""
+        """Start blinking effect using compatibility endpoint."""
         params = {
             "color": color, "count": count, 
             "speed": speed, "led": led
         }
         return self._request(f"/light/{light_id}/blink", params)
-    
-    def rainbow(self, light_id: int, speed: str = "slow") -> Dict[str, Any]:
-        """Start rainbow effect."""
-        params = {"speed": speed}
-        return self._request(f"/light/{light_id}/rainbow", params)
 
-# Usage example
-client = BusyLightClient(auth=("admin", "password"))
-
-# Turn first light red
-client.turn_on(0, "red")
-
-# Blink all lights blue
-client.blink(0, "blue", count=5)
-
-# Get device information
-lights = client.list_lights()
-print(f"Found {len(lights)} lights")
+# Usage with existing code - no changes needed
+legacy_client = CompatibilityBusyLightClient(auth=("admin", "password"))
+legacy_client.turn_on(0, "red")  # Works exactly as before
 ```
 
-### JavaScript/Node.js Client
+### JavaScript/TypeScript Client (V1 API)
 
-```javascript
-// busylight-client.js
-class BusyLightClient {
-    constructor(baseUrl = 'http://localhost:8000', auth = null) {
-        this.baseUrl = baseUrl.replace(/\/$/, '');
-        this.auth = auth;
+```typescript
+// modern-busylight-client.ts
+interface LightOperationRequest {
+  color?: string;
+  dim?: number;
+  led?: number;
+  speed?: string;
+  count?: number;
+}
+
+interface EffectRequest extends LightOperationRequest {
+  color_a?: string;
+  color_b?: string;
+}
+
+interface LightOperationResponse {
+  success: boolean;
+  action: string;
+  lights_affected: number;
+  details: Array<{
+    light_id: number;
+    action: string;
+    color?: string;
+    rgb?: [number, number, number];
+    dim?: number;
+    led?: number;
+  }>;
+}
+
+class ModernBusyLightClient {
+  private baseUrl: string;
+  private auth: { user: string; pass: string } | null;
+
+  constructor(baseUrl = 'http://localhost:8000', auth: { user: string; pass: string } | null = null) {
+    this.baseUrl = baseUrl.replace(/\/$/, '');
+    this.auth = auth;
+  }
+
+  private async postRequest(endpoint: string, data: any): Promise<any> {
+    const options: RequestInit = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    };
+
+    if (this.auth) {
+      const credentials = btoa(`${this.auth.user}:${this.auth.pass}`);
+      options.headers!['Authorization'] = `Basic ${credentials}`;
     }
 
-    async _request(endpoint, params = {}) {
-        const url = new URL(endpoint, this.baseUrl);
-        Object.keys(params).forEach(key => {
-            url.searchParams.append(key, params[key]);
-        });
+    const response = await fetch(`${this.baseUrl}${endpoint}`, options);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
 
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        };
+  private async getRequest(endpoint: string): Promise<any> {
+    const options: RequestInit = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
 
-        if (this.auth) {
-            const credentials = btoa(`${this.auth.user}:${this.auth.pass}`);
-            options.headers['Authorization'] = `Basic ${credentials}`;
-        }
-
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            throw new Error(`API Error: ${response.statusText}`);
-        }
-        
-        return response.json();
+    if (this.auth) {
+      const credentials = btoa(`${this.auth.user}:${this.auth.pass}`);
+      options.headers!['Authorization'] = `Basic ${credentials}`;
     }
 
-    async listLights() {
-        return this._request('/lights/status');
+    const response = await fetch(`${this.baseUrl}${endpoint}`, options);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
     }
+    
+    return response.json();
+  }
 
-    async turnOn(lightId, color = 'green', led = 0, dim = 1.0) {
-        return this._request(`/light/${lightId}/on`, {
-            color, led, dim
-        });
-    }
+  async getApiInfo(): Promise<any> {
+    return this.getRequest('/');
+  }
 
-    async turnOnAll(color = 'green', led = 0, dim = 1.0) {
-        return this._request('/lights/on', { color, led, dim });
-    }
+  async getSystemHealth(): Promise<any> {
+    return this.getRequest('/api/v1/system/health');
+  }
 
-    async turnOff(lightId) {
-        return this._request(`/light/${lightId}/off`);
-    }
+  async listLights(): Promise<any[]> {
+    return this.getRequest('/api/v1/lights');
+  }
 
-    async blink(lightId, color = 'red', count = 0, speed = 'slow', led = 0) {
-        return this._request(`/light/${lightId}/blink`, {
-            color, count, speed, led
-        });
-    }
+  async turnOn(lightId?: number, request: LightOperationRequest = {}): Promise<LightOperationResponse> {
+    const endpoint = lightId !== undefined 
+      ? `/api/v1/lights/${lightId}/on`
+      : '/api/v1/lights/on';
+    
+    const data = {
+      color: 'green',
+      dim: 1.0,
+      led: 0,
+      ...request
+    };
+    
+    return this.postRequest(endpoint, data);
+  }
 
-    async rainbow(lightId, speed = 'slow') {
-        return this._request(`/light/${lightId}/rainbow`, { speed });
-    }
+  async turnOff(lightId?: number): Promise<LightOperationResponse> {
+    const endpoint = lightId !== undefined 
+      ? `/api/v1/lights/${lightId}/off`
+      : '/api/v1/lights/off';
+    
+    return this.postRequest(endpoint, {});
+  }
+
+  async blink(lightId?: number, request: LightOperationRequest = {}): Promise<LightOperationResponse> {
+    const endpoint = lightId !== undefined 
+      ? `/api/v1/lights/${lightId}/blink`
+      : '/api/v1/lights/blink';
+    
+    const data = {
+      color: 'red',
+      dim: 1.0,
+      led: 0,
+      speed: 'slow',
+      count: 0,
+      ...request
+    };
+    
+    return this.postRequest(endpoint, data);
+  }
+
+  async rainbowEffect(lightId?: number, request: Omit<LightOperationRequest, 'color'> = {}): Promise<any> {
+    const endpoint = lightId !== undefined 
+      ? `/api/v1/effects/${lightId}/rainbow`
+      : '/api/v1/effects/rainbow';
+    
+    const data = {
+      dim: 1.0,
+      led: 0,
+      speed: 'slow',
+      ...request
+    };
+    
+    return this.postRequest(endpoint, data);
+  }
 }
 
 // Usage
-const client = new BusyLightClient('http://localhost:8000', {
-    user: 'admin',
-    pass: 'password'
+const client = new ModernBusyLightClient('http://localhost:8000', {
+  user: 'admin',
+  pass: 'password'
 });
 
-// Turn light red
-client.turnOn(0, 'red')
-    .then(result => console.log('Light turned on:', result))
-    .catch(error => console.error('Error:', error));
+// Turn all lights blue at 50% brightness
+await client.turnOn(undefined, { color: 'blue', dim: 0.5 });
+
+// Start fast rainbow effect on light 0
+await client.rainbowEffect(0, { speed: 'fast', dim: 0.8 });
 ```
 
 ## Integration Examples
 
-### CI/CD Pipeline Integration
+### CI/CD Pipeline Integration (Updated)
 
 ```yaml
 # .github/workflows/ci.yml
-name: CI Pipeline with BusyLight
+name: CI Pipeline with BusyLight v1 API
 
 on: [push, pull_request]
 
@@ -253,123 +458,180 @@ jobs:
       
       - name: Signal build start
         run: |
-          curl -f "http://localhost:8000/lights/blink?color=blue" || true
+          curl -X POST http://localhost:8000/api/v1/lights/blink \
+            -H "Content-Type: application/json" \
+            -d '{"color": "blue", "speed": "fast"}' || true
       
       - name: Run tests
-        run: |
-          npm test
+        run: npm test
       
       - name: Signal success
         if: success()
         run: |
-          curl -f "http://localhost:8000/lights/on?color=green" || true
+          curl -X POST http://localhost:8000/api/v1/lights/on \
+            -H "Content-Type: application/json" \
+            -d '{"color": "green"}' || true
           sleep 2
-          curl -f "http://localhost:8000/lights/off" || true
+          curl -X POST http://localhost:8000/api/v1/lights/off \
+            -H "Content-Type: application/json" \
+            -d '{}' || true
       
       - name: Signal failure  
         if: failure()
         run: |
-          curl -f "http://localhost:8000/lights/blink?color=red&count=10" || true
+          curl -X POST http://localhost:8000/api/v1/lights/blink \
+            -H "Content-Type: application/json" \
+            -d '{"color": "red", "count": 10, "speed": "fast"}' || true
 ```
 
-### Monitoring Integration
-
-```python
-# monitoring.py
-import time
-import psutil
-from busylight_client import BusyLightClient
-
-def monitor_system():
-    """Monitor system resources and update light status."""
-    client = BusyLightClient()
-    
-    while True:
-        try:
-            # Get system metrics
-            cpu_percent = psutil.cpu_percent(interval=1)
-            memory_percent = psutil.virtual_memory().percent
-            
-            # Determine status color
-            if cpu_percent > 80 or memory_percent > 90:
-                color = "red"    # Critical
-            elif cpu_percent > 60 or memory_percent > 75:
-                color = "yellow" # Warning
-            else:
-                color = "green"  # Normal
-            
-            # Update light
-            client.turn_on_all(color)
-            
-            print(f"CPU: {cpu_percent}%, Memory: {memory_percent}%, "
-                  f"Status: {color}")
-            
-        except Exception as e:
-            print(f"Error: {e}")
-            client.turn_on_all("red")  # Error state
-        
-        time.sleep(10)
-
-if __name__ == "__main__":
-    monitor_system()
-```
-
-### Web Dashboard
+### Status Dashboard (Modern)
 
 ```html
-<!-- dashboard.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>BusyLight Dashboard</title>
+    <title>BusyLight Modern Dashboard</title>
     <style>
-        .light-control { margin: 10px 0; }
-        button { margin: 5px; padding: 10px; }
-        .status { font-family: monospace; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .dashboard { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .control-group { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .button-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        button { 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.8; }
+        .status { 
+            font-family: 'SF Mono', Monaco, monospace; 
+            background: #f5f5f5; 
+            padding: 15px; 
+            border-radius: 6px; 
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+        .health-status { 
+            padding: 10px; 
+            border-radius: 6px; 
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .healthy { background-color: #d4edda; color: #155724; }
+        .unhealthy { background-color: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-    <h1>BusyLight Control Dashboard</h1>
-    
-    <div class="light-control">
-        <h3>Quick Controls</h3>
-        <button onclick="setStatus('available')">Available</button>
-        <button onclick="setStatus('busy')">Busy</button>
-        <button onclick="setStatus('meeting')">In Meeting</button>
-        <button onclick="setStatus('offline')">Offline</button>
+    <div class="dashboard">
+        <h1>BusyLight Control Dashboard</h1>
+        
+        <div class="control-group">
+            <h3>System Status</h3>
+            <button onclick="checkHealth()">Check Health</button>
+            <button onclick="getApiInfo()">API Info</button>
+            <div id="health-status"></div>
+        </div>
+        
+        <div class="control-group">
+            <h3>Quick Controls</h3>
+            <div class="button-group">
+                <button onclick="setStatus('available')" style="background: #28a745; color: white;">Available</button>
+                <button onclick="setStatus('busy')" style="background: #ffc107; color: black;">Busy</button>
+                <button onclick="setStatus('meeting')" style="background: #dc3545; color: white;">In Meeting</button>
+                <button onclick="setStatus('offline')" style="background: #6c757d; color: white;">Offline</button>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <h3>Effects</h3>
+            <div class="button-group">
+                <button onclick="startEffect('rainbow')" style="background: linear-gradient(45deg, #ff0000, #ff7700, #ffff00, #00ff00, #0000ff, #8b00ff); color: white;">Rainbow</button>
+                <button onclick="startEffect('blink')" style="background: #17a2b8; color: white;">Blink</button>
+                <button onclick="startEffect('pulse')" style="background: #6610f2; color: white;">Pulse</button>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <h3>Individual Light Control</h3>
+            <div id="light-controls"></div>
+        </div>
+        
+        <div class="status" id="status">Ready</div>
     </div>
-    
-    <div class="light-control">
-        <h3>Effects</h3>
-        <button onclick="startEffect('rainbow')">Rainbow</button>
-        <button onclick="startEffect('blink')">Blink</button>
-        <button onclick="startEffect('pulse')">Pulse</button>
-    </div>
-    
-    <div class="status" id="status"></div>
 
     <script>
         const API_BASE = 'http://localhost:8000';
         
-        async function apiCall(endpoint, params = {}) {
-            const url = new URL(endpoint, API_BASE);
-            Object.keys(params).forEach(key => {
-                url.searchParams.append(key, params[key]);
-            });
-            
+        async function postRequest(endpoint, data = {}) {
             try {
-                const response = await fetch(url);
-                const data = await response.json();
-                document.getElementById('status').innerText = 
-                    JSON.stringify(data, null, 2);
-                return data;
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                updateStatus(JSON.stringify(result, null, 2));
+                return result;
             } catch (error) {
-                document.getElementById('status').innerText = 
-                    `Error: ${error.message}`;
+                updateStatus(`Error: ${error.message}`, 'error');
+                throw error;
             }
         }
         
-        function setStatus(status) {
+        async function getRequest(endpoint) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                updateStatus(JSON.stringify(result, null, 2));
+                return result;
+            } catch (error) {
+                updateStatus(`Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+        
+        function updateStatus(text, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = text;
+            statusEl.style.color = type === 'error' ? '#dc3545' : '#333';
+        }
+        
+        async function checkHealth() {
+            try {
+                const health = await getRequest('/api/v1/system/health');
+                const healthEl = document.getElementById('health-status');
+                const isHealthy = health.status === 'healthy';
+                
+                healthEl.innerHTML = `
+                    <div class="${isHealthy ? 'healthy' : 'unhealthy'} health-status">
+                        Status: ${health.status} | 
+                        Lights Available: ${health.lights_available} |
+                        ${health.timestamp ? `Updated: ${new Date(health.timestamp).toLocaleTimeString()}` : ''}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Health check failed:', error);
+            }
+        }
+        
+        async function getApiInfo() {
+            await getRequest('/');
+        }
+        
+        async function setStatus(status) {
             const colors = {
                 'available': 'green',
                 'busy': 'yellow', 
@@ -378,103 +640,98 @@ if __name__ == "__main__":
             };
             
             if (status === 'offline') {
-                apiCall('/lights/off');
+                await postRequest('/api/v1/lights/off');
             } else {
-                apiCall('/lights/on', { color: colors[status] });
+                await postRequest('/api/v1/lights/on', { color: colors[status] });
             }
         }
         
-        function startEffect(effect) {
+        async function startEffect(effect) {
             if (effect === 'rainbow') {
-                apiCall('/lights/rainbow');
+                await postRequest('/api/v1/effects/rainbow', { speed: 'medium' });
             } else if (effect === 'blink') {
-                apiCall('/lights/blink', { color: 'red', count: 5 });
+                await postRequest('/api/v1/lights/blink', { 
+                    color: 'red', 
+                    count: 5, 
+                    speed: 'fast' 
+                });
             } else if (effect === 'pulse') {
-                apiCall('/lights/pulse', { color: 'blue', count: 3 });
+                await postRequest('/api/v1/effects/pulse', { 
+                    color: 'blue', 
+                    count: 3,
+                    speed: 'medium'
+                });
             }
         }
         
-        // Load initial status
-        apiCall('/lights/status');
+        async function loadLights() {
+            try {
+                const lights = await getRequest('/api/v1/lights');
+                const controlsEl = document.getElementById('light-controls');
+                
+                controlsEl.innerHTML = lights.map((light, index) => `
+                    <div style="margin: 10px 0; padding: 10px; border: 1px solid #eee; border-radius: 4px;">
+                        <strong>Light ${light.light_id}: ${light.name}</strong>
+                        <div style="margin-top: 8px;">
+                            <button onclick="controlLight(${light.light_id}, 'on', 'red')">Red</button>
+                            <button onclick="controlLight(${light.light_id}, 'on', 'green')">Green</button>
+                            <button onclick="controlLight(${light.light_id}, 'on', 'blue')">Blue</button>
+                            <button onclick="controlLight(${light.light_id}, 'off')">Off</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load lights:', error);
+            }
+        }
+        
+        async function controlLight(lightId, action, color) {
+            if (action === 'on') {
+                await postRequest(`/api/v1/lights/${lightId}/on`, { color });
+            } else {
+                await postRequest(`/api/v1/lights/${lightId}/off`);
+            }
+        }
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            checkHealth();
+            loadLights();
+        });
     </script>
 </body>
 </html>
 ```
 
-### Slack Bot Integration
+## Migration Guide
+
+### Gradual Migration Strategy
 
 ```python
-# slack_bot.py
-from slack_sdk import WebClient
-from slack_sdk.socket_mode import SocketModeClient
-from slack_sdk.socket_mode.request import SocketModeRequest
-from slack_sdk.socket_mode.response import SocketModeResponse
-from busylight_client import BusyLightClient
-import os
+class HybridBusyLightClient:
+    """Client that supports both v1 and compatibility endpoints."""
+    
+    def __init__(self, base_url: str = "http://localhost:8000", 
+                 auth: Optional[tuple] = None, prefer_v1: bool = True):
+        self.modern_client = ModernBusyLightClient(base_url, auth, use_v1=True)
+        self.compat_client = CompatibilityBusyLightClient(base_url, auth)
+        self.prefer_v1 = prefer_v1
+    
+    def turn_on(self, light_id: int, color: str = "green", **kwargs):
+        """Turn on light using preferred API version."""
+        if self.prefer_v1:
+            try:
+                return self.modern_client.turn_on(light_id, color, **kwargs)
+            except Exception as e:
+                print(f"V1 API failed, falling back to compatibility: {e}")
+                return self.compat_client.turn_on(light_id, color, **kwargs)
+        else:
+            return self.compat_client.turn_on(light_id, color, **kwargs)
 
-class BusyLightSlackBot:
-    def __init__(self):
-        self.slack_client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
-        self.socket_client = SocketModeClient(
-            app_token=os.environ["SLACK_APP_TOKEN"],
-            web_client=self.slack_client
-        )
-        self.light_client = BusyLightClient()
-        
-        # Register command handler
-        self.socket_client.socket_mode_request_listeners.append(
-            self.handle_commands
-        )
-    
-    def handle_commands(self, client: SocketModeClient, req: SocketModeRequest):
-        if req.type == "slash_commands":
-            command = req.payload["command"]
-            text = req.payload["text"]
-            
-            if command == "/busylight":
-                response_text = self.process_light_command(text)
-                
-                # Send response
-                response = SocketModeResponse(envelope_id=req.envelope_id)
-                client.send_socket_mode_response(response)
-                
-                # Send message to channel
-                client.web_client.chat_postMessage(
-                    channel=req.payload["channel_id"],
-                    text=response_text
-                )
-    
-    def process_light_command(self, command_text: str) -> str:
-        """Process light control commands."""
-        try:
-            parts = command_text.split()
-            if not parts:
-                return "Usage: /busylight <on|off|blink> [color]"
-            
-            action = parts[0].lower()
-            color = parts[1] if len(parts) > 1 else "green"
-            
-            if action == "on":
-                self.light_client.turn_on_all(color)
-                return f"✅ Lights turned on ({color})"
-            elif action == "off":
-                self.light_client.turn_off_all()
-                return "✅ Lights turned off"
-            elif action == "blink":
-                self.light_client.blink(0, color, count=3)
-                return f"✅ Lights blinking ({color})"
-            else:
-                return "❌ Unknown command. Use: on, off, or blink"
-                
-        except Exception as e:
-            return f"❌ Error: {str(e)}"
-    
-    def start(self):
-        self.socket_client.connect()
-
-if __name__ == "__main__":
-    bot = BusyLightSlackBot()
-    bot.start()
+# Migration steps:
+# 1. Use HybridBusyLightClient with prefer_v1=False initially
+# 2. Test v1 endpoints by setting prefer_v1=True  
+# 3. Switch to ModernBusyLightClient when ready
 ```
 
 ## Error Handling Best Practices
@@ -485,18 +742,30 @@ import time
 from typing import Optional
 
 class RobustBusyLightClient:
-    def __init__(self, base_url: str, max_retries: int = 3):
+    def __init__(self, base_url: str, max_retries: int = 3, use_v1: bool = True):
         self.base_url = base_url
         self.max_retries = max_retries
+        self.use_v1 = use_v1
         self.session = requests.Session()
     
-    def _safe_request(self, endpoint: str, params: Optional[dict] = None) -> Optional[dict]:
+    def _safe_request(self, method: str, endpoint: str, 
+                     data: Optional[dict] = None, 
+                     params: Optional[dict] = None) -> Optional[dict]:
         """Make API request with retry logic and error handling."""
         url = f"{self.base_url}{endpoint}"
         
         for attempt in range(self.max_retries):
             try:
-                response = self.session.get(url, params=params, timeout=5)
+                if method.upper() == 'POST':
+                    response = self.session.post(
+                        url, 
+                        json=data, 
+                        timeout=10,
+                        headers={'Content-Type': 'application/json'}
+                    )
+                else:
+                    response = self.session.get(url, params=params, timeout=10)
+                
                 response.raise_for_status()
                 return response.json()
                 
@@ -507,7 +776,12 @@ class RobustBusyLightClient:
                     continue
                     
             except requests.exceptions.HTTPError as e:
-                print(f"HTTP error: {e}")
+                if response.status_code == 401:
+                    print("Authentication required")
+                elif response.status_code == 503:
+                    print("No lights available")
+                elif response.status_code == 422:
+                    print(f"Validation error: {response.json()}")
                 break  # Don't retry HTTP errors
                 
             except requests.exceptions.Timeout:
@@ -517,11 +791,36 @@ class RobustBusyLightClient:
                     
         return None
     
-    def safe_turn_on(self, light_id: int, color: str) -> bool:
+    def safe_turn_on(self, light_id: Optional[int] = None, 
+                    color: str = "green") -> bool:
         """Safely turn on light with error handling."""
-        result = self._safe_request(f"/light/{light_id}/on", {"color": color})
-        return result is not None
+        if self.use_v1:
+            endpoint = f"/api/v1/lights/{light_id}/on" if light_id else "/api/v1/lights/on"
+            result = self._safe_request('POST', endpoint, {"color": color})
+        else:
+            endpoint = f"/light/{light_id}/on" if light_id else "/lights/on"
+            result = self._safe_request('GET', endpoint, params={"color": color})
+        
+        return result is not None and result.get('success', True)
 ```
 
-These examples demonstrate how to integrate the BusyLight API into various
-applications and services, with proper error handling and authentication.
+## OpenAPI Code Generation
+
+The v1 API provides OpenAPI 3.0 specifications for automatic client generation:
+
+```bash
+# Generate TypeScript client
+npx @openapitools/openapi-generator-cli generate \
+  -i http://localhost:8000/openapi.json \
+  -g typescript-fetch \
+  -o ./generated-client
+
+# Generate Python client  
+openapi-generator generate \
+  -i http://localhost:8000/openapi.json \
+  -g python \
+  -o ./generated-python-client
+```
+
+These examples demonstrate how to integrate with both the modern v1 API and 
+maintain compatibility with existing code using the compatibility endpoints.

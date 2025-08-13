@@ -2,30 +2,96 @@
 
 Complete reference for all BusyLight Web API endpoints.
 
-## Device Information
+## API Organization
 
-### List Available Endpoints
+The API is organized into three main domains:
+
+- **Lights** - Basic device control (on, off, blink)
+- **Effects** - Advanced light effects (rainbow, pulse, flash)
+- **System** - API health and information
+
+Each domain provides both versioned (`/api/v1/`) and compatibility endpoints.
+
+## System Endpoints
+
+### API Information
 
 ```http
 GET /
 ```
 
-Returns list of available API endpoints.
+Returns comprehensive API information including available versions, domains, and endpoints.
 
 **Response:**
 ```json
-[
-  {"path": "/"},
-  {"path": "/lights"},  
-  {"path": "/light/{light_id}"}
-]
+{
+  "name": "BusyLight API",
+  "version": "0.43.1",
+  "api_versions": {
+    "v1": {
+      "prefix": "/api/v1",
+      "description": "Current stable API version",
+      "features": ["REST endpoints", "Effects management", "LED targeting"]
+    },
+    "legacy": {
+      "prefix": "/",
+      "description": "Legacy endpoints for backward compatibility",
+      "deprecated": true
+    }
+  },
+  "domains": [
+    {
+      "name": "lights",
+      "description": "Basic light control operations",
+      "endpoints": ["/lights", "/lights/{id}"]
+    }
+  ]
+}
 ```
 
-### Get All Lights Status
+### System Health
+
+```http
+GET /system/health
+GET /api/v1/system/health
+```
+
+Check API server and device availability.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "lights_available": 2,
+  "timestamp": "2023-01-01T12:00:00Z"
+}
+```
+
+### System Information
+
+```http
+GET /system/info
+GET /api/v1/system/info
+```
+
+Get server configuration details.
+
+**Response:**
+```json
+{
+  "title": "Busylight Server: A USB Light Server",
+  "version": "0.43.1",
+  "description": "An API server for USB connected presence lights."
+}
+```
+
+## Lights Domain
+
+### Get All Lights
 
 ```http
 GET /lights
-GET /lights/status
+GET /api/v1/lights
 ```
 
 Returns status information for all connected lights.
@@ -48,14 +114,14 @@ Returns status information for all connected lights.
 ]
 ```
 
-### Get Single Light Status
+### Get Single Light
 
 ```http
-GET /light/{light_id}
-GET /light/{light_id}/status
+GET /lights/{light_id}/status
+GET /api/v1/lights/{light_id}/status
 ```
 
-Returns status for specific light.
+Returns detailed status for specific light.
 
 **Parameters:**
 - `light_id` (path, int): Light index (0-based)
@@ -69,8 +135,7 @@ Returns status for specific light.
     "path": "/dev/hidraw0",
     "vendor_id": 10168,
     "product_id": 493,
-    "serial_number": "ABC123",
-    "is_acquired": true
+    "serial_number": "ABC123"
   },
   "is_on": true,
   "color": "red",
@@ -78,18 +143,210 @@ Returns status for specific light.
 }
 ```
 
-## Light Control
+### Turn Light On (V1)
 
-### Turn Light On
+```http
+POST /api/v1/lights/on
+POST /api/v1/lights/{light_id}/on
+```
+
+Turn on all lights or specific light using JSON request body.
+
+**Request Body:**
+```json
+{
+  "color": "red",
+  "dim": 1.0,
+  "led": 0
+}
+```
+
+**Parameters:**
+- `color` (string): Color name or hex value (default: "green")
+- `dim` (float): Brightness factor 0.0-1.0 (default: 1.0)
+- `led` (int): LED index for multi-LED devices (default: 0)
+- `light_id` (path, int): Light index for single light endpoints
+
+**Examples:**
+```bash
+# Turn all lights red
+curl -X POST http://localhost:8000/api/v1/lights/on \
+  -H "Content-Type: application/json" \
+  -d '{"color": "red", "dim": 0.8}'
+
+# Turn specific light blue
+curl -X POST http://localhost:8000/api/v1/lights/2/on \
+  -H "Content-Type: application/json" \
+  -d '{"color": "blue", "led": 1}'
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "action": "turned on",
+  "lights_affected": 1,
+  "details": [
+    {
+      "light_id": 0,
+      "action": "turned on",
+      "color": "red",
+      "rgb": [255, 0, 0],
+      "dim": 1.0,
+      "led": 0
+    }
+  ]
+}
+```
+
+### Turn Light Off (V1)
+
+```http
+POST /api/v1/lights/off
+POST /api/v1/lights/{light_id}/off
+```
+
+Turn off all lights or specific light.
+
+**Request Body:**
+```json
+{}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "action": "turned off",
+  "lights_affected": 2,
+  "details": [
+    {
+      "light_id": 0,
+      "action": "turned off"
+    },
+    {
+      "light_id": 1,
+      "action": "turned off"
+    }
+  ]
+}
+```
+
+### Blink Light (V1)
+
+```http
+POST /api/v1/lights/blink
+POST /api/v1/lights/{light_id}/blink
+```
+
+Create blinking effect on lights.
+
+**Request Body:**
+```json
+{
+  "color": "red",
+  "dim": 1.0,
+  "speed": "slow",
+  "count": 5,
+  "led": 0
+}
+```
+
+**Parameters:**
+- `color` (string): Blink color (default: "red")
+- `dim` (float): Brightness factor 0.0-1.0 (default: 1.0)
+- `speed` (string): "slow", "medium", "fast" (default: "slow")
+- `count` (int): Number of blinks, 0=infinite (default: 0)
+- `led` (int): LED index for multi-LED devices (default: 0)
+
+## Effects Domain
+
+### Rainbow Effect (V1)
+
+```http
+POST /api/v1/effects/rainbow
+POST /api/v1/effects/{light_id}/rainbow
+```
+
+Start rainbow color cycling effect.
+
+**Request Body:**
+```json
+{
+  "dim": 1.0,
+  "speed": "slow",
+  "led": 0
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "action": "rainbow effect started",
+  "lights_affected": 1,
+  "effect": {
+    "name": "rainbow",
+    "speed": "slow",
+    "dim": 1.0,
+    "led": 0
+  }
+}
+```
+
+### Pulse Effect (V1)
+
+```http
+POST /api/v1/effects/pulse
+POST /api/v1/effects/{light_id}/pulse
+```
+
+Create pulsing/breathing effect.
+
+**Request Body:**
+```json
+{
+  "color": "red",
+  "dim": 1.0,
+  "speed": "slow",
+  "count": 0,
+  "led": 0
+}
+```
+
+### Flash Effect (V1)
+
+```http
+POST /api/v1/effects/flash
+POST /api/v1/effects/{light_id}/flash
+```
+
+Alternate between two colors.
+
+**Request Body:**
+```json
+{
+  "color_a": "red",
+  "color_b": "blue",
+  "dim": 1.0,
+  "speed": "slow",
+  "count": 0,
+  "led": 0
+}
+```
+
+## Compatibility Endpoints (Deprecated)
+
+These endpoints maintain backwards compatibility with the original API. They use GET requests with query parameters and return simplified responses.
+
+### Turn Light On (Compatibility)
 
 ```http
 GET /light/{light_id}/on
+GET /lights/on
 ```
 
-Turn on specific light with optional color and LED targeting.
-
 **Parameters:**
-- `light_id` (path, int): Light index
 - `color` (query, str): Color name or hex value (default: "green")
 - `dim` (query, float): Brightness factor 0.0-1.0 (default: 1.0)
 - `led` (query, int): LED index for multi-LED devices (default: 0)
@@ -99,306 +356,84 @@ Turn on specific light with optional color and LED targeting.
 # Basic usage
 curl http://localhost:8000/light/0/on
 
-# With color
-curl "http://localhost:8000/light/0/on?color=red"
-
-# With hex color
-curl "http://localhost:8000/light/0/on?color=%23ff0000"
-
-# With brightness
-curl "http://localhost:8000/light/0/on?color=blue&dim=0.5"
-
-# Target specific LED
-curl "http://localhost:8000/light/0/on?color=red&led=1"
+# With parameters
+curl "http://localhost:8000/light/0/on?color=red&dim=0.5"
 ```
 
-**Response:**
-```json
-{
-  "action": "on",
-  "light_id": 0,
-  "color": "red",
-  "rgb": [255, 0, 0],
-  "dim": 1.0,
-  "led": 0
-}
-```
-
-### Turn All Lights On
-
-```http
-GET /lights/on
-```
-
-Turn on all connected lights.
-
-**Parameters:**
-- `color` (query, str): Color name or hex value (default: "green")
-- `dim` (query, float): Brightness factor 0.0-1.0 (default: 1.0)  
-- `led` (query, int): LED index for multi-LED devices (default: 0)
-
-**Response:**
-```json
-{
-  "action": "on",
-  "light_id": "all",
-  "color": "green",
-  "rgb": [0, 128, 0],
-  "dim": 1.0,
-  "led": 0
-}
-```
-
-### Turn Light Off
-
-```http
-GET /light/{light_id}/off
-```
-
-Turn off specific light.
-
-**Parameters:**
-- `light_id` (path, int): Light index
-
-**Response:**
-```json
-{
-  "action": "off",
-  "light_id": 0
-}
-```
-
-### Turn All Lights Off
-
-```http
-GET /lights/off
-```
-
-Turn off all connected lights.
-
-**Response:**
-```json
-{
-  "action": "off",
-  "light_id": "all"
-}
-```
-
-## Effects
-
-### Blink Effect
+### Effects (Compatibility)
 
 ```http
 GET /light/{light_id}/blink
-```
-
-Create blinking effect on specific light.
-
-**Parameters:**
-- `light_id` (path, int): Light index
-- `color` (query, str): Blink color (default: "red")
-- `speed` (query, str): Speed - "slow", "medium", "fast" (default: "slow")
-- `dim` (query, float): Brightness factor 0.0-1.0 (default: 1.0)
-- `count` (query, int): Number of blinks, 0=infinite (default: 0)
-- `led` (query, int): LED index for multi-LED devices (default: 0)
-
-**Examples:**
-```bash
-# Basic blinking
-curl http://localhost:8000/light/0/blink
-
-# Blue, 5 blinks, fast
-curl "http://localhost:8000/light/0/blink?color=blue&count=5&speed=fast"
-
-# Target specific LED
-curl "http://localhost:8000/light/0/blink?color=red&led=1&count=3"
-```
-
-**Response:**
-```json
-{
-  "action": "blink",
-  "light_id": 0,
-  "color": "red",
-  "rgb": [255, 0, 0],
-  "speed": "slow",
-  "dim": 1.0,
-  "count": 0,
-  "led": 0
-}
-```
-
-### Blink All Lights
-
-```http
-GET /lights/blink
-```
-
-Create blinking effect on all lights.
-
-**Parameters:** Same as single light blink
-
-**Response:**
-```json
-{
-  "action": "blink",
-  "light_id": "all",
-  "color": "red",
-  "rgb": [255, 0, 0],
-  "speed": "slow",
-  "dim": 1.0,
-  "count": 0,
-  "led": 0
-}
-```
-
-### Rainbow Effect
-
-```http
 GET /light/{light_id}/rainbow
-```
-
-Start rainbow color cycling on specific light.
-
-**Parameters:**
-- `light_id` (path, int): Light index
-- `speed` (query, str): Effect speed (default: "slow")
-- `dim` (query, float): Brightness factor (default: 1.0)
-
-**Response:**
-```json
-{
-  "action": "effect",
-  "name": "rainbow",
-  "light_id": 0,
-  "speed": "slow",
-  "dim": 1.0
-}
-```
-
-### Rainbow All Lights
-
-```http
-GET /lights/rainbow
-```
-
-Start rainbow effect on all lights.
-
-### Pulse Effect
-
-```http
 GET /light/{light_id}/pulse
-```
-
-Create pulsing/breathing effect on specific light.
-
-**Parameters:**
-- `light_id` (path, int): Light index
-- `color` (query, str): Pulse color (default: "red")
-- `speed` (query, str): Pulse speed (default: "slow")
-- `dim` (query, float): Brightness factor (default: 1.0)
-- `count` (query, int): Number of pulses, 0=infinite (default: 0)
-
-**Response:**
-```json
-{
-  "action": "effect",
-  "name": "pulse",
-  "light_id": 0,
-  "color": "red",
-  "rgb": [255, 0, 0],
-  "speed": "slow",
-  "dim": 1.0,
-  "count": 0
-}
-```
-
-### Flash Lights Impressively (FLI)
-
-```http
 GET /light/{light_id}/fli
 ```
 
-Alternate between two colors (red and blue by default).
-
-**Parameters:**
-- `light_id` (path, int): Light index
-- `color_a` (query, str): First color (default: "red")
-- `color_b` (query, str): Second color (default: "blue") 
-- `speed` (query, str): Flash speed (default: "slow")
-- `dim` (query, float): Brightness factor (default: 1.0)
-- `count` (query, int): Number of flashes, 0=infinite (default: 0)
-
-**Response:**
-```json
-{
-  "action": "effect",
-  "name": "fli",
-  "light_id": 0,
-  "speed": "slow",
-  "color": "red",
-  "dim": 1.0,
-  "count": 0
-}
-```
+Query parameters match the original API specification.
 
 ## Color Specification
 
 Colors can be specified as:
 
 - **Named colors**: `red`, `green`, `blue`, `yellow`, `purple`, `white`, etc.
-- **Hex colors**: `#ff0000`, `0xff0000`, `ff0000` (URL encode `#` as `%23`)
-- **RGB tuples**: `rgb(255,0,0)` (URL encoded)
+- **Hex colors**: `#ff0000`, `0xff0000`, `ff0000`
+- **RGB tuples**: `rgb(255,0,0)` 
 
-## LED Parameter
+## LED Targeting
 
-For multi-LED devices (Blink1 mk2, BlinkStick variants):
+For multi-LED devices:
 
 - `led=0`: Control all LEDs (default)
 - `led=1`: Control first/top LED
 - `led=2`: Control second/bottom LED
 - `led=3+`: Control additional LEDs (device-specific)
 
-Single-LED devices ignore this parameter.
-
 ## Error Responses
 
-### Device Not Found
+### Validation Error (422)
 
 ```json
 {
-  "message": "Light index 5 not found"
+  "detail": [
+    {
+      "loc": ["body", "dim"],
+      "msg": "ensure this value is less than or equal to 1.0",
+      "type": "value_error.number.not_le"
+    }
+  ]
 }
 ```
 
-**Status Code:** 404
-
-### Invalid Color
+### Device Not Found (404)
 
 ```json
 {
-  "message": "Invalid color specification: 'notacolor'"
+  "detail": "Light index 5 not found"
 }
 ```
 
-**Status Code:** 422
-
-### Parameter Error
+### Authentication Required (401)
 
 ```json
 {
-  "message": "LED index must be >= 0"
+  "detail": "Incorrect username or password"
 }
 ```
 
-**Status Code:** 422
+### No Devices Available (503)
 
-## Rate Limiting
+```json
+{
+  "detail": "No lights available"
+}
+```
 
-No explicit rate limiting is enforced, but consider device physical
-limitations when making rapid requests.
+## OpenAPI Documentation
 
-## WebSocket Support
+Interactive API documentation is available at:
 
-Currently not supported. All communication uses HTTP GET requests with
-JSON responses.
+- **Swagger UI**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+- **OpenAPI JSON**: [http://localhost:8000/openapi.json](http://localhost:8000/openapi.json)
+
+These provide complete endpoint documentation with request/response schemas and testing capabilities.

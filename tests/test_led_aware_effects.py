@@ -4,7 +4,7 @@ import asyncio
 import inspect
 from unittest.mock import Mock
 
-from busylight.effects import Blink, Steady, Spectrum, Gradient
+from busylight.effects import Blink, Gradient, Spectrum, Steady
 
 
 class TestLedAwareEffects:
@@ -147,7 +147,7 @@ class TestEffectIntegration:
 
     def test_all_effects_have_led_aware_execute(self):
         """Test that all built-in effects support LED parameter."""
-        from busylight.effects import Blink, Steady, Spectrum, Gradient
+        from busylight.effects import Blink, Gradient, Spectrum, Steady
         
         effects = [
             Blink((255, 0, 0)),
