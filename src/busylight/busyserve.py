@@ -1,11 +1,10 @@
-""""""
+"""HTTP API server for BusyLight."""
 
 from os import environ
 
 import typer
 from loguru import logger
 
-# Check if webapi dependencies are available, fail import if not
 try:
     import uvicorn
 except ImportError as error:
@@ -13,6 +12,8 @@ except ImportError as error:
         "The package `uvicorn` is missing, unable to serve the busylight API. "
         "Install with webapi extras: pip install busylight-for-humans[webapi]"
     ) from error
+
+from busylight.api.logging_config import get_uvicorn_log_config
 
 busyserve_cli = typer.Typer()
 
@@ -33,16 +34,20 @@ def serve_http_api(
         help="Network port number to listen on.",
     ),
 ) -> None:
-    """Serve a HTTP API to access available lights."""
+    """Serve HTTP API to access available lights."""
 
     environ["BUSYLIGHT_DEBUG"] = str(debug)
 
-    (logger.enable if debug else logger.disable)("busylight")
-
-    logger.info("serving http api")
-
     try:
-        uvicorn.run("busylight.api:busylightapi", host=host, port=port, reload=debug)
+        log_config = get_uvicorn_log_config(debug=debug)
+        
+        uvicorn.run(
+            "busylight.api.main:app", 
+            host=host, 
+            port=port, 
+            reload=debug,
+            log_config=log_config
+        )
     except ModuleNotFoundError as error:
         logger.error(f"Failed to start webapi: {error}")
         typer.secho(
