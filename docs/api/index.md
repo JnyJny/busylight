@@ -245,13 +245,15 @@ busyserve
 busyserve --debug
 ```
 
-**Features:**
-- **Integrated logging** - All API, uvicorn, and application events appear in a unified log
-- **Color-coded output** - Different log levels are visually distinct  
-- **Request tracing** - HTTP requests and responses are logged when debug is enabled
-- **Structured format** - Timestamps, levels, module names, and line numbers included
+### Features
 
-**Log Levels:**
+- **Integrated logging**: All API, uvicorn, and application events appear in a unified log
+- **Color-coded output**: Different log levels are visually distinct  
+- **Request tracing**: HTTP requests and responses are logged when debug is enabled
+- **Structured format**: Timestamps, levels, module names, and line numbers included
+
+### Log Levels
+
 - **INFO**: Server startup, configuration, API operations
 - **DEBUG**: Detailed request/response data, internal operations  
 - **WARNING**: Configuration issues, recoverable errors
