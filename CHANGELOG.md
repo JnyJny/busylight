@@ -1,9 +1,18 @@
 # CHANGELOG
 
-## [v0.43.1](https://github.com/JnyJny/busylight/releases/tag/v0.43.1) - 2025-08-12 23:11:16
+## [v0.45.1](https://github.com/JnyJny/busylight/releases/tag/v0.45.1) - 2025-08-13 19:20:01
 
-## Release v0.43.1
+## Release v0.45.1
 
+- v0.45.1 (9a58f78)
+- test: fix busyserve tests for new logging integration (eb0e8f8)
+- v0.45.0 (cf75773)
+- v0.44.0 (a081e5a)
+- Merge pull request #487 from JnyJny/feature/fastapi-best-practices (fdf10a5)
+- feat: implement FastAPI best practices and fix logging integration (8f6c7b2)
+- Merge pull request #486 from JnyJny/dependabot/uv/poethepoet-0.37.0 (420703f)
+- build(deps): bump poethepoet from 0.36.0 to 0.37.0 (9cbe1ac)
+- docs(CHANGELOG): update release notes (0848b6c)
 - v0.43.1 (e2e68ee)
 - fix: update pulse command tests for LED parameter (d820410)
 - v0.43.0 (843d403)
@@ -15,49 +24,18 @@
 - resolve: merge conflict in mkdocs.yml navigation (51ef57e)
 - feat: consolidate markdown documentation into docs structure (8fedfeb)
 - Merge pull request #483 from JnyJny/features/effects-developer-docs (badb1da)
-- feat: add comprehensive Effects system developer documentation (6ee1a7e)
-- feat: add comprehensive contributing documentation and streamline README (ac899bb)
-- fix: add workflow_dispatch trigger and remove committed site/ directory (f2058b6)
-- Merge pull request #482 from JnyJny/features/mkdocs-documentation (1fa1b5c)
-- feat: add comprehensive MkDocs documentation with GitHub Pages deployment (37a6fbd)
-- Moved hardware documentation to new directory (3978b42)
-- Merge pull request #481 from JnyJny/doc/update-readme (38ecc20)
-- Light editing to README.md (0f31053)
-- docs: enforce 80-column line widths in README (de80370)
 ---
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.43.1...v0.43.1
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.45.1...v0.45.1
 
 
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.43.0...v0.43.1
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.45.0...v0.45.1
 
 ### Feature
 
 - general:
-  - implement LED-aware effects for multi-LED device support ([53f441e](https://github.com/JnyJny/busylight/commit/53f441e7801ce005604709140eede42076d7e65c)) ([#485](https://github.com/JnyJny/busylight/pull/485))
-  - consolidate markdown documentation into docs structure ([8fedfeb](https://github.com/JnyJny/busylight/commit/8fedfeb86dbd78b19fbf28a83fd19f5a583bdff8)) ([#484](https://github.com/JnyJny/busylight/pull/484))
-  - add comprehensive Effects system developer documentation ([6ee1a7e](https://github.com/JnyJny/busylight/commit/6ee1a7eadf2b77dc282928df9155969d1b826523)) ([#483](https://github.com/JnyJny/busylight/pull/483))
-  - add comprehensive contributing documentation and streamline README ([ac899bb](https://github.com/JnyJny/busylight/commit/ac899bb8369143c7449352cc5140347247657f16))
-  - add comprehensive MkDocs documentation with GitHub Pages deployment ([37a6fbd](https://github.com/JnyJny/busylight/commit/37a6fbdd697b5e90f78d1d106fce1ca3dd19b4c6)) ([#482](https://github.com/JnyJny/busylight/pull/482))
-  - add LED parameter support for multi-LED devices ([616443c](https://github.com/JnyJny/busylight/commit/616443cc243a75e967d499b3f5b9db749d27aae3)) ([#480](https://github.com/JnyJny/busylight/pull/480))
+  - implement FastAPI best practices and fix logging integration ([8f6c7b2](https://github.com/JnyJny/busylight/commit/8f6c7b28826afa90bd809dd41c7fc0094ceb9569)) ([#487](https://github.com/JnyJny/busylight/pull/487))
 
-### Bug Fixes
-
-- general:
-  - update pulse command tests for LED parameter ([d820410](https://github.com/JnyJny/busylight/commit/d82041059a64e0294a2a8db0842c91be159b3e70))
-  - add pull-requests write permission to docs workflow ([e319bfe](https://github.com/JnyJny/busylight/commit/e319bfe67613d7e1d0373a25f566c1878a74a267))
-  - add workflow_dispatch trigger and remove committed site/ directory ([f2058b6](https://github.com/JnyJny/busylight/commit/f2058b62ee45e0939208e4e5b2d48a7b8bb2bf30))
-  - resolve test hanging and update subcommand tests for LED parameter ([722b552](https://github.com/JnyJny/busylight/commit/722b5520ec1a239afe7c374363d2606222de7030)) ([#480](https://github.com/JnyJny/busylight/pull/480))
-
-### Documentation
-
-- general:
-  - enforce 80-column line widths in README ([de80370](https://github.com/JnyJny/busylight/commit/de803702d455b6f1a53545723e03b44c4485d090)) ([#481](https://github.com/JnyJny/busylight/pull/481))
-  - update README with current implementation details ([55681cf](https://github.com/JnyJny/busylight/commit/55681cff069ff8e2279708756dcb915065e17179)) ([#481](https://github.com/JnyJny/busylight/pull/481))
-
-### Refactor
-
-- general:
-  - improve code quality with Sphinx docstrings and clean formatting ([2765eff](https://github.com/JnyJny/busylight/commit/2765eff6c42dad8a0b39b4c91d595bc06b484ab8)) ([#480](https://github.com/JnyJny/busylight/pull/480))
+## [v0.43.1](https://github.com/JnyJny/busylight/releases/tag/v0.43.1) - 2025-08-12 23:11:16
 
 ## [v0.42.0](https://github.com/JnyJny/busylight/releases/tag/v0.42.0) - 2025-08-12 03:52:48
 
