@@ -2,10 +2,10 @@
 
 Provides dependency injection for:
 - Light controller singleton management with lifecycle handling
-- HTTP Basic Authentication with configurable credentials  
+- HTTP Basic Authentication with configurable credentials
 - Type aliases for controller access patterns (public vs authenticated)
 
-The dependency system enables clean separation between public endpoints 
+The dependency system enables clean separation between public endpoints
 (system info, health checks) and protected endpoints (light control operations)
 while maintaining a single controller instance across the application lifecycle.
 """
@@ -46,12 +46,12 @@ def authenticate_user(
     """Authenticate user with HTTP Basic Auth when enabled."""
     if not settings.is_auth_enabled:
         return
-    
+
     credentials = _http_basic(request)
-    
+
     username_correct = compare_digest(credentials.username, settings.username or "")
     password_correct = compare_digest(credentials.password, settings.password or "")
-    
+
     if not (username_correct and password_correct):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -69,5 +69,7 @@ def get_authenticated_controller(
 
 
 Controller = Annotated[LightController, Depends(get_light_controller)]
-AuthenticatedController = Annotated[LightController, Depends(get_authenticated_controller)]
+AuthenticatedController = Annotated[
+    LightController, Depends(get_authenticated_controller)
+]
 Settings = Annotated[APISettings, Depends(get_settings)]

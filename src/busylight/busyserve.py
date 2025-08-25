@@ -40,13 +40,13 @@ def serve_http_api(
 
     try:
         log_config = get_uvicorn_log_config(debug=debug)
-        
+
         uvicorn.run(
-            "busylight.api.main:app", 
-            host=host, 
-            port=port, 
+            "busylight.api.main:app",
+            host=host,
+            port=port,
             reload=debug,
-            log_config=log_config
+            log_config=log_config,
         )
     except ModuleNotFoundError as error:
         logger.error(f"Failed to start webapi: {error}")

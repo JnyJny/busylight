@@ -97,7 +97,9 @@ class BusylightAPI(FastAPI):
         else:
             self.controller.by_index(light_id).turn_off()
 
-    async def apply_effect(self, effect: Effects, light_id: int = None, led: int = 0) -> None:
+    async def apply_effect(
+        self, effect: Effects, light_id: int = None, led: int = 0
+    ) -> None:
         if light_id is None:
             self.controller.all().apply_effect(effect, led=led)
         else:

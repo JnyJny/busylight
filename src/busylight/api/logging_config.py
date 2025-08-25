@@ -36,52 +36,52 @@ class InterceptHandler(logging.Handler):
 
 def setup_logging(debug: bool = False) -> None:
     """Setup integrated logging for API server.
-    
+
     Args:
         debug: Enable debug level logging
     """
     # Remove default loguru handler
     logger.remove()
-    
+
     # Add loguru handler with appropriate level
     log_level = "DEBUG" if debug else "INFO"
-    
+
     logger.add(
         sys.stdout,
         level=log_level,
         format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
-               "<level>{level: <8}</level> | "
-               "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
-               "<level>{message}</level>",
+        "<level>{level: <8}</level> | "
+        "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - "
+        "<level>{message}</level>",
         colorize=True,
     )
-    
+
     # Intercept standard library logging
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
-    
+
     # Set levels for uvicorn loggers
     for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access"]:
         uvicorn_logger = logging.getLogger(logger_name)
         uvicorn_logger.handlers = [InterceptHandler()]
         uvicorn_logger.propagate = False
         uvicorn_logger.setLevel(logging.DEBUG if debug else logging.INFO)
-    
+
     # Enable busylight logging
     logger.enable("busylight")
     logger.enable("busylight.api")
-    
+
     if debug:
         logger.debug("Debug logging enabled")
-    
+
     logger.info("Logging configuration complete")
 
 
 def get_uvicorn_log_config(debug: bool = False) -> Dict[str, Any]:
     """Get uvicorn logging configuration that integrates with loguru.
-    
+
     Args:
         debug: Enable debug level logging
-        
+
     Returns:
         Logging configuration dict for uvicorn
     """
@@ -101,19 +101,19 @@ def get_uvicorn_log_config(debug: bool = False) -> Dict[str, Any]:
         },
         "loggers": {
             "uvicorn": {
-                "handlers": ["default"], 
+                "handlers": ["default"],
                 "level": "DEBUG" if debug else "INFO",
-                "propagate": False
+                "propagate": False,
             },
             "uvicorn.error": {
                 "handlers": ["default"],
-                "level": "DEBUG" if debug else "INFO", 
-                "propagate": False
+                "level": "DEBUG" if debug else "INFO",
+                "propagate": False,
             },
             "uvicorn.access": {
                 "handlers": ["default"],
                 "level": "DEBUG" if debug else "INFO",
-                "propagate": False
+                "propagate": False,
             },
         },
     }

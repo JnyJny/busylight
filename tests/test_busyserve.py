@@ -26,10 +26,12 @@ class TestServeHTTPAPI:
     @patch("busylight.busyserve.uvicorn")
     @patch("busylight.busyserve.logger")
     @patch("busylight.busyserve.environ")
-    def test_serve_http_api_success(self, mock_environ, mock_logger, mock_uvicorn, mock_log_config):
+    def test_serve_http_api_success(
+        self, mock_environ, mock_logger, mock_uvicorn, mock_log_config
+    ):
         """Should start uvicorn server successfully."""
         mock_log_config.return_value = {"version": 1}
-        
+
         serve_http_api(debug=True, host="localhost", port=9000)
 
         mock_environ.__setitem__.assert_called_with("BUSYLIGHT_DEBUG", "True")
@@ -37,21 +39,23 @@ class TestServeHTTPAPI:
         mock_log_config.assert_called_once_with(debug=True)
 
         mock_uvicorn.run.assert_called_once_with(
-            "busylight.api.main:app", 
-            host="localhost", 
-            port=9000, 
+            "busylight.api.main:app",
+            host="localhost",
+            port=9000,
             reload=True,
-            log_config={"version": 1}
+            log_config={"version": 1},
         )
 
     @patch("busylight.busyserve.get_uvicorn_log_config")
     @patch("busylight.busyserve.uvicorn")
     @patch("busylight.busyserve.logger")
     @patch("busylight.busyserve.environ")
-    def test_serve_http_api_no_debug(self, mock_environ, mock_logger, mock_uvicorn, mock_log_config):
+    def test_serve_http_api_no_debug(
+        self, mock_environ, mock_logger, mock_uvicorn, mock_log_config
+    ):
         """Should configure logging appropriately when debug=False."""
         mock_log_config.return_value = {"version": 1}
-        
+
         serve_http_api(debug=False, host="0.0.0.0", port=8000)
 
         mock_environ.__setitem__.assert_called_with("BUSYLIGHT_DEBUG", "False")
@@ -59,11 +63,11 @@ class TestServeHTTPAPI:
         mock_log_config.assert_called_once_with(debug=False)
 
         mock_uvicorn.run.assert_called_once_with(
-            "busylight.api.main:app", 
-            host="0.0.0.0", 
-            port=8000, 
+            "busylight.api.main:app",
+            host="0.0.0.0",
+            port=8000,
             reload=False,
-            log_config={"version": 1}
+            log_config={"version": 1},
         )
 
     @patch("busylight.busyserve.get_uvicorn_log_config")

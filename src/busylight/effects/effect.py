@@ -97,7 +97,9 @@ class BaseEffect(abc.ABC):
     def default_interval(self) -> float:
         """Default interval between color changes in seconds."""
 
-    async def execute(self, light: "Light", interval: float | None = None, led: int = 0) -> None:
+    async def execute(
+        self, light: "Light", interval: float | None = None, led: int = 0
+    ) -> None:
         """Execute this effect on the given light.
 
         This method runs the full effect cycle similar to the original

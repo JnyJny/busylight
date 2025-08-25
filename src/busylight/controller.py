@@ -215,7 +215,6 @@ class LightSelection:
         return self
 
 
-
 class LightController:
     """Light controller with fluent interface for managing USB LED lights.
 

@@ -1,7 +1,7 @@
 """FastAPI Middleware for Dynamic Device Management.
 
 Implements middleware to handle USB device hot-plugging/unplugging events.
-The light manager middleware runs before each API request to refresh the 
+The light manager middleware runs before each API request to refresh the
 available light devices, ensuring the controller stays synchronized with
 the current hardware state when devices are connected or disconnected
 during runtime.
@@ -22,5 +22,5 @@ async def light_manager_middleware(request: Request, call_next: Callable) -> Res
         controller.lights
     except Exception as error:
         logger.debug(f"Light manager update failed: {error}")
-    
+
     return await call_next(request)

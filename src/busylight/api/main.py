@@ -30,9 +30,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     controller = get_light_controller()
     controller.all().turn_off()
     logger.info(f"Found {len(controller.lights)} light(s)")
-    
+
     yield
-    
+
     logger.info("Shutting down BusyLight API server")
     try:
         controller = get_light_controller()
@@ -46,24 +46,24 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 def create_app() -> FastAPI:
     """Create and configure FastAPI application with middleware and routing."""
     settings = get_settings()
-    
+
     # Setup integrated logging for uvicorn compatibility
     setup_logging(debug=settings.debug)
-    
+
     dependencies = []
     if settings.is_auth_enabled:
         logger.info("Authentication enabled via environment variables")
     else:
         logger.info("Authentication disabled - no credentials found in environment")
-    
+
     app = FastAPI(
         title=settings.title,
-        description=settings.description, 
+        description=settings.description,
         version=settings.version,
         lifespan=lifespan,
         dependencies=dependencies,
     )
-    
+
     cors_origins = settings.cors_origins_for_debug
     if cors_origins:
         logger.info(f"CORS enabled for origins: {cors_origins}")
@@ -76,18 +76,18 @@ def create_app() -> FastAPI:
         )
     else:
         logger.info("CORS disabled - no origins configured")
-    
+
     app.middleware("http")(light_manager_middleware)
-    
+
     app.add_exception_handler(LightUnavailableError, light_unavailable_handler)
     app.add_exception_handler(NoLightsFoundError, no_lights_found_handler)
     app.add_exception_handler(IndexError, index_error_handler)
     app.add_exception_handler(ColorLookupError, color_lookup_error_handler)
     app.add_exception_handler(ValueError, validation_error_handler)
-    
+
     app.include_router(v1_router)
     app.include_router(legacy_router)
-    
+
     logger.info("FastAPI application configured successfully")
     return app
 
