@@ -73,7 +73,10 @@ dev = [
     "ty>=0.0.1a15",
 ]
 
+
 [tool.poe.tasks]
+
+sync.cmd = "uv sync --all-extras --all-packages"
 
 # testing
 _generate_coverage = "pytest --cov=./src/busylight --cov-report=html"
