@@ -1,8 +1,8 @@
 """On Command Line Interface.
 
-This module implements the 'on' subcommand for turning lights on with a
-specified color. It includes special handling for Kuando lights that require
-keepalive tasks to maintain their connection.
+This module implements the 'on' subcommand for turning lights on with
+a specified color. It includes special handling for Kuando lights that
+require keepalive tasks to maintain their connection.
 
 The command supports:
 - Basic color specification (named colors, hex values, RGB tuples)
@@ -16,6 +16,7 @@ Example:
         busylight on red
         busylight on "#ff0000"
         busylight on --color green
+
 """
 
 from typing import Optional
@@ -48,10 +49,6 @@ def activate_lights(
 ) -> None:
     """Activate lights with a specified color.
 
-    :param ctx: Typer context containing global options and controller
-    :param color: Color specification (name, hex, or RGB tuple)
-    :param led: Target LED index for multi-LED devices
-
     This command turns on the selected lights with the specified color.
     For devices with multiple LEDs (like Blink1 mk2), use --led to target
     specific LEDs: 0=all LEDs, 1=first/top LED, 2=second/bottom LED, etc.
@@ -69,7 +66,6 @@ def activate_lights(
 
             busylight on red
             busylight on "#ff0000"
-            busylight on "rgb(255,0,0)"
 
         Target specific LEDs on multi-LED devices::
 
