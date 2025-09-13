@@ -47,14 +47,13 @@ def create_app() -> FastAPI:
     """Create and configure FastAPI application with middleware and routing."""
     settings = get_settings()
 
-    # Setup integrated logging for uvicorn compatibility
     setup_logging(debug=settings.debug)
 
     dependencies = []
     if settings.is_auth_enabled:
         logger.info("Authentication enabled via environment variables")
     else:
-        logger.info("Authentication disabled - no credentials found in environment")
+        logger.info("Authentication disabled, no credentials found in environment")
 
     app = FastAPI(
         title=settings.title,
