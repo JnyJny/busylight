@@ -46,8 +46,6 @@ try:
 except ImportError:
     pass
 
-webcli = typer.Typer()
-
 
 @cli.callback(invoke_without_command=True, no_args_is_help=True)
 def precommand_callback(
@@ -86,25 +84,7 @@ def precommand_callback(
         help="Time out command in seconds.",
     ),
 ) -> None:
-    """Control USB connected presence lights.
-
-    :param ctx: Typer context for sharing state between commands
-    :param debug: Enable debug logging output
-    :param targets: Comma-separated list of light indices to target
-    :param all_lights: Override target selection to use all lights
-    :param dim: Brightness percentage from 0-100
-    :param timeout: Maximum operation duration in seconds
-
-    This callback function processes global CLI options and sets up the
-    application state before any subcommand runs. It handles:
-
-    - Parsing light target specifications
-    - Configuring logging based on debug flag
-    - Setting up the global options object
-    - Special handling for the 'list' command with no targets
-
-    The function exits with help text if no subcommand is specified.
-    """
+    """Control USB connected presence lights."""
     (logger.enable if debug else logger.disable)("busylight")
 
     options = ctx.ensure_object(GlobalOptions)
@@ -117,13 +97,10 @@ def precommand_callback(
     if ctx.invoked_subcommand == "list" and targets is None:
         all_lights = True
 
-    # Parse light targets - simple conversion for now
     if targets:
-        # Convert comma-separated string to list of indices
         try:
             options.lights = [int(x.strip()) for x in targets.split(",")]
         except ValueError:
-            # If parsing fails, use empty list (all lights)
             options.lights = []
 
     logger.info(f"version {__version__}")
