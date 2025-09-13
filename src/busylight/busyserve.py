@@ -11,7 +11,7 @@ except ImportError as error:
     raise ImportError(
         "The package `uvicorn` is missing, unable to serve the busylight API. "
         "Install with webapi extras: pip install busylight-for-humans[webapi]"
-    ) from error
+    ) from None
 
 from busylight.api.logging_config import get_uvicorn_log_config
 
