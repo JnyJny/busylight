@@ -56,19 +56,13 @@ def setup_logging(debug: bool = False) -> None:
         colorize=True,
     )
 
-    # Intercept standard library logging
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
 
-    # Set levels for uvicorn loggers
     for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access"]:
         uvicorn_logger = logging.getLogger(logger_name)
         uvicorn_logger.handlers = [InterceptHandler()]
         uvicorn_logger.propagate = False
         uvicorn_logger.setLevel(logging.DEBUG if debug else logging.INFO)
-
-    # Enable busylight logging
-    logger.enable("busylight")
-    logger.enable("busylight.api")
 
     if debug:
         logger.debug("Debug logging enabled")
