@@ -32,7 +32,7 @@ def parse_color_string(value: str, scale: float = 1.0) -> tuple[int, int, int]:
     """
     scale = max(0.0, min(scale, 1.0))
 
-    if value.startswith("0x") or value.startswith("0X"):
+    if value.startswith(("0x", "0X")):
         value = f"#{value[2:]}"
 
     if value.startswith("#"):
@@ -90,7 +90,7 @@ def scale_color(
     """
 
     if scale == 1.0:
-        return color
+        return tuple(color)
 
     if scale == 0.0:
         return (0, 0, 0)
