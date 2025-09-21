@@ -1,39 +1,67 @@
 # CHANGELOG
 
-## [v0.45.1](https://github.com/JnyJny/busylight/releases/tag/v0.45.1) - 2025-08-13 19:20:01
+## [v0.45.2](https://github.com/JnyJny/busylight/releases/tag/v0.45.2) - 2025-09-21 16:14:28
 
-## Release v0.45.1
+## Release v0.45.2
 
-- v0.45.1 (9a58f78)
-- test: fix busyserve tests for new logging integration (eb0e8f8)
-- v0.45.0 (cf75773)
-- v0.44.0 (a081e5a)
-- Merge pull request #487 from JnyJny/feature/fastapi-best-practices (fdf10a5)
-- feat: implement FastAPI best practices and fix logging integration (8f6c7b2)
-- Merge pull request #486 from JnyJny/dependabot/uv/poethepoet-0.37.0 (420703f)
-- build(deps): bump poethepoet from 0.36.0 to 0.37.0 (9cbe1ac)
-- docs(CHANGELOG): update release notes (0848b6c)
-- v0.43.1 (e2e68ee)
-- fix: update pulse command tests for LED parameter (d820410)
-- v0.43.0 (843d403)
-- Merge pull request #485 from JnyJny/features/led-aware-effects (0dec9e7)
-- feat: implement LED-aware effects for multi-LED device support (53f441e)
-- Merge branch 'features/consolidate-markdown-docs' (9b0f773)
-- fix: add pull-requests write permission to docs workflow (e319bfe)
-- Merge pull request #484 from JnyJny/features/consolidate-markdown-docs (dc1958f)
-- resolve: merge conflict in mkdocs.yml navigation (51ef57e)
-- feat: consolidate markdown documentation into docs structure (8fedfeb)
-- Merge pull request #483 from JnyJny/features/effects-developer-docs (badb1da)
+- v0.45.2 (2ad3188)
+- updt: updated busylight-core from 0.15.1 to 0.15.2 to address #500 (e3778a5)
+- Merge pull request #514 from JnyJny/dependabot/uv/ruff-0.13.1 (bfe9f74)
+- build(deps): bump ruff from 0.12.12 to 0.13.1 (2171316)
+- Merge pull request #513 from JnyJny/dependabot/uv/pytest-mock-3.15.1 (8436325)
+- Merge pull request #512 from JnyJny/dependabot/uv/fastapi-0.116.2 (8b33fe9)
+- build(deps): bump pytest-mock from 3.15.0 to 3.15.1 (728ca8c)
+- build(deps): bump fastapi from 0.116.1 to 0.116.2 (71cae4a)
+- Updated subcommands.on (1f32eb5)
+- Fixed import error handling in busyserve (d57cb58)
+- Updated busylight.api.main (3419211)
+- Updated busylight.api.logging_config (be1161f)
+- Updated __main__.precommand_callback (d5aae00)
+- Merge pull request #509 from JnyJny/dependabot/uv/pytest-cov-7.0.0 (1588bcd)
+- build(deps): bump pytest-cov from 6.3.0 to 7.0.0 (97a4bda)
+- Merge pull request #508 from JnyJny/dependabot/uv/pytest-cov-6.3.0 (7ed0adc)
+- Merge pull request #507 from JnyJny/dependabot/uv/mkdocs-material-9.6.19 (c5ba951)
+- build(deps): bump pytest-cov from 6.2.1 to 6.3.0 (30ddf87)
+- build(deps): bump mkdocs-material from 9.6.18 to 9.6.19 (a5540fc)
+- build(deps): bump typer from 0.17.3 to 0.17.4 (efcd44d)
 ---
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.45.1...v0.45.1
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.45.2...v0.45.2
+
+## What's Changed
+* build(deps): bump busylight-core from 0.15.0 to 0.15.1 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/488
+* build(deps): bump mkdocs-material from 9.6.16 to 9.6.17 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/491
+* build(deps): bump ty from 0.0.1a17 to 0.0.1a18 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/489
+* build(deps): bump ruff from 0.12.8 to 0.12.9 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/490
+* build(deps): bump typer from 0.16.0 to 0.16.1 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/492
+* build(deps): bump coverage from 7.10.3 to 7.10.4 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/493
+* build(deps): bump ty from 0.0.1a18 to 0.0.1a19 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/494
+* build(deps): bump ruff from 0.12.9 to 0.12.10 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/495
+* build(deps): bump mkdocs-material from 9.6.17 to 9.6.18 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/496
+* build(deps): bump coverage from 7.10.4 to 7.10.5 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/497
+* build(deps): bump ruff from 0.12.10 to 0.12.11 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/498
+* build(deps): bump coverage from 7.10.5 to 7.10.6 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/499
+* build(deps): bump typer from 0.16.1 to 0.17.3 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/501
+* build(deps): bump ty from 0.0.1a19 to 0.0.1a20 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/502
+* build(deps): bump pytest-mock from 3.14.1 to 3.15.0 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/503
+* build(deps): bump ruff from 0.12.11 to 0.12.12 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/504
+* build(deps): bump pytest from 8.4.1 to 8.4.2 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/505
+* build(deps): bump typer from 0.17.3 to 0.17.4 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/506
+* build(deps): bump mkdocs-material from 9.6.18 to 9.6.19 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/507
+* build(deps): bump pytest-cov from 6.2.1 to 6.3.0 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/508
+* build(deps): bump pytest-cov from 6.3.0 to 7.0.0 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/509
+* build(deps): bump fastapi from 0.116.1 to 0.116.2 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/512
+* build(deps): bump pytest-mock from 3.15.0 to 3.15.1 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/513
+* build(deps): bump ruff from 0.12.12 to 0.13.1 by @dependabot[bot] in https://github.com/JnyJny/busylight/pull/514
 
 
-**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.45.0...v0.45.1
+**Full Changelog**: https://github.com/JnyJny/busylight/compare/v0.45.1...v0.45.2
 
-### Feature
+### Documentation
 
 - general:
-  - implement FastAPI best practices and fix logging integration ([8f6c7b2](https://github.com/JnyJny/busylight/commit/8f6c7b28826afa90bd809dd41c7fc0094ceb9569)) ([#487](https://github.com/JnyJny/busylight/pull/487))
+  - improve logging section formatting with proper bullet lists ([9b66b5e](https://github.com/JnyJny/busylight/commit/9b66b5e73e4a0ff0b857498b161dcd3dee8c643d))
+
+## [v0.45.1](https://github.com/JnyJny/busylight/releases/tag/v0.45.1) - 2025-08-13 19:20:01
 
 ## [v0.43.1](https://github.com/JnyJny/busylight/releases/tag/v0.43.1) - 2025-08-12 23:11:16
 
