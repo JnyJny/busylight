@@ -1,6 +1,6 @@
 [project]
 name = "busylight-for-humans"
-version = "0.45.1"
+version = "0.45.2"
 description = "Control USB connected LED lights, like a human."
 readme = "README.md"
 license = "Apache-2.0"
