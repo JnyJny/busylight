@@ -70,7 +70,7 @@ class EffectService:
         selection = self._get_light_selection(light_id)
 
         effect = Effects.for_name("gradient")(rgb, step=8, count=count)
-        interval = self._get_speed_interval(speed, 0.00625)
+        interval = self._get_speed_interval(speed, 0.0625)
         selection.apply_effect(effect, interval=interval, led=led)
 
         return EffectOperationResponse(
