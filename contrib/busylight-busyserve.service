@@ -1,0 +1,11 @@
+[Unit]
+Description=Busylight API Server
+
+[Service]
+ExecStart=screen -m -d -S systemD_busylight /usr/local/bin/busyserve -D
+ExecStartPost=/bin/curl --retry-connrefused --retry 5 --connect-timeout 5 -s "http://localhost:8000/lights/rainbow?speed=slow"
+KillMode=control-group
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
