@@ -25,7 +25,7 @@ availability, build status, system health, or any other visual indicator.
 Perfect for home offices, development workflows, and team collaboration.
 
 **Key Features:**
-- **23 supported devices** from 9 vendors (Blink1, BlinkStick, Luxafor, etc.)
+- **26 supported devices** from 9 vendors (Blink1, BlinkStick, Luxafor, etc.)
 - **Command-line interface** with intuitive color and effect controls
 - **HTTP API** with full documentation for automation and integration
 - **Multi-LED targeting** for devices with multiple independent LEDs
@@ -38,7 +38,7 @@ Perfect for home offices, development workflows, and team collaboration.
 | **Agile Innovative** | BlinkStick, BlinkStick Pro, BlinkStick Square, BlinkStick Strip, BlinkStick Nano, BlinkStick Flex | Multi-LED targeting |
 | **Compulab** | fit-statUSB | Single LED |
 | **EPOS** | Busylight | Single LED |
-| **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus | Single LED |
+| **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus, Blynclight BLYNCUSB10, Blynclight BLYNCUSB20 | Single LED |
 | **Kuando** | Busylight Alpha, Busylight Omega | Single LED |
 | **Luxafor** | Flag, Orb, Mute, Busy Tag, Bluetooth variants | Flag: Multi-LED, Others: Single LED |
 | **MuteMe** | MuteMe Original, Mute Mini, MuteSync | Single LED |
