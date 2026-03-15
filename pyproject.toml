@@ -10,7 +10,7 @@ authors = [
 repository = "https://github.com/JnyJny/busylight.git"
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "busylight-core>=1.0.1",
+    "busylight-core>=2.0.1",
     "hidapi>=0.14.0.post4",
     "loguru>=0.7.3",
     "pyserial>=3.5",
