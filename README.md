@@ -38,14 +38,14 @@ Blynclight Plus<sup>14</sup>
 - HTTP API with full documentation and authentication support  
 - Individual LED control for multi-LED devices (Blink1 mk2, Flag variants, BlinkStick variants)
 - Cross-platform support: macOS and Linux (Windows in development)
-- Support for 23 devices from 9 vendors:
+- Support for 26 devices from 9 vendors:
 
 | **Vendor** |  **Models** | **LED Support** |
 |------------|-------------|-----------------|
 | [**Agile Innovative**][2] | BlinkStick, BlinkStick Pro, BlinkStick Square, BlinkStick Strip, BlinkStick Nano, BlinkStick Flex | Multi-LED targeting |
 | [**Compulab**][8] | fit-statUSB | Single LED |
 | [**EPOS**][11] | Busylight | Single LED |
-| [**Embrava**][3] | Blynclight, Blynclight Mini, Blynclight Plus | Single LED |
+| [**Embrava**][3] | Blynclight, Blynclight Mini, Blynclight Plus, Blynclight BLYNCUSB10, Blynclight BLYNCUSB20 | Single LED |
 | [**Kuando**][4] | Busylight Alpha, BusyLight Omega | Single LED |
 | [**Luxafor**][5] | Bluetooth, Flag, Mute, Orb, Busy Tag | Multi-LED / Single LED |
 | [**Plantronics**][3] | Status Indicator | Single LED |
