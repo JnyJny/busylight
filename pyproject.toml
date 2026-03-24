@@ -64,6 +64,7 @@ packages = ["src/busylight"]
 dev = [
     "anyio>=4.9.0",
     "coverage>=7.8.0",
+    "git-cliff>=2.12.0",
     "httpx>=0.28.1",
     "poethepoet>=0.34.0",
     "pytest>=8.3.5",
@@ -111,6 +112,14 @@ publish_minor= ["_minor_bump", "_update_pyproject"]
 publish_major= ["_major_bump", "_update_pyproject"]
 
 publish = {ref = "publish_patch"}
+
+# release
+
+changelog.cmd = "git cliff"
+changelog.help = "[Release] Generate full changelog to stdout."
+
+release-notes.cmd = "git cliff --latest --strip header"
+release-notes.help = "[Release] Generate release notes for the latest tag."
 
 # clean
 [[tool.poe.tasks.clean]]
