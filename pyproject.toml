@@ -8,7 +8,7 @@ authors = [
     { name = "JnyJny", email = "erik.oshaughnessy@gmail.com" }
 ]
 repository = "https://github.com/JnyJny/busylight.git"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.12,<4.0"
 dependencies = [
     "busylight-core>=2.1.0",
     "hidapi>=0.14.0.post4",
@@ -28,11 +28,9 @@ classifiers = [
   "Topic :: Utilities",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",  
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",  
 ]
 
 [project.scripts]
