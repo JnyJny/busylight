@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.46.1](https://github.com/JnyJny/busylight/releases/tag/v0.46.1) - 2026-03-24
+
+### Bug Fixes
+
+- use raw.githubusercontent.com for README images ([f24ede6](https://github.com/JnyJny/busylight/commit/f24ede6bb5230a3dbbe91ad3af9710609a18c501))
 ## [0.46.0](https://github.com/JnyJny/busylight/releases/tag/v0.46.0) - 2026-03-24
 
 ### Bug Fixes
