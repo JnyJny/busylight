@@ -162,8 +162,8 @@ Thank you to [@todbot][todbot] and [ThingM][thingm] for graciously gifting
 [thingm]: https://thingm.com
 
 <!-- Assets -->
-[LOGO]: https://github.com/JnyJny/busylight/blob/main/assets/BusyLightForHumans.png
-[DEMO]: https://github.com/JnyJny/busylight/blob/main/assets/HerdOfLights.png
+[LOGO]: https://raw.githubusercontent.com/JnyJny/busylight/main/assets/BusyLightForHumans.png
+[DEMO]: https://raw.githubusercontent.com/JnyJny/busylight/main/assets/HerdOfLights.png
 
 <!-- Badges -->
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
