@@ -153,7 +153,7 @@ Thank you to [@todbot][todbot] and [ThingM][thingm] for graciously gifting
 [docs-api]: https://jnyjny.github.io/busylight/api/
 [docs-devices]: https://jnyjny.github.io/busylight/devices/
 [docs-integration]: https://jnyjny.github.io/busylight/api/integration/
-[contributing]: https://github.com/JnyJny/busylight/blob/master/CONTRIBUTING.md
+[contributing]: https://github.com/JnyJny/busylight/blob/main/CONTRIBUTING.md
 [issues]: https://github.com/JnyJny/busylight/issues
 [device-request]: https://github.com/JnyJny/busylight-core/issues/new?template=4_new_device_request.yaml
 [discussions]: https://github.com/JnyJny/busylight/discussions
@@ -162,12 +162,12 @@ Thank you to [@todbot][todbot] and [ThingM][thingm] for graciously gifting
 [thingm]: https://thingm.com
 
 <!-- Assets -->
-[LOGO]: https://github.com/JnyJny/busylight/blob/master/assets/BusyLightForHumans.png
-[DEMO]: https://github.com/JnyJny/busylight/blob/master/assets/HerdOfLights.png
+[LOGO]: https://github.com/JnyJny/busylight/blob/main/assets/BusyLightForHumans.png
+[DEMO]: https://github.com/JnyJny/busylight/blob/main/assets/HerdOfLights.png
 
 <!-- Badges -->
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
-[python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmaster%2Fpyproject.toml
+[python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmain%2Fpyproject.toml
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [code-style]: https://img.shields.io/badge/ruff-yellow?style=flat-square&label=Style&link=https%3A%2F%2Fastral.sh%2Fruff
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
