@@ -106,8 +106,6 @@ class LightSelection:
         """
         for light in self.lights:
             try:
-                if hasattr(light, "cancel_tasks"):
-                    light.cancel_tasks()
                 light.off()
             except LightUnavailableError as error:
                 logger.debug(f"Light unavailable during turn_off: {error}")
@@ -289,8 +287,6 @@ class LightController:
         """
         for light in self.lights:
             try:
-                if hasattr(light, "cancel_tasks"):
-                    light.cancel_tasks()
                 light.off()
             except Exception as error:
                 logger.error(f"Error turning off light during cleanup: {error}")

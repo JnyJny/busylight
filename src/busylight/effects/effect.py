@@ -117,12 +117,17 @@ class BaseEffect(abc.ABC):
         else:
             color_iterator = cycle(self.colors)
 
+        cancelled = False
         try:
             for color in color_iterator:
                 light.on(color, led=led, interrupt=False)
                 await asyncio.sleep(sleep_interval)
+        except asyncio.CancelledError:
+            cancelled = True
+            logger.debug(f"{self.name} effect cancelled")
         finally:
-            light.off(led=led)
+            if not cancelled:
+                light.off(led=led)
 
     def reset(self) -> None:
         """Reset the effect's internal state."""
