@@ -32,7 +32,7 @@ Issues = "https://github.com/JnyJny/busylight_core/issues"
 Source = "https://github.com/JnyJny/busylight_core"
 
 [build-system]
-requires = ["uv_build>=0.7.19,<0.8"]
+requires = ["uv_build"]
 build-backend = "uv_build"
 
 [dependency-groups]
