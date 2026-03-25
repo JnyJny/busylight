@@ -1,0 +1,260 @@
+[project]
+name = "busylight_core"
+version = "2.2.0"
+description = "Busylight Core Implementation for Humans, presumably like you!"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{name = "JnyJny", email = "erik.oshaughnessy@gmail.com"}]
+repository = "https://github.com/JnyJny/busylight_core"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "loguru",
+    "pyserial>=3.5",
+    "hidapi>=0.14.0.post4",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Developers",
+  "Intended Audience :: End Users/Desktop",
+  "Environment :: Console",
+  "Topic :: Utilities",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Documentation = "https://JnyJny.github.io/busylight_core/"
+Issues = "https://github.com/JnyJny/busylight_core/issues"
+Source = "https://github.com/JnyJny/busylight_core"
+
+[build-system]
+requires = ["uv_build>=0.7.19,<0.8"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "git-cliff>=2.0.0",
+    "poethepoet",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-markdown-docs>=0.9.1",
+    "ruff",
+    "toml-cli>=0.8.1",
+]
+docs = [
+    "mkdocs",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+    "mkdocs-autorefs",
+    "mkdocs-gen-files",
+    "mkdocs-literate-nav",
+    "mkdocs-section-index",
+]
+
+[tool.poe.tasks]
+
+# Code Quality
+
+_generate_coverage = "pytest --cov=./src/busylight_core --cov-report=html"
+_open_report = "open htmlcov/index.html"
+coverage.sequence = [ "_generate_coverage", "_open_report"]
+coverage.help = "[Code Quality] Open generated coverage report in a browser."
+
+ruff-check.cmd = "ruff check src tests"
+ruff-check.help = "[Code Quality] Run ruff check on source."
+
+ruff-format.cmd = "ruff format src tests"
+ruff-format.help = "[Code Quality] Run ruff format on source."
+
+ruff.sequence = ["ruff-check", "ruff-format"]
+ruff.help = "[Code Quality] Run Ruff check and format on source."
+
+check.sequence = [ "ruff", ]
+check.help = "[Code Quality] Run all code quality tools on source."
+
+test.cmd = "pytest tests/"
+test.help = "[Code Quality] Run unit tests."
+
+doc-test.cmd = "pytest --markdown-docs docs/ --ignore=docs/gen_ref_pages.py"
+doc-test.help = "[Code Quality] Run doc tests (validates Python code blocks in docs/)."
+
+qc.sequence = [ "test", "doc-test", "check", ]
+qc.help = "[Code Quality] Run all code quality tasks."
+
+# Publish tasks
+
+## update version in pyproject
+
+_preflight.shell = """
+if [ "$(git branch --show-current)" != "main" ]; then
+  echo "ERROR: publish must run from main branch" >&2
+  exit 1
+fi
+if [ -n "$(git status --porcelain)" ]; then
+  echo "ERROR: working tree is dirty" >&2
+  exit 1
+fi
+"""
+_preflight.help = "Verify on main branch with clean working tree."
+
+_patch_bump = "uv version --bump patch"
+_minor_bump = "uv version --bump minor"
+_major_bump = "uv version --bump major"
+
+## add, commit, tag and commit pyproject updated by bump
+
+_add = "git add pyproject.toml uv.lock"
+_commit = {shell = "git commit -m v`uv version --short`"}
+_tag = { shell = "git tag v`uv version --short`" }
+_push = "git push --all"
+_push_tags = "git push --tags"
+
+_update_pyproject = ["_add", "_commit", "_tag", "_push_tags", "_push"]
+
+## Publish patch, minor or major releases
+## See .github/workflows/release.yaml
+
+publish_patch.sequence = ["_preflight", "_patch_bump", "_update_pyproject"]
+publish_patch.help = "[Publish] Patch release."
+
+publish_minor.sequence = ["_preflight", "_minor_bump", "_update_pyproject"]
+publish_minor.help = "[Publish] Minor release."
+
+publish_major.sequence = ["_preflight", "_major_bump", "_update_pyproject"]
+publish_major.help = "[Publish] Major release."
+
+publish.ref =  "publish_patch"
+publish.help = "[Publish] Patch release."
+
+# Release tasks
+
+changelog.cmd = "git cliff"
+changelog.help = "[Release] Generate full changelog to stdout."
+
+release-notes.cmd = "git cliff --latest --strip header"
+release-notes.help = "[Release] Generate release notes for the latest tag."
+
+# Clean
+
+clean.cmd = "rm -rf htmlcov dist busylight_core.egg-info *.log"
+# clean.cmd = "git clean -f"
+clean.help = "[Clean] Remove testing, build and code quality artifacts."
+
+# Misc
+
+tree.cmd = "tree . -a -I .venv -I .git -I .ruff_cache"
+tree.help = "List project files in tree format."
+
+# Documentation
+
+docs-serve.cmd = "mkdocs serve"
+docs-serve.help = "[Documentation] Serve documentation locally for development."
+
+docs-build.cmd = "mkdocs build"
+docs-build.help = "[Documentation] Build documentation for production."
+
+docs-deploy.cmd = "mkdocs gh-deploy"
+docs-deploy.help = "[Documentation] Deploy documentation to GitHub Pages."
+
+# Tool Options
+
+[tool.busylight_core.ci]
+test-python-versions = ["3.12", "3.13", "3.14"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+fix = true
+lint.select = [
+  # isort
+  "I",
+  # ok isort is in all.
+  "ALL"
+]
+lint.ignore = [
+  # ARG002 Unused method argument
+  "ARG002",
+  # Missing docstring in magic method
+  "D105",
+  # missing-trailing-comma (COM812)
+  "COM812",
+  # incorrect-blank-line-before-class (D203)
+  "D203",
+  # blank-line-before-class (D211)
+  "D211",
+  # multi-line-summary-first-line (D212)
+  "D212",
+  # multi-line-summary-second-line (D213)
+  "D213",
+  # boolean-type-hint-positional-argument (FBT001)
+  "FBT001",
+  # boolean-positional-value-in-call (FBT003)
+  "FBT003",
+  # missing-trailing-period (D400)
+  "D400",
+  # first-line-ends-in-period (D415)
+  "D415",
+  # blank-except (BLE001)
+  "BLE001",
+  # invalid-class-name (N801)
+  "N801",
+  # boolean-default-value-positional-argument (FBT002)
+  "FBT002",
+  # magic-value-comparison (PLR2004)
+  "PLR2004",
+  # too-many-arguments (PLR0913)
+  "PLR0913",
+  # non-unique-enums (PIE796)
+  "PIE796",
+  # missing-type-function-argument (ANN001)
+  "ANN001",
+  # missing-return-type-special-method (ANN204)
+  "ANN204"
+ ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  # line-too-long (E501)
+  "E501",
+  # use-of-assert (S101)
+  "S101",
+  # unused-lambda-argument (ARG005)
+  "ARG005",
+  # redefined-while-unused (F811)
+  "F811",
+  # local-variable-is-assigned-but-never-used (F841)
+  "F841",
+]
+"docs/conftest.py" = [
+  # Test infrastructure: relax annotation, docstring, and style rules
+  "ANN", "D", "E501", "INP001", "SLF001", "ARG001", "PLW0602",
+  "PLC0415", "E402",
+]
+"docs/gen_ref_pages.py" = [
+  "INP001", "E501", "B007",
+]
+"**/implementation/*" = [
+  # missing-docstring-in-init (D107)
+  "D107"
+]
+
+
+
+[tool.ty]
+
+[mypy]
+
+[mypy-loguru]
+ignore_missing_imports = true
+
+[mypy-typer]
+ignore_missing_imports = true
+
+[mypy-pydantic_settings]
+ignore_missing_imports = true

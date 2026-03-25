@@ -1,0 +1,128 @@
+site_name: Busylight Core for Humans
+site_description: Busylight Core Implementation for Humans, presumably like you!
+site_author: Erik O'Shaughnessy
+site_url: https://JnyJny.github.io/busylight_core/
+
+repo_name: JnyJny/busylight_core
+repo_url: https://github.com/JnyJny/busylight_core
+edit_uri: blob/main/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - toc.integrate
+    - toc.follow
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+
+plugins:
+  - search
+
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_bases: true
+            show_root_heading: true
+            show_object_full_path: true
+            show_category_heading: true
+            show_if_no_docstring: true
+            inherited_members: true
+            members_order: source
+            separate_signature: true
+            unwrap_annotated: true
+            filters: ["!^_"]
+            merge_init_into_class: true
+            docstring_section_style: spacy
+            signature_crossrefs: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+  - gen-files:
+      scripts:
+        - docs/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+
+
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - User Guide:
+    - Features: user-guide/features.md
+    - Device Capabilities: user-guide/device-capabilities.md
+    - Examples: user-guide/examples.md
+  - API Reference: reference/
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+
+
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - attr_list
+  - md_in_html
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+
+
+validation:
+  nav:
+    omitted_files: ignore
+    not_found: warn
+    absolute_links: info
+  links:
+    not_found: ignore
+    anchors: ignore
+    unrecognized_links: ignore
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/JnyJny/busylight_core
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/busylight_core/

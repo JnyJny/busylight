@@ -1,0 +1,13 @@
+blank_issues_enabled: true
+
+# Note: Contact links are commented out here by default. Use them to
+#       create links to off-GitHub resources for community or
+#       documentation.
+
+# contact_links:
+#   - name: Documentation
+#     url: https://github.com/JnyJny/busylight_core / docs
+#     about: Please consult the documentation before creating an issue.
+#   - name: Community
+#     url: https://discord.com/invite/busylight_core
+#     about: Join our Discord community to ask questions and collaborate.

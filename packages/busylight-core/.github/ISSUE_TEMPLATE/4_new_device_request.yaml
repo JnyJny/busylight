@@ -1,0 +1,59 @@
+name: New device support request
+description: Request support for a new busylight device
+labels: ["enhancement", "new-device"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Request support for a new busylight device.**
+        
+        Please provide as much information as possible about the device to help us evaluate and implement support.
+
+  - type: input
+    attributes:
+      label: Device name
+      description: What is the name or model of the device?
+      placeholder: e.g., Blink(1) mk3, Blynclight Plus, Status Indicator Pro
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Manufacturer
+      description: Who makes this device?
+      placeholder: e.g., ThingM, Embrava, Plantronics, Luxafor
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Purchase URL
+      description: Where can this device be purchased? (optional)
+      placeholder: e.g., https://blink1.thingm.com/, https://embrava.com/products/blynclight
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Documentation links
+      description: Links to any public documentation, datasheets, or technical specifications for the device (optional)
+      placeholder: |
+        e.g., 
+        - Product manual: https://example.com/manual.pdf
+        - API documentation: https://example.com/api-docs
+        - Developer resources: https://example.com/developers
+    validations:
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Any other relevant information about the device that might help with implementation
+      placeholder: |
+        e.g.,
+        - Connection type (USB HID, Bluetooth, etc.)
+        - Supported colors/effects
+        - Special features
+        - Similar devices already supported
+    validations:
+      required: false

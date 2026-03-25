@@ -1,0 +1,71 @@
+# git-cliff configuration for busylight-core
+# https://git-cliff.org/docs/configuration
+
+[changelog]
+header = """# CHANGELOG\n
+All notable changes to this project will be documented in this file.\n
+"""
+body = """
+{%- macro remote_url() -%}
+  https://github.com/JnyJny/busylight-core
+{%- endmacro -%}
+
+{% if version -%}
+## [{{ version | trim_start_matches(pat="v") }}]({{ self::remote_url() }}/releases/tag/{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## Unreleased
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+{% for commit in commits %}
+- {{ commit.message | split(pat="\n") | first | trim }}\
+  {% if commit.remote.pr_number %} \
+    ([#{{ commit.remote.pr_number }}]({{ self::remote_url() }}/pull/{{ commit.remote.pr_number }}))\
+  {% endif %} \
+  ([{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }}))\
+{%- endfor %}
+{% endfor %}
+"""
+footer = ""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+split_commits = false
+commit_parsers = [
+  # Skip merge commits, dependabot CI bumps, changelog updates, and version bumps
+  { message = "^Merge pull request", skip = true },
+  { message = "^Merge branch", skip = true },
+  { message = "^ci\\(deps\\)", skip = true },
+  { message = "^ci:", skip = true },
+  { message = "^docs\\(CHANGELOG\\)", skip = true },
+  { message = "^v\\d+\\.\\d+", skip = true },
+
+  # Standard conventional commits
+  { message = "^feat", group = "Features" },
+  { message = "^fix", group = "Bug Fixes" },
+  { message = "^bug", group = "Bug Fixes" },
+  { message = "^doc", group = "Documentation" },
+  { message = "^refactor", group = "Refactor" },
+  { message = "^perf", group = "Performance" },
+  { message = "^style", group = "Styling" },
+  { message = "^ci", group = "CI" },
+
+  # Legacy prefixes (older commits use inconsistent casing)
+  { message = "^BUG", group = "Bug Fixes" },
+  { message = "^Fix", group = "Bug Fixes" },
+  { message = "^Feature", group = "Features" },
+  { message = "^Cleanup", group = "Refactor" },
+  { message = "^YOLO", group = "Other" },
+
+  # Catch-all
+  { message = ".*", group = "Other" },
+]
+filter_commits = false
+tag_pattern = "v[0-9].*"
+skip_tags = ""
+ignore_tags = ""
+topo_order = false
+sort_commits = "newest"

@@ -1,0 +1,39 @@
+---
+# https://docs.github.com/en/code-security/dependabot/
+
+version: 2
+updates:
+  # Check for Python package updates daily
+  - package-ecosystem: "uv"
+    directory: "/" 
+    schedule:
+      interval: "daily"
+      time: "08:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+    reviewers:
+      - "JnyJny"
+
+  # Check for GitHub Action updates weekly  
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "America/Chicago"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    reviewers:
+      - "JnyJny"

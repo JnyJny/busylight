@@ -1,0 +1,18 @@
+[project]
+name = "busylight-workspace"
+version = "0.0.0"
+requires-python = ">=3.11,<4.0"
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[dependency-groups]
+dev = [
+    "poethepoet",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-mock",
+    "ruff",
+    "git-cliff",
+]

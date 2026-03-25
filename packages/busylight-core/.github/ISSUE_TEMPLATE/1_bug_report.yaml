@@ -1,0 +1,43 @@
+name: Bug report
+description: Report an error or unexpected behavior
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Open a new issue if you can't find an existing issue that describes the problem you're having.**
+
+  - type: textarea
+    attributes:
+      label: Summary
+      description: |
+        A clear and concise description of the bug, including a minimal reproducible example.
+        If we cannot reproduce the bug, it is unlikely that we will be able to help you.
+
+        Please include the full output of busylight_core with the complete error message.
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Platform
+      description: What operating system and architecture are you using? (see `uname -orsm`)
+      placeholder: e.g., macOS 14 arm64, Windows 11 x86_64, Ubuntu 20.04 amd64
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Version
+      description: What version of busylight_core are you using? (see `uv pip list | grep busylight`, `pip list | grep busylight`, or `python -c "import busylight_core; print(busylight_core.version)"`)
+      placeholder: e.g., busylight-core 0.5.20
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Python version
+      description: What version of Python are you using? (see `python --version`)
+      placeholder: e.g., Python 3.13.4
+    validations:
+      required: false
