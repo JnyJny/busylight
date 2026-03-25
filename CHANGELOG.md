@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.47.1](https://github.com/JnyJny/busylight/releases/tag/v0.47.1) - 2026-03-25
+
+### Bug Fixes
+
+- Fix effect cancellation stomping on new light state ([bbf1283](https://github.com/JnyJny/busylight/commit/bbf1283da9abbfc32d61095990fba5626786dc52))
+## [0.47.0](https://github.com/JnyJny/busylight/releases/tag/v0.47.0) - 2026-03-25
+
+### Bug Fixes
+
+- Animation effects broken due to fix for JnyJny/busylight-core#58 ([cf0a634](https://github.com/JnyJny/busylight/commit/cf0a634228e55577f3191af95d5816875e8de212))
+
+### Other
+
+- bump anyio from 4.12.1 to 4.13.0 ([81472ba](https://github.com/JnyJny/busylight/commit/81472ba7b3159cf745cd102f78ce04bfa6366ef9))
 ## [0.46.1](https://github.com/JnyJny/busylight/releases/tag/v0.46.1) - 2026-03-24
 
 ### Bug Fixes
