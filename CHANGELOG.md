@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.48.0](https://github.com/JnyJny/busylight/releases/tag/v0.48.0) - 2026-03-25
+
+### Bug Fixes
+
+- reduced python base version from 3.12 to 3.11, updated to busylight-core 2.2.0 ([f6bbe43](https://github.com/JnyJny/busylight/commit/f6bbe4389141560a89832e273e443b9b98c191ab))
+
+### Other
+
+- bump requests from 2.32.5 to 2.33.0 ([f81668c](https://github.com/JnyJny/busylight/commit/f81668c03350e8a781c1ce7890b52329dfe1bbee))
 ## [0.47.1](https://github.com/JnyJny/busylight/releases/tag/v0.47.1) - 2026-03-25
 
 ### Bug Fixes
