@@ -119,7 +119,7 @@ class BaseEffect(abc.ABC):
 
         try:
             for color in color_iterator:
-                light.on(color, led=led)
+                light.on(color, led=led, interrupt=False)
                 await asyncio.sleep(sleep_interval)
         finally:
             light.off(led=led)
