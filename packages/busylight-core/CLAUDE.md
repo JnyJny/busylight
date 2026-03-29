@@ -1,61 +1,24 @@
 # CLAUDE.md
 
-Python library for controlling USB status lights from various vendors using a plugin architecture.
+See [root CLAUDE.md](../../CLAUDE.md) for workspace-level guidance.
 
-## Commands
-- `poe test` - Run unit tests
-- `poe doc-test` - Run doc tests (validates Python code blocks in docs/)
-- `poe ruff` - Format and lint
-- `poe coverage` - Coverage report
-- `poe docs-serve` - Serve docs locally
+## busylight-core Quick Reference
 
-## Architecture
-- **Light** (src/busylight_core/light.py) - Base class for all devices
-- **Hardware** (src/busylight_core/hardware.py) - Device connection handling
-- **Vendors** (src/busylight_core/vendors/) - Device-specific implementations
-- **Mixins** - ColorableMixin, TaskableMixin for shared functionality
+Python library for USB status light control. Plugin architecture.
 
-### TaskableMixin
-Provides automatic task management with environment-driven strategy selection:
-- **Asyncio context**: Uses `asyncio.Task` for periodic execution
-- **Non-asyncio context**: Uses `threading.Timer` for periodic execution
-- **Automatic detection**: No user configuration required
-- **Backward compatibility**: Maintains existing coroutine-based API
+### Commands
 
-### Adding Devices
-1. Create vendor package in vendors/ if needed  
-2. Implement Light subclass
-3. Import in vendor __init__.py and main __init__.py
-4. Discovery uses abc.ABC.__subclasses__()
-
-## Release Workflow
-Pipeline: `get-python-versions` → `test` → `build` → [`publish`, `github-release`] → `docs`
-
-- **Python versions**: Configure test matrix in `[tool.busylight_core.ci].test-python-versions`
-- **Artifact caching**: Package built once, reused by publish/release jobs
-- **Parallel execution**: Publish and GitHub release run simultaneously  
-- **Docs deployment**: Triggered only after successful releases
-
-## Code Guidelines
-
-**Architecture**: **DO NOT** consolidate vendor classes - this breaks plugin discovery and type safety.
-
-**Docstrings**: Use Sphinx format focusing on programmer intent:
-```python
-def method(self, param: str) -> bool:
-    """Brief summary.
-    
-    :param param: What user provides
-    :return: How to use result
-    """
+```bash
+poe test          # unit tests
+poe doc-test      # validate code blocks in docs/
+poe ruff          # format + lint
+poe coverage      # coverage report
+poe docs-serve    # serve docs locally
 ```
 
-**Patterns**: Three device types - simple (ColorableMixin), complex (Word/BitField), multi-LED (arrays). Preserve these patterns.
+### Key Rules
 
-**Quality**: Run `poe ruff` before commits.
-
-## Doc Tests
-All Python code blocks in `docs/` are tested via pytest-markdown-docs.
-Mock USB hardware lives in `docs/conftest.py`. If you change any public API,
-update the doc examples -- CI will catch mismatches. Use `continuation` marker
-for blocks that depend on prior imports, `notest` for untestable blocks.
+- **DO NOT consolidate vendor classes** — breaks plugin discovery
+- Three device patterns: simple, complex (Word/BitField), multi-LED
+- Doc tests run on all Python blocks in `docs/` — update examples when changing APIs
+- Mock hardware in `docs/conftest.py`

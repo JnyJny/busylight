@@ -133,14 +133,14 @@ architecture for adding new devices.
 
 ## Platform Support
 
-- **macOS** works out of the box
-- **Linux** requires udev rules for USB access:
+- **macOS** &mdash; works out of the box
+- **Linux** &mdash; requires udev rules for USB access:
   ```bash
   busylight udev-rules -o 99-busylights.rules
   sudo cp 99-busylights.rules /etc/udev/rules.d/
   sudo udevadm control -R
   ```
-- **Windows** may work, untested, patches welcome
+- **Windows** &mdash; may work, untested, patches welcome
 
 ## Contributing
 
