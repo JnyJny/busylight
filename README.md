@@ -58,7 +58,7 @@ light.off()
 | Vendor | Models | Connection |
 |--------|--------|------------|
 | **Agile Innovative** | BlinkStick, BlinkStick Pro, Square, Strip, Nano, Flex | HID |
-| **CompuLab** | fit-statUSB | HID |
+| **CompuLab** | fit-statUSB | Serial |
 | **EPOS** | Busylight | HID |
 | **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus, BLYNCUSB10, BLYNCUSB20 | HID |
 | **Kuando** | Busylight Alpha, Busylight Omega | HID |
@@ -71,9 +71,9 @@ Multi-LED targeting supported on BlinkStick variants, Luxafor Flag, and Blink(1)
 
 ## Packages
 
-This repository contains two packages that work together:
+This repository contains two packages that work together; [busylight-for-humans][busylight-gh] and [busylight-core][busylight-gh].
 
-### [busylight-for-humans][busylight-pypi] &mdash; CLI & Web API
+### Busylight for Humans  &mdash; CLI & Web API [pypi][busylight-pypi] [gh][busylight-gh]
 
 The user-facing tools. Install this if you want to control lights from
 the command line or expose an HTTP API for automation.
@@ -102,13 +102,13 @@ curl "http://localhost:8000/lights/off"
 
 Full documentation: **[busylight-for-humans docs][busylight-docs]**
 
-### [busylight-core][core-pypi] &mdash; Python Library
+### busylight-core &mdash; Python Library [gh][core-gh] [pypi][core-pypi]
 
-The device communication layer. Install this if you're building your
-own tools or integrating status lights into a larger system.
+The device communication layer you can use if you're building your own
+tools or integrating status lights into a larger system.
 
 ```bash
-pip install busylight_core
+uv add busylight_core
 ```
 
 ```python
@@ -171,7 +171,9 @@ Both packages are licensed under the [Apache License 2.0](LICENSE).
 
 <!-- Links -->
 [busylight-pypi]: https://pypi.org/project/busylight-for-humans/
+[busylight-gh]: https://github.com/JnyJny/busylight/packages/busylight
 [core-pypi]: https://pypi.org/project/busylight-core/
+[core-gh]: https://github.com/JnyJny/busylight/packages/busylight-core
 [busylight-docs]: https://jnyjny.github.io/busylight/
 [core-docs]: https://jnyjny.github.io/busylight_core/
 [uv-workspaces]: https://docs.astral.sh/uv/concepts/workspaces/
