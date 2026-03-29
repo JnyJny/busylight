@@ -8,10 +8,8 @@
 </p>
 
 <p align="center">
-<img alt="PyPI version" src="https://img.shields.io/pypi/v/busylight-for-humans">
-<img alt="Python version" src="https://img.shields.io/pypi/pyversions/busylight-for-humans">
 <img alt="License" src="https://img.shields.io/pypi/l/busylight-for-humans">
-<img alt="Monthly downloads" src="https://img.shields.io/pypi/dm/busylight-for-humans">
+<img alt="Python version" src="https://img.shields.io/pypi/pyversions/busylight-for-humans">
 </p>
 
 ![All Supported Lights][DEMO]
@@ -75,6 +73,9 @@ This repository contains two packages that work together:
 
 ### [Busylight for Humans][busylight-cli]  &mdash; CLI & Web API
 
+![PyPI version](https://img.shields.io/pypi/v/busylight-for-humans)
+![Monthly downloads](https://img.shields.io/pypi/dm/busylight-for-humans)
+
 The user-facing tools. Install this if you want to control lights from
 the command line or expose an HTTP API for automation.
 
@@ -103,6 +104,9 @@ curl "http://localhost:8000/lights/off"
 [Full documentation][busylight-cli-docs]
 
 ### [busylight-core][busylight-core] &mdash; Python Library
+
+![PyPI version](https://img.shields.io/pypi/v/busylight-core)
+![Monthly downloads](https://img.shields.io/pypi/dm/busylight-core)
 
 The device communication layer you can use if you're building your own
 tools or integrating status lights into a larger system.
