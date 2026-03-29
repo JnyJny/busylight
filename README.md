@@ -9,7 +9,7 @@
 
 <p align="center">
 <img alt="PyPI version" src="https://img.shields.io/pypi/v/busylight-for-humans">
-<img alt="Python version" src="https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmain%2Fpackages%2Fbusylight%2Fpyproject.toml">
+<img alt="Python version" src="https://img.shields.io/pypi/pyversions/busylight-for-humans">
 <img alt="License" src="https://img.shields.io/pypi/l/busylight-for-humans">
 <img alt="Monthly downloads" src="https://img.shields.io/pypi/dm/busylight-for-humans">
 </p>
@@ -162,5 +162,5 @@ Both packages are licensed under the [Apache License 2.0](LICENSE).
 [thingm]: https://thingm.com
 
 <!-- Assets -->
-[LOGO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/BusyLightForHumans.png
-[DEMO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/HerdOfLights.png
+[LOGO]: packages/busylight/assets/BusyLightForHumans.png
+[DEMO]: packages/busylight/assets/HerdOfLights.png
