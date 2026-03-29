@@ -75,13 +75,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "git-cliff" },
-    { name = "poethepoet" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
     { name = "pytest-markdown-docs" },
-    { name = "ruff" },
     { name = "toml-cli" },
 ]
 docs = [
@@ -103,13 +97,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "git-cliff", specifier = ">=2.0.0" },
-    { name = "poethepoet" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
     { name = "pytest-markdown-docs", specifier = ">=0.9.1" },
-    { name = "ruff" },
     { name = "toml-cli", specifier = ">=0.8.1" },
 ]
 docs = [
@@ -153,14 +141,7 @@ webapi = [
 dev = [
     { name = "anyio" },
     { name = "coverage" },
-    { name = "git-cliff" },
     { name = "httpx" },
-    { name = "poethepoet" },
-    { name = "pytest" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-    { name = "ruff" },
-    { name = "ty" },
 ]
 
 [package.metadata]
@@ -184,14 +165,7 @@ provides-extras = ["webapi", "web", "docs"]
 dev = [
     { name = "anyio", specifier = ">=4.9.0" },
     { name = "coverage", specifier = ">=7.8.0" },
-    { name = "git-cliff", specifier = ">=2.12.0" },
     { name = "httpx", specifier = ">=0.28.1" },
-    { name = "poethepoet", specifier = ">=0.34.0" },
-    { name = "pytest", specifier = ">=8.3.5" },
-    { name = "pytest-cov", specifier = ">=6.1.1" },
-    { name = "pytest-mock", specifier = ">=3.14.0" },
-    { name = "ruff", specifier = ">=0.12.4" },
-    { name = "ty", specifier = ">=0.0.1a15" },
 ]
 
 [[package]]
@@ -208,19 +182,21 @@ dev = [
     { name = "pytest-cov" },
     { name = "pytest-mock" },
     { name = "ruff" },
+    { name = "ty" },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "git-cliff" },
+    { name = "git-cliff", specifier = ">=2.0.0" },
     { name = "poethepoet" },
-    { name = "pytest" },
+    { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-asyncio" },
-    { name = "pytest-cov" },
-    { name = "pytest-mock" },
-    { name = "ruff" },
+    { name = "pytest-cov", specifier = ">=6.1.1" },
+    { name = "pytest-mock", specifier = ">=3.14.0" },
+    { name = "ruff", specifier = ">=0.12.4" },
+    { name = "ty", specifier = ">=0.0.1a15" },
 ]
 
 [[package]]

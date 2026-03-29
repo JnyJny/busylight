@@ -37,13 +37,7 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "git-cliff>=2.0.0",
-    "poethepoet",
-    "pytest",
-    "pytest-asyncio",
-    "pytest-cov",
     "pytest-markdown-docs>=0.9.1",
-    "ruff",
     "toml-cli>=0.8.1",
 ]
 docs = [

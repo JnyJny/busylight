@@ -66,14 +66,7 @@ busylight-core = { workspace = true }
 dev = [
     "anyio>=4.9.0",
     "coverage>=7.8.0",
-    "git-cliff>=2.12.0",
     "httpx>=0.28.1",
-    "poethepoet>=0.34.0",
-    "pytest>=8.3.5",
-    "pytest-cov>=6.1.1",
-    "pytest-mock>=3.14.0",
-    "ruff>=0.12.4",
-    "ty>=0.0.1a15",
 ]
 
 
