@@ -163,8 +163,8 @@ Thank you to [@todbot][todbot] and [ThingM][thingm] for gifting
 Both packages are licensed under the [Apache License 2.0](LICENSE).
 
 <!-- Links -->
-[busylight-cli]: https://github.com/JnyJny/busylight/packages/busylight
-[busylight-core]: https://github.com/JnyJny/busylight/packages/busylight-core
+[busylight-cli]: packages/busylight/
+[busylight-core]: packages/busylight-core/
 [busylight-cli-docs]: https://jnyjny.github.io/busylight/
 [busylight-core-docs]: https://jnyjny.github.io/busylight_core/
 
