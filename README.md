@@ -15,6 +15,22 @@
 </p>
 
 ![All Supported Lights][DEMO]
+<p align="center">
+Blynclight Plus<sup>1</sup>,
+MuteSync<sup>2</sup>,
+Blink(1)<sup>3</sup>,
+fit-statUSB<sup>4</sup>,
+Flag<sup>5</sup>,
+MuteMe Original<sup>6</sup>,
+Blynclight Mini<sup>7</sup>,
+BlinkStick Square<sup>8</sup>,
+BusyLight Omega<sup>9</sup>,
+Orb<sup>10</sup>,
+Mute<sup>11</sup>,
+Blynclight<sup>12</sup>,
+Busylight Alpha<sup>13</sup>,
+Status Indicator<sup>14</sup>
+</p>
 
 ## Quick Start
 
