@@ -15,20 +15,21 @@
 </p>
 
 ![All Supported Lights][DEMO]
-<p align="center">
-Blynclight Plus<sup>1</sup>,
-MuteSync<sup>2</sup>,
-Blink(1)<sup>3</sup>,
-fit-statUSB<sup>4</sup>,
-Flag<sup>5</sup>,
-MuteMe Original<sup>6</sup>,
-Blynclight Mini<sup>7</sup>,
-BlinkStick Square<sup>8</sup>,
-BusyLight Omega<sup>9</sup>,
-Orb<sup>10</sup>,
-Mute<sup>11</sup>,
-Blynclight<sup>12</sup>,
-Busylight Alpha<sup>13</sup>,
+<p align="left">
+
+Flag<sup>1</sup>,
+Busylight Alpha<sup>2</sup>,
+Blynclight Plus<sup>3</sup>,
+Blink(1)<sup>4</sup>,
+Mute<sup>5</sup>,
+Blynclight<sup>6</sup>,
+Orb<sup>7</sup>,
+BusyLight Omega<sup>8</sup>,
+BlinkStick Square<sup>9</sup>,
+Blynclight Mini<sup>10</sup>,
+MuteMe Original<sup>11</sup>,
+fit-statUSB<sup>12</sup>,
+MuteSync<sup>13</sup>,
 Status Indicator<sup>14</sup>
 </p>
 
