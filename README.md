@@ -148,21 +148,10 @@ architecture for adding new devices.
 
 ## Contributing
 
-Both packages welcome contributions. See the contributing guides:
-
-- [busylight-for-humans CONTRIBUTING.md](packages/busylight/CONTRIBUTING.md)
-- [busylight-core CONTRIBUTING.md](packages/busylight-core/CONTRIBUTING.md)
-
-**Development setup:**
-```bash
-git clone https://github.com/JnyJny/busylight.git
-cd busylight
-uv sync
-```
-
-This is a [uv workspace][uv-workspaces] &mdash; both packages share a
-virtual environment and dev dependencies. Changes to busylight-core
-are immediately available to busylight during development.
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for
+development setup, workflow, and guidelines. This is a
+[uv workspace][uv-workspaces] &mdash; one clone, one venv, both
+packages.
 
 ## Gratitude
 
