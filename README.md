@@ -55,25 +55,25 @@ light.off()
 
 ## Supported Hardware
 
-| Vendor | Models | Connection |
-|--------|--------|------------|
-| **Agile Innovative** | BlinkStick, BlinkStick Pro, Square, Strip, Nano, Flex | HID |
-| **CompuLab** | fit-statUSB | Serial |
-| **EPOS** | Busylight | HID |
-| **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus, BLYNCUSB10, BLYNCUSB20 | HID |
-| **Kuando** | Busylight Alpha, Busylight Omega | HID |
-| **Luxafor** | Flag, Orb, Mute, Busy Tag, Bluetooth | HID |
-| **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync | HID |
-| **Plantronics** | Status Indicator | HID |
-| **ThingM** | Blink(1), Blink(1) mk2 | HID |
+| Vendor | Models |
+|--------|--------|
+| **Agile Innovative** | BlinkStick, BlinkStick Pro, Square, Strip, Nano, Flex |
+| **CompuLab** | fit-statUSB |
+| **EPOS** | Busylight |
+| **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus, BLYNCUSB10, BLYNCUSB20 |
+| **Kuando** | Busylight Alpha, Busylight Omega |
+| **Luxafor** | Flag, Orb, Mute, Busy Tag, Bluetooth |
+| **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync |
+| **Plantronics** | Status Indicator |
+| **ThingM** | Blink(1), Blink(1) mk2 |
 
 Multi-LED targeting supported on BlinkStick variants, Luxafor Flag, and Blink(1) mk2.
 
 ## Packages
 
-This repository contains two packages that work together; [busylight-for-humans][busylight-gh] and [busylight-core][busylight-gh].
+This repository contains two packages that work together:
 
-### Busylight for Humans  &mdash; CLI & Web API [pypi][busylight-pypi] [gh][busylight-gh]
+### [Busylight for Humans][busylight-cli]  &mdash; CLI & Web API
 
 The user-facing tools. Install this if you want to control lights from
 the command line or expose an HTTP API for automation.
@@ -100,9 +100,9 @@ curl "http://localhost:8000/light/0/on?color=red"
 curl "http://localhost:8000/lights/off"
 ```
 
-Full documentation: **[busylight-for-humans docs][busylight-docs]**
+[Full documentation][busylight-cli-docs]
 
-### busylight-core &mdash; Python Library [gh][core-gh] [pypi][core-pypi]
+### [busylight-core][busylight-core] &mdash; Python Library
 
 The device communication layer you can use if you're building your own
 tools or integrating status lights into a larger system.
@@ -129,18 +129,18 @@ Features: multi-vendor abstraction, HID and serial support, async
 effects, button/input detection, multi-LED targeting, plugin
 architecture for adding new devices.
 
-Full documentation: **[busylight-core docs][core-docs]**
+[Full documentation][busylight-core-docs]
 
 ## Platform Support
 
-- **macOS** &mdash; works out of the box
-- **Linux** &mdash; requires udev rules for USB access:
+- **macOS** works out of the box
+- **Linux** requires udev rules for USB access:
   ```bash
   busylight udev-rules -o 99-busylights.rules
   sudo cp 99-busylights.rules /etc/udev/rules.d/
   sudo udevadm control -R
   ```
-- **Windows** &mdash; may work, untested, patches welcome
+- **Windows** may work, untested, patches welcome
 
 ## Contributing
 
@@ -170,12 +170,11 @@ Thank you to [@todbot][todbot] and [ThingM][thingm] for gifting
 Both packages are licensed under the [Apache License 2.0](LICENSE).
 
 <!-- Links -->
-[busylight-pypi]: https://pypi.org/project/busylight-for-humans/
-[busylight-gh]: https://github.com/JnyJny/busylight/packages/busylight
-[core-pypi]: https://pypi.org/project/busylight-core/
-[core-gh]: https://github.com/JnyJny/busylight/packages/busylight-core
-[busylight-docs]: https://jnyjny.github.io/busylight/
-[core-docs]: https://jnyjny.github.io/busylight_core/
+[busylight-cli]: https://github.com/JnyJny/busylight/packages/busylight
+[busylight-core]: https://github.com/JnyJny/busylight/packages/busylight-core
+[busylight-cli-docs]: https://jnyjny.github.io/busylight/
+[busylight-core-docs]: https://jnyjny.github.io/busylight_core/
+
 [uv-workspaces]: https://docs.astral.sh/uv/concepts/workspaces/
 [todbot]: https://github.com/todbot
 [thingm]: https://thingm.com
