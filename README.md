@@ -1,0 +1,166 @@
+<!-- agile-innovative blink(1) blinkstick bluetooth blynclight busylight busylight-alpha busylight-omega compulab embrava epos fit-statusb flag hid kuando luxafor mute muteme mutesync omega orb plantronics serial thingM usb python usb-led status-light busy-light availability-indicator home-office work-from-home -->
+
+![BusyLight Project Logo][LOGO]
+
+<p align="center">
+<strong>Control USB LED status lights from Python.</strong><br>
+26 devices &middot; 9 vendors &middot; CLI &middot; HTTP API &middot; Python library
+</p>
+
+<p align="center">
+<img alt="PyPI version" src="https://img.shields.io/pypi/v/busylight-for-humans">
+<img alt="Python version" src="https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmain%2Fpackages%2Fbusylight%2Fpyproject.toml">
+<img alt="License" src="https://img.shields.io/pypi/l/busylight-for-humans">
+<img alt="Monthly downloads" src="https://img.shields.io/pypi/dm/busylight-for-humans">
+</p>
+
+![All Supported Lights][DEMO]
+
+## Quick Start
+
+```bash
+# Turn on a green light right now
+uvx --from busylight-for-humans busylight on
+
+# Red, blinking, then off
+uvx --from busylight-for-humans busylight blink red
+uvx --from busylight-for-humans busylight off
+```
+
+```python
+# Or from Python
+from busylight_core import Light
+
+light = Light.first_light()
+light.on((0, 128, 0))   # green
+light.off()
+```
+
+## Supported Hardware
+
+| Vendor | Models | Connection |
+|--------|--------|------------|
+| **Agile Innovative** | BlinkStick, BlinkStick Pro, Square, Strip, Nano, Flex | HID |
+| **CompuLab** | fit-statUSB | HID |
+| **EPOS** | Busylight | HID |
+| **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus, BLYNCUSB10, BLYNCUSB20 | HID |
+| **Kuando** | Busylight Alpha, Busylight Omega | HID |
+| **Luxafor** | Flag, Orb, Mute, Busy Tag, Bluetooth | HID |
+| **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync | HID |
+| **Plantronics** | Status Indicator | HID |
+| **ThingM** | Blink(1), Blink(1) mk2 | HID |
+
+Multi-LED targeting supported on BlinkStick variants, Luxafor Flag, and Blink(1) mk2.
+
+## Packages
+
+This repository contains two packages that work together:
+
+### [busylight-for-humans][busylight-pypi] &mdash; CLI & Web API
+
+The user-facing tools. Install this if you want to control lights from
+the command line or expose an HTTP API for automation.
+
+```bash
+pip install busylight-for-humans
+```
+
+**Command line:**
+```bash
+busylight on red          # solid red
+busylight blink blue      # blinking blue
+busylight rainbow         # cycle through colors
+busylight on green --led 1  # target specific LED
+busylight off             # turn off
+```
+
+**Web API:**
+```bash
+pip install busylight-for-humans[webapi]
+busyserve  # starts on http://localhost:8000
+
+curl "http://localhost:8000/light/0/on?color=red"
+curl "http://localhost:8000/lights/off"
+```
+
+Full documentation: **[busylight-for-humans docs][busylight-docs]**
+
+### [busylight-core][core-pypi] &mdash; Python Library
+
+The device communication layer. Install this if you're building your
+own tools or integrating status lights into a larger system.
+
+```bash
+pip install busylight_core
+```
+
+```python
+from busylight_core import Light
+
+# Find and control lights
+for light in Light.all_lights():
+    print(f"{light.name} by {light.vendor}")
+    light.on((255, 0, 0))  # red
+
+# Async effects
+import asyncio
+light = Light.first_light()
+asyncio.run(light.blink(color=(0, 0, 255), speed=1))
+```
+
+Features: multi-vendor abstraction, HID and serial support, async
+effects, button/input detection, multi-LED targeting, plugin
+architecture for adding new devices.
+
+Full documentation: **[busylight-core docs][core-docs]**
+
+## Platform Support
+
+- **macOS** &mdash; works out of the box
+- **Linux** &mdash; requires udev rules for USB access:
+  ```bash
+  busylight udev-rules -o 99-busylights.rules
+  sudo cp 99-busylights.rules /etc/udev/rules.d/
+  sudo udevadm control -R
+  ```
+- **Windows** &mdash; may work, untested, patches welcome
+
+## Contributing
+
+Both packages welcome contributions. See the contributing guides:
+
+- [busylight-for-humans CONTRIBUTING.md](packages/busylight/CONTRIBUTING.md)
+- [busylight-core CONTRIBUTING.md](packages/busylight-core/CONTRIBUTING.md)
+
+**Development setup:**
+```bash
+git clone https://github.com/JnyJny/busylight.git
+cd busylight
+uv sync
+```
+
+This is a [uv workspace][uv-workspaces] &mdash; both packages share a
+virtual environment and dev dependencies. Changes to busylight-core
+are immediately available to busylight during development.
+
+## Gratitude
+
+Thank you to [@todbot][todbot] and [ThingM][thingm] for gifting
+`blink(1) mk3` lights to support this project.
+
+## License
+
+Both packages are licensed under the [Apache License 2.0](LICENSE).
+
+<!-- Links -->
+[busylight-pypi]: https://pypi.org/project/busylight-for-humans/
+[core-pypi]: https://pypi.org/project/busylight-core/
+[busylight-docs]: https://jnyjny.github.io/busylight/
+[core-docs]: https://jnyjny.github.io/busylight_core/
+[uv-workspaces]: https://docs.astral.sh/uv/concepts/workspaces/
+[todbot]: https://github.com/todbot
+[thingm]: https://thingm.com
+
+<!-- Assets -->
+[LOGO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/BusyLightForHumans.png
+[DEMO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/HerdOfLights.png
