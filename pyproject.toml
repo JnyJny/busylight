@@ -6,6 +6,15 @@ requires-python = ">=3.11,<4.0"
 [tool.uv.workspace]
 members = ["packages/*"]
 
+[tool.pytest.ini_options]
+testpaths = [
+    "packages/busylight-core/tests",
+    "packages/busylight/tests",
+]
+pythonpath = [
+    "packages/busylight-core/tests",
+]
+
 [dependency-groups]
 dev = [
     "poethepoet",

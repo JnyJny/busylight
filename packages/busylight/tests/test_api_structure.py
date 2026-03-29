@@ -2,7 +2,7 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from src.busylight.api.main import app
+from busylight.api.main import app
 
 
 @pytest.fixture

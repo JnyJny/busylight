@@ -18,7 +18,7 @@ from busylight_core.vendors.muteme.muteme_base import MuteMeBase
 from busylight_core.vendors.plantronics.plantronics_base import PlantronicsBase
 from busylight_core.vendors.thingm.thingm_base import ThingMBase
 
-from .vendor_examples import HardwareCatalog
+from vendor_examples import HardwareCatalog
 
 VENDOR_SUBCLASSES = HardwareCatalog.keys()
 
