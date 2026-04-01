@@ -106,7 +106,8 @@ class Light(abc.ABC, TaskableMixin):
         #     name from the module name. Subclasses can
         #     and should override this method to provide
         #     a more accurate vendor name.
-        return cls.__module__.split(".")[-2].title()
+        parts = cls.__module__.split(".")
+        return parts[-2].title() if len(parts) >= 2 else "Unknown"
 
     @classmethod
     @cache

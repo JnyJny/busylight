@@ -390,7 +390,7 @@ class TestLightIntegration:
             # Test various properties and methods
             assert light.name == "MockLight"
             assert (
-                light.vendor() == "Tests"
+                light.vendor() == MockLightSubclass.vendor()
             )  # From module path (tests.test_light_comprehensive)
             assert isinstance(light.path, str)
             assert isinstance(light.platform, str)
@@ -472,7 +472,8 @@ class TestLightUdevRules:
         assert len(rule_list) == 3  # Comment + 2 rule formats
 
         # Check comment line
-        assert rule_list[0] == "# Tests MockLightSubclass udev rules"
+        vendor = MockLightSubclass.vendor()
+        assert rule_list[0] == f"# {vendor} MockLightSubclass udev rules"
 
         # Check USB subsystem rule
         expected_usb = 'SUBSYSTEMS=="usb", ATTRS{idVendor}=="1234", ATTRS{idProduct}=="5678", MODE="0666"'
