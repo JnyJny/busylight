@@ -166,7 +166,7 @@ Both packages are licensed under the [Apache License 2.0](LICENSE).
 [busylight-cli]: packages/busylight/
 [busylight-core]: packages/busylight-core/
 [busylight-cli-docs]: https://jnyjny.github.io/busylight/
-[busylight-core-docs]: https://jnyjny.github.io/busylight_core/
+[busylight-core-docs]: https://github.com/JnyJny/busylight/tree/main/packages/busylight-core#readme
 
 [uv-workspaces]: https://docs.astral.sh/uv/concepts/workspaces/
 [todbot]: https://github.com/todbot
