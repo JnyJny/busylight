@@ -52,8 +52,7 @@ jobs:
           enable-cache: true
 
       - name: Run CLI unit tests
-        working-directory: packages/busylight
-        run: uv run --all-extras poe test
+        run: uv run --all-extras pytest packages/busylight/tests/
 
   build:
     name: Build Package

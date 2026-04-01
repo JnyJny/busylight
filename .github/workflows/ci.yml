@@ -74,12 +74,10 @@ jobs:
           enable-cache: true
 
       - name: Run core unit tests
-        working-directory: packages/busylight-core
-        run: uv run --all-extras poe test
+        run: uv run --all-extras pytest packages/busylight-core/tests/
 
       - name: Run core doc tests
-        working-directory: packages/busylight-core
-        run: uv run --all-extras poe doc-test
+        run: uv run --all-extras pytest --markdown-docs packages/busylight-core/docs/ --ignore=packages/busylight-core/docs/gen_ref_pages.py
 
   test-cli:
     name: "CLI: Tests (${{ matrix.python-version }}, ${{ matrix.os }})"
@@ -105,8 +103,7 @@ jobs:
           enable-cache: true
 
       - name: Run CLI unit tests
-        working-directory: packages/busylight
-        run: uv run --all-extras poe test
+        run: uv run --all-extras pytest packages/busylight/tests/
 
   lint:
     name: Lint
@@ -122,7 +119,7 @@ jobs:
           enable-cache: true
 
       - name: Run ruff check
-        run: uv run ruff check .
+        run: uv run ruff check packages/
 
       - name: Run ruff format check
-        run: uv run ruff format --check .
+        run: uv run ruff format --check packages/

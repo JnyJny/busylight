@@ -52,12 +52,10 @@ jobs:
           enable-cache: true
 
       - name: Run unit tests
-        working-directory: packages/busylight-core
-        run: uv run --all-extras poe test
+        run: uv run --all-extras pytest packages/busylight-core/tests/
 
       - name: Run doc tests
-        working-directory: packages/busylight-core
-        run: uv run --all-extras poe doc-test
+        run: uv run --all-extras pytest --markdown-docs packages/busylight-core/docs/ --ignore=packages/busylight-core/docs/gen_ref_pages.py
 
   build:
     name: Build Package
@@ -177,8 +175,7 @@ jobs:
           enable-cache: true
 
       - name: Run CLI tests against new core
-        working-directory: packages/busylight
-        run: uv run --all-extras poe test
+        run: uv run --all-extras pytest packages/busylight/tests/
 
       - name: Report result
         if: always()
