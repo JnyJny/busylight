@@ -1,0 +1,158 @@
+name: "Release: busylight-cli"
+
+on:
+  push:
+    tags:
+      - 'busylight-cli/v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: read
+
+jobs:
+  get-python-versions:
+    name: Get Python test versions
+    runs-on: ubuntu-latest
+    outputs:
+      python-versions: ${{ steps.extract.outputs.versions }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Extract Python test versions
+        id: extract
+        run: |
+          if versions=$(uv run toml get --toml-path packages/busylight-core/pyproject.toml tool.busylight_core.ci.test-python-versions 2>/dev/null); then
+            echo "versions=$versions" >> $GITHUB_OUTPUT
+          else
+            echo 'versions=["3.11", "3.12", "3.13"]' >> $GITHUB_OUTPUT
+          fi
+
+  test:
+    name: "Test (${{ matrix.python-version }}, ${{ matrix.os }})"
+    needs: get-python-versions
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ${{ fromJSON(needs.get-python-versions.outputs.python-versions) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libudev-dev libusb-1.0-0-dev
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Run CLI unit tests
+        working-directory: packages/busylight
+        run: uv run --all-extras poe test
+
+  build:
+    name: Build Package
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Build package
+        run: uv build --package busylight-for-humans
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: cli-dist
+          path: dist/
+          retention-days: 1
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi-cli
+      url: https://pypi.org/project/busylight-for-humans
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: cli-dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: cli-dist
+          path: dist/
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Generate release notes
+        run: |
+          uv run git cliff --include-path 'packages/busylight/**' \
+            --latest --strip header > release_notes.md
+
+      - name: Update CHANGELOG
+        run: |
+          uv run git cliff --include-path 'packages/busylight/**' \
+            --output packages/busylight/CHANGELOG.md
+
+      - name: Commit updated CHANGELOG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/busylight/CHANGELOG.md
+          git diff --cached --quiet || git commit -m "docs(cli): update CHANGELOG"
+          git push origin HEAD:main
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"
+          bodyFile: "release_notes.md"
+          name: "busylight-cli ${{ github.ref_name }}"
+          tag: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generateReleaseNotes: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-docs:
+    name: Deploy CLI Documentation
+    needs: [publish, github-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger docs deployment
+        uses: peter-evans/repository-dispatch@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: release-cli
+          client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}"}'

@@ -103,8 +103,8 @@ _major_bump = "uv version --bump major"
 ## add, commit, tag and commit pyproject updated by bump
 
 _add = "git add pyproject.toml uv.lock"
-_commit = {shell = "git commit -m v`uv version --short`"}
-_tag = { shell = "git tag v`uv version --short`" }
+_commit = {shell = "git commit -m busylight-core/v`uv version --short`"}
+_tag = {shell = "git tag busylight-core/v`uv version --short`"}
 _push = "git push --all"
 _push_tags = "git push --tags"
 
@@ -127,10 +127,10 @@ publish.help = "[Publish] Patch release."
 
 # Release tasks
 
-changelog.cmd = "git cliff"
+changelog.cmd = "git cliff --include-path 'packages/busylight-core/**'"
 changelog.help = "[Release] Generate full changelog to stdout."
 
-release-notes.cmd = "git cliff --latest --strip header"
+release-notes.cmd = "git cliff --include-path 'packages/busylight-core/**' --latest --strip header"
 release-notes.help = "[Release] Generate release notes for the latest tag."
 
 # Clean

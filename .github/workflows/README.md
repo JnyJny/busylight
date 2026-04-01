@@ -1,102 +1,100 @@
 # GitHub Actions Workflows
 
-This directory contains optimized CI/CD workflows for testing, building,
-publishing, and documentation deployment.
+Monorepo CI/CD for busylight-core and busylight-cli (busylight-for-humans).
 
-## Workflow Architecture
-
-The release workflow follows an efficient pipeline structure:
+## Architecture
 
 ```
-test (matrix) → build → [publish, github-release] (parallel) → docs
-                ↓              ↓           ↓                     ↑
-          [artifacts]    (cached artifacts) (cached artifacts)  └─(both complete)
+PR / push to main
+  └─ ci.yml
+       ├─ detect-changes (path filters)
+       ├─ test-core (if core changed)
+       ├─ test-cli  (if cli or core changed)
+       └─ lint      (if anything changed)
+
+Tag: busylight-core/vX.Y.Z
+  └─ release-core.yaml
+       ├─ test (core matrix)
+       ├─ build
+       ├─ publish (PyPI) ──────┐
+       ├─ github-release ──────┼─ deploy-docs
+       └─ check-cli-compat    │  (repository_dispatch)
+
+Tag: busylight-cli/vX.Y.Z
+  └─ release-cli.yaml
+       ├─ test (cli matrix)
+       ├─ build
+       ├─ publish (PyPI) ──┐
+       └─ github-release ──┴─ deploy-docs
 ```
 
 ## Workflows
 
 ### ci.yml
-Continuous integration for every push to main and every PR targeting main.
 
-**Jobs:**
-1. **test** - Matrix testing (Ubuntu, macOS, Windows x Python versions):
-   - Unit tests: `pytest tests/`
-   - Doc tests: `pytest --markdown-docs docs/` (validates all Python code blocks in documentation against the real API using mock USB hardware from `docs/conftest.py`)
-2. **lint** - Ruff check and format verification
+Runs on every PR and push to main. Uses path filters to detect which
+packages changed and only runs the relevant test matrices. CLI tests
+also run when core changes (since CLI depends on core).
 
-**CI coverage by scenario:**
+Jobs: detect-changes, get-python-versions, test-core, test-cli, lint.
 
-| Scenario | Workflow | Unit Tests | Doc Tests | Timing |
-|----------|----------|-----------|-----------|--------|
-| Push to main | ci.yml | Yes | Yes | Post-hoc |
-| PR to main | ci.yml | Yes | Yes | Pre-merge (gate with branch protection) |
-| Tag push (release) | release.yaml | Yes | Yes | Pre-publish |
-| Push to testing | release.yaml | Yes | Yes | Post-hoc |
+### release-core.yaml
 
-**Note:** For PRs, CI results are advisory unless branch protection is enabled on main with required status checks. With branch protection, failing doc tests block the merge.
+Triggered by tags matching `busylight-core/v*`. Full test matrix,
+build, publish to PyPI, GitHub release with per-package changelog,
+docs deployment, and CLI compatibility check.
 
-### release.yaml
-Main CI/CD pipeline triggered on version tags (e.g., `v1.2.3`).
+The compatibility check runs CLI tests against the newly published
+core version and warns if they fail.
 
-**Stages:**
-1. **get-python-versions** - Extracts Python test versions from pyproject.toml
-2. **test** - Matrix testing across OS/Python versions (Ubuntu, macOS, Windows × extracted versions)
-3. **build** - Single package build, uploads artifacts for reuse
-4. **publish** - Publishes to PyPI using cached artifacts (parallel with github-release)
-5. **github-release** - Creates GitHub release with changelog (parallel with publish)
-6. **deploy-docs** - Triggers documentation deployment after successful release
+### release-cli.yaml
 
-**Key optimizations:**
-- Package built once and reused via artifact caching
-- Parallel execution of publish and release jobs
-- Consolidated changelog generation
-- Dynamic Python version matrix from pyproject.toml
-- ~3x faster than sequential builds
+Triggered by tags matching `busylight-cli/v*`. Same structure as
+core release but for the CLI package.
 
 ### docs.yml
-Documentation deployment workflow.
 
-**Triggers:**
-- Repository dispatch after successful releases
-- Manual workflow dispatch for ad-hoc builds
+Deploys documentation to GitHub Pages. Triggered by repository
+dispatch from release workflows or manual workflow dispatch.
 
-**Process:**
-- Builds MkDocs documentation
-- Deploys to GitHub Pages only after successful PyPI publish and GitHub release
+### auto-merge.yml
 
-## Workflow Communication
+Squash-merges PRs when JnyJny comments "LGTM".
 
-The two workflows communicate via GitHub's repository dispatch mechanism:
+## Tag Convention
 
-1. **release.yaml** → **docs.yml**: After successful publish and GitHub release, the `deploy-docs` job sends a `repository_dispatch` event with type `release-complete`
-2. **docs.yml** listens for this event and automatically builds/deploys documentation
-3. This ensures documentation is only rebuilt for actual releases, not every code change
+- Core releases: `busylight-core/vX.Y.Z`
+- CLI releases: `busylight-cli/vX.Y.Z`
 
-**Manual Override**: The docs workflow can also be triggered manually via `workflow_dispatch` for ad-hoc documentation updates without doing a release.
+Tags are created by `poe publish_patch|publish_minor|publish_major`
+in the respective package directory.
+
+## Release Flow
+
+1. `cd packages/busylight-core` (or `packages/busylight`)
+2. `poe publish_patch` (or `publish_minor` / `publish_major`)
+   - Preflight: verifies main branch + clean tree
+   - Bumps version in pyproject.toml
+   - Commits, tags with package prefix, pushes
+3. GitHub Actions picks up the tag and runs the release workflow
+4. Package is tested, built, published to PyPI
+5. GitHub release created with changelog
+6. Docs deployed
 
 ## Python Version Configuration
 
-The test matrix Python versions are configured in `pyproject.toml`:
+Test matrix versions are configured in busylight-core's pyproject.toml:
 
 ```toml
 [tool.busylight_core.ci]
 test-python-versions = ["3.11", "3.12", "3.13"]
 ```
 
-**Benefits:**
-- Single source of truth for Python test versions
-- Automatic CI updates when versions change
-- Graceful fallback to default versions if config missing
-
-**Fallback:** If the configuration section is missing, the workflow defaults to `["3.11", "3.12", "3.13"]`.
+Both packages share this configuration. Fallback: `["3.11", "3.12", "3.13"]`.
 
 ## Requirements
 
-The workflows require:
-- PyPI project with [trusted publisher][trusted-publisher] configured
-- Environment named "pypi" matching PyPI trusted publisher setup
-- GitHub Pages for documentation deployment (automatically enabled by docs workflow)
-
-<!-- End Links -->
-[pypi]: https://pypi.org
-[trusted-publisher]: https://docs.pypi.org/trusted-publishers/
+- PyPI trusted publisher configured for each package
+- Environments: `pypi-core` and `pypi-cli` matching trusted publisher setup
+- `GH_PAT` secret for changelog commits and auto-merge
+- GitHub Pages enabled (auto-enabled by docs workflow)

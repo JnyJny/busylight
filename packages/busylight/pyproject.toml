@@ -72,51 +72,78 @@ dev = [
 
 [tool.poe.tasks]
 
-sync.cmd = "uv sync --all-extras --all-packages"
+# Code Quality
 
-# testing
 _generate_coverage = "pytest --cov=./src/busylight --cov-report=html"
 _open_report = "open htmlcov/index.html"
-coverage = [ "_generate_coverage", "_open_report"]
+coverage.sequence = ["_generate_coverage", "_open_report"]
+coverage.help = "[Code Quality] Open generated coverage report in a browser."
 
-# code quality
+ruff-check.cmd = "ruff check src tests"
+ruff-check.help = "[Code Quality] Run ruff check on source."
 
-check.cmd = "ruff check src tests"
-format.cmd = "ruff format src tests"
+ruff-format.cmd = "ruff format src tests"
+ruff-format.help = "[Code Quality] Run ruff format on source."
 
-ruff.sequence = [ "check", "format"]
+ruff.sequence = ["ruff-check", "ruff-format"]
+ruff.help = "[Code Quality] Run Ruff check and format on source."
 
-# update version in pyproject
+check.sequence = ["ruff"]
+check.help = "[Code Quality] Run all code quality tools on source."
+
+test.cmd = "pytest tests/"
+test.help = "[Code Quality] Run unit tests."
+
+qc.sequence = ["test", "check"]
+qc.help = "[Code Quality] Run all code quality tasks."
+
+# Publish tasks
+
+_preflight.shell = """
+if [ "$(git branch --show-current)" != "main" ]; then
+  echo "ERROR: publish must run from main branch" >&2
+  exit 1
+fi
+if [ -n "$(git status --porcelain)" ]; then
+  echo "ERROR: working tree is dirty" >&2
+  exit 1
+fi
+"""
+_preflight.help = "Verify on main branch with clean working tree."
 
 _patch_bump = "uv version --bump patch"
 _minor_bump = "uv version --bump minor"
 _major_bump = "uv version --bump major"
 
-# add, commit, tag and commit pyproject updated by bump
-
 _add = "git add pyproject.toml uv.lock"
-_commit = {shell = "git commit -m v`uv version --short`"}
-_tag = { shell = "git tag v`uv version --short`" }
+_commit = {shell = "git commit -m busylight-cli/v`uv version --short`"}
+_tag = {shell = "git tag busylight-cli/v`uv version --short`"}
 _push = "git push --all"
 _push_tags = "git push --tags"
 
 _update_pyproject = ["_add", "_commit", "_tag", "_push_tags", "_push"]
 
-publish_patch= ["_patch_bump", "_update_pyproject"]
-publish_minor= ["_minor_bump", "_update_pyproject"]
-publish_major= ["_major_bump", "_update_pyproject"]
+publish_patch = ["_preflight", "_patch_bump", "_update_pyproject"]
+publish_minor = ["_preflight", "_minor_bump", "_update_pyproject"]
+publish_major = ["_preflight", "_major_bump", "_update_pyproject"]
 
 publish = {ref = "publish_patch"}
 
-# release
+# Release
 
-changelog.cmd = "git cliff"
+changelog.cmd = "git cliff --include-path 'packages/busylight/**'"
 changelog.help = "[Release] Generate full changelog to stdout."
 
-release-notes.cmd = "git cliff --latest --strip header"
+release-notes.cmd = "git cliff --include-path 'packages/busylight/**' --latest --strip header"
 release-notes.help = "[Release] Generate release notes for the latest tag."
 
-# clean
-[[tool.poe.tasks.clean]]
-cmd = "rm -rf htmlcov dist busylight.egg-info *.log"
+# Clean
+
+clean.cmd = "rm -rf htmlcov dist busylight.egg-info *.log"
+clean.help = "[Clean] Remove testing, build and code quality artifacts."
+
+# Misc
+
+tree.cmd = "tree . -a -I .venv -I .git -I .ruff_cache"
+tree.help = "List project files in tree format."
 
