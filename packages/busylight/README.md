@@ -24,7 +24,7 @@ API to turn lights on/off, change colors, and apply effects.
 Built on [busylight-core][busylight-core], the Python library for USB
 status light communication.
 
-![All Supported Lights][DEMO]
+<img alt="All Supported Lights" src="https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/HerdOfLights.png">
 <p align="left">
 
 Flag<sup>1</sup>,
