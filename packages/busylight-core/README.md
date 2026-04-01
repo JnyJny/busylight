@@ -166,7 +166,7 @@ details.
 [release]: https://github.com/JnyJny/busylight_core/actions/workflows/release.yaml
 [badge-pypi-version]: https://img.shields.io/pypi/v/busylight_core
 [badge-release-date]: https://img.shields.io/github/release-date/JnyJny/busylight_core
-[badge-python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight_core%2Fmain%2Fpyproject.toml
+[badge-python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmain%2Fpackages%2Fbusylight-core%2Fpyproject.toml
 [badge-license]: https://img.shields.io/github/license/JnyJny/busylight_core
 [badge-monthly-downloads]: https://img.shields.io/pypi/dm/busylight_core
 [poe-the-poet]: https://poethepoet.natn.io
@@ -178,5 +178,5 @@ details.
 [docs-quick-start]: https://jnyjny.github.io/busylight-core/getting-started/installation/
 [docs-feature-guide]: https://jnyjny.github.io/busylight-core/user-guide/features/
 [docs-api-reference]: https://jnyjny.github.io/busylight-core/reference/
-[docs-contributing]: https://github.com/JnyJny/busylight-core/blob/main/CONTRIBUTING.md
+[docs-contributing]: https://github.com/JnyJny/busylight/blob/main/packages/busylight-core/CONTRIBUTING.md
 

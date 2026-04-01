@@ -146,31 +146,31 @@ Thank you to [@todbot][todbot] and [ThingM][thingm] for graciously gifting
 
 <!-- Links -->
 [busylight-for-humans]: https://github.com/JnyJny/busylight
-[busylight-core]: https://github.com/JnyJny/busylight-core
+[busylight-core]: https://github.com/JnyJny/busylight/tree/main/packages/busylight-core
 [docs]: https://jnyjny.github.io/busylight/
 [docs-installation]: https://jnyjny.github.io/busylight/installation/
 [docs-cli]: https://jnyjny.github.io/busylight/cli/
 [docs-api]: https://jnyjny.github.io/busylight/api/
 [docs-devices]: https://jnyjny.github.io/busylight/devices/
 [docs-integration]: https://jnyjny.github.io/busylight/api/integration/
-[contributing]: https://github.com/JnyJny/busylight/blob/main/CONTRIBUTING.md
+[contributing]: https://github.com/JnyJny/busylight/blob/main/packages/busylight/CONTRIBUTING.md
 [issues]: https://github.com/JnyJny/busylight/issues
-[device-request]: https://github.com/JnyJny/busylight-core/issues/new?template=4_new_device_request.yaml
+[device-request]: https://github.com/JnyJny/busylight/issues/new?template=4_new_device_request.yaml
 [discussions]: https://github.com/JnyJny/busylight/discussions
 [uv-docs]: https://docs.astral.sh/uv/
 [todbot]: https://github.com/todbot
 [thingm]: https://thingm.com
 
 <!-- Assets -->
-[LOGO]: https://raw.githubusercontent.com/JnyJny/busylight/main/assets/BusyLightForHumans.png
-[DEMO]: https://raw.githubusercontent.com/JnyJny/busylight/main/assets/HerdOfLights.png
+[LOGO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/BusyLightForHumans.png
+[DEMO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/HerdOfLights.png
 
 <!-- Badges -->
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
-[python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmain%2Fpyproject.toml
+[python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmain%2Fpackages%2Fbusylight%2Fpyproject.toml
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
 [code-style]: https://img.shields.io/badge/ruff-yellow?style=flat-square&label=Style&link=https%3A%2F%2Fastral.sh%2Fruff
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
 [release-date]: https://img.shields.io/github/release-date/JnyJny/busylight
-[release-badge]: https://github.com/JnyJny/busylight/actions/workflows/release.yaml/badge.svg
-[release]: https://github.com/JnyJny/busylight/actions/workflows/release.yaml
+[release-badge]: https://github.com/JnyJny/busylight/actions/workflows/release-cli.yaml/badge.svg
+[release]: https://github.com/JnyJny/busylight/actions/workflows/release-cli.yaml
