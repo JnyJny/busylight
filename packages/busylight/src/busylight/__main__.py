@@ -23,7 +23,6 @@ Example:
         busylight list
 """
 
-
 import typer
 from loguru import logger
 

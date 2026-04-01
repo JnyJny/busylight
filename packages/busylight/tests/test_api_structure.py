@@ -211,9 +211,7 @@ class TestErrorHandling:
             error_data = response.json()
             # FastAPI uses 'detail' field for error messages
             assert (
-                "error" in error_data
-                or "message" in error_data
-                or "detail" in error_data
+                "error" in error_data or "message" in error_data or "detail" in error_data
             )
 
     def test_validation_errors(self, client):

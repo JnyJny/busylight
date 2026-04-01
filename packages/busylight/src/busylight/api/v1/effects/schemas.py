@@ -54,9 +54,7 @@ class EffectOperationResponse(BaseModel):
     effect_name: str = Field(description="Name of effect applied")
     light_id: int | str = Field(description="Light ID or 'all'")
     color: str | None = Field(default=None, description="Color used")
-    rgb: tuple[int, int, int] | None = Field(
-        default=None, description="RGB values used"
-    )
+    rgb: tuple[int, int, int] | None = Field(default=None, description="RGB values used")
     dim: float | None = Field(default=None, description="Brightness level used")
     speed: str | None = Field(default=None, description="Speed used")
     count: int | None = Field(default=None, description="Count used")

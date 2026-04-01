@@ -25,12 +25,8 @@ class APISettings(BaseModel):
         default_factory=lambda: version("busylight-for-humans"),
         description="Package version",
     )
-    username: str | None = Field(
-        default=None, description="API username for basic auth"
-    )
-    password: str | None = Field(
-        default=None, description="API password for basic auth"
-    )
+    username: str | None = Field(default=None, description="API username for basic auth")
+    password: str | None = Field(default=None, description="API password for basic auth")
     cors_origins: list[str] = Field(
         default_factory=list, description="Allowed CORS origins"
     )
@@ -73,12 +69,8 @@ def get_api_settings_from_env() -> APISettings:
     """Create API settings from environment variables."""
     try:
         debug = environ.get("BUSYLIGHT_DEBUG", "false").lower() in ("true", "1", "yes")
-        username = environ.get("BUSYLIGHT_API_USER") or environ.get(
-            "BUSYLIGHT_USERNAME"
-        )
-        password = environ.get("BUSYLIGHT_API_PASS") or environ.get(
-            "BUSYLIGHT_PASSWORD"
-        )
+        username = environ.get("BUSYLIGHT_API_USER") or environ.get("BUSYLIGHT_USERNAME")
+        password = environ.get("BUSYLIGHT_API_PASS") or environ.get("BUSYLIGHT_PASSWORD")
         cors_origins_str = (
             environ.get("BUSYLIGHT_API_CORS_ORIGINS_LIST")
             or environ.get("BUSYLIGHT_CORS_ORIGINS")

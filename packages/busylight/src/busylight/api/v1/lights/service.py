@@ -1,6 +1,5 @@
 """Light Business Logic Service."""
 
-
 from busylight_core import Light
 
 from ....color import colortuple_to_name, parse_color_string

@@ -21,7 +21,6 @@ Example:
         busylight supported --verbose
 """
 
-
 import typer
 from busylight_core import Light, NoLightsFoundError
 from loguru import logger

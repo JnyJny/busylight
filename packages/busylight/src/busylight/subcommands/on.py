@@ -100,17 +100,13 @@ def activate_lights(
                         break
 
                     try:
-                        await asyncio.wait(
-                            all_tasks, return_when=asyncio.FIRST_COMPLETED
-                        )
+                        await asyncio.wait(all_tasks, return_when=asyncio.FIRST_COMPLETED)
                     except KeyboardInterrupt:
                         for light in selection.lights:
                             light.cancel_tasks()
                         raise
 
-            logger.info(
-                "Kuando lights detected, keeping process alive (Ctrl+C to exit)"
-            )
+            logger.info("Kuando lights detected, keeping process alive (Ctrl+C to exit)")
             asyncio.run(turn_on_and_wait())
         else:
             selection.turn_on(color, led=led)

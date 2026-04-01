@@ -60,9 +60,7 @@ class LightOperationResponse(BaseModel):
     action: str = Field(description="Action performed")
     light_id: int | str = Field(description="Light ID or 'all'")
     color: str | None = Field(default=None, description="Color used")
-    rgb: tuple[int, int, int] | None = Field(
-        default=None, description="RGB values used"
-    )
+    rgb: tuple[int, int, int] | None = Field(default=None, description="RGB values used")
     dim: float | None = Field(default=None, description="Brightness level used")
     led: int | None = Field(default=None, description="LED index used")
     speed: str | None = Field(default=None, description="Speed used")

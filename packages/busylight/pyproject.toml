@@ -61,6 +61,31 @@ module-name = "busylight"
 [tool.uv.sources]
 busylight-core = { workspace = true }
 
+[tool.ruff]
+fix = false
+line-length = 90
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = [
+  # comparison-to-singleton (E711, E712) -- legacy code style
+  "E711",
+  "E712",
+  # type-comparison (E721) -- legacy code style
+  "E721",
+  # line-too-long (E501) -- handled by formatter
+  "E501",
+  # unsorted-imports (I001) -- defer to a dedicated cleanup pass
+  "I001",
+  # unused-variable (F841) -- some are intentional side-effect calls
+  "F841",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = [
+  "F841",
+]
+
 
 [dependency-groups]
 dev = [

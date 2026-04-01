@@ -70,9 +70,7 @@ def test_colortuple_to_name(value: Tuple[int, int, int], expected: str) -> None:
 @pytest.mark.parametrize(
     "color,expected", [((0, 0, 1), "#000001"), ((255, 254, 253), "#fffefd")]
 )
-def test_colortuple_to_name_unknown_color(
-    color: Tuple[int, int, int], expected
-) -> None:
+def test_colortuple_to_name_unknown_color(color: Tuple[int, int, int], expected) -> None:
     result = colortuple_to_name(color)
     assert result == expected
 

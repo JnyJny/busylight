@@ -1,6 +1,5 @@
 """Rainbow Command Line Interface"""
 
-
 import typer
 from busylight_core import NoLightsFoundError
 from loguru import logger
