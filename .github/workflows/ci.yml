@@ -122,6 +122,9 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Install workspace packages
+        run: uv sync --all-extras --all-packages
+
       - name: Run ruff check
         run: uv run ruff check packages/
 
