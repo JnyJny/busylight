@@ -73,11 +73,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
+      - name: Install workspace
+        run: uv sync --all-extras --all-packages
+
       - name: Run core unit tests
-        run: uv run --all-extras pytest packages/busylight-core/tests/
+        run: uv run pytest packages/busylight-core/tests/
 
       - name: Run core doc tests
-        run: uv run --all-extras pytest --markdown-docs packages/busylight-core/docs/ --ignore=packages/busylight-core/docs/gen_ref_pages.py
+        run: uv run pytest --markdown-docs packages/busylight-core/docs/ --ignore=packages/busylight-core/docs/gen_ref_pages.py
 
   test-cli:
     name: "CLI: Tests (${{ matrix.python-version }}, ${{ matrix.os }})"
@@ -102,8 +105,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
+      - name: Install workspace
+        run: uv sync --all-extras --all-packages
+
       - name: Run CLI unit tests
-        run: uv run --all-extras pytest packages/busylight/tests/
+        run: uv run pytest packages/busylight/tests/
 
   lint:
     name: Lint

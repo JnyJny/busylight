@@ -51,11 +51,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
+      - name: Install workspace
+        run: uv sync --all-extras --all-packages
+
       - name: Run unit tests
-        run: uv run --all-extras pytest packages/busylight-core/tests/
+        run: uv run pytest packages/busylight-core/tests/
 
       - name: Run doc tests
-        run: uv run --all-extras pytest --markdown-docs packages/busylight-core/docs/ --ignore=packages/busylight-core/docs/gen_ref_pages.py
+        run: uv run pytest --markdown-docs packages/busylight-core/docs/ --ignore=packages/busylight-core/docs/gen_ref_pages.py
 
   build:
     name: Build Package
@@ -174,8 +177,11 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Install workspace
+        run: uv sync --all-extras --all-packages
+
       - name: Run CLI tests against new core
-        run: uv run --all-extras pytest packages/busylight/tests/
+        run: uv run pytest packages/busylight/tests/
 
       - name: Report result
         if: always()

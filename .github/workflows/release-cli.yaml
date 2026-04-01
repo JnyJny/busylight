@@ -51,8 +51,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
+      - name: Install workspace
+        run: uv sync --all-extras --all-packages
+
       - name: Run CLI unit tests
-        run: uv run --all-extras pytest packages/busylight/tests/
+        run: uv run pytest packages/busylight/tests/
 
   build:
     name: Build Package
