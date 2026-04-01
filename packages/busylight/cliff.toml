@@ -64,7 +64,7 @@ commit_parsers = [
   { message = ".*", group = "Other" },
 ]
 filter_commits = false
-tag_pattern = "v[0-9].*"
+tag_pattern = "busylight-cli/v[0-9].*"
 skip_tags = ""
 ignore_tags = ""
 topo_order = false

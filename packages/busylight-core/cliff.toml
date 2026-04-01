@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.\n
 """
 body = """
 {%- macro remote_url() -%}
-  https://github.com/JnyJny/busylight-core
+  https://github.com/JnyJny/busylight
 {%- endmacro -%}
 
 {% if version -%}
@@ -64,7 +64,7 @@ commit_parsers = [
   { message = ".*", group = "Other" },
 ]
 filter_commits = false
-tag_pattern = "v[0-9].*"
+tag_pattern = "busylight-core/v[0-9].*"
 skip_tags = ""
 ignore_tags = ""
 topo_order = false
