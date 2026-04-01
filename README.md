@@ -71,7 +71,7 @@ Multi-LED targeting supported on BlinkStick variants, Luxafor Flag, and Blink(1)
 
 This repository contains two packages that work together:
 
-### [Busylight for Humans][busylight-cli]  &mdash; CLI & Web API
+### [Busylight for Humans&#8482;][busylight-cli]  &mdash; CLI & Web API
 
 ![PyPI version](https://img.shields.io/pypi/v/busylight-for-humans)
 ![Monthly downloads](https://img.shields.io/pypi/dm/busylight-for-humans)
@@ -103,7 +103,7 @@ curl "http://localhost:8000/lights/off"
 
 [Full documentation][busylight-cli-docs]
 
-### [busylight-core][busylight-core] &mdash; Python Library
+### [Busylight Core for Humans&#8482;][busylight-core] &mdash; Python Library
 
 ![PyPI version](https://img.shields.io/pypi/v/busylight-core)
 ![Monthly downloads](https://img.shields.io/pypi/dm/busylight-core)

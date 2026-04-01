@@ -1,20 +1,28 @@
-<!-- agile-innovative blink(1) blinkstick bluetooth blynclight bt busylight busylight-alpha busylight-omega compulab embrava epos fit-statusb flag hid kuando luxafor mute muteme mutesync omega orb plantronics serial thingM usb --> 
+<!-- agile-innovative blink(1) blinkstick bluetooth blynclight busylight busylight-alpha busylight-omega compulab embrava epos fit-statusb flag hid kuando luxafor mute muteme mutesync omega orb plantronics serial thingM usb -->
 
 ![BusyLight Project Logo][LOGO]
-<br>
+
+<p align="center">
+<strong>Control USB LED status lights from the command line and HTTP.</strong><br>
+26 devices &middot; 9 vendors &middot; CLI &middot; HTTP API
+</p>
+
+<p align="center">
 
 [![Test & Publish][release-badge]][release]
 ![Version][pypi-version]
-![Release Date][release-date]
 ![Python Version][python-version]
 ![License][license]
-![Code Style: ruff][code-style]
 ![Monthly Downloads][monthly-downloads]
-<br>
 
-[BusyLight for Humans][busylight-for-humans] controls USB LED lights
-from multiple vendors. Use the command-line interface or HTTP API to
-turn lights on/off, change colors, and apply effects.
+</p>
+
+[BusyLight for Humans&#8482;][busylight-for-humans] controls USB LED
+lights from multiple vendors. Use the command-line interface or HTTP
+API to turn lights on/off, change colors, and apply effects.
+
+Built on [busylight-core][busylight-core], the Python library for USB
+status light communication.
 
 ![All Supported Lights][DEMO]
 <p align="left">
@@ -35,61 +43,28 @@ MuteSync<sup>13</sup>,
 Status Indicator<sup>14</sup>
 </p>
 
-## What is BusyLight?
+## Quick Start
 
-BusyLight provides simple control over USB LED status lights to show your
-availability, build status, system health, or any other visual indicator.
-Perfect for home offices, development workflows, and team collaboration.
+```bash
+# Turn on a green light right now
+uvx --from busylight-for-humans busylight on
 
-**Key Features:**
-- **26 supported devices** from 9 vendors (Blink1, BlinkStick, Luxafor, etc.)
-- **Command-line interface** with intuitive color and effect controls
-- **HTTP API** with full documentation for automation and integration
-- **Multi-LED targeting** for devices with multiple independent LEDs
-- **Cross-platform** support for macOS and Linux (and maybe Windows, it's spotty).
-
-## Supported Hardware
-
-| **Vendor** | **Models** | **LED Support** |
-|------------|------------|-----------------|
-| **Agile Innovative** | BlinkStick, BlinkStick Pro, BlinkStick Square, BlinkStick Strip, BlinkStick Nano, BlinkStick Flex | Multi-LED targeting |
-| **Compulab** | fit-statUSB | Single LED |
-| **EPOS** | Busylight | Single LED |
-| **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus, Blynclight BLYNCUSB10, Blynclight BLYNCUSB20 | Single LED |
-| **Kuando** | Busylight Alpha, Busylight Omega | Single LED |
-| **Luxafor** | Flag, Orb, Mute, Busy Tag, Bluetooth variants | Flag: Multi-LED, Others: Single LED |
-| **MuteMe** | MuteMe Original, Mute Mini, MuteSync | Single LED |
-| **Plantronics** | Status Indicator | Single LED |
-| **ThingM** | Blink(1), Blink(1) mk2 | mk2: Multi-LED |
-
-📖 **[Device setup guides →][docs-devices]**
+# Red, blinking, then off
+uvx --from busylight-for-humans busylight blink red
+uvx --from busylight-for-humans busylight off
+```
 
 ## Installation
 
-### Basic Install (CLI only)
 ```bash
-# Using uvx (recommended)
-uvx --from busylight-for-humans busylight list
-```
-
-```bash
-# Using pip
+# Basic install (CLI only)
 pip install busylight-for-humans
-```
 
-### Web API Install
-```bash
-# Using uvx
-uvx --from "busylight-for-humans[webapi]" busyserve
-```
-
-```bash
-# Using pip
+# With web API support
 pip install busylight-for-humans[webapi]
 ```
 
-### Linux Setup
-Linux requires udev rules for USB device access:
+**Linux** requires udev rules for USB device access:
 ```bash
 busylight udev-rules -o 99-busylights.rules
 sudo cp 99-busylights.rules /etc/udev/rules.d/
@@ -97,24 +72,39 @@ sudo udevadm control -R
 # Unplug and reconnect your device
 ```
 
-## Quick Start
+## Supported Hardware
 
-### Command Line
+| Vendor | Models |
+|--------|--------|
+| **Agile Innovative** | BlinkStick, BlinkStick Pro, Square, Strip, Nano, Flex |
+| **CompuLab** | fit-statUSB |
+| **EPOS** | Busylight |
+| **Embrava** | Blynclight, Blynclight Mini, Blynclight Plus, BLYNCUSB10, BLYNCUSB20 |
+| **Kuando** | Busylight Alpha, Busylight Omega |
+| **Luxafor** | Flag, Orb, Mute, Busy Tag, Bluetooth |
+| **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync |
+| **Plantronics** | Status Indicator |
+| **ThingM** | Blink(1), Blink(1) mk2 |
+
+Multi-LED targeting supported on BlinkStick variants, Luxafor Flag,
+and Blink(1) mk2.
+
+## Command Line
+
 ```bash
-# Basic usage
-busylight on              # Green light
-busylight on red          # Red light
-busylight blink blue      # Blinking blue
-busylight off             # Turn off
+busylight on              # green light
+busylight on red          # red light
+busylight blink blue      # blinking blue
+busylight rainbow         # cycle through colors
+busylight off             # turn off
 
-# Multi-LED devices (Blink1 mk2, BlinkStick, etc.)
-busylight on red --led 1          # First LED only
-busylight on blue --led 2         # Second LED only
-busylight rainbow --led 1         # Rainbow on first LED
-busylight pulse green --led 2     # Pulse on second LED
+# Multi-LED devices
+busylight on red --led 1  # first LED only
+busylight on blue --led 2 # second LED only
 ```
 
-### Web API
+## Web API
+
 ```bash
 # Start the server
 busyserve
@@ -123,62 +113,38 @@ busyserve
 curl "http://localhost:8000/light/0/on?color=red"
 curl "http://localhost:8000/light/0/blink?color=blue&count=5"
 curl "http://localhost:8000/lights/off"
-
-# Multi-LED targeting
-curl "http://localhost:8000/lights/on?color=red&led=1"
-curl "http://localhost:8000/lights/rainbow?led=2"
 ```
 
-## Documentation
+## Platform Support
 
-📖 **[Complete Documentation →][docs]**
-
-- **[Installation Guide][docs-installation]** - Detailed setup for all platforms
-- **[CLI Reference][docs-cli]** - All commands, options, and examples
-- **[Web API Guide][docs-api]** - REST endpoints and integration examples
-- **[Device Support][docs-devices]** - Full compatibility matrix and LED targeting
-- **[Integration Examples][docs-integration]** - CI/CD, monitoring, and automation
+- **macOS** -- works out of the box
+- **Linux** -- requires udev rules (see Installation)
+- **Windows** -- may work, untested, patches welcome
 
 ## Contributing
 
-🛠️ **[Contributing Guide →][contributing]**
-
-- Development environment setup
-- Testing and code quality guidelines
-- Architecture overview and design patterns
-- Pull request process and coding standards
-
-## Support
-
-- **[Report Issues][issues]** - Bug reports and feature requests
-- **[Request Device Support][device-request]** - New hardware support
-- **[Discussions][discussions]** - Community help and questions
+Contributions welcome. See [CONTRIBUTING.md][contributing] for
+development setup and guidelines. This project is part of a
+[uv workspace][uv-workspaces] monorepo.
 
 ## Gratitude
 
-Thank you to [@todbot][todbot] and [ThingM][thingm] for graciously gifting
-`blink(1) mk3` lights to support this project!
+Thank you to [@todbot][todbot] and [ThingM][thingm] for gifting
+`blink(1) mk3` lights to support this project.
 
-<hr>
+## License
+
+[Apache License 2.0](https://github.com/JnyJny/busylight/blob/main/LICENSE)
 
 <!-- Links -->
-[busylight-for-humans]: https://github.com/JnyJny/busylight
-[busylight-core]: https://github.com/JnyJny/busylight/tree/main/packages/busylight-core
-[docs]: https://jnyjny.github.io/busylight/
-[docs-installation]: https://jnyjny.github.io/busylight/installation/
-[docs-cli]: https://jnyjny.github.io/busylight/cli/
-[docs-api]: https://jnyjny.github.io/busylight/api/
-[docs-devices]: https://jnyjny.github.io/busylight/devices/
-[docs-integration]: https://jnyjny.github.io/busylight/api/integration/
+[busylight-for-humans]: https://github.com/JnyJny/busylight/tree/main/packages/busylight
+[busylight-core]: https://pypi.org/project/busylight-core/
 [contributing]: https://github.com/JnyJny/busylight/blob/main/packages/busylight/CONTRIBUTING.md
-[issues]: https://github.com/JnyJny/busylight/issues
-[device-request]: https://github.com/JnyJny/busylight/issues/new?template=4_new_device_request.yaml
-[discussions]: https://github.com/JnyJny/busylight/discussions
-[uv-docs]: https://docs.astral.sh/uv/
+[uv-workspaces]: https://docs.astral.sh/uv/concepts/workspaces/
 [todbot]: https://github.com/todbot
 [thingm]: https://thingm.com
 
-<!-- Assets -->
+<!-- Assets (absolute URLs for PyPI rendering) -->
 [LOGO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/BusyLightForHumans.png
 [DEMO]: https://raw.githubusercontent.com/JnyJny/busylight/main/packages/busylight/assets/HerdOfLights.png
 
@@ -186,8 +152,6 @@ Thank you to [@todbot][todbot] and [ThingM][thingm] for graciously gifting
 [pypi-version]: https://img.shields.io/pypi/v/busylight-for-humans
 [python-version]: https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2FJnyJny%2Fbusylight%2Fmain%2Fpackages%2Fbusylight%2Fpyproject.toml
 [license]: https://img.shields.io/pypi/l/busylight-for-humans
-[code-style]: https://img.shields.io/badge/ruff-yellow?style=flat-square&label=Style&link=https%3A%2F%2Fastral.sh%2Fruff
 [monthly-downloads]: https://img.shields.io/pypi/dm/busylight-for-humans
-[release-date]: https://img.shields.io/github/release-date/JnyJny/busylight
 [release-badge]: https://github.com/JnyJny/busylight/actions/workflows/release-cli.yaml/badge.svg
 [release]: https://github.com/JnyJny/busylight/actions/workflows/release-cli.yaml
