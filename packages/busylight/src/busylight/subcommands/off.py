@@ -18,10 +18,9 @@ Example:
 """
 
 import typer
-from busylight_core import LightUnavailableError, NoLightsFoundError
+from busylight_core import NoLightsFoundError
 from loguru import logger
 
-from ..callbacks import string_to_scaled_color
 from .helpers import get_light_selection
 
 off_cli = typer.Typer()

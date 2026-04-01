@@ -1,6 +1,6 @@
 """Test Color Handling"""
 
-from typing import List, Tuple
+from typing import Tuple
 
 import pytest
 from busylight.color import (

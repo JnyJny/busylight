@@ -1,6 +1,5 @@
 """Tests for Speed enum functionality."""
 
-import pytest
 from busylight.speed import Speed
 
 

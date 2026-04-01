@@ -7,7 +7,7 @@ from busylight_core.mixins.taskable import TaskPriority
 from .effect import BaseEffect
 
 if TYPE_CHECKING:
-    from busylight_core import Light
+    pass
 
 
 class Gradient(BaseEffect):

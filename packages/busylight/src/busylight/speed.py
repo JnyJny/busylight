@@ -1,6 +1,6 @@
 """Describe how often to change colors."""
 
-from enum import Enum, auto
+from enum import Enum
 from functools import cached_property
 
 

@@ -21,10 +21,9 @@ Example:
         busylight supported --verbose
 """
 
-from typing import Optional
 
 import typer
-from busylight_core import Light, LightUnavailableError, NoLightsFoundError
+from busylight_core import Light, NoLightsFoundError
 from loguru import logger
 
 from .helpers import get_light_selection

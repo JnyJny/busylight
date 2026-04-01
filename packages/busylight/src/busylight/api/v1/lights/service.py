@@ -1,12 +1,10 @@
 """Light Business Logic Service."""
 
-from typing import Any
 
 from busylight_core import Light
 
 from ....color import colortuple_to_name, parse_color_string
 from ....controller import LightController, LightSelection
-from ....speed import Speed
 from ...exceptions import LightNotFoundError, NoLightsAvailableError
 from .schemas import LightHardwareInfo, LightOperationResponse, LightStatus
 

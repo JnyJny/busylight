@@ -4,7 +4,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from ....controller import LightController
 from ...config import APISettings, get_settings
 from ...dependencies import Controller
 from .schemas import ApiInfo, HealthStatus

@@ -24,11 +24,10 @@ from __future__ import annotations
 
 import asyncio
 import re
-from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Iterator, Pattern
 
-from busylight_core import Light, LightUnavailableError, NoLightsFoundError
+from busylight_core import Light, LightUnavailableError
 from loguru import logger
 
 from .effects import Effects

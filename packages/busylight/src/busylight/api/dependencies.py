@@ -14,7 +14,7 @@ from secrets import compare_digest
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, Request, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.security import HTTPBasic
 
 from ..controller import LightController
 from .config import APISettings, get_settings

@@ -9,10 +9,14 @@ This module provides a restructured API following FastAPI best practices:
 - Modern patterns (dependency injection, Pydantic models, proper HTTP methods)
 """
 
-from loguru import logger
-
 from .busylight_api import busylightapi as legacy_busylightapi
 from .main import app as busylightapi
 from .models import EndPoint, LightDescription, LightOperation
 
-__all__ = ["busylightapi", "legacy_busylightapi"]
+__all__ = [
+    "busylightapi",
+    "legacy_busylightapi",
+    "EndPoint",
+    "LightDescription",
+    "LightOperation",
+]

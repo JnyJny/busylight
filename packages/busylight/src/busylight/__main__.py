@@ -23,15 +23,12 @@ Example:
         busylight list
 """
 
-from typing import Optional
 
 import typer
 from loguru import logger
 
 from . import __version__
-from .callbacks import string_to_scaled_color
 from .global_options import GlobalOptions
-from .speed import Speed
 from .subcommands import subcommands
 
 cli = typer.Typer()

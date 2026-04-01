@@ -9,7 +9,7 @@ from loguru import logger
 from .effect import BaseEffect
 
 if TYPE_CHECKING:
-    from busylight_core import Light
+    pass
 
 
 class Spectrum(BaseEffect):

@@ -3,7 +3,7 @@
 from typing import Optional
 
 import typer
-from busylight_core import LightUnavailableError, NoLightsFoundError
+from busylight_core import NoLightsFoundError
 from loguru import logger
 
 from busylight.callbacks import string_to_scaled_color

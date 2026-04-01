@@ -1,6 +1,6 @@
 """ """
 
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, Tuple
 
 import pytest
 from busylight.api.models import EndPoint, LightDescription, LightOperation

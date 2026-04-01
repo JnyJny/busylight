@@ -2,7 +2,6 @@
 
 from unittest.mock import Mock, patch
 
-import pytest
 from busylight.controller import LightController, LightSelection
 
 
