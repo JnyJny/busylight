@@ -3,6 +3,7 @@
 from collections.abc import Callable
 
 import pytest
+from vendor_examples import HardwareCatalog
 
 from busylight_core import HardwareUnsupportedError, NoLightsFoundError
 from busylight_core.hardware import Hardware
@@ -17,8 +18,6 @@ from busylight_core.vendors.luxafor.luxafor_base import LuxaforBase
 from busylight_core.vendors.muteme.muteme_base import MuteMeBase
 from busylight_core.vendors.plantronics.plantronics_base import PlantronicsBase
 from busylight_core.vendors.thingm.thingm_base import ThingMBase
-
-from vendor_examples import HardwareCatalog
 
 VENDOR_SUBCLASSES = HardwareCatalog.keys()
 

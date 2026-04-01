@@ -209,11 +209,17 @@ lint.ignore = [
   # missing-type-function-argument (ANN001)
   "ANN001",
   # missing-return-type-special-method (ANN204)
-  "ANN204"
+  "ANN204",
+  # str-enum-inheritance (UP042) -- StrEnum requires Python 3.11+
+  "UP042",
+  # replace-bin-call (FURB116) -- current form is clearer with zfill
+  "FURB116",
  ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
+  # implicit-namespace-package (INP001) -- intentionally no __init__.py
+  "INP001",
   # line-too-long (E501)
   "E501",
   # use-of-assert (S101)
@@ -224,6 +230,10 @@ lint.ignore = [
   "F811",
   # local-variable-is-assigned-but-never-used (F841)
   "F841",
+  # regex-metacharacter-in-match (RUF043)
+  "RUF043",
+  # unnecessary-lambda (PLW0108)
+  "PLW0108",
 ]
 "docs/conftest.py" = [
   # Test infrastructure: relax annotation, docstring, and style rules

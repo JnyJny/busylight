@@ -14,7 +14,7 @@ from collections.abc import Callable
 from typing import ClassVar
 
 from .blyncusb_base import BlyncusbBase
-from .implementation import BlyncusbColor, rgb_to_blyncusb_color
+from .implementation import rgb_to_blyncusb_color
 
 
 class Blyncusb10(BlyncusbBase):
