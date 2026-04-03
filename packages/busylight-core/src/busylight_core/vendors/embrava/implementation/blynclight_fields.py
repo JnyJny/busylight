@@ -33,28 +33,28 @@ class OffBit(BitField):
     """1-bit field to turn light off, clear to turn light on."""
 
     def __init__(self) -> None:
-        super().__init__(17, 1)
+        super().__init__(16, 1)
 
 
 class DimBit(BitField):
     """1-bit field to dim light, clear to brighten light."""
 
     def __init__(self) -> None:
-        super().__init__(18, 1)
+        super().__init__(17, 1)
 
 
 class FlashBit(BitField):
     """1-bit field to flash light, clear to stop flashing."""
 
     def __init__(self) -> None:
-        super().__init__(19, 1)
+        super().__init__(18, 1)
 
 
 class SpeedField(BitField):
     """3-bit field to set flash speed: 1=slow, 2=medium, 4=fast."""
 
     def __init__(self) -> None:
-        super().__init__(20, 3)
+        super().__init__(19, 3)
 
 
 class RepeatBit(BitField):
