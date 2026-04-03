@@ -88,45 +88,48 @@ class TestBlynclightBytes:
             assert len(result) == 9  # Expected struct size
             assert blynclight.state.off == 0  # Should set off=False when lit
 
-    def test_bytes_conversion_light_off(self) -> None:
-        """Test __bytes__ method when light is off."""
+    def test_on_sets_off_bit_when_color_is_black(self) -> None:
+        """Test on() sets off=True when color is black (not lit)."""
         mock_hardware = create_mock_blynclight_hardware()
 
-        with patch.object(mock_hardware, "acquire"), patch.object(Blynclight, "reset"):
+        with (
+            patch.object(mock_hardware, "acquire"),
+            patch.object(Blynclight, "reset"),
+            patch.object(Blynclight, "update"),
+        ):
             blynclight = Blynclight(mock_hardware)
-            blynclight.color = (0, 0, 0)  # Set RGB to zero - this makes is_lit False
+            blynclight.on((0, 0, 0))  # Black color - not lit
 
-            result = bytes(blynclight)
+            assert blynclight.state.off == 1
 
-            assert isinstance(result, bytes)
-            assert blynclight.state.off == 1  # Should set off=True when not lit
-
-    def test_bytes_flash_disabled_when_off(self) -> None:
-        """Test that flash is disabled when light is off."""
+    def test_on_clears_flash_when_off(self) -> None:
+        """Test that on() clears flash when light is off."""
         mock_hardware = create_mock_blynclight_hardware()
 
-        with patch.object(mock_hardware, "acquire"), patch.object(Blynclight, "reset"):
+        with (
+            patch.object(mock_hardware, "acquire"),
+            patch.object(Blynclight, "reset"),
+            patch.object(Blynclight, "update"),
+        ):
             blynclight = Blynclight(mock_hardware)
             blynclight.state.flash = True
-            blynclight.color = (0, 0, 0)  # Set RGB to zero - this makes is_lit False
+            blynclight.on((0, 0, 0))  # Black color - not lit
 
-            bytes(blynclight)
-
-            # Flash should be disabled when light is off
             assert blynclight.state.flash == 0
 
-    def test_bytes_dim_disabled_when_off(self) -> None:
-        """Test that dim is disabled when light is off."""
+    def test_on_clears_dim_when_off(self) -> None:
+        """Test that on() clears dim when light is off."""
         mock_hardware = create_mock_blynclight_hardware()
 
-        with patch.object(mock_hardware, "acquire"), patch.object(Blynclight, "reset"):
+        with (
+            patch.object(mock_hardware, "acquire"),
+            patch.object(Blynclight, "reset"),
+            patch.object(Blynclight, "update"),
+        ):
             blynclight = Blynclight(mock_hardware)
             blynclight.state.dim = True
-            blynclight.color = (0, 0, 0)  # Set RGB to zero - this makes is_lit False
+            blynclight.on((0, 0, 0))  # Black color - not lit
 
-            bytes(blynclight)
-
-            # Dim should be disabled when light is off
             assert blynclight.state.dim == 0
 
     def test_bytes_flash_preserved_when_on(self) -> None:
@@ -326,17 +329,18 @@ class TestBlynclightIntegration:
         """Test interactions between different state settings."""
         mock_hardware = create_mock_blynclight_hardware()
 
-        with patch.object(mock_hardware, "acquire"), patch.object(Blynclight, "reset"):
+        with (
+            patch.object(mock_hardware, "acquire"),
+            patch.object(Blynclight, "reset"),
+            patch.object(Blynclight, "update"),
+        ):
             blynclight = Blynclight(mock_hardware)
 
-            # Test flash and dim both set, then light turned off
+            # Test flash and dim both set, then light turned off via on()
             blynclight.state.flash = True
             blynclight.state.dim = True
-            blynclight.color = (0, 0, 0)  # Set color to zero to make is_lit False
+            blynclight.on((0, 0, 0))  # Turn off clears flash and dim
 
-            bytes(blynclight)
-
-            # Both should be disabled when light is off
             assert blynclight.state.flash == 0
             assert blynclight.state.dim == 0
 

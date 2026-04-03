@@ -20,11 +20,6 @@ class BlynclightBase(EmbravaBase):
 
     def __bytes__(self) -> bytes:
         """Return the device state as bytes for USB communication."""
-        if not self.is_lit:
-            self.state.off = True
-            self.state.flash = False
-            self.state.dim = False
-
         return bytes([0, *bytes(self.state), 0xFF, 0x22])
 
     @property
@@ -45,6 +40,12 @@ class BlynclightBase(EmbravaBase):
         """
         with self.batch_update():
             self.color = color
+            if not self.is_lit:
+                self.state.off = True
+                self.state.dim = False
+                self.state.flash = False
+            else:
+                self.state.off = False
 
     def dim(self) -> None:
         """Dim the current light color."""
