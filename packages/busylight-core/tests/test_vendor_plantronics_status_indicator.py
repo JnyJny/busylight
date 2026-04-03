@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from busylight_core.hardware import ConnectionType, Hardware
+from busylight_core.light import Light
 from busylight_core.vendors.embrava.blynclight import Blynclight
 from busylight_core.vendors.embrava.blynclight_plus import BlynclightPlus
 from busylight_core.vendors.embrava.embrava_base import EmbravaBase
@@ -67,13 +68,15 @@ class TestPlantronicsStatusIndicator:
         assert StatusIndicator.claims(mock_hardware) is False
 
     def test_inheritance_from_blynclight(self, status_indicator) -> None:
-        """Test that StatusIndicator properly inherits from EmbravaBase."""
-        # Should be an instance of both StatusIndicator and EmbravaBase
+        """Test that StatusIndicator has BlynclightProtocol capabilities."""
         assert isinstance(status_indicator, StatusIndicator)
+        assert isinstance(status_indicator, PlantronicsBase)
+        assert isinstance(status_indicator, Light)
 
-        assert isinstance(status_indicator, EmbravaBase)
+        # Not an EmbravaBase -- uses mixin for protocol, not inheritance
+        assert not isinstance(status_indicator, EmbravaBase)
 
-        # Should have all Blynclight methods
+        # Should have all Blynclight methods via BlynclightProtocol mixin
         assert hasattr(status_indicator, "on")
         assert hasattr(status_indicator, "off")
         assert hasattr(status_indicator, "color")
@@ -274,19 +277,18 @@ class TestPlantronicsStatusIndicator:
 
     def test_class_hierarchy(self) -> None:
         """Test the class hierarchy is correct."""
-        # StatusIndicator should inherit from PlantronicsBase which inherits from BlynclightPlus
-
+        # StatusIndicator inherits from PlantronicsBase (vendor) + BlynclightProtocol (mixin)
         assert issubclass(StatusIndicator, PlantronicsBase)
-        assert issubclass(StatusIndicator, BlynclightPlus)
-        assert issubclass(StatusIndicator, EmbravaBase)
+        assert issubclass(StatusIndicator, Light)
+
+        # Not in Embrava hierarchy -- protocol comes from mixin
+        assert not issubclass(StatusIndicator, BlynclightPlus)
+        assert not issubclass(StatusIndicator, EmbravaBase)
 
         # Should have the expected method resolution order
         status_mro = StatusIndicator.__mro__
-
-        # StatusIndicator -> PlantronicsBase -> BlynclightPlus -> EmbravaBase -> Light -> ...
         assert status_mro[0] == StatusIndicator
         assert status_mro[1] == PlantronicsBase
-        assert status_mro[2] == BlynclightPlus
 
     def test_module_path_vendor_detection(self) -> None:
         """Test that vendor detection works via module path."""
