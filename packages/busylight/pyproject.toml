@@ -61,6 +61,11 @@ module-name = "busylight"
 [tool.uv.sources]
 busylight-core = { workspace = true }
 
+[tool.deptry]
+known_first_party = ["busylight", "busylight_core"]
+package_module_name_map = {pyserial = "serial", hidapi = "hid", "busylight-core" = "busylight_core"}
+per_rule_ignores = {DEP001 = ["importlib_metadata"], DEP002 = ["hidapi", "pyserial", "mkdocs", "mkdocs-material", "mkdocs-git-revision-date-localized-plugin"], DEP003 = ["pydantic"]}
+
 [tool.ruff]
 fix = false
 line-length = 90
