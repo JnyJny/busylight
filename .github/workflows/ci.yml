@@ -52,8 +52,12 @@ jobs:
 
   test-core:
     name: "Core: Tests (${{ matrix.python-version }}, ${{ matrix.os }})"
-    needs: [detect-changes, get-python-versions]
-    if: needs.detect-changes.outputs.core == 'true'
+    needs: [detect-changes, get-python-versions, lint, dependency-check]
+    if: |
+      always()
+      && needs.detect-changes.outputs.core == 'true'
+      && needs.lint.result == 'success'
+      && (needs.dependency-check.result == 'success' || needs.dependency-check.result == 'skipped')
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -84,8 +88,12 @@ jobs:
 
   test-cli:
     name: "CLI: Tests (${{ matrix.python-version }}, ${{ matrix.os }})"
-    needs: [detect-changes, get-python-versions]
-    if: needs.detect-changes.outputs.cli == 'true' || needs.detect-changes.outputs.core == 'true'
+    needs: [detect-changes, get-python-versions, lint, dependency-check]
+    if: |
+      always()
+      && (needs.detect-changes.outputs.cli == 'true' || needs.detect-changes.outputs.core == 'true')
+      && needs.lint.result == 'success'
+      && (needs.dependency-check.result == 'success' || needs.dependency-check.result == 'skipped')
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
