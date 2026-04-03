@@ -1,6 +1,6 @@
 [project]
 name = "busylight_core"
-version = "2.3.0"
+version = "2.4.0"
 description = "Busylight Core Implementation for Humans, presumably like you!"
 readme = "README.md"
 license = "Apache-2.0"
