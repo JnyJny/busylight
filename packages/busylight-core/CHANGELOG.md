@@ -1,3 +1,12 @@
+## [busylight-core/v2.4.0] - 2026-04-03
+
+### 🚜 Refactor
+
+- Extract BlynclightProtocol mixins for cross-vendor protocol sharing (#711)
+
+### 📚 Documentation
+
+- *(core)* Update CHANGELOG
 ## [busylight-core/v2.3.0] - 2026-04-03
 
 ### 🚀 Features
