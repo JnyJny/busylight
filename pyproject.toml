@@ -18,6 +18,7 @@ cache_dir = "/tmp/pytest_cache_busylight"
 
 [dependency-groups]
 dev = [
+    "deptry>=0.25.1",
     "git-cliff>=2.0.0",
     "poethepoet",
     "pytest>=8.3.5",
@@ -26,4 +27,25 @@ dev = [
     "pytest-mock>=3.14.0",
     "ruff>=0.12.4",
     "ty>=0.0.1a15",
+]
+
+[tool.deptry]
+# Exclude test files and example files that have special import patterns
+extend_exclude = [
+    ".*/tests/.*",
+    ".*/test_.*\\.py", 
+    ".*/vendor_examples/.*",
+    ".*/docs/.*",
+]
+
+# Known first-party packages in our workspace
+known_first_party = [
+    "busylight",
+    "busylight_core",
+]
+
+# Ignore certain error types for this monorepo setup
+ignore = [
+    # DEP004: Dev dependencies imported in test files is expected
+    "DEP004",
 ]
