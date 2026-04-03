@@ -112,7 +112,7 @@ docs = [
 
 [[package]]
 name = "busylight-for-humans"
-version = "0.48.0"
+version = "1.0.0"
 source = { editable = "packages/busylight" }
 dependencies = [
     { name = "busylight-core" },
