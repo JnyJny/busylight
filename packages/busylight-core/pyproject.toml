@@ -163,6 +163,10 @@ test-python-versions = ["3.12", "3.13", "3.14"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
+[tool.deptry]
+known_first_party = ["busylight_core"]
+package_module_name_map = {pyserial = "serial", hidapi = "hid"}
+
 [tool.ruff]
 fix = true
 lint.select = [
