@@ -1,9 +1,6 @@
 """Control USB Attached Lights with Style!"""
 
-try:
-    from importlib.metadata import distribution
-except ModuleNotFoundError:
-    from importlib_metadata import distribution
+from importlib.metadata import distribution
 
 from loguru import logger
 
