@@ -19,7 +19,7 @@ cache_dir = "/tmp/pytest_cache_busylight"
 [dependency-groups]
 dev = [
     "deptry>=0.25.1",
-    "git-cliff>=2.0.0",
+    "git-cliff>=2.13.1",
     "poethepoet",
     "pytest>=8.3.5",
     "pytest-asyncio",
