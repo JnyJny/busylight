@@ -25,5 +25,5 @@ dev = [
     "pytest-asyncio",
     "pytest-cov>=6.1.1",
     "pytest-mock>=3.14.0",
-    "ruff>=0.15.16",
+    "ruff>=0.15.17",
 ]
