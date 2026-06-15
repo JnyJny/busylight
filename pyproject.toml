@@ -21,7 +21,7 @@ dev = [
     "deptry>=0.25.1",
     "git-cliff>=2.13.1",
     "poethepoet",
-    "pytest>=8.3.5",
+    "pytest>=9.1.0",
     "pytest-asyncio",
     "pytest-cov>=6.1.1",
     "pytest-mock>=3.14.0",
