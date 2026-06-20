@@ -147,8 +147,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "busylight-core", editable = "packages/busylight-core" },
-    { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.137.2" },
-    { name = "fastapi", marker = "extra == 'webapi'", specifier = ">=0.137.2" },
+    { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.115.14" },
+    { name = "fastapi", marker = "extra == 'webapi'", specifier = ">=0.115.14" },
     { name = "hidapi", specifier = ">=0.14.0.post4" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
