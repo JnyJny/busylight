@@ -21,9 +21,13 @@ class TestAPIStructure:
 
     def test_route_counts(self, client):
         """Test that we have the expected number of routes."""
-        routes_with_paths = [route for route in app.routes if hasattr(route, "path")]
+        # Newer FastAPI versions store included-router routes as lazy
+        # `_IncludedRouter` wrappers on `app.routes` (no `.path` attribute),
+        # so route counting must go through the resolved OpenAPI schema
+        # instead of introspecting `app.routes` directly.
+        openapi_spec = app.openapi()
         # Should have both versioned and legacy routes
-        assert len(routes_with_paths) > 40  # Conservative estimate
+        assert len(openapi_spec["paths"]) > 40  # Conservative estimate
 
     def test_root_endpoint(self, client):
         """Test the root API information endpoint."""
