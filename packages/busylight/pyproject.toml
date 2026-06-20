@@ -145,7 +145,7 @@ _patch_bump = "uv version --bump patch"
 _minor_bump = "uv version --bump minor"
 _major_bump = "uv version --bump major"
 
-_add = "git add pyproject.toml uv.lock"
+_add = "git add pyproject.toml ../../uv.lock"
 _commit = {shell = "git commit -m busylight-cli/v`uv version --short`"}
 _tag = {shell = "git tag busylight-cli/v`uv version --short`"}
 _push = "git push --all"
