@@ -1,3 +1,8 @@
+## [busylight-cli/v1.0.1] - 2026-06-20
+
+### 📚 Documentation
+
+- *(cli)* Update CHANGELOG
 ## [busylight-cli/v1.0.0] - 2026-04-03
 
 ### 🚀 Features
