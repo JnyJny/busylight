@@ -39,11 +39,11 @@ busyserve = "busylight.busyserve:busyserve_cli"
 
 [project.optional-dependencies]
 webapi = [
-    "fastapi>=0.115.14",
+    "fastapi>=0.138.2",
     "uvicorn>=0.34.2",
 ]
 web = [
-    "fastapi>=0.115.14",
+    "fastapi>=0.138.2",
 ]
 docs = [
     "mkdocs>=1.6.1",
