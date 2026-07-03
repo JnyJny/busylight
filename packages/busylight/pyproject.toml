@@ -95,7 +95,7 @@ ignore = [
 [dependency-groups]
 dev = [
     "anyio>=4.9.0",
-    "coverage>=7.8.0",
+    "coverage>=7.15.0",
     "httpx>=0.28.1",
 ]
 
