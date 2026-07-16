@@ -14,7 +14,7 @@ dependencies = [
     "hidapi>=0.14.0.post4",
     "loguru>=0.7.3",
     "pyserial>=3.5",
-    "typer>=0.16.0",
+    "typer>=0.27.0",
     "webcolors>=24.11.1",
 ]
 classifiers = [
