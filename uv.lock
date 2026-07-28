@@ -147,8 +147,8 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "busylight-core", editable = "packages/busylight-core" },
-    { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.140.1" },
-    { name = "fastapi", marker = "extra == 'webapi'", specifier = ">=0.140.1" },
+    { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.140.9" },
+    { name = "fastapi", marker = "extra == 'webapi'", specifier = ">=0.140.9" },
     { name = "hidapi", specifier = ">=0.14.0.post4" },
     { name = "loguru", specifier = ">=0.7.3" },
     { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
@@ -439,7 +439,7 @@ wheels = [
 
 [[package]]
 name = "fastapi"
-version = "0.140.1"
+version = "0.140.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "annotated-doc" },
@@ -448,9 +448,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/94/04/90178464ab31cf2534ab6da71b72864b39360fa0b529854b6eb2515b3461/fastapi-0.140.1.tar.gz", hash = "sha256:8c10f75cf17c46f9d27c512a6f9bcc3643ffef2029a9ac956f8bf821ef47ceea", size = 421119, upload-time = "2026-07-27T12:07:52.666Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/29/a4/7e4dc8867a5c7f53355655314f3007e4a1f18b3ada60d49b6509b303fe29/fastapi-0.140.9.tar.gz", hash = "sha256:fadc1dae3671c34a542a34b14e3cec92ebe774b9f6ae6ae8da7339a9f0e9c287", size = 422649, upload-time = "2026-07-28T12:38:57.359Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6c/b6/aaa42a7793c87e434036801225c1ff135ec22ddfc4b945d46c6159faeff2/fastapi-0.140.1-py3-none-any.whl", hash = "sha256:1b4944b5ca29a67783d0edc42078c3edb4aaeb13faecc1a9c131de88458a59c8", size = 130909, upload-time = "2026-07-27T12:07:51.034Z" },
+    { url = "https://files.pythonhosted.org/packages/91/ea/113074d315b02e94ea452b0a0e0397d91d7791000215b098c03b68c2d471/fastapi-0.140.9-py3-none-any.whl", hash = "sha256:313ab1c00f02d1a2255573d456d2cb519e87826d3eb82ce75ea2da2e983bcb64", size = 131098, upload-time = "2026-07-28T12:38:55.736Z" },
 ]
 
 [[package]]
