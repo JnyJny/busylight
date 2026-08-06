@@ -29,26 +29,6 @@ CLI and HTTP API built on busylight-core.
 - `src/busylight/controller.py` — Multi-device coordination
 - `src/busylight/api/` — FastAPI web server
 
-## Commands
-
-Run from package directories:
-
-```bash
-# busylight-core
-cd packages/busylight-core
-poe test              # unit tests
-poe doc-test          # validate code blocks in docs/
-poe ruff              # format + lint
-poe coverage          # coverage report
-poe docs-serve        # serve docs locally
-
-# busylight (CLI)
-cd packages/busylight
-poe test              # unit tests
-poe ruff              # format + lint (check + format)
-poe coverage          # coverage report
-```
-
 ## Architecture Rules
 
 **DO NOT consolidate vendor classes.** Each device gets its own class in
@@ -68,25 +48,6 @@ Automatic strategy selection:
 - **Asyncio context:** Uses `asyncio.Task`
 - **Non-asyncio context:** Uses `threading.Timer`
 - No user configuration needed
-
-## Adding Devices
-
-Goes in busylight-core:
-
-1. Create vendor package in `vendors/` if needed
-2. Implement `Light` subclass (`__bytes__`, `on`, `color` property)
-3. Define `supported_device_ids`
-4. Import in vendor `__init__.py` and main `__init__.py`
-5. Add tests in `tests/`
-
-## Doc Tests
-
-All Python code blocks in `packages/busylight-core/docs/` are tested
-via pytest-markdown-docs. Mock hardware in `docs/conftest.py`.
-
-- `continuation` marker for blocks depending on prior imports
-- `notest` marker to exclude blocks
-- **If you change a public API, update doc examples** — CI catches mismatches
 
 ## Code Style
 
