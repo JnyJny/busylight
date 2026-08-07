@@ -1,11 +1,11 @@
-""" """
+"""Color name and hex string parsing for CLI and API use."""
 
 import webcolors
 from loguru import logger
 
 
 class ColorLookupError(Exception):
-    pass
+    """Raised when a color name or hex string can't be resolved."""
 
 
 def parse_color_string(value: str, scale: float = 1.0) -> tuple[int, int, int]:
@@ -41,7 +41,8 @@ def parse_color_string(value: str, scale: float = 1.0) -> tuple[int, int, int]:
             return scale_color(rgb, scale)
         except ValueError as error:
             logger.debug(f"No match found for {value} -> {error}")
-            raise ColorLookupError(f"No color mapping for {value}") from error
+            msg = f"No color mapping for {value}"
+            raise ColorLookupError(msg) from error
 
     for spec in [
         webcolors.CSS3,
@@ -55,7 +56,8 @@ def parse_color_string(value: str, scale: float = 1.0) -> tuple[int, int, int]:
         except ValueError as error:
             logger.info(f"name_to_rgb[{spec}] {value} ->  {error}")
 
-    raise ColorLookupError(f"No color mapping for {value}")
+    msg = f"No color mapping for {value}"
+    raise ColorLookupError(msg)
 
 
 def colortuple_to_name(color: tuple[int, int, int]) -> str:
@@ -80,7 +82,7 @@ def scale_color(
     color: tuple[int, int, int],
     scale: float = 1.0,
 ) -> tuple[int, int, int]:
-    """Returns a tuple[int, int, int] whose color intensity scaled by the given value.
+    """Scale a color's intensity by the given value.
 
     Each of the component values of the tuple[int, int, int] are multiplied by scale
     which is assumed to range from 0.0 to 1.0 corresponding to 0% to 100%
@@ -88,7 +90,6 @@ def scale_color(
 
     :param color: tuple[int, int, int]
     """
-
     if scale == 1.0:
         return tuple(color)
 

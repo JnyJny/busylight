@@ -16,6 +16,7 @@ Example:
         busylight blink red
         busylight blink blue --count 5 --speed fast
         busylight blink "#00ff00" --count 0  # Infinite blinking
+
 """
 
 import typer
@@ -82,6 +83,7 @@ def blink_lights(
 
             busylight blink red --led 1 --count 3    # Top LED only
             busylight blink green --led 2            # Bottom LED infinite
+
     """
     logger.info("Blinking lights with color: {}", color)
 
@@ -93,7 +95,7 @@ def blink_lights(
         selection.turn_off()
     except NoLightsFoundError:
         typer.secho("Unable to blink lights.", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
     except Exception as error:
         typer.secho(f"Error blinking lights: {error}", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from error

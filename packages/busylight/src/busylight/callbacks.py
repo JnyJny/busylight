@@ -1,4 +1,4 @@
-""" """
+"""Typer callbacks for CLI argument parsing."""
 
 import typer
 

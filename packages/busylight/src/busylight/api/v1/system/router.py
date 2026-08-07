@@ -4,8 +4,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 
-from ...config import APISettings, get_settings
-from ...dependencies import Controller
+from busylight.api.config import APISettings, get_settings
+from busylight.api.dependencies import Controller
 from .schemas import ApiInfo, HealthStatus
 
 router = APIRouter(prefix="/system", tags=["system"])
@@ -13,14 +13,13 @@ router = APIRouter(prefix="/system", tags=["system"])
 
 @router.get(
     "/info",
-    response_model=ApiInfo,
     summary="API information",
     description="Get API metadata and information.",
 )
 async def get_api_info(
     settings: Annotated[APISettings, Depends(get_settings)],
 ) -> ApiInfo:
-    """API information."""
+    """Return API information."""
     return ApiInfo(
         title=settings.title,
         description=settings.description,
@@ -33,7 +32,6 @@ async def get_api_info(
 
 @router.get(
     "/health",
-    response_model=HealthStatus,
     summary="Health check",
     description="Check API and hardware health status.",
 )

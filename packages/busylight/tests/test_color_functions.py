@@ -10,7 +10,7 @@ from busylight.color import (
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         ("black", (0, 0, 0)),
         ("Black", (0, 0, 0)),
@@ -51,7 +51,7 @@ def test_parse_color_string_invalid(value: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         ((0, 0, 0), "black"),
         ((255, 255, 255), "white"),
@@ -66,7 +66,7 @@ def test_colortuple_to_name(value: tuple[int, int, int], expected: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "color,expected", [((0, 0, 1), "#000001"), ((255, 254, 253), "#fffefd")]
+    ("color", "expected"), [((0, 0, 1), "#000001"), ((255, 254, 253), "#fffefd")]
 )
 def test_colortuple_to_name_unknown_color(color: tuple[int, int, int], expected) -> None:
     result = colortuple_to_name(color)
@@ -74,7 +74,7 @@ def test_colortuple_to_name_unknown_color(color: tuple[int, int, int], expected)
 
 
 @pytest.mark.parametrize(
-    "source,scale,expected",
+    ("source", "scale", "expected"),
     [
         ((255, 255, 255), 1.00, (255, 255, 255)),
         ((255, 255, 255), 2.00, (255, 255, 255)),

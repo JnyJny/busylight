@@ -6,7 +6,7 @@ from busylight_core import LightUnavailableError, NoLightsFoundError
 from fastapi import HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
-from ..color import ColorLookupError
+from busylight.color import ColorLookupError
 
 
 class APIError(HTTPException):
@@ -19,6 +19,7 @@ class APIError(HTTPException):
         error_code: str | None = None,
         headers: dict[str, Any] | None = None,
     ) -> None:
+        """Build an HTTPException carrying a machine-readable error_code."""
         super().__init__(status_code=status_code, detail=detail, headers=headers)
         self.error_code = error_code
 
@@ -27,6 +28,7 @@ class LightNotFoundError(APIError):
     """Light not found at specified index."""
 
     def __init__(self, light_id: int) -> None:
+        """Build the 404 response for a light index that doesn't exist."""
         super().__init__(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Light with ID {light_id} not found",
@@ -38,6 +40,7 @@ class NoLightsAvailableError(APIError):
     """No lights are currently available."""
 
     def __init__(self) -> None:
+        """Build the 503 response for when no USB lights are attached."""
         super().__init__(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="No USB lights are currently available",
@@ -49,6 +52,7 @@ class InvalidColorError(APIError):
     """Invalid color specification."""
 
     def __init__(self, color: str, reason: str | None = None) -> None:
+        """Build the 400 response for a color string that failed to parse."""
         detail = f"Invalid color '{color}'"
         if reason:
             detail += f": {reason}"
@@ -63,6 +67,7 @@ class LightUnavailableAPIError(APIError):
     """Light is unavailable for operation."""
 
     def __init__(self, light_name: str) -> None:
+        """Build the 409 response for a light that's busy or unreachable."""
         super().__init__(
             status_code=status.HTTP_409_CONFLICT,
             detail=f"Light '{light_name}' is currently unavailable",
@@ -92,7 +97,7 @@ def create_error_response(
 
 
 async def light_unavailable_handler(
-    request: Request, exc: LightUnavailableError
+    _request: Request, exc: LightUnavailableError
 ) -> JSONResponse:
     """Handle lights which are unavailable."""
     return create_error_response(
@@ -103,7 +108,7 @@ async def light_unavailable_handler(
 
 
 async def no_lights_found_handler(
-    request: Request, exc: NoLightsFoundError
+    _request: Request, _exc: NoLightsFoundError
 ) -> JSONResponse:
     """Handle when no lights are found."""
     return create_error_response(
@@ -113,7 +118,7 @@ async def no_lights_found_handler(
     )
 
 
-async def index_error_handler(request: Request, exc: IndexError) -> JSONResponse:
+async def index_error_handler(_request: Request, exc: IndexError) -> JSONResponse:
     """Handle light not found at index."""
     return create_error_response(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -123,7 +128,7 @@ async def index_error_handler(request: Request, exc: IndexError) -> JSONResponse
 
 
 async def color_lookup_error_handler(
-    request: Request, exc: ColorLookupError
+    _request: Request, exc: ColorLookupError
 ) -> JSONResponse:
     """Handle invalid color specifications."""
     return create_error_response(
@@ -133,7 +138,7 @@ async def color_lookup_error_handler(
     )
 
 
-async def validation_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+async def validation_error_handler(_request: Request, exc: ValueError) -> JSONResponse:
     """Handle general validation errors."""
     return create_error_response(
         status_code=status.HTTP_400_BAD_REQUEST,

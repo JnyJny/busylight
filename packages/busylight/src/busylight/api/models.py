@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 
 class LightOperation(BaseModel):
+    """Result of a light or effect operation."""
+
     light_id: int | str
     action: str | None = None
     color: str | None = None
@@ -16,6 +18,8 @@ class LightOperation(BaseModel):
 
 
 class LightDescription(BaseModel):
+    """Description of a single light's identity and current state."""
+
     light_id: int
     name: str
     info: dict[str, Any]
@@ -25,4 +29,6 @@ class LightDescription(BaseModel):
 
 
 class EndPoint(BaseModel):
+    """A single API route path."""
+
     path: str

@@ -38,15 +38,15 @@ class APISettings(BaseModel):
         if isinstance(v, str):
             try:
                 parsed = json.loads(v)
+            except json.JSONDecodeError:
+                logger.warning(f"Failed to parse CORS origins: {v}")
+                return []
+            else:
                 if isinstance(parsed, list) and all(
                     isinstance(item, str) for item in parsed
                 ):
                     return parsed
-                else:
-                    logger.warning(f"Invalid CORS origins format: {parsed}")
-                    return []
-            except json.JSONDecodeError:
-                logger.warning(f"Failed to parse CORS origins: {v}")
+                logger.warning(f"Invalid CORS origins format: {parsed}")
                 return []
         elif isinstance(v, list):
             return v
@@ -103,5 +103,5 @@ def get_api_settings_from_env() -> APISettings:
 
 @lru_cache
 def get_settings() -> APISettings:
-    """Cached API settings instance."""
+    """Return a cached APISettings instance."""
     return get_api_settings_from_env()

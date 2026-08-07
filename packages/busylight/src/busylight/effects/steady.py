@@ -11,7 +11,10 @@ if TYPE_CHECKING:
 
 
 class Steady(BaseEffect):
+    """Hold a light at a single, unchanging color."""
+
     def __init__(self, color: tuple[int, int, int]) -> None:
+        """Set the color to hold."""
         self.color = color
         self.priority = TaskPriority.NORMAL
 
@@ -20,10 +23,12 @@ class Steady(BaseEffect):
 
     @property
     def colors(self) -> list[tuple[int, int, int]]:
+        """The single held color."""
         return [self.color]
 
     @property
     def default_interval(self) -> float:
+        """Default seconds between updates -- unused, the color never changes."""
         return 0.0
 
     async def execute(

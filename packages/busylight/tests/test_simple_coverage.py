@@ -7,7 +7,7 @@ from busylight.effects.steady import Steady
 class TestSpectrumSimple:
     """Test spectrum effect for coverage."""
 
-    def test_colors_property_cached(self):
+    def test_colors_property_cached(self) -> None:
         """Test colors property returns cached value."""
         spectrum = Spectrum()
 
@@ -20,7 +20,7 @@ class TestSpectrumSimple:
 class TestSteadySimple:
     """Test steady effect for coverage."""
 
-    def test_repr(self):
+    def test_repr(self) -> None:
         """Test __repr__ method."""
         steady = Steady(color=(255, 128, 64))
 
@@ -32,7 +32,7 @@ class TestSteadySimple:
 class TestImportsAndMisc:
     """Test various imports and simple functionality."""
 
-    def test_effect_imports(self):
+    def test_effect_imports(self) -> None:
         """Test that effect classes can be imported."""
         from busylight.effects.blink import Blink
         from busylight.effects.gradient import Gradient
@@ -46,7 +46,7 @@ class TestImportsAndMisc:
 
         assert all([blink, gradient, spectrum, steady])
 
-    def test_busylight_init_imports(self):
+    def test_busylight_init_imports(self) -> None:
         """Test __init__.py imports."""
         try:
             from busylight import __version__

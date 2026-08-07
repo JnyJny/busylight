@@ -6,13 +6,14 @@ from busylight_core.mixins.taskable import TaskPriority
 
 
 @pytest.mark.parametrize(
-    "scale,steps,frequency,phase,center,width,count",
+    ("scale", "steps", "frequency", "phase", "center", "width", "count"),
     [
         (1.0, 64, None, None, 128, 127, 1),
         (0.5, 32, (0.2, 0.2, 0.2), (0, 2, 4), 64, 63, 0),
     ],
 )
 def test_spectrum_init(
+    *,
     scale,
     steps,
     frequency,
@@ -21,7 +22,15 @@ def test_spectrum_init(
     width,
     count,
 ) -> None:
-    instance = Spectrum(scale, steps, frequency, phase, center, width, count)
+    instance = Spectrum(
+        scale=scale,
+        steps=steps,
+        frequency=frequency,
+        phase=phase,
+        center=center,
+        width=width,
+        count=count,
+    )
 
     assert instance.name == "Spectrum"
     assert isinstance(instance, Spectrum)

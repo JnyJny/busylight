@@ -1,4 +1,4 @@
-""" """
+"""Generate Linux udev rules for supported lights."""
 
 import typer
 from busylight_core import Light
@@ -30,9 +30,9 @@ def generate_udev_rules(
 
         print("\n".join(about), file=output)
 
-        for device, rules in rules.items():
-            print("\n".join(rules), file=output)
+        for rule_lines in rules.values():
+            print("\n".join(rule_lines), file=output)
 
     except Exception as error:
         typer.secho(f"Error generating udev rules: {error}", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from error

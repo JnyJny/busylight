@@ -12,6 +12,7 @@ Example:
         options.debug = True
         options.lights = [0, 1]  # Select first two lights
         options.dim = 0.5        # 50% brightness
+
 """
 
 from dataclasses import dataclass, field
@@ -42,6 +43,7 @@ class GlobalOptions:
                 lights=[0, 2],
                 debug=True
             )
+
     """
 
     timeout: float = None

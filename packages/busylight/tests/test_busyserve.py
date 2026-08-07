@@ -10,11 +10,11 @@ from busylight.busyserve import busyserve_cli, serve_http_api
 class TestBusyserveCLI:
     """Test busyserve CLI setup."""
 
-    def test_busyserve_cli_is_typer_instance(self):
+    def test_busyserve_cli_is_typer_instance(self) -> None:
         """busyserve_cli should be a Typer instance."""
         assert isinstance(busyserve_cli, typer.Typer)
 
-    def test_busyserve_cli_has_serve_command(self):
+    def test_busyserve_cli_has_serve_command(self) -> None:
         """busyserve_cli should have serve command."""
         assert callable(serve_http_api)
 
@@ -28,7 +28,7 @@ class TestServeHTTPAPI:
     @patch("busylight.busyserve.environ")
     def test_serve_http_api_success(
         self, mock_environ, mock_logger, mock_uvicorn, mock_log_config
-    ):
+    ) -> None:
         """Should start uvicorn server successfully."""
         mock_log_config.return_value = {"version": 1}
 
@@ -52,7 +52,7 @@ class TestServeHTTPAPI:
     @patch("busylight.busyserve.environ")
     def test_serve_http_api_no_debug(
         self, mock_environ, mock_logger, mock_uvicorn, mock_log_config
-    ):
+    ) -> None:
         """Should configure logging appropriately when debug=False."""
         mock_log_config.return_value = {"version": 1}
 
@@ -76,7 +76,7 @@ class TestServeHTTPAPI:
     @patch("busylight.busyserve.environ")
     def test_serve_http_api_module_not_found_error(
         self, mock_environ, mock_logger, mock_uvicorn, mock_log_config
-    ):
+    ) -> None:
         """Should handle ModuleNotFoundError gracefully."""
         mock_log_config.return_value = {"version": 1}
         mock_uvicorn.run.side_effect = ModuleNotFoundError("No module named 'fastapi'")
@@ -92,14 +92,14 @@ class TestServeHTTPAPI:
 class TestBusyserveImport:
     """Test busyserve import behavior with missing dependencies."""
 
-    def test_busyserve_imports_successfully_with_uvicorn(self):
+    def test_busyserve_imports_successfully_with_uvicorn(self) -> None:
         """Should import successfully when uvicorn is available."""
         import busylight.busyserve as busyserve_module
 
         assert hasattr(busyserve_module, "busyserve_cli")
         assert hasattr(busyserve_module, "serve_http_api")
 
-    def test_busyserve_module_has_required_attributes(self):
+    def test_busyserve_module_has_required_attributes(self) -> None:
         """Should have all required module attributes."""
         import busylight.busyserve as busyserve_module
 

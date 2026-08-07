@@ -1,10 +1,10 @@
 """Effects Business Logic Service."""
 
-from ....color import parse_color_string
-from ....controller import LightController, LightSelection
-from ....effects import Effects
-from ....speed import Speed
-from ...exceptions import LightNotFoundError, NoLightsAvailableError
+from busylight.color import parse_color_string
+from busylight.controller import LightController, LightSelection
+from busylight.effects import Effects
+from busylight.speed import Speed
+from busylight.api.exceptions import LightNotFoundError, NoLightsAvailableError
 from .schemas import EffectOperationResponse
 
 
@@ -12,12 +12,13 @@ class EffectService:
     """Service layer for effect operations."""
 
     def __init__(self, controller: LightController):
+        """Wrap a LightController for effect operations."""
         self.controller = controller
 
     def _get_light_selection(self, light_id: int | None = None) -> LightSelection:
         """Get light selection by ID or all lights."""
         if not self.controller.lights:
-            raise NoLightsAvailableError()
+            raise NoLightsAvailableError
 
         if light_id is None:
             return self.controller.all()
@@ -25,7 +26,7 @@ class EffectService:
         try:
             return self.controller.by_index(light_id)
         except IndexError:
-            raise LightNotFoundError(light_id)
+            raise LightNotFoundError(light_id) from None
 
     def _get_speed_interval(self, speed: str, base_interval: float) -> float:
         """Get interval based on speed setting."""
@@ -59,6 +60,7 @@ class EffectService:
     async def apply_pulse_effect(
         self,
         color: str,
+        *,
         dim: float = 1.0,
         speed: str = "slow",
         count: int = 0,
@@ -90,6 +92,7 @@ class EffectService:
         self,
         color_a: str,
         color_b: str,
+        *,
         dim: float = 1.0,
         speed: str = "slow",
         count: int = 0,

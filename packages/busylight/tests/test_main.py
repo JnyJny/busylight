@@ -10,11 +10,11 @@ from busylight.__main__ import cli, precommand_callback
 class TestCLISetup:
     """Test CLI setup and configuration."""
 
-    def test_cli_is_typer_instance(self):
+    def test_cli_is_typer_instance(self) -> None:
         """CLI should be a Typer instance."""
         assert isinstance(cli, typer.Typer)
 
-    def test_cli_has_subcommands(self):
+    def test_cli_has_subcommands(self) -> None:
         """CLI should have subcommands registered."""
         assert cli is not None
 
@@ -23,7 +23,7 @@ class TestPrecommandCallback:
     """Test the main CLI callback function."""
 
     @patch("busylight.__main__.logger")
-    def test_precommand_callback_sets_options(self, mock_logger):
+    def test_precommand_callback_sets_options(self, mock_logger) -> None:
         """Should set global options correctly."""
         ctx = Mock()
         ctx.ensure_object.return_value = Mock()
@@ -40,7 +40,7 @@ class TestPrecommandCallback:
         assert options.lights == [1, 2]
 
     @patch("busylight.__main__.logger")
-    def test_precommand_callback_with_all_lights(self, mock_logger):
+    def test_precommand_callback_with_all_lights(self, mock_logger) -> None:
         """Should clear lights list when all_lights is True."""
         ctx = Mock()
         ctx.ensure_object.return_value = Mock()
@@ -54,7 +54,9 @@ class TestPrecommandCallback:
         assert options.lights == []
 
     @patch("busylight.__main__.logger")
-    def test_precommand_callback_list_command_forces_all_lights(self, mock_logger):
+    def test_precommand_callback_list_command_forces_all_lights(
+        self, mock_logger
+    ) -> None:
         """List command with no targets should force all_lights=True."""
         ctx = Mock()
         ctx.ensure_object.return_value = Mock()
@@ -73,7 +75,7 @@ class TestPrecommandCallback:
         assert options.lights == []
 
     @patch("busylight.__main__.logger")
-    def test_precommand_callback_enables_logging_when_debug(self, mock_logger):
+    def test_precommand_callback_enables_logging_when_debug(self, mock_logger) -> None:
         """Should enable logging when debug=True."""
         ctx = Mock()
         ctx.ensure_object.return_value = Mock()
@@ -86,7 +88,9 @@ class TestPrecommandCallback:
         mock_logger.enable.assert_called_once_with("busylight")
 
     @patch("busylight.__main__.logger")
-    def test_precommand_callback_disables_logging_when_not_debug(self, mock_logger):
+    def test_precommand_callback_disables_logging_when_not_debug(
+        self, mock_logger
+    ) -> None:
         """Should disable logging when debug=False."""
         ctx = Mock()
         ctx.ensure_object.return_value = Mock()
@@ -99,7 +103,9 @@ class TestPrecommandCallback:
         mock_logger.disable.assert_called_once_with("busylight")
 
     @patch("busylight.__main__.logger")
-    def test_precommand_callback_exits_with_help_when_no_subcommand(self, mock_logger):
+    def test_precommand_callback_exits_with_help_when_no_subcommand(
+        self, mock_logger
+    ) -> None:
         """Should exit with help when no subcommand is invoked."""
         ctx = Mock()
         ctx.ensure_object.return_value = Mock()
@@ -124,7 +130,7 @@ class TestCLIConditionalImports:
     """Test conditional imports in CLI setup."""
 
     @patch("busylight.__main__.logger")
-    def test_cli_handles_missing_busyserve_gracefully(self, mock_logger):
+    def test_cli_handles_missing_busyserve_gracefully(self, mock_logger) -> None:
         """CLI should handle missing busyserve imports gracefully."""
         assert cli is not None
 
@@ -134,13 +140,13 @@ class TestCLIConditionalImports:
 class TestGlobalOptions:
     """Test GlobalOptions integration."""
 
-    def test_global_options_import(self):
+    def test_global_options_import(self) -> None:
         """Should be able to import GlobalOptions."""
         from busylight.global_options import GlobalOptions
 
         assert GlobalOptions is not None
 
-    def test_global_options_can_be_instantiated(self):
+    def test_global_options_can_be_instantiated(self) -> None:
         """Should be able to create GlobalOptions instance."""
         from busylight.global_options import GlobalOptions
 
@@ -152,6 +158,6 @@ class TestMainModuleEntry:
     """Test main module entry point."""
 
     @patch("busylight.__main__.cli")
-    def test_main_module_calls_cli(self, mock_cli):
+    def test_main_module_calls_cli(self, mock_cli) -> None:
         """When run as main module, should call cli()."""
         assert mock_cli is not None

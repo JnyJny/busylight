@@ -60,6 +60,7 @@ class Step(Word):
     def jump(
         self,
         color: tuple[int, int, int],
+        *,
         target: int = 0,
         repeat: int = 0,
         on_time: int = 0,

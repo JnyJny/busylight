@@ -6,7 +6,7 @@ from busylight_core.mixins.taskable import TaskPriority
 
 
 @pytest.mark.parametrize(
-    "on_color,off_color,count",
+    ("on_color", "off_color", "count"),
     [
         ((255, 255, 255), None, 3),
         ((128, 255, 32), (32, 32, 32), 0),

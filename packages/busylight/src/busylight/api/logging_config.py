@@ -33,10 +33,11 @@ class InterceptHandler(logging.Handler):
 
 
 def setup_logging(debug: bool = False) -> None:
-    """Setup integrated logging for API server.
+    """Set up integrated logging for API server.
 
     Args:
         debug: Enable debug level logging
+
     """
     # Remove default loguru handler
     logger.remove()
@@ -76,6 +77,7 @@ def get_uvicorn_log_config(debug: bool = False) -> dict[str, Any]:
 
     Returns:
         Logging configuration dict for uvicorn
+
     """
     return {
         "version": 1,

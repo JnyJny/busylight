@@ -44,7 +44,6 @@ def pulse_lights(
     ),
 ) -> None:
     """Pulse lights with a specified color and speed."""
-
     logger.info("Applying pulse effect.")
 
     effect = Effects.for_name("gradient")(color, step=8, count=count)
@@ -59,7 +58,7 @@ def pulse_lights(
         selection.turn_off()
     except NoLightsFoundError:
         typer.secho("Unable to pulse lights.", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
     except Exception as error:
         typer.secho(f"Error pulse lights: {error}", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from error

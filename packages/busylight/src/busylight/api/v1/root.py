@@ -4,7 +4,7 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends
 
-from ..config import APISettings, get_settings
+from busylight.api.config import APISettings, get_settings
 
 root_router = APIRouter()
 
@@ -17,7 +17,7 @@ root_router = APIRouter()
 async def api_root(
     settings: Annotated[APISettings, Depends(get_settings)],
 ) -> dict[str, Any]:
-    """API information including versions, domains and available endpoints."""
+    """Return API information including versions, domains and available endpoints."""
     return {
         "name": "BusyLight API",
         "title": settings.title,

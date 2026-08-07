@@ -18,6 +18,7 @@ Example:
 
         # Apply effects to specific lights
         controller.by_name("Kuando").blink((0, 255, 0), count=5)
+
 """
 
 from __future__ import annotations
@@ -26,13 +27,17 @@ import asyncio
 import re
 from dataclasses import dataclass, field
 from re import Pattern
-from collections.abc import Iterator
 
 from busylight_core import Light, LightUnavailableError
 from loguru import logger
 
 from .effects import Effects
 from .speed import Speed
+from typing import TYPE_CHECKING, Self
+import contextlib
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 @dataclass
@@ -53,9 +58,11 @@ class LightSelection:
             selection = LightSelection(lights)
             selection.turn_on((255, 0, 0))  # Turn all lights red
             selection.blink((0, 255, 0), count=3)  # Blink green 3 times
+
     """
 
     lights: list[Light] = field(default_factory=list)
+    background_tasks: set = field(default_factory=set, repr=False, compare=False)
 
     def __len__(self) -> int:
         """Return the number of lights in this selection."""
@@ -87,8 +94,8 @@ class LightSelection:
             Turn only top LED of Blink1 mk2 blue::
 
                 selection.turn_on((0, 0, 255), led=1)
-        """
 
+        """
         for light in self.lights:
             try:
                 light.on(color, led=led)
@@ -142,6 +149,7 @@ class LightSelection:
             Blink only bottom LED of Blink1 mk2::
 
                 selection.blink((255, 0, 0), led=2)
+
         """
         try:
             speed_obj = Speed(speed)
@@ -151,7 +159,7 @@ class LightSelection:
         effect = Effects.for_name("blink")(color, count=count)
         return self.apply_effect(effect, interval=speed_obj.duty_cycle, led=led)
 
-    def apply_effect(
+    def apply_effect(  # noqa: C901
         self,
         effect: Effects,
         duration: float | None = None,
@@ -170,12 +178,12 @@ class LightSelection:
         """
         actual_interval = interval if interval is not None else effect.default_interval
 
-        async def effect_supervisor():
+        async def effect_supervisor() -> None:
             tasks = []
             for light in self.lights:
                 light.cancel_tasks()
 
-                async def effect_task(target_light=light):
+                async def effect_task(target_light=light) -> None:
                     return await effect.execute(target_light, actual_interval, led)
 
                 task = light.add_task(
@@ -188,7 +196,7 @@ class LightSelection:
 
             if tasks:
                 if duration:
-                    done, pending = await asyncio.wait(tasks, timeout=duration)
+                    _done, pending = await asyncio.wait(tasks, timeout=duration)
                     for task in pending:
                         task.cancel()
                 elif hasattr(effect, "count") and effect.count > 0:
@@ -203,12 +211,12 @@ class LightSelection:
 
         try:
             loop = asyncio.get_running_loop()
-            asyncio.create_task(effect_supervisor())
+            task = asyncio.create_task(effect_supervisor())
+            self.background_tasks.add(task)
+            task.add_done_callback(self.background_tasks.discard)
         except RuntimeError:
-            try:
+            with contextlib.suppress(KeyboardInterrupt):
                 asyncio.run(effect_supervisor())
-            except KeyboardInterrupt:
-                pass
 
         return self
 
@@ -238,15 +246,17 @@ class LightController:
             # Use as context manager for automatic cleanup
             with LightController() as ctrl:
                 ctrl.first().turn_on((0, 0, 255))
+
     """
 
-    def __init__(self, light_class: type = None) -> None:
+    def __init__(self, light_class: type | None = None) -> None:
         """Initialize the light controller.
 
         :param light_class: Light class to use for device discovery
         """
         self.light_class = light_class or Light
         self._lights: set[Light] = set()
+        self.background_tasks: set = set()
 
     @property
     def lights(self) -> list[Light]:
@@ -263,7 +273,7 @@ class LightController:
             logger.warning(f"Failed to get lights: {error}")
         return sorted(self._lights)
 
-    def __enter__(self) -> LightController:
+    def __enter__(self) -> Self:
         """Enter context manager."""
         return self
 
@@ -271,7 +281,7 @@ class LightController:
         """Exit context manager and cleanup resources."""
         self.cleanup()
 
-    async def __aenter__(self) -> LightController:
+    async def __aenter__(self) -> Self:
         """Enter async context manager."""
         return self.__enter__()
 
@@ -328,7 +338,7 @@ class LightController:
         if not self.has_active_tasks():
             return
 
-        async def task_supervisor():
+        async def task_supervisor() -> None:
             """Monitor all light tasks and wait for them."""
             while True:
                 all_tasks = []
@@ -347,12 +357,12 @@ class LightController:
 
         try:
             loop = asyncio.get_running_loop()
-            asyncio.create_task(task_supervisor())
+            task = asyncio.create_task(task_supervisor())
+            self.background_tasks.add(task)
+            task.add_done_callback(self.background_tasks.discard)
         except RuntimeError:
-            try:
+            with contextlib.suppress(KeyboardInterrupt):
                 asyncio.run(task_supervisor())
-            except KeyboardInterrupt:
-                pass
 
     def all(self) -> LightSelection:
         """Select all discovered lights.
@@ -361,6 +371,7 @@ class LightController:
             Turn on all lights::
 
                 controller.all().turn_on((255, 255, 255))
+
         """
         return LightSelection(self.lights)
 
@@ -374,6 +385,7 @@ class LightController:
             Turn on the first light::
 
                 controller.first().turn_on((0, 255, 0))
+
         """
         lights = self.lights
         return LightSelection(lights[:1] if lights else [])
@@ -390,6 +402,7 @@ class LightController:
             Select the first and third lights::
 
                 controller.by_index(0, 2).blink((255, 0, 0))
+
         """
         lights = self.lights
         selected = []
@@ -400,7 +413,7 @@ class LightController:
                 logger.warning(f"Light index {index} not found")
         return LightSelection(selected)
 
-    def by_name(self, name: str, index: int = None) -> LightSelection:
+    def by_name(self, name: str, index: int | None = None) -> LightSelection:
         """Select lights by their device name.
 
         :param name: Exact name of the light device to match
@@ -418,8 +431,8 @@ class LightController:
             Select the second Kuando light specifically::
 
                 controller.by_name("Kuando Busylight", index=1).blink((255, 0, 0))
-        """
 
+        """
         matching = [light for light in self.lights if light.name == name]
 
         if not matching:
@@ -451,6 +464,7 @@ class LightController:
             Select lights starting with "Luxafor"::
 
                 controller.by_pattern(r"^Luxafor").blink((255, 255, 0))
+
         """
         if isinstance(pattern, str):
             pattern = re.compile(pattern, re.IGNORECASE)
@@ -470,6 +484,7 @@ class LightController:
 
                 for name in controller.names():
                     print(f"Found light: {name}")
+
         """
         lights = self.lights
         name_counts = {}

@@ -19,6 +19,8 @@ Example:
 
 """
 
+import asyncio
+
 import typer
 from busylight_core import NoLightsFoundError
 from loguru import logger
@@ -31,7 +33,7 @@ on_cli = typer.Typer()
 
 
 @on_cli.command(name="on")
-def activate_lights(
+def activate_lights(  # noqa: C901
     ctx: typer.Context,
     color: str | None = typer.Argument(
         "green",
@@ -70,6 +72,7 @@ def activate_lights(
             busylight on red --led 1      # Top LED only
             busylight on blue --led 2     # Bottom LED only
             busylight on green --led 0    # All LEDs (default)
+
     """
     logger.info("Activating lights with color: {}", color)
 
@@ -84,7 +87,6 @@ def activate_lights(
         ]
 
         if kuando_lights:
-            import asyncio
 
             async def turn_on_and_wait() -> None:
                 selection.turn_on(color, led=led)
@@ -114,7 +116,7 @@ def activate_lights(
         selection.turn_off()
     except NoLightsFoundError:
         typer.secho("No lights found.", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
     except Exception as e:
         typer.secho(f"Error activating lights: {e}", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from e

@@ -1,4 +1,4 @@
-""" """
+"""Tests for the API's pydantic models."""
 
 from typing import Any
 
@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 
 @pytest.mark.parametrize(
-    "path,expected_exception",
+    ("path", "expected_exception"),
     [
         ("foo", None),
         (1, ValidationError),
@@ -17,7 +17,7 @@ from pydantic import ValidationError
         (None, ValidationError),
         ([], ValidationError),
         (set(), ValidationError),
-        (tuple(), ValidationError),
+        ((), ValidationError),
     ],
 )
 def test_model_endpoint(path, expected_exception) -> None:
@@ -31,7 +31,7 @@ def test_model_endpoint(path, expected_exception) -> None:
 
 
 @pytest.mark.parametrize(
-    "light_id,name,info,is_on,color,rgb",
+    ("light_id", "name", "info", "is_on", "color", "rgb"),
     [
         (
             0,
@@ -44,6 +44,7 @@ def test_model_endpoint(path, expected_exception) -> None:
     ],
 )
 def test_model_lightdescription(
+    *,
     light_id: int,
     name: str,
     info: dict[str, Any],
@@ -66,12 +67,13 @@ def test_model_lightdescription(
 
 
 @pytest.mark.parametrize(
-    "light_id,action,color,rgb,speed,name,dim",
+    ("light_id", "action", "color", "rgb", "speed", "name", "dim"),
     [
         (0, "on", "green", (0, 0x80, 0), "insane", "foo", False),
     ],
 )
 def test_model_lightoperation(
+    *,
     light_id: int,
     action: str,
     color: str,

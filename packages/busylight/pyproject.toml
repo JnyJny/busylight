@@ -91,7 +91,11 @@ ignore = [
 [tool.ruff.lint.flake8-bugbear]
 # FastAPI's DI pattern calls Depends()/Query()/Path() in argument defaults
 # by design -- this isn't the mutable-default-arg bug B008 looks for.
-extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
+# Same story for typer.Option()/typer.Argument() in CLI signatures.
+extend-immutable-calls = [
+  "fastapi.Depends", "fastapi.Query", "fastapi.Path",
+  "typer.Option", "typer.Argument",
+]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
@@ -99,12 +103,41 @@ extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
   "INP001",
   # use-of-assert (S101) -- assert is the point in test code
   "S101",
+  # import-outside-top-level (PLC0415) -- deferred imports inside test
+  # functions (e.g. after mocking sys.modules) are a normal pytest pattern
+  "PLC0415",
+  # private-member-access (SLF001) -- tests legitimately reach into
+  # private state to arrange a scenario
+  "SLF001",
+  # undocumented-public-{class,method,function} (D101/D102/D103) and
+  # undocumented-public-init (D107) -- test names are the documentation
+  "D101", "D102", "D103", "D107",
   "F841",
+]
+"tests/test_busyserve.py" = [
+  # hardcoded-bind-all-interfaces (S104) -- asserting the documented
+  # default value in a mock, not an actual bind
+  "S104",
 ]
 "src/busylight/busyserve.py" = [
   # hardcoded-bind-all-interfaces (S104) -- deliberate, documented,
   # user-overridable via --host
   "S104",
+]
+"src/busylight/api/config.py" = [
+  # any-type (ANN401) -- pydantic `mode="before"` validators receive the
+  # raw pre-validation value, which is genuinely Any by design
+  "ANN401",
+]
+"src/busylight/api/logging_config.py" = [
+  # private-member-access (SLF001) -- sys._getframe() is loguru's own
+  # documented recipe for redirecting stdlib logging through it
+  "SLF001",
+]
+"src/busylight/api/dependencies.py" = [
+  # global-statement (PLW0603) -- standard module-level singleton pattern
+  # for a FastAPI DI provider, with an explicit release_* teardown
+  "PLW0603",
 ]
 
 

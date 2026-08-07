@@ -19,7 +19,7 @@ async def light_manager_middleware(request: Request, call_next: Callable) -> Res
     """Update light manager for device plug/unplug events before each request."""
     try:
         controller = get_light_controller()
-        controller.lights
+        _ = controller.lights
     except Exception as error:
         logger.debug(f"Light manager update failed: {error}")
 
