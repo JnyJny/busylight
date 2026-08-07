@@ -7,7 +7,7 @@ the current hardware state when devices are connected or disconnected
 during runtime.
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from loguru import logger

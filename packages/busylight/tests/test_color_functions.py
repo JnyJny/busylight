@@ -1,7 +1,5 @@
 """Test Color Handling"""
 
-from typing import Tuple
-
 import pytest
 from busylight.color import (
     ColorLookupError,
@@ -26,7 +24,7 @@ from busylight.color import (
         ("0X000", (0, 0, 0)),
     ],
 )
-def test_parse_color_string(value: str, expected: Tuple[int, int, int]) -> None:
+def test_parse_color_string(value: str, expected: tuple[int, int, int]) -> None:
     result = parse_color_string(value)
     assert result == expected
 
@@ -62,7 +60,7 @@ def test_parse_color_string_invalid(value: str) -> None:
         ((0, 0, 255), "blue"),
     ],
 )
-def test_colortuple_to_name(value: Tuple[int, int, int], expected: str) -> None:
+def test_colortuple_to_name(value: tuple[int, int, int], expected: str) -> None:
     result = colortuple_to_name(value)
     assert result == expected
 
@@ -70,7 +68,7 @@ def test_colortuple_to_name(value: Tuple[int, int, int], expected: str) -> None:
 @pytest.mark.parametrize(
     "color,expected", [((0, 0, 1), "#000001"), ((255, 254, 253), "#fffefd")]
 )
-def test_colortuple_to_name_unknown_color(color: Tuple[int, int, int], expected) -> None:
+def test_colortuple_to_name_unknown_color(color: tuple[int, int, int], expected) -> None:
     result = colortuple_to_name(color)
     assert result == expected
 
@@ -93,7 +91,7 @@ def test_colortuple_to_name_unknown_color(color: Tuple[int, int, int], expected)
     ],
 )
 def test_scale_color(
-    source: Tuple[int, int, int], scale: float, expected: Tuple[int, int, int]
+    source: tuple[int, int, int], scale: float, expected: tuple[int, int, int]
 ) -> None:
     result = scale_color(source, scale)
     assert result == expected

@@ -67,11 +67,11 @@ package_module_name_map = {pyserial = "serial", hidapi = "hid", "busylight-core"
 per_rule_ignores = {DEP002 = ["hidapi", "pyserial", "mkdocs", "mkdocs-material", "mkdocs-git-revision-date-localized-plugin"], DEP003 = ["pydantic"]}
 
 [tool.ruff]
+extend = "../../ruff.toml"
 fix = false
 line-length = 90
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "W"]
 ignore = [
   # comparison-to-singleton (E711, E712) -- legacy code style
   "E711",
@@ -84,11 +84,27 @@ ignore = [
   "I001",
   # unused-variable (F841) -- some are intentional side-effect calls
   "F841",
+  # print-found (T201) -- CLI package, stdout output is the point
+  "T201",
 ]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's DI pattern calls Depends()/Query()/Path() in argument defaults
+# by design -- this isn't the mutable-default-arg bug B008 looks for.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
+  # implicit-namespace-package (INP001) -- intentionally no __init__.py
+  "INP001",
+  # use-of-assert (S101) -- assert is the point in test code
+  "S101",
   "F841",
+]
+"src/busylight/busyserve.py" = [
+  # hardcoded-bind-all-interfaces (S104) -- deliberate, documented,
+  # user-overridable via --host
+  "S104",
 ]
 
 

@@ -101,7 +101,7 @@ def get_api_settings_from_env() -> APISettings:
         raise
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> APISettings:
     """Cached API settings instance."""
     return get_api_settings_from_env()

@@ -18,8 +18,6 @@ Example:
         busylight blink "#00ff00" --count 0  # Infinite blinking
 """
 
-from typing import Optional
-
 import typer
 from busylight_core import NoLightsFoundError
 from loguru import logger
@@ -35,7 +33,7 @@ blink_cli = typer.Typer()
 @blink_cli.command(name="blink")
 def blink_lights(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument(
+    color: str | None = typer.Argument(
         "red",
         callback=string_to_scaled_color,
         show_default=True,
