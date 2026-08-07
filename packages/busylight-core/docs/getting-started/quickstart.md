@@ -28,7 +28,7 @@ from busylight_core import Light, NoLightsFoundError
 try:
     light = Light.first_light()
     light.on((255, 0, 0))  # Turn on red
-    light.off()             # Turn off
+    light.off()  # Turn off
 except NoLightsFoundError:
     print("No compatible lights found. Check your device connection.")
 ```
@@ -42,8 +42,8 @@ from busylight_core import EmbravaLights, KuandoLights, NoLightsFoundError
 try:
     light = EmbravaLights.first_light()
     light.on((255, 0, 0))
-    light.dim()       # Reduce brightness
-    light.bright()    # Restore full brightness
+    light.dim()  # Reduce brightness
+    light.bright()  # Restore full brightness
     light.flash((255, 255, 0))  # Flash yellow
 except NoLightsFoundError:
     print("No Embrava devices found")
@@ -81,8 +81,12 @@ else:
 
 ```python
 from busylight_core import (
-    EmbravaLights, KuandoLights, LuxaforLights,
-    AgileInnovativeLights, ThingMLights, MuteMeLights
+    EmbravaLights,
+    KuandoLights,
+    LuxaforLights,
+    AgileInnovativeLights,
+    ThingMLights,
+    MuteMeLights,
 )
 
 vendors = [
@@ -113,12 +117,12 @@ try:
     light = Light.first_light()
 
     # Basic colors (RGB tuples, values 0-255)
-    light.on((255, 0, 0))      # Red
-    light.on((0, 255, 0))      # Green
-    light.on((0, 0, 255))      # Blue
-    light.on((255, 255, 0))    # Yellow
-    light.on((255, 0, 255))    # Magenta
-    light.on((0, 255, 255))    # Cyan
+    light.on((255, 0, 0))  # Red
+    light.on((0, 255, 0))  # Green
+    light.on((0, 0, 255))  # Blue
+    light.on((255, 255, 0))  # Yellow
+    light.on((255, 0, 255))  # Magenta
+    light.on((0, 255, 255))  # Cyan
     light.on((255, 255, 255))  # White
 
     # Turn off

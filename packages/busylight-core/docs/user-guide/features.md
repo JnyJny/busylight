@@ -44,12 +44,12 @@ try:
     light = Light.first_light()
 
     # RGB tuples (0-255) - only supported format
-    light.on((255, 0, 0))      # Red
-    light.on((0, 255, 0))      # Green
-    light.on((0, 0, 255))      # Blue
-    light.on((255, 255, 0))    # Yellow
-    light.on((255, 0, 255))    # Magenta
-    light.on((0, 255, 255))    # Cyan
+    light.on((255, 0, 0))  # Red
+    light.on((0, 255, 0))  # Green
+    light.on((0, 0, 255))  # Blue
+    light.on((255, 255, 0))  # Yellow
+    light.on((255, 0, 255))  # Magenta
+    light.on((0, 255, 255))  # Cyan
     light.on((255, 255, 255))  # White
     light.on((128, 128, 128))  # Gray (50% brightness)
 
@@ -78,10 +78,10 @@ from busylight_core import Flag, BlinkStickSquare, NoLightsFoundError
 # Luxafor Flag has 6 LEDs
 try:
     flag = Flag.first_light()
-    flag.on((255, 0, 0), led=0)    # First LED red
-    flag.on((0, 255, 0), led=1)    # Second LED green
-    flag.on((0, 0, 255), led=2)    # Third LED blue
-    flag.on((255, 255, 0))         # led=0 targets all LEDs
+    flag.on((255, 0, 0), led=0)  # First LED red
+    flag.on((0, 255, 0), led=1)  # Second LED green
+    flag.on((0, 0, 255), led=2)  # Third LED blue
+    flag.on((255, 255, 0))  # led=0 targets all LEDs
 except NoLightsFoundError:
     pass
 
@@ -154,8 +154,8 @@ from busylight_core import EmbravaLights, NoLightsFoundError
 try:
     light = EmbravaLights.first_light()
     light.on((255, 0, 0))
-    light.dim()       # Reduce brightness
-    light.bright()    # Restore full brightness
+    light.dim()  # Reduce brightness
+    light.bright()  # Restore full brightness
 except NoLightsFoundError:
     pass
 ```
@@ -196,9 +196,9 @@ from busylight_core import KuandoLights, NoLightsFoundError
 
 try:
     light = KuandoLights.first_light()
-    light.on((0, 255, 0))   # Keepalive starts automatically
+    light.on((0, 255, 0))  # Keepalive starts automatically
     # ... light stays on ...
-    light.off()              # Keepalive stops automatically
+    light.off()  # Keepalive stops automatically
 except NoLightsFoundError:
     pass
 ```
@@ -244,6 +244,7 @@ except NoLightsFoundError:
 import asyncio
 from busylight_core import Light, NoLightsFoundError
 
+
 async def main():
     try:
         light = Light.first_light()
@@ -259,6 +260,7 @@ async def main():
 
     except NoLightsFoundError:
         print("No lights found")
+
 
 asyncio.run(main())
 ```

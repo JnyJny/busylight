@@ -45,14 +45,14 @@ LightController().select_indices(0, 2, 4).apply_effect(Effects.rainbow())
 # Automatic cleanup and clearer scope
 with LightManager() as lights:
     lights.all().on(color="green")
-    lights.by_name("desk").blink("red") 
+    lights.by_name("desk").blink("red")
     # automatic cleanup on exit
 ```
 
 ### Option 3: Separate Concerns with Multiple Classes
 ```python
 # LightDiscovery - finding and tracking lights
-# LightSelector - choosing which lights to operate on  
+# LightSelector - choosing which lights to operate on
 # LightOperator - performing actions on selected lights
 
 discovery = LightDiscovery()
@@ -67,7 +67,7 @@ operator.apply_to(selected).turn_on("blue")
 ```python
 # More functional approach
 lights = get_all_lights()
-desk_lights = filter_lights(lights, name_pattern="desk*") 
+desk_lights = filter_lights(lights, name_pattern="desk*")
 turn_on_lights(desk_lights, color="red", timeout=5.0)
 apply_effect(desk_lights, Effects.blink(color="blue", count=3))
 ```
@@ -158,22 +158,25 @@ with LightController() as controller:
 with LightController() as lights:
     lights.all().turn_on("green")
 
-# Advanced selection and effects  
+# Advanced selection and effects
 with LightController() as controller:
     # Turn on all desk lights
     controller.by_pattern("desk.*").turn_on("blue")
-    
+
     # Blink specific lights
     controller.by_index(0, 2, 4).blink("red", count=3)
-    
+
     # Monitor for device changes
     controller.on_light_plugged(lambda light: print(f"Plugged: {light.name}"))
     controller.on_light_unplugged(lambda light: print(f"Unplugged: {light.name}"))
 
+
 # CLI integration (much cleaner)
 def activate_lights(ctx: typer.Context, color: str):
     with ctx.obj.controller as controller:
-        selection = controller.by_index(*ctx.obj.lights) if ctx.obj.lights else controller.all()
+        selection = (
+            controller.by_index(*ctx.obj.lights) if ctx.obj.lights else controller.all()
+        )
         selection.turn_on(color, timeout=ctx.obj.timeout)
 ```
 

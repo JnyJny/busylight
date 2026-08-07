@@ -67,8 +67,8 @@ from busylight_core import KuandoLights, BusylightAlpha, NoLightsFoundError
 
 try:
     light = KuandoLights.first_light()
-    light.on((0, 255, 0))   # Keepalive starts automatically
-    light.off()              # Keepalive stops automatically
+    light.on((0, 255, 0))  # Keepalive starts automatically
+    light.off()  # Keepalive stops automatically
 except NoLightsFoundError:
     pass
 ```
@@ -97,7 +97,7 @@ try:
     flag = Flag.first_light()
     for i in range(6):
         flag.on((255, 0, 0), led=i)  # Individual LED control
-    flag.on((0, 255, 0))             # All LEDs (led=0 default)
+    flag.on((0, 255, 0))  # All LEDs (led=0 default)
 except NoLightsFoundError:
     pass
 
@@ -137,7 +137,7 @@ except NoLightsFoundError:
 # Multi-LED with BlinkStick Pro
 try:
     strip = BlinkStickPro.first_light()
-    colors = [(255,0,0), (255,127,0), (255,255,0), (0,255,0), (0,0,255)]
+    colors = [(255, 0, 0), (255, 127, 0), (255, 255, 0), (0, 255, 0), (0, 0, 255)]
     for i, color in enumerate(colors):
         strip.on(color, led=i)
 except NoLightsFoundError:
@@ -160,7 +160,7 @@ try:
     blink = Blink1.first_light()
     blink.on((255, 0, 0), led=0)  # First LED
     blink.on((0, 0, 255), led=1)  # Second LED
-    blink.on((255, 255, 255))     # Both LEDs
+    blink.on((255, 255, 255))  # Both LEDs
 except NoLightsFoundError:
     pass
 ```

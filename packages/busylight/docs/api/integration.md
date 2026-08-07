@@ -12,23 +12,20 @@ services using both the modern v1 endpoints and compatibility endpoints.
 import subprocess
 import os
 
+
 def start_busylight_server():
     """Start BusyLight API server with custom configuration."""
     env = os.environ.copy()
-    
+
     # Optional: Set authentication
-    env['BUSYLIGHT_API_USER'] = 'api_user'
-    env['BUSYLIGHT_API_PASS'] = 'secure_password'
-    
+    env["BUSYLIGHT_API_USER"] = "api_user"
+    env["BUSYLIGHT_API_PASS"] = "secure_password"
+
     # Optional: Enable CORS for web apps
-    env['BUSYLIGHT_API_CORS_ORIGINS_LIST'] = '["http://localhost:3000"]'
-    
+    env["BUSYLIGHT_API_CORS_ORIGINS_LIST"] = '["http://localhost:3000"]'
+
     # Start server
-    subprocess.Popen([
-        'busyserve', 
-        '--host', '0.0.0.0',
-        '--port', '8000'
-    ], env=env)
+    subprocess.Popen(["busyserve", "--host", "0.0.0.0", "--port", "8000"], env=env)
 ```
 
 ### Docker Deployment
@@ -84,135 +81,158 @@ import requests
 import json
 from typing import Optional, Dict, Any, List
 
+
 class ModernBusyLightClient:
     """Python client using the modern v1 API endpoints."""
-    
-    def __init__(self, base_url: str = "http://localhost:8000", 
-                 auth: Optional[tuple] = None, use_v1: bool = True):
-        self.base_url = base_url.rstrip('/')
+
+    def __init__(
+        self,
+        base_url: str = "http://localhost:8000",
+        auth: Optional[tuple] = None,
+        use_v1: bool = True,
+    ):
+        self.base_url = base_url.rstrip("/")
         self.auth = auth
         self.use_v1 = use_v1
         self.session = requests.Session()
         if auth:
             self.session.auth = auth
-    
+
     def _post_request(self, endpoint: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Make POST request with JSON data."""
         url = f"{self.base_url}{endpoint}"
         response = self.session.post(
-            url, 
-            json=data,
-            headers={'Content-Type': 'application/json'}
+            url, json=data, headers={"Content-Type": "application/json"}
         )
         response.raise_for_status()
         return response.json()
-    
+
     def _get_request(self, endpoint: str) -> Dict[str, Any]:
         """Make GET request."""
         url = f"{self.base_url}{endpoint}"
         response = self.session.get(url)
         response.raise_for_status()
         return response.json()
-    
+
     def get_api_info(self) -> Dict[str, Any]:
         """Get API information and available endpoints."""
         return self._get_request("/")
-    
+
     def get_system_health(self) -> Dict[str, Any]:
         """Check system health and device availability."""
         endpoint = "/api/v1/system/health" if self.use_v1 else "/system/health"
         return self._get_request(endpoint)
-    
+
     def list_lights(self) -> List[Dict[str, Any]]:
         """Get status of all lights."""
         endpoint = "/api/v1/lights" if self.use_v1 else "/lights"
         return self._get_request(endpoint)
-    
+
     def get_light(self, light_id: int) -> Dict[str, Any]:
         """Get status of specific light."""
-        endpoint = f"/api/v1/lights/{light_id}/status" if self.use_v1 else f"/lights/{light_id}/status"
+        endpoint = (
+            f"/api/v1/lights/{light_id}/status"
+            if self.use_v1
+            else f"/lights/{light_id}/status"
+        )
         return self._get_request(endpoint)
-    
-    def turn_on(self, light_id: Optional[int] = None, color: str = "green", 
-                led: int = 0, dim: float = 1.0) -> Dict[str, Any]:
+
+    def turn_on(
+        self,
+        light_id: Optional[int] = None,
+        color: str = "green",
+        led: int = 0,
+        dim: float = 1.0,
+    ) -> Dict[str, Any]:
         """Turn on light(s) using v1 API."""
         if not self.use_v1:
             raise ValueError("Use compatibility client for non-v1 endpoints")
-            
+
         data = {"color": color, "led": led, "dim": dim}
-        
+
         if light_id is not None:
             endpoint = f"/api/v1/lights/{light_id}/on"
         else:
             endpoint = "/api/v1/lights/on"
-            
+
         return self._post_request(endpoint, data)
-    
+
     def turn_off(self, light_id: Optional[int] = None) -> Dict[str, Any]:
         """Turn off light(s) using v1 API."""
         if not self.use_v1:
             raise ValueError("Use compatibility client for non-v1 endpoints")
-            
+
         if light_id is not None:
             endpoint = f"/api/v1/lights/{light_id}/off"
         else:
             endpoint = "/api/v1/lights/off"
-            
+
         return self._post_request(endpoint, {})
-    
-    def blink(self, light_id: Optional[int] = None, color: str = "red", 
-              count: int = 0, speed: str = "slow", led: int = 0, 
-              dim: float = 1.0) -> Dict[str, Any]:
+
+    def blink(
+        self,
+        light_id: Optional[int] = None,
+        color: str = "red",
+        count: int = 0,
+        speed: str = "slow",
+        led: int = 0,
+        dim: float = 1.0,
+    ) -> Dict[str, Any]:
         """Start blinking effect using v1 API."""
         if not self.use_v1:
             raise ValueError("Use compatibility client for non-v1 endpoints")
-            
-        data = {
-            "color": color, "count": count, "speed": speed, 
-            "led": led, "dim": dim
-        }
-        
+
+        data = {"color": color, "count": count, "speed": speed, "led": led, "dim": dim}
+
         if light_id is not None:
             endpoint = f"/api/v1/lights/{light_id}/blink"
         else:
             endpoint = "/api/v1/lights/blink"
-            
+
         return self._post_request(endpoint, data)
-    
-    def rainbow_effect(self, light_id: Optional[int] = None, 
-                      speed: str = "slow", dim: float = 1.0, 
-                      led: int = 0) -> Dict[str, Any]:
+
+    def rainbow_effect(
+        self,
+        light_id: Optional[int] = None,
+        speed: str = "slow",
+        dim: float = 1.0,
+        led: int = 0,
+    ) -> Dict[str, Any]:
         """Start rainbow effect using v1 API."""
         if not self.use_v1:
             raise ValueError("Use compatibility client for non-v1 endpoints")
-            
+
         data = {"speed": speed, "dim": dim, "led": led}
-        
+
         if light_id is not None:
             endpoint = f"/api/v1/effects/{light_id}/rainbow"
         else:
             endpoint = "/api/v1/effects/rainbow"
-            
+
         return self._post_request(endpoint, data)
-    
-    def pulse_effect(self, light_id: Optional[int] = None, color: str = "red",
-                    speed: str = "slow", dim: float = 1.0, count: int = 0,
-                    led: int = 0) -> Dict[str, Any]:
+
+    def pulse_effect(
+        self,
+        light_id: Optional[int] = None,
+        color: str = "red",
+        speed: str = "slow",
+        dim: float = 1.0,
+        count: int = 0,
+        led: int = 0,
+    ) -> Dict[str, Any]:
         """Start pulse effect using v1 API."""
         if not self.use_v1:
             raise ValueError("Use compatibility client for non-v1 endpoints")
-            
-        data = {
-            "color": color, "speed": speed, "dim": dim, 
-            "count": count, "led": led
-        }
-        
+
+        data = {"color": color, "speed": speed, "dim": dim, "count": count, "led": led}
+
         if light_id is not None:
             endpoint = f"/api/v1/effects/{light_id}/pulse"
         else:
             endpoint = "/api/v1/effects/pulse"
-            
+
         return self._post_request(endpoint, data)
+
 
 # Usage example
 client = ModernBusyLightClient(auth=("admin", "password"))
@@ -234,42 +254,49 @@ client.rainbow_effect(speed="fast", dim=0.7)
 ```python
 class CompatibilityBusyLightClient:
     """Python client for backwards compatibility with original API."""
-    
-    def __init__(self, base_url: str = "http://localhost:8000", 
-                 auth: Optional[tuple] = None):
-        self.base_url = base_url.rstrip('/')
+
+    def __init__(
+        self, base_url: str = "http://localhost:8000", auth: Optional[tuple] = None
+    ):
+        self.base_url = base_url.rstrip("/")
         self.auth = auth
         self.session = requests.Session()
         if auth:
             self.session.auth = auth
-    
+
     def _request(self, endpoint: str, params: Optional[Dict] = None) -> Dict[Any, Any]:
         """Make API request and return JSON response."""
         url = f"{self.base_url}{endpoint}"
         response = self.session.get(url, params=params or {})
         response.raise_for_status()
         return response.json()
-    
-    def turn_on(self, light_id: int, color: str = "green", 
-                led: int = 0, dim: float = 1.0) -> Dict[str, Any]:
+
+    def turn_on(
+        self, light_id: int, color: str = "green", led: int = 0, dim: float = 1.0
+    ) -> Dict[str, Any]:
         """Turn on specific light using compatibility endpoint."""
         params = {"color": color, "led": led, "dim": dim}
         return self._request(f"/light/{light_id}/on", params)
-    
-    def turn_on_all(self, color: str = "green", 
-                    led: int = 0, dim: float = 1.0) -> Dict[str, Any]:
+
+    def turn_on_all(
+        self, color: str = "green", led: int = 0, dim: float = 1.0
+    ) -> Dict[str, Any]:
         """Turn on all lights using compatibility endpoint."""
         params = {"color": color, "led": led, "dim": dim}
         return self._request("/lights/on", params)
-    
-    def blink(self, light_id: int, color: str = "red", count: int = 0,
-              speed: str = "slow", led: int = 0) -> Dict[str, Any]:
+
+    def blink(
+        self,
+        light_id: int,
+        color: str = "red",
+        count: int = 0,
+        speed: str = "slow",
+        led: int = 0,
+    ) -> Dict[str, Any]:
         """Start blinking effect using compatibility endpoint."""
-        params = {
-            "color": color, "count": count, 
-            "speed": speed, "led": led
-        }
+        params = {"color": color, "count": count, "speed": speed, "led": led}
         return self._request(f"/light/{light_id}/blink", params)
+
 
 # Usage with existing code - no changes needed
 legacy_client = CompatibilityBusyLightClient(auth=("admin", "password"))
@@ -710,13 +737,17 @@ jobs:
 ```python
 class HybridBusyLightClient:
     """Client that supports both v1 and compatibility endpoints."""
-    
-    def __init__(self, base_url: str = "http://localhost:8000", 
-                 auth: Optional[tuple] = None, prefer_v1: bool = True):
+
+    def __init__(
+        self,
+        base_url: str = "http://localhost:8000",
+        auth: Optional[tuple] = None,
+        prefer_v1: bool = True,
+    ):
         self.modern_client = ModernBusyLightClient(base_url, auth, use_v1=True)
         self.compat_client = CompatibilityBusyLightClient(base_url, auth)
         self.prefer_v1 = prefer_v1
-    
+
     def turn_on(self, light_id: int, color: str = "green", **kwargs):
         """Turn on light using preferred API version."""
         if self.prefer_v1:
@@ -728,9 +759,10 @@ class HybridBusyLightClient:
         else:
             return self.compat_client.turn_on(light_id, color, **kwargs)
 
+
 # Migration steps:
 # 1. Use HybridBusyLightClient with prefer_v1=False initially
-# 2. Test v1 endpoints by setting prefer_v1=True  
+# 2. Test v1 endpoints by setting prefer_v1=True
 # 3. Switch to ModernBusyLightClient when ready
 ```
 
@@ -741,40 +773,45 @@ import requests
 import time
 from typing import Optional
 
+
 class RobustBusyLightClient:
     def __init__(self, base_url: str, max_retries: int = 3, use_v1: bool = True):
         self.base_url = base_url
         self.max_retries = max_retries
         self.use_v1 = use_v1
         self.session = requests.Session()
-    
-    def _safe_request(self, method: str, endpoint: str, 
-                     data: Optional[dict] = None, 
-                     params: Optional[dict] = None) -> Optional[dict]:
+
+    def _safe_request(
+        self,
+        method: str,
+        endpoint: str,
+        data: Optional[dict] = None,
+        params: Optional[dict] = None,
+    ) -> Optional[dict]:
         """Make API request with retry logic and error handling."""
         url = f"{self.base_url}{endpoint}"
-        
+
         for attempt in range(self.max_retries):
             try:
-                if method.upper() == 'POST':
+                if method.upper() == "POST":
                     response = self.session.post(
-                        url, 
-                        json=data, 
+                        url,
+                        json=data,
                         timeout=10,
-                        headers={'Content-Type': 'application/json'}
+                        headers={"Content-Type": "application/json"},
                     )
                 else:
                     response = self.session.get(url, params=params, timeout=10)
-                
+
                 response.raise_for_status()
                 return response.json()
-                
+
             except requests.exceptions.ConnectionError:
                 print(f"Connection failed (attempt {attempt + 1})")
                 if attempt < self.max_retries - 1:
-                    time.sleep(2 ** attempt)  # Exponential backoff
+                    time.sleep(2**attempt)  # Exponential backoff
                     continue
-                    
+
             except requests.exceptions.HTTPError as e:
                 if response.status_code == 401:
                     print("Authentication required")
@@ -783,25 +820,26 @@ class RobustBusyLightClient:
                 elif response.status_code == 422:
                     print(f"Validation error: {response.json()}")
                 break  # Don't retry HTTP errors
-                
+
             except requests.exceptions.Timeout:
                 print(f"Request timeout (attempt {attempt + 1})")
                 if attempt < self.max_retries - 1:
                     continue
-                    
+
         return None
-    
-    def safe_turn_on(self, light_id: Optional[int] = None, 
-                    color: str = "green") -> bool:
+
+    def safe_turn_on(self, light_id: Optional[int] = None, color: str = "green") -> bool:
         """Safely turn on light with error handling."""
         if self.use_v1:
-            endpoint = f"/api/v1/lights/{light_id}/on" if light_id else "/api/v1/lights/on"
-            result = self._safe_request('POST', endpoint, {"color": color})
+            endpoint = (
+                f"/api/v1/lights/{light_id}/on" if light_id else "/api/v1/lights/on"
+            )
+            result = self._safe_request("POST", endpoint, {"color": color})
         else:
             endpoint = f"/light/{light_id}/on" if light_id else "/lights/on"
-            result = self._safe_request('GET', endpoint, params={"color": color})
-        
-        return result is not None and result.get('success', True)
+            result = self._safe_request("GET", endpoint, params={"color": color})
+
+        return result is not None and result.get("success", True)
 ```
 
 ## OpenAPI Code Generation
