@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
 
-from ...dependencies import AuthenticatedController, Controller
+from busylight.api.dependencies import AuthenticatedController, Controller
 from .schemas import (
     LightBlinkRequest,
     LightOnRequest,
@@ -36,13 +36,11 @@ AuthLightServiceDep = Annotated[LightService, Depends(get_light_service_auth)]
 
 @router.get(
     "/{light_id}/status",
-    response_model=LightStatus,
     summary="Get light status",
     description="Get detailed status information for a specific light.",
 )
 @router.get(
     "/{light_id}",
-    response_model=LightStatus,
     summary="Get light status",
     description="Get detailed status information for a specific light.",
 )
@@ -56,13 +54,11 @@ async def get_light_status(
 
 @router.get(
     "/status",
-    response_model=list[LightStatus],
     summary="Get all lights status",
     description="Get status information for all available lights.",
 )
 @router.get(
     "",
-    response_model=list[LightStatus],
     summary="Get all lights status",
     description="Get status information for all available lights.",
 )
@@ -75,7 +71,6 @@ async def get_all_lights_status(
 
 @router.post(
     "/{light_id}/on",
-    response_model=LightOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Turn on light",
     description="Turn on a specific light with the given color and settings.",
@@ -96,7 +91,6 @@ async def turn_on_light(
 
 @router.post(
     "/on",
-    response_model=LightOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Turn on all lights",
     description="Turn on all available lights with the given color and settings.",
@@ -116,7 +110,6 @@ async def turn_on_all_lights(
 
 @router.post(
     "/{light_id}/off",
-    response_model=LightOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Turn off light",
     description="Turn off a specific light.",
@@ -131,7 +124,6 @@ async def turn_off_light(
 
 @router.post(
     "/off",
-    response_model=LightOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Turn off all lights",
     description="Turn off all available lights.",
@@ -145,7 +137,6 @@ async def turn_off_all_lights(
 
 @router.post(
     "/{light_id}/blink",
-    response_model=LightOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Blink light",
     description="Start blinking a specific light with the given parameters.",
@@ -168,7 +159,6 @@ async def blink_light(
 
 @router.post(
     "/blink",
-    response_model=LightOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Blink all lights",
     description="Start blinking all available lights with the given parameters.",

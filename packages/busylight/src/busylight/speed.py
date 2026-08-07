@@ -5,6 +5,8 @@ from functools import cached_property
 
 
 class Speed(str, Enum):
+    """How often an effect changes colors."""
+
     Slow = "slow"
     Medium = "medium"
     Fast = "fast"

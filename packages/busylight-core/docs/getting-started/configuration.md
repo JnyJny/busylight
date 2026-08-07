@@ -29,7 +29,7 @@ try:
     light = Light.first_light()
 
     # Explicitly control initialization behavior
-    light = Light.first_light(reset=True, exclusive=True)    # Default behavior
+    light = Light.first_light(reset=True, exclusive=True)  # Default behavior
     light = Light.first_light(reset=False, exclusive=False)  # No reset, shared access
 
 except NoLightsFoundError:

@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
-from ..color import ColorLookupError
+from busylight.color import ColorLookupError
 from .config import get_settings
 from .dependencies import get_light_controller, release_light_controller
 from .exceptions import (
@@ -24,7 +24,7 @@ from .v1.router import legacy_router, v1_router
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan events for startup and shutdown."""
     logger.info("Starting BusyLight API server")
     controller = get_light_controller()

@@ -8,7 +8,7 @@ the various subcommand modules.
 
 import typer
 
-from ..controller import LightSelection
+from busylight.controller import LightSelection
 
 
 def get_light_selection(ctx: typer.Context) -> LightSelection:
@@ -26,6 +26,7 @@ def get_light_selection(ctx: typer.Context) -> LightSelection:
             def my_command(ctx: typer.Context):
                 selection = get_light_selection(ctx)
                 selection.turn_on((255, 0, 0))
+
     """
     return (
         ctx.obj.controller.by_index(*ctx.obj.lights)

@@ -126,11 +126,13 @@ from busylight_client import BusyLightClient
 
 client = BusyLightClient()
 
+
 # Blink(1) mk2 dual status
 def set_dual_status(top_color, bottom_color):
     """Set different colors on top and bottom LEDs."""
-    client.turn_on(0, top_color, led=1)    # Top LED
-    client.turn_on(0, bottom_color, led=2) # Bottom LED
+    client.turn_on(0, top_color, led=1)  # Top LED
+    client.turn_on(0, bottom_color, led=2)  # Bottom LED
+
 
 # Usage
 set_dual_status("green", "red")  # Available but busy
@@ -214,20 +216,21 @@ class LEDStateManager:
         self.client = client
         self.light_id = light_id
         self.led_states = {}
-    
+
     def set_led(self, led_index, color):
         """Set LED color and track state."""
         self.client.turn_on(self.light_id, color, led=led_index)
         self.led_states[led_index] = color
-    
+
     def get_state(self, led_index):
         """Get current LED color."""
         return self.led_states.get(led_index, "off")
-    
+
     def clear_all(self):
         """Turn off all LEDs."""
         self.client.turn_off_all()
         self.led_states.clear()
+
 
 # Usage
 manager = LEDStateManager(client, 0)

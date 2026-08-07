@@ -19,6 +19,7 @@ Example:
 
         busylight supported
         busylight supported --verbose
+
 """
 
 import typer
@@ -53,7 +54,6 @@ def list_lights(
 
     The command exits with an error if no lights are detected.
     """
-
     logger.info("Listing connected lights.")
     try:
         selection = get_light_selection(ctx)
@@ -102,13 +102,13 @@ def list_supported_lights(
             for name in names:
                 typer.secho("  - ", nl=False)
                 typer.secho(name, fg="green")
-        raise typer.Exit()
+        raise typer.Exit
 
     supported_lights = {}
     for subclass in Light.subclasses():
         supported_lights.setdefault(subclass.vendor(), []).append(subclass)
 
-    for vendor, subclasses in supported_lights.items():
+    for subclasses in supported_lights.values():
         for subclass in subclasses:
             typer.secho(subclass.vendor(), fg="blue")
             for (vid, pid), name in subclass.supported_device_ids.items():

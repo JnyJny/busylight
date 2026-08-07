@@ -92,7 +92,16 @@ class TestKuandoBusylightStep:
         ringtone = Ring.Buzz
         volume = 7
 
-        step.jump(color, target, repeat, on_time, off_time, update, ringtone, volume)
+        step.jump(
+            color,
+            target=target,
+            repeat=repeat,
+            on_time=on_time,
+            off_time=off_time,
+            update=update,
+            ringtone=ringtone,
+            volume=volume,
+        )
 
         assert step.opcode == OpCode.Jump
         assert step.operand == target
@@ -120,7 +129,16 @@ class TestKuandoBusylightStep:
         ringtone = 0x1F  # Should be masked to 0xF
         volume = 0x7  # Should be masked to 0x3
 
-        step.jump(color, target, repeat, on_time, off_time, update, ringtone, volume)
+        step.jump(
+            color,
+            target=target,
+            repeat=repeat,
+            on_time=on_time,
+            off_time=off_time,
+            update=update,
+            ringtone=ringtone,
+            volume=volume,
+        )
 
         assert step.operand == 0xF
         assert step.repeat == 0xFF

@@ -54,7 +54,7 @@ def rainbow_lights(
         selection.turn_off()
     except NoLightsFoundError:
         typer.secho("Unable to rainbow lights.", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
     except Exception as error:
         typer.secho(f"Error rainbow lights: {error}", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from error

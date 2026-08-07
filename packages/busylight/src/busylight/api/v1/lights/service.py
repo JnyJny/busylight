@@ -2,9 +2,9 @@
 
 from busylight_core import Light
 
-from ....color import colortuple_to_name, parse_color_string
-from ....controller import LightController, LightSelection
-from ...exceptions import LightNotFoundError, NoLightsAvailableError
+from busylight.color import colortuple_to_name, parse_color_string
+from busylight.controller import LightController, LightSelection
+from busylight.api.exceptions import LightNotFoundError, NoLightsAvailableError
 from .schemas import LightHardwareInfo, LightOperationResponse, LightStatus
 
 
@@ -12,12 +12,13 @@ class LightService:
     """Service layer for light operations."""
 
     def __init__(self, controller: LightController):
+        """Wrap a LightController for light operations."""
         self.controller = controller
 
     def _get_light_selection(self, light_id: int | None = None) -> LightSelection:
         """Get light selection by ID or all lights."""
         if not self.controller.lights:
-            raise NoLightsAvailableError()
+            raise NoLightsAvailableError
 
         if light_id is None:
             return self.controller.all()
@@ -25,7 +26,7 @@ class LightService:
         try:
             return self.controller.by_index(light_id)
         except IndexError:
-            raise LightNotFoundError(light_id)
+            raise LightNotFoundError(light_id) from None
 
     def _light_to_status(self, light: Light, light_id: int) -> LightStatus:
         """Convert Light object to LightStatus schema."""
@@ -50,12 +51,12 @@ class LightService:
     def get_light_status(self, light_id: int) -> LightStatus:
         """Get status of a specific light."""
         if not self.controller.lights:
-            raise NoLightsAvailableError()
+            raise NoLightsAvailableError
 
         try:
             light = self.controller.lights[light_id]
         except IndexError:
-            raise LightNotFoundError(light_id)
+            raise LightNotFoundError(light_id) from None
 
         return self._light_to_status(light, light_id)
 
@@ -102,6 +103,7 @@ class LightService:
     def blink_light(
         self,
         color: str,
+        *,
         dim: float = 1.0,
         speed: str = "slow",
         count: int = 0,

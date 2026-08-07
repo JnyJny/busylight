@@ -1,20 +1,16 @@
 """A smooth color gradient for a given color."""
 
-from typing import TYPE_CHECKING
-
 from busylight_core.mixins.taskable import TaskPriority
 
 from .effect import BaseEffect
 
-if TYPE_CHECKING:
-    pass
-
 
 class Gradient(BaseEffect):
-    """This effect produces a smooth color gradient from black to the given
-    color and then back to black again with the given number of steps.
-    If count is given and is greater than zero the light will cycle through
-    the sequence count times.
+    """Produce a smooth color gradient, ramping up and back down.
+
+    Ramps from black to the given color and back to black again with the
+    given number of steps. If count is given and is greater than zero the
+    light will cycle through the sequence count times.
     """
 
     def __init__(
@@ -39,6 +35,7 @@ class Gradient(BaseEffect):
 
     @property
     def colors(self) -> list[tuple[int, int, int]]:
+        """The ramp-up and ramp-down color sequence, computed once and cached."""
         if hasattr(self, "_colors"):
             return self._colors
 
@@ -58,4 +55,5 @@ class Gradient(BaseEffect):
 
     @property
     def default_interval(self) -> float:
+        """Default seconds between gradient steps."""
         return 0.1

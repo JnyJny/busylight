@@ -15,6 +15,7 @@ Example:
 
         busylight off          # Turn off all lights
         busylight -l 0,1 off   # Turn off specific lights
+
 """
 
 import typer
@@ -39,7 +40,6 @@ def deactivate_lights(ctx: typer.Context) -> None:
     The command handles cases where no lights are found gracefully by
     displaying an informational message rather than failing with an error.
     """
-
     logger.info("Deactivating lights")
 
     try:

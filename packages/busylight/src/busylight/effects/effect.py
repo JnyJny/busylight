@@ -14,10 +14,12 @@ if TYPE_CHECKING:
 
 
 class BaseEffect(abc.ABC):
+    """Base class all lighting effects inherit from."""
+
     @classmethod
     @cache
     def subclasses(cls) -> dict[str, "BaseEffect"]:
-        """Returns a dictionary of Effect subclasses, keyed by name."""
+        """Return a dictionary of Effect subclasses, keyed by name."""
         subclasses = {}
         if cls is BaseEffect:
             for subclass in cls.__subclasses__():
@@ -48,7 +50,8 @@ class BaseEffect(abc.ABC):
         try:
             return cls.subclasses()[name.casefold()]
         except KeyError:
-            raise ValueError(f"Unknown effect {name}") from None
+            msg = f"Unknown effect {name}"
+            raise ValueError(msg) from None
 
     @classmethod
     def effects(cls) -> list[str]:

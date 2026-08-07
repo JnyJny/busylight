@@ -234,13 +234,14 @@ def on(self, color: tuple[int, int, int], led: int = 0) -> None:
     """Turn on the light with specified RGB color.
 
     Sets the device to display the given color immediately. For devices
-    with multiple LEDs, use led parameter to target specific LEDs or 
+    with multiple LEDs, use led parameter to target specific LEDs or
     0 for all LEDs.
 
     :param color: RGB values from 0-255 for desired color intensity
     :param led: Target LED index, 0 affects all LEDs
     :raises LightUnavailableError: If device communication fails
     """
+
 
 def get_colors(self) -> list[tuple[int, int, int]]:
     """Get current colors of all LEDs.

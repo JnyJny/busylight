@@ -50,6 +50,7 @@ You can also do a quick import test to verify the library is installed correctly
 
 ```python
 from busylight_core import Light
+
 print("busylight_core imported successfully")
 ```
 

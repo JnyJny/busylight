@@ -33,9 +33,9 @@ try:
     light = Light.first_light()
 
     # Turn on with different colors
-    light.on((255, 0, 0))    # Red
-    light.on((0, 255, 0))    # Green
-    light.on((0, 0, 255))    # Blue
+    light.on((255, 0, 0))  # Red
+    light.on((0, 255, 0))  # Green
+    light.on((0, 0, 255))  # Blue
     light.on((255, 255, 0))  # Yellow
 
     # Turn off
@@ -118,9 +118,9 @@ from busylight_core import KuandoLights, BusylightOmega, NoLightsFoundError
 # Any Kuando device
 try:
     light = KuandoLights.first_light()
-    light.on((0, 255, 0))   # Keepalive managed automatically
+    light.on((0, 255, 0))  # Keepalive managed automatically
     # ... light stays on ...
-    light.off()              # Keepalive cancelled automatically
+    light.off()  # Keepalive cancelled automatically
 except NoLightsFoundError:
     print("No Kuando devices found")
 
@@ -142,9 +142,9 @@ try:
     flag = Flag.first_light()
 
     # Control individual LEDs (Flag has 6 LEDs)
-    flag.on((255, 0, 0), led=1)    # LED 1 red
-    flag.on((0, 255, 0), led=2)    # LED 2 green
-    flag.on((0, 0, 255), led=3)    # LED 3 blue
+    flag.on((255, 0, 0), led=1)  # LED 1 red
+    flag.on((0, 255, 0), led=2)  # LED 2 green
+    flag.on((0, 0, 255), led=3)  # LED 3 blue
 
     # All LEDs same color (led=0 means all)
     flag.on((255, 255, 255))
@@ -163,8 +163,16 @@ from busylight_core import BlinkStickSquare, BlinkStickPro, NoLightsFoundError
 # BlinkStick Square has 8 LEDs
 try:
     square = BlinkStickSquare.first_light()
-    colors = [(255,0,0), (255,127,0), (255,255,0), (0,255,0),
-              (0,0,255), (75,0,130), (148,0,211), (255,255,255)]
+    colors = [
+        (255, 0, 0),
+        (255, 127, 0),
+        (255, 255, 0),
+        (0, 255, 0),
+        (0, 0, 255),
+        (75, 0, 130),
+        (148, 0, 211),
+        (255, 255, 255),
+    ]
     for i, color in enumerate(colors):
         square.on(color, led=i)
 except NoLightsFoundError:
@@ -234,12 +242,13 @@ except NoLightsFoundError:
 import asyncio
 from busylight_core import Light, NoLightsFoundError
 
+
 async def main():
     try:
         light = Light.first_light()
 
         async def color_cycle(light):
-            colors = [(255,0,0), (0,255,0), (0,0,255)]
+            colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
             for color in colors:
                 light.on(color)
                 await asyncio.sleep(0.3)
@@ -252,6 +261,7 @@ async def main():
 
     except NoLightsFoundError:
         print("No lights found")
+
 
 asyncio.run(main())
 ```

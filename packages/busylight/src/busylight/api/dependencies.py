@@ -16,7 +16,7 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPBasic
 
-from ..controller import LightController
+from busylight.controller import LightController
 from .config import APISettings, get_settings
 
 _light_controller: LightController | None = None

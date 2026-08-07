@@ -119,7 +119,9 @@ class MyEffect(BaseEffect):
 **After:** Effects automatically support LED targeting
 ```python
 class MyEffect(BaseEffect):
-    async def execute(self, light: "Light", interval: float | None = None, led: int = 0) -> None:
+    async def execute(
+        self, light: "Light", interval: float | None = None, led: int = 0
+    ) -> None:
         # New: LED parameter automatically supported
         for color in self.colors:
             light.on(color, led=led)  # Respects LED targeting
@@ -166,7 +168,9 @@ return self.apply_effect(effect, interval=speed_obj.duty_cycle, led=led)
 **BaseEffect Enhancement:** The execute method now includes LED parameter:
 
 ```python
-async def execute(self, light: "Light", interval: float | None = None, led: int = 0) -> None:
+async def execute(
+    self, light: "Light", interval: float | None = None, led: int = 0
+) -> None:
     # LED parameter is now part of the core effect interface
     for color in color_iterator:
         light.on(color, led=led)  # LED targeting built-in
@@ -226,7 +230,7 @@ with LightController() as controller:
 ```python
 # New LED targeting capabilities
 with LightController() as controller:
-    controller.all().turn_on("red", led=1)      # Top LED red
+    controller.all().turn_on("red", led=1)  # Top LED red
     controller.all().apply_effect(Spectrum(), led=2)  # Bottom LED rainbow
 ```
 
@@ -238,12 +242,12 @@ class BlinkingGradient(BaseEffect):
     def __init__(self, color):
         self.color = color
         self.priority = TaskPriority.NORMAL
-    
+
     @property
     def colors(self):
         return [self.color, (0, 0, 0)]  # Color + black
-    
-    @property 
+
+    @property
     def default_interval(self):
         return 0.5
 ```
@@ -254,17 +258,19 @@ class BlinkingGradient(BaseEffect):
     def __init__(self, color):
         self.color = color
         self.priority = TaskPriority.NORMAL
-    
+
     @property
     def colors(self):
         return [self.color, (0, 0, 0)]  # Color + black
-    
-    @property 
+
+    @property
     def default_interval(self):
         return 0.5
-    
+
     # Optional: Custom execute method with LED support
-    async def execute(self, light: "Light", interval: float | None = None, led: int = 0) -> None:
+    async def execute(
+        self, light: "Light", interval: float | None = None, led: int = 0
+    ) -> None:
         """Custom execution with LED awareness."""
         try:
             for color in self.colors:

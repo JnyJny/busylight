@@ -1,22 +1,19 @@
 """Rainbows are fun!"""
 
 import math
-from typing import TYPE_CHECKING
 
 from busylight_core.mixins.taskable import TaskPriority
 from loguru import logger
 
 from .effect import BaseEffect
 
-if TYPE_CHECKING:
-    pass
-
 
 class Spectrum(BaseEffect):
-    """This effect produces colors in the order of the rainbow (ROYGBIV)."""
+    """Produce colors in the order of the rainbow (ROYGBIV)."""
 
     def __init__(
         self,
+        *,
         scale: float = 1.0,
         steps: int = 64,
         frequency: tuple[float, float, float] | None = None,
@@ -51,6 +48,7 @@ class Spectrum(BaseEffect):
 
     @property
     def colors(self) -> list[tuple[int, int, int]]:
+        """The rainbow color sequence, computed once and cached."""
         if hasattr(self, "_colors"):
             return self._colors
 
@@ -75,4 +73,5 @@ class Spectrum(BaseEffect):
 
     @property
     def default_interval(self) -> float:
+        """Default seconds between spectrum steps."""
         return 0.05

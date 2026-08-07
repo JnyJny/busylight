@@ -1,23 +1,20 @@
 """Change a light between two colors with a short interval."""
 
-from typing import TYPE_CHECKING
-
 from busylight_core.mixins.taskable import TaskPriority
 
 from .effect import BaseEffect
 
-if TYPE_CHECKING:
-    pass
-
 
 class Blink(BaseEffect):
+    """Alternate a light between two colors."""
+
     def __init__(
         self,
         on_color: tuple[int, int, int],
         off_color: tuple[int, int, int] | None = None,
         count: int = 0,
     ) -> None:
-        """This effect alternates between on_color and off_color.
+        """Alternate between on_color and off_color.
 
         If count is given and greater than zero, the light will blink
         count times.
@@ -36,8 +33,10 @@ class Blink(BaseEffect):
 
     @property
     def colors(self) -> list[tuple[int, int, int]]:
+        """The on and off colors, in that order."""
         return [self.on_color, self.off_color]
 
     @property
     def default_interval(self) -> float:
+        """Default seconds between on/off transitions."""
         return 0.5

@@ -8,10 +8,11 @@ from loguru import logger
 try:
     import uvicorn
 except ImportError as error:
-    raise ImportError(
+    msg = (
         "The package `uvicorn` is missing, unable to serve the busylight API. "
         "Install with webapi extras: pip install busylight-for-humans[webapi]"
-    ) from None
+    )
+    raise ImportError(msg) from None
 
 from busylight.api.logging_config import get_uvicorn_log_config
 
@@ -35,7 +36,6 @@ def serve_http_api(
     ),
 ) -> None:
     """Serve HTTP API to access available lights."""
-
     environ["BUSYLIGHT_DEBUG"] = str(debug)
 
     try:

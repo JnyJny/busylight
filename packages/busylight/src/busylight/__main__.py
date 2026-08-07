@@ -21,6 +21,7 @@ Example:
 
         # List available lights
         busylight list
+
 """
 
 import typer
@@ -29,6 +30,7 @@ from loguru import logger
 from . import __version__
 from .global_options import GlobalOptions
 from .subcommands import subcommands
+import sys
 
 cli = typer.Typer()
 
@@ -46,6 +48,7 @@ except ImportError:
 @cli.callback(invoke_without_command=True, no_args_is_help=True)
 def precommand_callback(
     ctx: typer.Context,
+    *,
     debug: bool = typer.Option(
         False,
         "--debug",
@@ -114,4 +117,4 @@ def precommand_callback(
 
 
 if __name__ == "__main__":
-    exit(cli())
+    sys.exit(cli())

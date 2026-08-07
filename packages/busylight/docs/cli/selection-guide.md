@@ -10,17 +10,17 @@ from busylight.controller import LightController
 controller = LightController()
 
 # Selection methods (return LightSelection objects)
-controller.select_all()           # All available lights
-controller.select_first()         # Just the first light
-controller.select_by_indices(0, 2, 4)    # Specific indices
-controller.select_by_names("desk", "monitor")  # By exact names  
-controller.select_by_pattern(r"desk.*")        # By regex pattern
+controller.select_all()  # All available lights
+controller.select_first()  # Just the first light
+controller.select_by_indices(0, 2, 4)  # Specific indices
+controller.select_by_names("desk", "monitor")  # By exact names
+controller.select_by_pattern(r"desk.*")  # By regex pattern
 
 # Convenience aliases (shorter syntax)
-controller.all()                  # Same as select_all()
-controller.first()                # Same as select_first()
-controller.by_index(0, 2, 4)      # Same as select_by_indices()
-controller.by_name("desk")        # Same as select_by_names()
+controller.all()  # Same as select_all()
+controller.first()  # Same as select_first()
+controller.by_index(0, 2, 4)  # Same as select_by_indices()
+controller.by_name("desk")  # Same as select_by_names()
 controller.by_pattern(r"desk.*")  # Same as select_by_pattern()
 ```
 
@@ -74,11 +74,11 @@ with LightController() as controller:
     # List lights first to see indices
     for i, name in enumerate(controller.list_lights()):
         print(f"{i}: {name}")
-    
+
     # Select specific lights by position
-    controller.by_index(0).turn_on("red")           # First light only
-    controller.by_index(1, 3).turn_on("blue")       # Second and fourth lights
-    controller.by_index(0, 2, 4).blink("green")     # Every other light
+    controller.by_index(0).turn_on("red")  # First light only
+    controller.by_index(1, 3).turn_on("blue")  # Second and fourth lights
+    controller.by_index(0, 2, 4).blink("green")  # Every other light
 ```
 
 **Details**:
@@ -90,13 +90,13 @@ with LightController() as controller:
 **Example Use Cases**:
 ```python
 # Status lights by position
-controller.by_index(0).turn_on("green")    # Status OK
-controller.by_index(1).turn_on("yellow")   # Warning
-controller.by_index(2).turn_on("red")      # Error
+controller.by_index(0).turn_on("green")  # Status OK
+controller.by_index(1).turn_on("yellow")  # Warning
+controller.by_index(2).turn_on("red")  # Error
 
 # Physical arrangement (left to right)
 controller.by_index(0, 1, 2).turn_on("white")  # Left side lights
-controller.by_index(3, 4, 5).turn_off()        # Right side lights
+controller.by_index(3, 4, 5).turn_off()  # Right side lights
 ```
 
 ## 4. Select by Name
@@ -107,15 +107,15 @@ controller.by_index(3, 4, 5).turn_off()        # Right side lights
 with LightController() as controller:
     # Single light by exact name
     controller.by_name("Desk Light").turn_on("warm_white")
-    
+
     # Handle duplicate lights with count parameter
-    controller.by_name("Flag").turn_on("blue")           # All Flag lights
-    controller.by_name("Flag", count=1).turn_on("red")   # First Flag light
-    controller.by_name("Flag", count=2).turn_on("green") # Second Flag light
-    
+    controller.by_name("Flag").turn_on("blue")  # All Flag lights
+    controller.by_name("Flag", count=1).turn_on("red")  # First Flag light
+    controller.by_name("Flag", count=2).turn_on("green")  # Second Flag light
+
     # Multiple lights by names (different method)
     controller.by_names("Monitor", "Keyboard").turn_on("blue")
-    
+
     # Common naming patterns
     controller.by_name("Status Light").blink("red", count=5)
     controller.by_name("Camera Light").turn_on("green")
@@ -134,13 +134,13 @@ with LightController() as controller:
 # Actual device names from testing
 controller.by_name("MuteMe Original").turn_on("red")
 controller.by_name("Blynclight", count=1).turn_on("blue")  # First Blynclight
-controller.by_name("Blynclight", count=2).turn_on("green") # Second Blynclight  
+controller.by_name("Blynclight", count=2).turn_on("green")  # Second Blynclight
 controller.by_name("Blink(1)").blink("green")
 controller.by_name("fit-statUSB").turn_off()
 
 # Handle multiple lights with same name elegantly
-controller.by_name("Flag").turn_on("red")        # Both Flag lights
-controller.by_name("Flag", count=1).blink("blue") # Just first Flag
+controller.by_name("Flag").turn_on("red")  # Both Flag lights
+controller.by_name("Flag", count=1).blink("blue")  # Just first Flag
 ```
 
 ## 5. Select by Pattern (Regex)
@@ -152,14 +152,14 @@ import re
 
 with LightController() as controller:
     # String patterns (case-insensitive by default)
-    controller.by_pattern("desk").turn_on("blue")           # Contains "desk"
-    controller.by_pattern(".*light").turn_on("white")       # Ends with "light"  
-    controller.by_pattern("monitor.*").blink("yellow")      # Starts with "monitor"
-    
+    controller.by_pattern("desk").turn_on("blue")  # Contains "desk"
+    controller.by_pattern(".*light").turn_on("white")  # Ends with "light"
+    controller.by_pattern("monitor.*").blink("yellow")  # Starts with "monitor"
+
     # Compiled regex patterns for more control
     pattern = re.compile(r"Blyn.*", re.IGNORECASE)
     controller.by_pattern(pattern).turn_on("purple")
-    
+
     # Complex patterns
     controller.by_pattern(r"(desk|monitor|lamp).*light", re.IGNORECASE).turn_on("cyan")
 ```
@@ -175,15 +175,15 @@ with LightController() as controller:
 # All USB lights
 controller.by_pattern(r".*USB.*").turn_on("green")
 
-# All "Plus" model lights  
+# All "Plus" model lights
 controller.by_pattern(r".*Plus$").turn_on("blue")
 
 # Lights with numbers
 controller.by_pattern(r".*\(\d+\)").blink("red")  # Matches "Blink(1)"
 
 # Brand-specific patterns
-controller.by_pattern(r"^Blyn.*").turn_on("blue")        # Blynclight devices
-controller.by_pattern(r"^MuteMe.*").turn_on("orange")    # MuteMe devices
+controller.by_pattern(r"^Blyn.*").turn_on("blue")  # Blynclight devices
+controller.by_pattern(r"^MuteMe.*").turn_on("orange")  # MuteMe devices
 ```
 
 ## Selection Information and Debugging
@@ -213,15 +213,15 @@ All selection methods return `LightSelection` objects that support fluent operat
 with LightController() as controller:
     # Chain operations
     controller.by_pattern("desk.*").turn_on("blue").turn_off()
-    
+
     # Store selections for reuse
-    work_lights = controller.by_name("Desk Light", "Monitor Light") 
+    work_lights = controller.by_name("Desk Light", "Monitor Light")
     status_lights = controller.by_index(0, 1)
-    
+
     # Use stored selections
     work_lights.turn_on("white")
     status_lights.blink("green", count=3)
-    
+
     # Operations return LightOperations for further chaining
     controller.all().turn_on("red").turn_off()
 ```
@@ -268,8 +268,8 @@ else:
 ### 3. Use Patterns for Naming Conventions
 ```python
 # If you name your lights consistently
-controller.by_pattern("room1_.*").turn_on("blue")    # All room 1 lights
-controller.by_pattern(".*_status$").blink("red")     # All status lights  
+controller.by_pattern("room1_.*").turn_on("blue")  # All room 1 lights
+controller.by_pattern(".*_status$").blink("red")  # All status lights
 controller.by_pattern("webcam_.*").turn_on("green")  # All webcam lights
 ```
 
@@ -281,7 +281,7 @@ def set_system_status(status):
         if status == "ok":
             controller.by_pattern("status.*").turn_on("green")
             controller.by_name("Main Monitor").turn_on("blue")
-        elif status == "warning":  
+        elif status == "warning":
             controller.all().turn_off()
             controller.first().blink("yellow", count=3)
         elif status == "error":
@@ -294,16 +294,16 @@ def set_system_status(status):
 # Find out what lights are available
 with LightController() as controller:
     print(f"Total lights: {len(controller)}")
-    
+
     # List all lights with indices
     for i, name in enumerate(controller.list_lights()):
         print(f"  {i}: {name}")
-    
+
     # Get all lights for manual inspection
     all_lights = controller.registry.get_all_lights()
     for light in all_lights:
         print(f"Light: {light.name}")
-        if hasattr(light, 'hardware'):
+        if hasattr(light, "hardware"):
             print(f"  Hardware: {light.hardware}")
 ```
 

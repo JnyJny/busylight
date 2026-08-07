@@ -11,7 +11,7 @@ class TestStringToScaledColorCallback:
     """Test the string_to_scaled_color callback function."""
 
     @patch("busylight.callbacks.parse_color_string")
-    def test_string_to_scaled_color_success(self, mock_parse_color):
+    def test_string_to_scaled_color_success(self, mock_parse_color) -> None:
         """Should parse color string and return scaled tuple."""
         mock_parse_color.return_value = (255, 128, 64)
         mock_ctx = Mock()
@@ -23,7 +23,9 @@ class TestStringToScaledColorCallback:
         assert result == (255, 128, 64)
 
     @patch("busylight.callbacks.parse_color_string")
-    def test_string_to_scaled_color_with_color_lookup_error(self, mock_parse_color):
+    def test_string_to_scaled_color_with_color_lookup_error(
+        self, mock_parse_color
+    ) -> None:
         """Should exit with code 1 on ColorLookupError."""
         from busylight.color import ColorLookupError
 
@@ -36,7 +38,7 @@ class TestStringToScaledColorCallback:
 
         assert exc_info.value.exit_code == 1
 
-    def test_string_to_scaled_color_integration(self):
+    def test_string_to_scaled_color_integration(self) -> None:
         """Integration test with actual color parsing."""
         from busylight.global_options import GlobalOptions
 
@@ -49,7 +51,7 @@ class TestStringToScaledColorCallback:
         assert len(result) == 3
         assert all(isinstance(x, int) and 0 <= x <= 255 for x in result)
 
-    def test_string_to_scaled_color_integration_with_hex(self):
+    def test_string_to_scaled_color_integration_with_hex(self) -> None:
         """Integration test with hex color."""
         from busylight.global_options import GlobalOptions
 
@@ -60,7 +62,7 @@ class TestStringToScaledColorCallback:
         result = string_to_scaled_color(mock_ctx, "#ff0000")
         assert result == (255, 0, 0)
 
-    def test_string_to_scaled_color_integration_with_invalid_color(self):
+    def test_string_to_scaled_color_integration_with_invalid_color(self) -> None:
         """Integration test with invalid color should exit."""
         from busylight.global_options import GlobalOptions
 

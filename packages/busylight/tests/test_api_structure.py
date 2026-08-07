@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 
 
 @pytest.fixture
-def client():
+def client() -> TestClient:
     """Create test client."""
     return TestClient(app)
 
@@ -14,12 +14,12 @@ def client():
 class TestAPIStructure:
     """Test the new API structure."""
 
-    def test_app_creation(self):
+    def test_app_creation(self) -> None:
         """Test that the FastAPI app is created successfully."""
         assert app is not None
         assert app.title == "Busylight Server: A USB Light Server"
 
-    def test_route_counts(self, client):
+    def test_route_counts(self, client) -> None:
         """Test that we have the expected number of routes."""
         # Newer FastAPI versions store included-router routes as lazy
         # `_IncludedRouter` wrappers on `app.routes` (no `.path` attribute),
@@ -29,7 +29,7 @@ class TestAPIStructure:
         # Should have both versioned and legacy routes
         assert len(openapi_spec["paths"]) > 40  # Conservative estimate
 
-    def test_root_endpoint(self, client):
+    def test_root_endpoint(self, client) -> None:
         """Test the root API information endpoint."""
         response = client.get("/")
         assert response.status_code == 200
@@ -44,7 +44,7 @@ class TestAPIStructure:
         assert "v1" in data["api_versions"]
         assert "legacy" in data["api_versions"]
 
-    def test_system_health_endpoint(self, client):
+    def test_system_health_endpoint(self, client) -> None:
         """Test the system health endpoint."""
         response = client.get("/system/health")
         assert response.status_code == 200
@@ -54,7 +54,7 @@ class TestAPIStructure:
         assert "lights_available" in data
         assert data["status"] in ["healthy", "degraded"]
 
-    def test_system_info_endpoint(self, client):
+    def test_system_info_endpoint(self, client) -> None:
         """Test the system info endpoint."""
         response = client.get("/system/info")
         assert response.status_code == 200
@@ -64,7 +64,7 @@ class TestAPIStructure:
         assert "version" in data
         assert "description" in data
 
-    def test_versioned_routes_exist(self, client):
+    def test_versioned_routes_exist(self, client) -> None:
         """Test that versioned API routes exist."""
         # Test v1 versioned routes that don't require auth
         public_v1_routes = [
@@ -85,7 +85,7 @@ class TestAPIStructure:
             # Should return 401 without auth, or 200 if no auth is configured
             assert response.status_code in [200, 401]
 
-    def test_legacy_compatibility_routes(self, client):
+    def test_legacy_compatibility_routes(self, client) -> None:
         """Test that legacy GET-based routes work."""
         # Test legacy GET routes that require auth
         legacy_routes = [
@@ -99,7 +99,7 @@ class TestAPIStructure:
             # Should return 401 without auth, 422 for validation errors, 503 if no lights, or 200 if successful
             assert response.status_code in [200, 401, 422, 503]
 
-    def test_openapi_docs_available(self, client):
+    def test_openapi_docs_available(self, client) -> None:
         """Test that OpenAPI documentation is available."""
         response = client.get("/docs")
         assert response.status_code == 200
@@ -116,7 +116,7 @@ class TestAPIStructure:
 class TestDomainSeparation:
     """Test that domains are properly separated."""
 
-    def test_lights_domain_routes(self, client):
+    def test_lights_domain_routes(self, client) -> None:
         """Test lights domain routes."""
         # Modern POST endpoints
         lights_post_data = {"color": "red", "dim": 1.0, "led": 0}
@@ -133,7 +133,7 @@ class TestDomainSeparation:
             503,
         ]  # 503 if no lights available, 401 if auth required
 
-    def test_effects_domain_routes(self, client):
+    def test_effects_domain_routes(self, client) -> None:
         """Test effects domain routes."""
         effect_data = {"dim": 0.5, "speed": "fast", "led": 0}
 
@@ -144,7 +144,7 @@ class TestDomainSeparation:
             503,
         ]  # 503 if no lights available, 401 if auth required
 
-    def test_system_domain_routes(self, client):
+    def test_system_domain_routes(self, client) -> None:
         """Test system domain routes."""
         # System endpoints should always work
         response = client.get("/system/health")
@@ -157,7 +157,7 @@ class TestDomainSeparation:
 class TestBackwardCompatibility:
     """Test backward compatibility features."""
 
-    def test_legacy_get_endpoints_marked_deprecated(self, client):
+    def test_legacy_get_endpoints_marked_deprecated(self, client) -> None:
         """Test that legacy GET endpoints are marked as deprecated in OpenAPI."""
         response = client.get("/openapi.json")
         openapi_spec = response.json()
@@ -175,7 +175,7 @@ class TestBackwardCompatibility:
                 if get_spec:
                     assert get_spec.get("deprecated") is True
 
-    def test_both_versioned_and_legacy_routes_work(self, client):
+    def test_both_versioned_and_legacy_routes_work(self, client) -> None:
         """Test that both versioned and legacy routes work."""
         # Legacy route
         response = client.get("/lights")
@@ -200,12 +200,12 @@ class TestBackwardCompatibility:
 class TestErrorHandling:
     """Test error handling and responses."""
 
-    def test_404_for_nonexistent_routes(self, client):
+    def test_404_for_nonexistent_routes(self, client) -> None:
         """Test 404 responses for non-existent routes."""
         response = client.get("/nonexistent/route")
         assert response.status_code == 404
 
-    def test_invalid_light_id_handling(self, client):
+    def test_invalid_light_id_handling(self, client) -> None:
         """Test handling of invalid light IDs."""
         # Test with very large light ID (should return 404 or proper error)
         response = client.get("/lights/999/status")
@@ -218,7 +218,7 @@ class TestErrorHandling:
                 "error" in error_data or "message" in error_data or "detail" in error_data
             )
 
-    def test_validation_errors(self, client):
+    def test_validation_errors(self, client) -> None:
         """Test parameter validation."""
         # Invalid data should return 422 or 401 if auth required
         invalid_data = {"color": "red", "dim": 5.0}  # dim > 1.0

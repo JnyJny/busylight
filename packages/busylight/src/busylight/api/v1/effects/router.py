@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, status
 
-from ...dependencies import AuthenticatedController
+from busylight.api.dependencies import AuthenticatedController
 from .schemas import (
     EffectOperationResponse,
     FlashEffectRequest,
@@ -28,7 +28,6 @@ EffectServiceDep = Annotated[EffectService, Depends(get_effect_service)]
 
 @router.post(
     "/{light_id}/rainbow",
-    response_model=EffectOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Rainbow effect on light",
     description="Apply rainbow/spectrum effect to a specific light.",
@@ -49,7 +48,6 @@ async def rainbow_light_effect(
 
 @router.post(
     "/rainbow",
-    response_model=EffectOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Rainbow effect on all lights",
     description="Apply rainbow/spectrum effect to all lights.",
@@ -69,7 +67,6 @@ async def rainbow_all_lights_effect(
 
 @router.post(
     "/{light_id}/pulse",
-    response_model=EffectOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Pulse effect on light",
     description="Apply pulse/gradient effect to a specific light.",
@@ -92,7 +89,6 @@ async def pulse_light_effect(
 
 @router.post(
     "/pulse",
-    response_model=EffectOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Pulse effect on all lights",
     description="Apply pulse/gradient effect to all lights.",
@@ -114,7 +110,6 @@ async def pulse_all_lights_effect(
 
 @router.post(
     "/{light_id}/flash",
-    response_model=EffectOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Flash effect on light",
     description="Apply flash lights impressively (fli) effect to a specific light.",
@@ -138,7 +133,6 @@ async def flash_light_effect(
 
 @router.post(
     "/flash",
-    response_model=EffectOperationResponse,
     status_code=status.HTTP_200_OK,
     summary="Flash effect on all lights",
     description="Apply flash lights impressively (fli) effect to all lights.",

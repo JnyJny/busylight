@@ -21,13 +21,13 @@ from busylight.subcommands.udev_rules import udev_rules_cli
 class TestDisplaySubcommand:
     """Test display CLI subcommands."""
 
-    def test_display_cli_is_typer_instance(self):
+    def test_display_cli_is_typer_instance(self) -> None:
         """display_cli should be a Typer instance."""
         assert isinstance(display_cli, typer.Typer)
 
     @patch("busylight.subcommands.display.get_light_selection")
     @patch("busylight.subcommands.display.typer")
-    def test_list_lights_success(self, mock_typer, mock_get_selection):
+    def test_list_lights_success(self, mock_typer, mock_get_selection) -> None:
         """Should list lights successfully."""
         mock_ctx = Mock()
         mock_light1 = Mock()
@@ -45,23 +45,25 @@ class TestDisplaySubcommand:
         mock_typer.secho.assert_called()
 
     @patch("busylight.subcommands.display.get_light_selection")
-    def test_list_lights_no_lights_found(self, mock_get_selection):
+    def test_list_lights_no_lights_found(self, mock_get_selection) -> None:
         """Should handle NoLightsFoundError."""
         from busylight_core import Light, NoLightsFoundError
 
         mock_ctx = Mock()
         mock_get_selection.side_effect = NoLightsFoundError(Light)
 
-        with patch("busylight.subcommands.display.typer.secho") as mock_secho:
-            with pytest.raises(typer.Exit) as exc_info:
-                list_lights(mock_ctx, verbose=False)
+        with (
+            patch("busylight.subcommands.display.typer.secho") as mock_secho,
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            list_lights(mock_ctx, verbose=False)
 
         assert exc_info.value.exit_code == 1
         mock_secho.assert_called_with("No lights detected.", fg="red")
 
     @patch("busylight.subcommands.display.get_light_selection")
     @patch("busylight.subcommands.display.typer")
-    def test_list_lights_verbose_mode(self, mock_typer, mock_get_selection):
+    def test_list_lights_verbose_mode(self, mock_typer, mock_get_selection) -> None:
         """Should show detailed info in verbose mode."""
         mock_ctx = Mock()
         mock_light = Mock()
@@ -77,7 +79,7 @@ class TestDisplaySubcommand:
 
     @patch("busylight.subcommands.display.Light")
     @patch("busylight.subcommands.display.typer")
-    def test_list_supported_lights_non_verbose(self, mock_typer, mock_light):
+    def test_list_supported_lights_non_verbose(self, mock_typer, mock_light) -> None:
         """Should list supported lights without verbose."""
         mock_light.supported_lights.return_value = {
             "Vendor1": ["Device1", "Device2"],
@@ -92,7 +94,7 @@ class TestDisplaySubcommand:
 
     @patch("busylight.subcommands.display.Light")
     @patch("busylight.subcommands.display.typer")
-    def test_list_supported_lights_verbose(self, mock_typer, mock_light):
+    def test_list_supported_lights_verbose(self, mock_typer, mock_light) -> None:
         """Should list supported lights with detailed info in verbose mode."""
         mock_subclass = Mock()
         mock_subclass.vendor.return_value = "TestVendor"
@@ -107,12 +109,12 @@ class TestDisplaySubcommand:
 class TestOnSubcommand:
     """Test on CLI subcommand."""
 
-    def test_on_cli_is_typer_instance(self):
+    def test_on_cli_is_typer_instance(self) -> None:
         """on_cli should be a Typer instance."""
         assert isinstance(on_cli, typer.Typer)
 
     @patch("busylight.subcommands.on.get_light_selection")
-    def test_activate_lights_success(self, mock_get_selection):
+    def test_activate_lights_success(self, mock_get_selection) -> None:
         """Should activate lights successfully."""
         mock_ctx = Mock()
         mock_selection = Mock()
@@ -128,7 +130,9 @@ class TestOnSubcommand:
 
     @patch("busylight.subcommands.on.get_light_selection")
     @patch("busylight.subcommands.on.typer")
-    def test_activate_lights_no_lights_found(self, mock_typer, mock_get_selection):
+    def test_activate_lights_no_lights_found(
+        self, mock_typer, mock_get_selection
+    ) -> None:
         """Should handle NoLightsFoundError."""
         from busylight_core import Light, NoLightsFoundError
 
@@ -144,7 +148,9 @@ class TestOnSubcommand:
 
     @patch("busylight.subcommands.on.get_light_selection")
     @patch("busylight.subcommands.on.typer")
-    def test_activate_lights_keyboard_interrupt(self, mock_typer, mock_get_selection):
+    def test_activate_lights_keyboard_interrupt(
+        self, mock_typer, mock_get_selection
+    ) -> None:
         """Should handle KeyboardInterrupt gracefully."""
         mock_ctx = Mock()
         mock_selection = Mock()
@@ -161,7 +167,7 @@ class TestOnSubcommand:
 
     @patch("busylight.subcommands.on.get_light_selection")
     @patch("busylight.subcommands.on.typer")
-    def test_activate_lights_timeout_error(self, mock_typer, mock_get_selection):
+    def test_activate_lights_timeout_error(self, mock_typer, mock_get_selection) -> None:
         """Should handle TimeoutError gracefully."""
         mock_ctx = Mock()
         mock_selection = Mock()
@@ -178,7 +184,9 @@ class TestOnSubcommand:
 
     @patch("busylight.subcommands.on.get_light_selection")
     @patch("busylight.subcommands.on.typer")
-    def test_activate_lights_generic_exception(self, mock_typer, mock_get_selection):
+    def test_activate_lights_generic_exception(
+        self, mock_typer, mock_get_selection
+    ) -> None:
         """Should handle generic exceptions."""
         mock_ctx = Mock()
         mock_selection = Mock()
@@ -202,12 +210,12 @@ class TestOnSubcommand:
 class TestOffSubcommand:
     """Test off CLI subcommand."""
 
-    def test_off_cli_is_typer_instance(self):
+    def test_off_cli_is_typer_instance(self) -> None:
         """off_cli should be a Typer instance."""
         assert isinstance(off_cli, typer.Typer)
 
     @patch("busylight.subcommands.off.get_light_selection")
-    def test_deactivate_lights_success(self, mock_get_selection):
+    def test_deactivate_lights_success(self, mock_get_selection) -> None:
         """Should deactivate lights successfully."""
         mock_ctx = Mock()
         mock_selection = Mock()
@@ -219,7 +227,9 @@ class TestOffSubcommand:
 
     @patch("busylight.subcommands.off.get_light_selection")
     @patch("busylight.subcommands.off.typer")
-    def test_deactivate_lights_no_lights_found(self, mock_typer, mock_get_selection):
+    def test_deactivate_lights_no_lights_found(
+        self, mock_typer, mock_get_selection
+    ) -> None:
         """Should handle NoLightsFoundError gracefully."""
         from busylight_core import Light, NoLightsFoundError
 
@@ -234,12 +244,12 @@ class TestOffSubcommand:
 class TestBlinkSubcommand:
     """Test blink CLI subcommand."""
 
-    def test_blink_cli_is_typer_instance(self):
+    def test_blink_cli_is_typer_instance(self) -> None:
         """blink_cli should be a Typer instance."""
         assert isinstance(blink_cli, typer.Typer)
 
     @patch("busylight.subcommands.blink.get_light_selection")
-    def test_blink_lights_success(self, mock_get_selection):
+    def test_blink_lights_success(self, mock_get_selection) -> None:
         """Should apply blink effect successfully."""
         from busylight.speed import Speed
         from busylight.subcommands.blink import blink_lights
@@ -255,7 +265,7 @@ class TestBlinkSubcommand:
         )
 
     @patch("busylight.subcommands.blink.get_light_selection")
-    def test_blink_lights_keyboard_interrupt(self, mock_get_selection):
+    def test_blink_lights_keyboard_interrupt(self, mock_get_selection) -> None:
         """Should handle KeyboardInterrupt gracefully."""
         from busylight.speed import Speed
         from busylight.subcommands.blink import blink_lights
@@ -270,7 +280,7 @@ class TestBlinkSubcommand:
         mock_selection.turn_off.assert_called_once()
 
     @patch("busylight.subcommands.blink.get_light_selection")
-    def test_blink_lights_no_lights_found(self, mock_get_selection):
+    def test_blink_lights_no_lights_found(self, mock_get_selection) -> None:
         """Should handle NoLightsFoundError."""
         from busylight.speed import Speed
         from busylight.subcommands.blink import blink_lights
@@ -279,15 +289,17 @@ class TestBlinkSubcommand:
         mock_ctx = Mock()
         mock_get_selection.side_effect = NoLightsFoundError(Light)
 
-        with patch("busylight.subcommands.blink.typer.secho") as mock_secho:
-            with pytest.raises(typer.Exit) as exc_info:
-                blink_lights(mock_ctx, color=(255, 0, 0), speed=Speed.Medium, count=3)
+        with (
+            patch("busylight.subcommands.blink.typer.secho") as mock_secho,
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            blink_lights(mock_ctx, color=(255, 0, 0), speed=Speed.Medium, count=3)
 
         assert exc_info.value.exit_code == 1
         mock_secho.assert_called_with("Unable to blink lights.", fg="red")
 
     @patch("busylight.subcommands.blink.get_light_selection")
-    def test_blink_lights_generic_exception(self, mock_get_selection):
+    def test_blink_lights_generic_exception(self, mock_get_selection) -> None:
         """Should handle generic exceptions."""
         from busylight.speed import Speed
         from busylight.subcommands.blink import blink_lights
@@ -297,9 +309,11 @@ class TestBlinkSubcommand:
         mock_selection.blink.side_effect = Exception("Test error")
         mock_get_selection.return_value = mock_selection
 
-        with patch("busylight.subcommands.blink.typer.secho") as mock_secho:
-            with pytest.raises(typer.Exit) as exc_info:
-                blink_lights(mock_ctx, color=(255, 0, 0), speed=Speed.Fast, count=1)
+        with (
+            patch("busylight.subcommands.blink.typer.secho") as mock_secho,
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            blink_lights(mock_ctx, color=(255, 0, 0), speed=Speed.Fast, count=1)
 
         assert exc_info.value.exit_code == 1
         mock_secho.assert_called_with("Error blinking lights: Test error", fg="red")
@@ -308,13 +322,13 @@ class TestBlinkSubcommand:
 class TestPulseSubcommand:
     """Test pulse CLI subcommand."""
 
-    def test_pulse_cli_is_typer_instance(self):
+    def test_pulse_cli_is_typer_instance(self) -> None:
         """pulse_cli should be a Typer instance."""
         assert isinstance(pulse_cli, typer.Typer)
 
     @patch("busylight.subcommands.pulse.get_light_selection")
     @patch("busylight.subcommands.pulse.Effects")
-    def test_pulse_lights_success(self, mock_effects, mock_get_selection):
+    def test_pulse_lights_success(self, mock_effects, mock_get_selection) -> None:
         """Should apply pulse effect successfully."""
         from busylight.speed import Speed
         from busylight.subcommands.pulse import pulse_lights
@@ -342,7 +356,7 @@ class TestPulseSubcommand:
 
     @patch("busylight.subcommands.pulse.get_light_selection")
     @patch("busylight.subcommands.pulse.Effects")
-    def test_pulse_lights_timeout_error(self, mock_effects, mock_get_selection):
+    def test_pulse_lights_timeout_error(self, mock_effects, mock_get_selection) -> None:
         """Should handle TimeoutError gracefully."""
         from busylight.speed import Speed
         from busylight.subcommands.pulse import pulse_lights
@@ -360,7 +374,7 @@ class TestPulseSubcommand:
         mock_selection.turn_off.assert_called_once()
 
     @patch("busylight.subcommands.pulse.get_light_selection")
-    def test_pulse_lights_no_lights_found(self, mock_get_selection):
+    def test_pulse_lights_no_lights_found(self, mock_get_selection) -> None:
         """Should handle NoLightsFoundError."""
         from busylight.speed import Speed
         from busylight.subcommands.pulse import pulse_lights
@@ -369,18 +383,22 @@ class TestPulseSubcommand:
         mock_ctx = Mock()
         mock_get_selection.side_effect = NoLightsFoundError(Light)
 
-        with patch("busylight.subcommands.pulse.typer.secho") as mock_secho:
-            with pytest.raises(typer.Exit) as exc_info:
-                pulse_lights(
-                    mock_ctx, color=(128, 128, 128), speed=Speed.Slow, count=2, led=0
-                )
+        with (
+            patch("busylight.subcommands.pulse.typer.secho") as mock_secho,
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            pulse_lights(
+                mock_ctx, color=(128, 128, 128), speed=Speed.Slow, count=2, led=0
+            )
 
         assert exc_info.value.exit_code == 1
         mock_secho.assert_called_with("Unable to pulse lights.", fg="red")
 
     @patch("busylight.subcommands.pulse.get_light_selection")
     @patch("busylight.subcommands.pulse.Effects")
-    def test_pulse_lights_generic_exception(self, mock_effects, mock_get_selection):
+    def test_pulse_lights_generic_exception(
+        self, mock_effects, mock_get_selection
+    ) -> None:
         """Should handle generic exceptions."""
         from busylight.speed import Speed
         from busylight.subcommands.pulse import pulse_lights
@@ -392,11 +410,11 @@ class TestPulseSubcommand:
         mock_selection.apply_effect.side_effect = Exception("Pulse test error")
         mock_get_selection.return_value = mock_selection
 
-        with patch("busylight.subcommands.pulse.typer.secho") as mock_secho:
-            with pytest.raises(typer.Exit) as exc_info:
-                pulse_lights(
-                    mock_ctx, color=(64, 64, 64), speed=Speed.Medium, count=1, led=0
-                )
+        with (
+            patch("busylight.subcommands.pulse.typer.secho") as mock_secho,
+            pytest.raises(typer.Exit) as exc_info,
+        ):
+            pulse_lights(mock_ctx, color=(64, 64, 64), speed=Speed.Medium, count=1, led=0)
 
         assert exc_info.value.exit_code == 1
         mock_secho.assert_called_with("Error pulse lights: Pulse test error", fg="red")
@@ -405,14 +423,14 @@ class TestPulseSubcommand:
 class TestSubcommandCLIInstances:
     """Test that remaining subcommand CLI instances are Typer instances."""
 
-    def test_rainbow_cli_is_typer_instance(self):
+    def test_rainbow_cli_is_typer_instance(self) -> None:
         """rainbow_cli should be a Typer instance."""
         assert isinstance(rainbow_cli, typer.Typer)
 
-    def test_fli_cli_is_typer_instance(self):
+    def test_fli_cli_is_typer_instance(self) -> None:
         """fli_cli should be a Typer instance."""
         assert isinstance(fli_cli, typer.Typer)
 
-    def test_udev_rules_cli_is_typer_instance(self):
+    def test_udev_rules_cli_is_typer_instance(self) -> None:
         """udev_rules_cli should be a Typer instance."""
         assert isinstance(udev_rules_cli, typer.Typer)

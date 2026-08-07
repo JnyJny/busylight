@@ -19,7 +19,7 @@ API, see [Busylight for Humans&#8482;][busylight-for-humans].
 from busylight_core import Light
 
 light = Light.first_light()
-light.on((0, 128, 0))   # green
+light.on((0, 128, 0))  # green
 light.off()
 ```
 
@@ -95,8 +95,8 @@ from busylight_core import Light
 
 light = Light.first_light()
 
-light.on((0, 128, 0))    # available (green)
-light.on((255, 0, 0))    # in meeting (red)
+light.on((0, 128, 0))  # available (green)
+light.on((255, 0, 0))  # in meeting (red)
 light.on((255, 255, 0))  # away (yellow)
 light.off()
 ```

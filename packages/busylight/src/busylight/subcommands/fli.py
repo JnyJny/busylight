@@ -16,6 +16,7 @@ fli_cli = typer.Typer()
 @fli_cli.command(name="fli")
 def flash_lights_impressively(
     ctx: typer.Context,
+    *,
     on_color: str | None = typer.Argument(
         "red",
         callback=string_to_scaled_color,
@@ -50,7 +51,6 @@ def flash_lights_impressively(
     ),
 ) -> None:
     """Flash Lights Impressively"""
-
     logger.info("Applying fli effect.")
 
     effect = Effects.for_name("blink")(
@@ -69,7 +69,7 @@ def flash_lights_impressively(
         selection.turn_off()
     except NoLightsFoundError:
         typer.secho("Unable to flash lights impressively.", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
     except Exception as error:
         typer.secho(f"Error while flashing lights impressively: {error}", fg="red")
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from error

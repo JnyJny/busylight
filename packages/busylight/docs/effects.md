@@ -45,11 +45,7 @@ Alternates between two colors with configurable timing.
 from busylight.effects import Blink
 
 # Blink red/black 5 times
-effect = Blink(
-    on_color=(255, 0, 0),
-    off_color=(0, 0, 0),
-    count=5
-)
+effect = Blink(on_color=(255, 0, 0), off_color=(0, 0, 0), count=5)
 ```
 
 **CLI Examples:**
@@ -108,11 +104,7 @@ Smooth transition from black to a target color and back.
 from busylight.effects import Gradient
 
 # Pulsing blue effect
-effect = Gradient(
-    color=(0, 0, 255),
-    step=5,
-    count=2
-)
+effect = Gradient(color=(0, 0, 255), step=5, count=2)
 ```
 
 **CLI Examples:**
@@ -175,18 +167,18 @@ from busylight.controller import LightController
 with LightController() as controller:
     # All LEDs (default)
     controller.all().turn_on("red")
-    
+
     # Specific LED targeting using apply_effect
     from busylight.effects import Blink, Spectrum, Gradient
-    
+
     # LED-specific effects
     controller.all().apply_effect(Blink((255, 0, 0), count=5), led=1)
     controller.all().apply_effect(Spectrum(scale=0.8), led=2)
     controller.all().apply_effect(Gradient((0, 255, 0)), led=1)
-    
+
     # LED-specific basic operations
-    controller.all().turn_on((255, 0, 0), led=1)    # Top LED red
-    controller.all().turn_on((0, 0, 255), led=2)    # Bottom LED blue
+    controller.all().turn_on((255, 0, 0), led=1)  # Top LED red
+    controller.all().turn_on((0, 0, 255), led=2)  # Bottom LED blue
     controller.all().blink((255, 255, 0), led=1, count=3)  # Top LED blink yellow
 ```
 
@@ -205,16 +197,16 @@ with LightController() as controller:
 # Create complex multi-LED effects
 async def multi_led_pattern():
     controller = LightController()
-    
+
     # Alternating pattern
     controller.all().apply_effect(Blink((255, 0, 0)), led=1)  # Top red blink
     await asyncio.sleep(0.5)
     controller.all().apply_effect(Blink((0, 255, 0)), led=2)  # Bottom green blink
-    
+
     # Synchronized different effects
     tasks = [
-        controller.all().apply_effect(Spectrum(), led=1),      # Top rainbow
-        controller.all().apply_effect(Gradient((255, 0, 0)), led=2)  # Bottom pulse
+        controller.all().apply_effect(Spectrum(), led=1),  # Top rainbow
+        controller.all().apply_effect(Gradient((255, 0, 0)), led=2),  # Bottom pulse
     ]
     await asyncio.gather(*tasks)
 ```
@@ -233,7 +225,8 @@ All effects inherit from `BaseEffect`, which provides:
 def colors(self) -> list[tuple[int, int, int]]:
     """List of RGB color tuples that define the effect sequence."""
 
-@property  
+
+@property
 @abc.abstractmethod
 def default_interval(self) -> float:
     """Default interval between color changes in seconds."""
@@ -288,23 +281,24 @@ from busylight.effects.effect import BaseEffect
 if TYPE_CHECKING:
     from busylight_core import Light
 
+
 class CustomEffect(BaseEffect):
     def __init__(self, param1: str, param2: int = 0) -> None:
         """Initialize your custom effect.
-        
+
         :param param1: Custom parameter description
         :param param2: Another parameter with default value
         """
         self.param1 = param1
         self.param2 = param2
         self.priority = TaskPriority.NORMAL
-    
+
     @property
     def colors(self) -> list[tuple[int, int, int]]:
         """Generate your color sequence."""
         # Return list of RGB tuples
         return [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
-    
+
     @property
     def default_interval(self) -> float:
         """Return default timing between colors."""
@@ -320,11 +314,11 @@ class CustomEffect(BaseEffect):
 def colors(self) -> list[tuple[int, int, int]]:
     """Simple predefined sequence."""
     return [
-        (255, 0, 0),    # Red
-        (255, 127, 0),  # Orange  
+        (255, 0, 0),  # Red
+        (255, 127, 0),  # Orange
         (255, 255, 0),  # Yellow
-        (0, 255, 0),    # Green
-        (0, 0, 255),    # Blue
+        (0, 255, 0),  # Green
+        (0, 0, 255),  # Blue
     ]
 ```
 
@@ -356,29 +350,25 @@ class ParameterizedEffect(BaseEffect):
         self.base_color = base_color
         self.steps = steps
         self.priority = TaskPriority.LOW
-    
+
     @property
     def colors(self) -> list[tuple[int, int, int]]:
         """Generate gradient based on parameters."""
         if hasattr(self, "_colors"):
             return self._colors
-            
+
         r, g, b = self.base_color
         colors = []
-        
+
         for i in range(self.steps):
             # Create brightness ramp
             scale = i / (self.steps - 1)
-            colors.append((
-                int(r * scale),
-                int(g * scale), 
-                int(b * scale)
-            ))
-        
+            colors.append((int(r * scale), int(g * scale), int(b * scale)))
+
         # Add reverse for smooth cycle
         self._colors = colors + list(reversed(colors[:-1]))
         return self._colors
-    
+
     @property
     def default_interval(self) -> float:
         return 0.1
@@ -390,18 +380,20 @@ For advanced effects, override the `execute()` method:
 
 ```python
 class CustomTimingEffect(BaseEffect):
-    async def execute(self, light: "Light", interval: float | None = None, led: int = 0) -> None:
+    async def execute(
+        self, light: "Light", interval: float | None = None, led: int = 0
+    ) -> None:
         """Custom execution with variable timing and LED support."""
         try:
             for i, color in enumerate(self.colors):
                 light.on(color, led=led)  # Pass LED parameter
-                
+
                 # Variable timing based on position
                 if i < len(self.colors) // 2:
                     await asyncio.sleep(0.1)  # Fast first half
                 else:
                     await asyncio.sleep(0.5)  # Slow second half
-                    
+
         finally:
             light.off(led=led)  # Clean up specific LED
 ```
@@ -417,7 +409,7 @@ from .custom_effect import CustomEffect
 __all__ = [
     "Blink",
     "CustomEffect",  # Add your effect
-    "Effects", 
+    "Effects",
     "Gradient",
     "Spectrum",
     "Steady",
@@ -441,13 +433,14 @@ __all__ = [
 def colors(self) -> list[tuple[int, int, int]]:
     if hasattr(self, "_colors"):
         return self._colors
-    
+
     # Expensive computation here
     self._colors = computed_colors
     return self._colors
 
+
 # ❌ Bad: Recalculates every time
-@property 
+@property
 def colors(self) -> list[tuple[int, int, int]]:
     return [expensive_computation() for _ in range(100)]
 ```
@@ -497,12 +490,13 @@ class AdaptiveEffect(BaseEffect):
 ```python
 import math
 
+
 class SineWaveEffect(BaseEffect):
     def __init__(self, frequency: float = 0.1, amplitude: int = 127):
         self.frequency = frequency
         self.amplitude = amplitude
         self.priority = TaskPriority.LOW
-    
+
     @property
     def colors(self) -> list[tuple[int, int, int]]:
         colors = []
@@ -519,9 +513,9 @@ class SineWaveEffect(BaseEffect):
 class MultiPhaseEffect(BaseEffect):
     @property
     def colors(self) -> list[tuple[int, int, int]]:
-        phase1 = [(255, 0, 0)] * 5      # Red phase
-        phase2 = [(0, 255, 0)] * 3      # Green phase  
-        phase3 = [(0, 0, 255)] * 7      # Blue phase
+        phase1 = [(255, 0, 0)] * 5  # Red phase
+        phase2 = [(0, 255, 0)] * 3  # Green phase
+        phase3 = [(0, 0, 255)] * 7  # Blue phase
         return phase1 + phase2 + phase3
 ```
 
@@ -533,13 +527,15 @@ class MultiPhaseEffect(BaseEffect):
 import pytest
 from your_module import CustomEffect
 
+
 def test_custom_effect_colors():
     effect = CustomEffect(param1="test")
     colors = effect.colors
-    
+
     assert len(colors) > 0
     assert all(len(color) == 3 for color in colors)
     assert all(0 <= c <= 255 for color in colors for c in color)
+
 
 def test_custom_effect_timing():
     effect = CustomEffect(param1="test")
@@ -552,13 +548,14 @@ def test_custom_effect_timing():
 import asyncio
 from unittest.mock import Mock
 
+
 async def test_effect_execution():
     effect = CustomEffect(param1="test")
     mock_light = Mock()
-    
+
     # Test execution doesn't raise errors
     await effect.execute(mock_light, interval=0.01)
-    
+
     # Verify light was called
     assert mock_light.on.called
     assert mock_light.off.called

@@ -16,12 +16,12 @@ class MockLight:
         self.cancel_tasks = Mock()
         self.release = Mock()
 
-    def on(self, color, led=0):
+    def on(self, color, led=0) -> None:
         self.is_on = True
         self.current_color = color
         self.current_led = led
 
-    def off(self):
+    def off(self) -> None:
         self.is_on = False
         self.current_color = None
 
@@ -45,7 +45,7 @@ class MockLight:
 
 
 class TestLightSelection:
-    def test_basic_operations(self):
+    def test_basic_operations(self) -> None:
         lights = [MockLight("Test")]
         selection = LightSelection(lights)
 
@@ -53,14 +53,14 @@ class TestLightSelection:
         assert bool(selection) is True
         assert list(selection) == lights
 
-    def test_turn_off(self):
+    def test_turn_off(self) -> None:
         lights = [MockLight("Test")]
         selection = LightSelection(lights)
 
         selection.turn_off()
         assert not lights[0].is_on
 
-    def test_apply_effect_calls_asyncio_run(self):
+    def test_apply_effect_calls_asyncio_run(self) -> None:
         lights = [MockLight("Test")]
         selection = LightSelection(lights)
 
@@ -81,7 +81,7 @@ class TestLightSelection:
             selection.apply_effect(mock_effect)
             mock_run.assert_called_once()
 
-    def test_turn_on_with_color_tuple(self):
+    def test_turn_on_with_color_tuple(self) -> None:
         lights = [MockLight("Test")]
         selection = LightSelection(lights)
 
@@ -91,7 +91,7 @@ class TestLightSelection:
         assert lights[0].is_on
         assert lights[0].current_color == (255, 128, 0)
 
-    def test_blink_calls_apply_effect(self):
+    def test_blink_calls_apply_effect(self) -> None:
         lights = [MockLight("Test")]
         selection = LightSelection(lights)
 
@@ -102,11 +102,11 @@ class TestLightSelection:
 
 
 class TestLightController:
-    def test_init(self):
+    def test_init(self) -> None:
         controller = LightController()
         assert controller.light_class is not None
 
-    def test_no_lights(self):
+    def test_no_lights(self) -> None:
         mock_light_class = Mock()
         mock_light_class.all_lights.return_value = []
 
@@ -114,7 +114,7 @@ class TestLightController:
         assert len(controller) == 0
         assert not bool(controller)
 
-    def test_fluent_selection(self):
+    def test_fluent_selection(self) -> None:
         mock_lights = [MockLight("Light1"), MockLight("Light2")]
         mock_light_class = Mock()
         mock_light_class.all_lights.return_value = mock_lights
@@ -133,7 +133,7 @@ class TestLightController:
         by_name_selection = controller.by_name("Light1")
         assert len(by_name_selection) == 1
 
-    def test_duplicate_names(self):
+    def test_duplicate_names(self) -> None:
         mock_lights = [MockLight("Flag"), MockLight("Flag"), MockLight("Unique")]
         mock_light_class = Mock()
         mock_light_class.all_lights.return_value = mock_lights
@@ -157,13 +157,13 @@ class TestLightController:
         assert "Flag #2" in names
         assert "Unique" in names
 
-    def test_context_manager(self):
+    def test_context_manager(self) -> None:
         controller = LightController()
 
         with controller as ctx:
             assert ctx is controller
 
-    def test_cleanup_and_release(self):
+    def test_cleanup_and_release(self) -> None:
         mock_lights = [MockLight("Test")]
         mock_light_class = Mock()
         mock_light_class.all_lights.return_value = mock_lights
@@ -180,7 +180,7 @@ class TestLightController:
 class TestLedFunctionality:
     """Test LED-specific functionality in the controller and selection classes."""
 
-    def test_light_selection_turn_on_with_led_parameter(self):
+    def test_light_selection_turn_on_with_led_parameter(self) -> None:
         """Test that turn_on passes LED parameter to individual lights."""
         mock_light1 = MockLight("Light1")
         mock_light2 = MockLight("Light2")
@@ -201,7 +201,7 @@ class TestLedFunctionality:
         assert mock_light2.current_color == (0, 255, 0)
         assert mock_light2.current_led == 1
 
-    def test_light_selection_blink_with_led_parameter(self):
+    def test_light_selection_blink_with_led_parameter(self) -> None:
         """Test that blink method accepts LED parameter."""
         mock_light = MockLight("TestLight")
         mock_light.add_task.return_value = Mock()
@@ -209,12 +209,14 @@ class TestLedFunctionality:
         selection = LightSelection([mock_light])
 
         # Test blink with LED parameter
-        with patch("asyncio.get_running_loop", side_effect=RuntimeError):
-            with patch("asyncio.run") as mock_run:
-                selection.blink((255, 0, 0), count=3, led=2)
-                mock_run.assert_called_once()
+        with (
+            patch("asyncio.get_running_loop", side_effect=RuntimeError),
+            patch("asyncio.run") as mock_run,
+        ):
+            selection.blink((255, 0, 0), count=3, led=2)
+            mock_run.assert_called_once()
 
-    def test_controller_fluent_interface_with_leds(self):
+    def test_controller_fluent_interface_with_leds(self) -> None:
         """Test that controller methods work with LED parameters."""
         mock_lights = [MockLight("Blink1"), MockLight("Luxafor")]
         mock_light_class = Mock()
@@ -229,7 +231,7 @@ class TestLedFunctionality:
             assert light.current_color == (0, 0, 255)
             assert light.current_led == 1
 
-    def test_led_parameter_validation(self):
+    def test_led_parameter_validation(self) -> None:
         """Test that LED parameter handles edge cases correctly."""
         mock_light = MockLight("TestLight")
         selection = LightSelection([mock_light])

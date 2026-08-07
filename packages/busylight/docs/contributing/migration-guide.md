@@ -29,7 +29,7 @@ def activate_lights(
 ## After (New LightController)
 
 ```python
-# src/busylight/subcommands/on.py  
+# src/busylight/subcommands/on.py
 @on_cli.command(name="on")
 def activate_lights(
     ctx: typer.Context,
@@ -45,10 +45,10 @@ def activate_lights(
                 selection = controller.by_index(*ctx.obj.lights)
             else:
                 selection = controller.all()
-            
+
             # Turn on lights - much cleaner!
             selection.turn_on(color, timeout=ctx.obj.timeout)
-            
+
     except (KeyboardInterrupt, TimeoutError):
         # Automatic cleanup happens in context manager
         pass
@@ -74,7 +74,9 @@ def activate_lights(
 ```python
 # Old way:
 effect = Effects.for_name("blink")(color, count=count)
-ctx.obj.manager.apply_effect(effect, duty_cycle=speed.duty_cycle, light_ids=ctx.obj.lights, timeout=ctx.obj.timeout)
+ctx.obj.manager.apply_effect(
+    effect, duty_cycle=speed.duty_cycle, light_ids=ctx.obj.lights, timeout=ctx.obj.timeout
+)
 
 # New way:
 controller.all().blink(color, count=count, speed="slow")
@@ -106,6 +108,7 @@ class GlobalOptions:
     lights: list[int] = field(default_factory=list)
     debug: bool = False
     manager: LightManager = field(default_factory=LightManager)
+
 
 # NEW: src/busylight/global_options.py
 @dataclass

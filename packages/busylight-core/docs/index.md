@@ -22,7 +22,7 @@ from busylight_core import Light, NoLightsFoundError
 try:
     light = Light.first_light()
     light.on((255, 0, 0))  # Turn on red
-    light.off()             # Turn off
+    light.off()  # Turn off
 except NoLightsFoundError:
     print("No compatible lights found")
 ```

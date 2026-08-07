@@ -1,10 +1,10 @@
-""" """
+"""Tests for the Effects registry."""
 
 import pytest
 from busylight.effects import Blink, Effects, Gradient, Spectrum, Steady
 
 
-def test_effects_classmethod_subclasses():
+def test_effects_classmethod_subclasses() -> None:
     subclasses = Effects.subclasses()
     assert isinstance(subclasses, dict)
     for name, subclass in subclasses.items():
@@ -15,7 +15,7 @@ def test_effects_classmethod_subclasses():
 
 
 @pytest.mark.parametrize(
-    "name,expected",
+    ("name", "expected"),
     [
         ("Blink", Blink),
         ("blink", Blink),
@@ -33,5 +33,5 @@ def test_effects_classmethod_for_name(name, expected) -> None:
 
 @pytest.mark.parametrize("name", ["foo", "bar", "baz"])
 def test_effects_classmethod_for_name_unknown(name) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Unknown effect"):
         result = Effects.for_name(name)
