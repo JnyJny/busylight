@@ -7,7 +7,7 @@ with uvicorn.
 
 import logging
 import sys
-from typing import Any, Dict
+from typing import Any
 
 from loguru import logger
 
@@ -68,7 +68,7 @@ def setup_logging(debug: bool = False) -> None:
     logger.info("Logging configuration complete")
 
 
-def get_uvicorn_log_config(debug: bool = False) -> Dict[str, Any]:
+def get_uvicorn_log_config(debug: bool = False) -> dict[str, Any]:
     """Get uvicorn logging configuration that integrates with loguru.
 
     Args:

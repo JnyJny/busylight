@@ -1,0 +1,57 @@
+# Shared ruff baseline for both packages/*. Each package's pyproject.toml
+# extends this file and layers on package-specific per-file-ignores and
+# framework-specific settings. See CLAUDE.md for the rationale.
+
+[lint]
+select = ["I", "ALL"]
+ignore = [
+  # unused-method-argument (ARG002) -- common in Protocol/ABC implementations
+  "ARG002",
+  # missing-docstring-in-magic-method (D105)
+  "D105",
+  # missing-trailing-comma (COM812) -- handled by formatter
+  "COM812",
+  # incorrect-blank-line-before-class (D203)
+  "D203",
+  # blank-line-before-class (D211)
+  "D211",
+  # multi-line-summary-first-line (D212)
+  "D212",
+  # multi-line-summary-second-line (D213)
+  "D213",
+  # boolean-type-hint-positional-argument (FBT001)
+  "FBT001",
+  # boolean-positional-value-in-call (FBT003)
+  "FBT003",
+  # boolean-default-value-positional-argument (FBT002)
+  "FBT002",
+  # missing-trailing-period (D400)
+  "D400",
+  # first-line-ends-in-period (D415)
+  "D415",
+  # blank-except (BLE001)
+  "BLE001",
+  # invalid-class-name (N801)
+  "N801",
+  # magic-value-comparison (PLR2004)
+  "PLR2004",
+  # too-many-arguments (PLR0913)
+  "PLR0913",
+  # non-unique-enums (PIE796)
+  "PIE796",
+  # missing-type-function-argument (ANN001)
+  "ANN001",
+  # missing-return-type-special-method (ANN204)
+  "ANN204",
+  # str-enum-inheritance (UP042) -- StrEnum requires Python 3.11+
+  "UP042",
+  # replace-bin-call (FURB116) -- current form is clearer with zfill
+  "FURB116",
+  # missing-copyright-notice (CPY001) -- not used in this repo
+  "CPY001",
+]
+
+# Note: per-file-ignores do NOT merge across `extend` -- a package that
+# defines "tests/*" here would silently replace, not add to, this list.
+# Each package's own pyproject.toml restates the full per-file-ignore set
+# it needs, including these two.

@@ -1,7 +1,5 @@
 """Pulse Command Line Interface"""
 
-from typing import Optional
-
 import typer
 from busylight_core import NoLightsFoundError
 from loguru import logger
@@ -18,7 +16,7 @@ pulse_cli = typer.Typer()
 @pulse_cli.command(name="pulse")
 def pulse_lights(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument(
+    color: str | None = typer.Argument(
         "green",
         callback=string_to_scaled_color,
         help="Color of the pulse effect.",

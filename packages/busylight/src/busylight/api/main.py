@@ -1,7 +1,7 @@
 """FastAPI Application Factory."""
 
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from busylight_core import LightUnavailableError, NoLightsFoundError
 from fastapi import FastAPI

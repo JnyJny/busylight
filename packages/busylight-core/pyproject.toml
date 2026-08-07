@@ -168,57 +168,8 @@ known_first_party = ["busylight_core"]
 package_module_name_map = {pyserial = "serial", hidapi = "hid"}
 
 [tool.ruff]
+extend = "../../ruff.toml"
 fix = true
-lint.select = [
-  # isort
-  "I",
-  # ok isort is in all.
-  "ALL"
-]
-lint.ignore = [
-  # ARG002 Unused method argument
-  "ARG002",
-  # Missing docstring in magic method
-  "D105",
-  # missing-trailing-comma (COM812)
-  "COM812",
-  # incorrect-blank-line-before-class (D203)
-  "D203",
-  # blank-line-before-class (D211)
-  "D211",
-  # multi-line-summary-first-line (D212)
-  "D212",
-  # multi-line-summary-second-line (D213)
-  "D213",
-  # boolean-type-hint-positional-argument (FBT001)
-  "FBT001",
-  # boolean-positional-value-in-call (FBT003)
-  "FBT003",
-  # missing-trailing-period (D400)
-  "D400",
-  # first-line-ends-in-period (D415)
-  "D415",
-  # blank-except (BLE001)
-  "BLE001",
-  # invalid-class-name (N801)
-  "N801",
-  # boolean-default-value-positional-argument (FBT002)
-  "FBT002",
-  # magic-value-comparison (PLR2004)
-  "PLR2004",
-  # too-many-arguments (PLR0913)
-  "PLR0913",
-  # non-unique-enums (PIE796)
-  "PIE796",
-  # missing-type-function-argument (ANN001)
-  "ANN001",
-  # missing-return-type-special-method (ANN204)
-  "ANN204",
-  # str-enum-inheritance (UP042) -- StrEnum requires Python 3.11+
-  "UP042",
-  # replace-bin-call (FURB116) -- current form is clearer with zfill
-  "FURB116",
- ]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [

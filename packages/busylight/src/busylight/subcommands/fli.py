@@ -1,7 +1,5 @@
 """Fli Command Line Interface"""
 
-from typing import Optional
-
 import typer
 from busylight_core import NoLightsFoundError
 from loguru import logger
@@ -18,13 +16,13 @@ fli_cli = typer.Typer()
 @fli_cli.command(name="fli")
 def flash_lights_impressively(
     ctx: typer.Context,
-    on_color: Optional[str] = typer.Argument(
+    on_color: str | None = typer.Argument(
         "red",
         callback=string_to_scaled_color,
         help="Primary color of the fli effect.",
         show_default=True,
     ),
-    off_color: Optional[str] = typer.Argument(
+    off_color: str | None = typer.Argument(
         "blue",
         callback=string_to_scaled_color,
         help="Secondary color of the fli effect.",

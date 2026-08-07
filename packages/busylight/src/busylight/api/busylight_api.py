@@ -3,7 +3,8 @@
 from json import loads as json_loads
 from os import environ
 from secrets import compare_digest
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 from busylight_core import Light, LightUnavailableError, NoLightsFoundError
 from fastapi import Depends, FastAPI, HTTPException, Path, Request, Response, status

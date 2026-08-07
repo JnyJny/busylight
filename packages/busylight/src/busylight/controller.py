@@ -25,7 +25,8 @@ from __future__ import annotations
 import asyncio
 import re
 from dataclasses import dataclass, field
-from typing import Iterator, Pattern
+from re import Pattern
+from collections.abc import Iterator
 
 from busylight_core import Light, LightUnavailableError
 from loguru import logger

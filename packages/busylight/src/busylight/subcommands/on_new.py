@@ -1,7 +1,5 @@
 """On Command with new LightController."""
 
-from typing import Optional
-
 import typer
 from busylight_core import NoLightsFoundError
 from loguru import logger
@@ -12,7 +10,7 @@ on_cli = typer.Typer()
 @on_cli.command(name="on")
 def activate_lights(
     ctx: typer.Context,
-    color: Optional[str] = typer.Argument(
+    color: str | None = typer.Argument(
         "green",
         show_default=True,
     ),

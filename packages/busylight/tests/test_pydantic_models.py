@@ -1,6 +1,6 @@
 """ """
 
-from typing import Any, Dict, Tuple
+from typing import Any
 
 import pytest
 from busylight.api.models import EndPoint, LightDescription, LightOperation
@@ -46,10 +46,10 @@ def test_model_endpoint(path, expected_exception) -> None:
 def test_model_lightdescription(
     light_id: int,
     name: str,
-    info: Dict[str, Any],
+    info: dict[str, Any],
     is_on: bool,
     color: str,
-    rgb: Tuple[int, int, int],
+    rgb: tuple[int, int, int],
 ) -> None:
     light_description = LightDescription(
         light_id=light_id, name=name, info=info, is_on=is_on, color=color, rgb=rgb
@@ -75,7 +75,7 @@ def test_model_lightoperation(
     light_id: int,
     action: str,
     color: str,
-    rgb: Tuple[int, int, int],
+    rgb: tuple[int, int, int],
     speed: str,
     name: str,
     dim: bool,
