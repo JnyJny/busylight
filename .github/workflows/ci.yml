@@ -162,3 +162,6 @@ jobs:
       - name: Check CLI dependencies
         if: needs.detect-changes.outputs.cli == 'true' || needs.detect-changes.outputs.core == 'true'
         run: uv run deptry packages/busylight/src --config packages/busylight/pyproject.toml
+
+      - name: Verify cross-package dependencies (Dispatch #68)
+        run: uv run python scripts/verify-cross-package-deps.py
