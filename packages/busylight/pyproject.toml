@@ -40,7 +40,7 @@ busyserve = "busylight.busyserve:busyserve_cli"
 [project.optional-dependencies]
 webapi = [
     "fastapi>=0.141.1",
-    "uvicorn>=0.52.3",
+    "uvicorn>=0.52.4",
 ]
 web = [
     "fastapi>=0.141.1",
