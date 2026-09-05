@@ -386,12 +386,7 @@ class Light(abc.ABC, TaskableMixin):
     @cached_property
     def platform(self) -> str:
         """The discovered operating system platform name."""
-        system = platform.system()
-        match system:
-            case "Windows":
-                return f"{system}_{platform.release()}"
-            case _:
-                return system
+        return platform.system()
 
     @property
     def exclusive(self) -> bool:
@@ -504,9 +499,9 @@ class Light(abc.ABC, TaskableMixin):
         state = bytes(self)
 
         match self.platform:
-            case "Windows_10":
+            case "Windows":
                 state = bytes([0]) + state
-            case "Darwin" | "Linux" | "Windows_11":
+            case "Darwin" | "Linux":
                 pass
             case _:
                 logger.info(f"Unsupported OS {self.platform}, hoping for the best.")
