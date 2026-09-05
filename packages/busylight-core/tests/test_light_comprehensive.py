@@ -118,12 +118,11 @@ class TestLightPlatform:
             patch.object(mock_hardware, "acquire"),
             patch.object(MockLightSubclass, "reset"),
             patch("busylight_core.light.platform.system", return_value="Windows"),
-            patch("busylight_core.light.platform.release", return_value="10"),
         ):
             light = MockLightSubclass(mock_hardware)
             platform = light.platform
 
-            assert platform == "Windows_10"
+            assert platform == "Windows"
 
 
 class TestLightSortKey:
@@ -306,8 +305,8 @@ class TestLightExclusiveAccess:
 class TestLightUpdate:
     """Test update method coverage."""
 
-    def test_update_windows_10_platform(self) -> None:
-        """Test update method with Windows 10 platform - covers line 236."""
+    def test_update_windows_platform(self) -> None:
+        """Test update method with Windows platform - covers line 236."""
         mock_hardware = create_mock_hardware()
 
         with (
@@ -316,8 +315,8 @@ class TestLightUpdate:
         ):
             light = MockLightSubclass(mock_hardware)
 
-            # Mock platform to be Windows_10
-            light.platform = "Windows_10"
+            # Mock platform to be Windows
+            light.platform = "Windows"
 
             with patch.object(light, "exclusive_access"):
                 light.update()
