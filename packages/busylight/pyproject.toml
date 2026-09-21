@@ -40,7 +40,7 @@ busyserve = "busylight.busyserve:busyserve_cli"
 [project.optional-dependencies]
 webapi = [
     "fastapi>=0.141.1",
-    "uvicorn>=0.52.4",
+    "uvicorn>=0.53.0",
 ]
 web = [
     "fastapi>=0.141.1",
@@ -48,7 +48,7 @@ web = [
 docs = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.7.7",
-    "mkdocs-git-revision-date-localized-plugin>=1.5.4",
+    "mkdocs-git-revision-date-localized-plugin>=1.6.0",
 ]
 
 [build-system]
@@ -144,7 +144,7 @@ extend-immutable-calls = [
 [dependency-groups]
 dev = [
     "anyio>=4.15.1",
-    "coverage>=7.16.0",
+    "coverage>=7.16.1",
     "httpx>=0.28.1",
 ]
 
