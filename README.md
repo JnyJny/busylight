@@ -4,7 +4,7 @@
 
 <p align="center">
 <strong>Control USB LED status lights from Python.</strong><br>
-26 devices &middot; 9 vendors &middot; CLI &middot; HTTP API &middot; Python library
+26 devices &middot; 10 vendors &middot; CLI &middot; HTTP API &middot; Python library
 </p>
 
 <p align="center">
@@ -64,6 +64,7 @@ light.off()
 | **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync |
 | **Plantronics** | Status Indicator |
 | **ThingM** | Blink(1), Blink(1) mk2 |
+| **VT** | DND Alpha, DND Omega |
 
 Multi-LED targeting supported on BlinkStick variants, Luxafor Flag, and Blink(1) mk2.
 

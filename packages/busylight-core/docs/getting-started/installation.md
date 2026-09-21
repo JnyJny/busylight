@@ -101,6 +101,10 @@ KERNEL=="hidraw*", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="f372", MODE="0666
 # ThingM Blink1 
 SUBSYSTEMS=="usb", ATTRS{idVendor}=="27b8", ATTRS{idProduct}=="01ed", MODE="0666"
 KERNEL=="hidraw*", ATTRS{idVendor}=="27b8", ATTRS{idProduct}=="01ed", MODE="0666"
+
+# VT DND 
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="340b", ATTRS{idProduct}=="f001", MODE="0666"
+KERNEL=="hidraw*", ATTRS{idVendor}=="340b", ATTRS{idProduct}=="f001", MODE="0666"
 ```
 
 3. **Reload udev rules**:

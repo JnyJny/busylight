@@ -7,8 +7,8 @@ This guide provides detailed information about each supported device's capabilit
 | Feature | Devices | Description |
 |---------|---------|-------------|
 | **Basic RGB Color** | All devices | `on(color)` / `off()` with RGB tuples (0-255) |
-| **Hardware Flash** | Embrava (3 devices) | `flash(color, speed)` with `FlashSpeed` enum |
-| **Dim/Bright** | Embrava (3 devices) | `dim()` / `bright()` for brightness control |
+| **Hardware Flash** | Embrava and VT | Vendor-specific `flash()` control |
+| **Dim/Bright** | Embrava and VT | `dim()` / `bright()` for brightness control |
 | **Audio Playback** | Blynclight Plus (1 device) | `play_sound(music, volume, repeat)` |
 | **Multi-LED Control** | BlinkStick variants, Luxafor Flag | `on(color, led=N)` for individual LEDs |
 | **Button Input** | MuteMe (3 devices), Luxafor Mute | `is_button` / `button_on` properties |
@@ -74,6 +74,32 @@ except NoLightsFoundError:
 ```
 
 **Note on ringtones:** The Kuando protocol supports 9 built-in ringtones (`Ring` enum: OpenOffice, Quiet, Funky, FairyTale, KuandoTrain, TelephoneNordic, TelephoneOriginal, TelephonePickMeUp, Buzz) with volume control (0-3) at the command level. However, these are **not exposed through the public `on()` API**. The `Step.jump()` command in `busylight_core.vendors.kuando.implementation.commands` accepts `ringtone` and `volume` parameters for direct protocol access.
+
+### VT (2 devices)
+
+VT DND Alpha and Omega lights support RGB colors, three brightness levels,
+and two predefined flash modes.
+
+| Device | Flash | Dim/Bright | Special |
+|--------|-------|------------|---------|
+| **VT DND Alpha** | Yes | Yes | Flash modes 1 and 2 |
+| **VT DND Omega** | Yes | Yes | Flash modes 1 and 2 |
+
+**Usage:**
+
+```python
+from busylight_core import NoLightsFoundError, VTDND
+
+try:
+    light = VTDND.first_light()
+    light.on((0, 255, 0))
+    light.dim()
+    light.bright()
+    light.flash(1)
+    light.off()
+except NoLightsFoundError:
+    pass
+```
 
 ### Luxafor (5 devices)
 
