@@ -18,6 +18,7 @@ from busylight_core.vendors.luxafor.luxafor_base import LuxaforBase
 from busylight_core.vendors.muteme.muteme_base import MuteMeBase
 from busylight_core.vendors.plantronics.plantronics_base import PlantronicsBase
 from busylight_core.vendors.thingm.thingm_base import ThingMBase
+from busylight_core.vendors.vt.vt_base import VTBase
 
 VENDOR_SUBCLASSES = HardwareCatalog.keys()
 
@@ -275,6 +276,7 @@ def test_vendor_base_class_hierarchies() -> None:
         "MuteMe": MuteMeBase,
         "Plantronics": PlantronicsBase,
         "ThingM": ThingMBase,
+        "VT": VTBase,
     }
 
     # Test each vendor base class has correct vendor() method

@@ -4,7 +4,7 @@
 
 <p align="center">
 <strong>Control USB LED status lights from Python.</strong><br>
-26 devices &middot; 10 vendors &middot; CLI &middot; HTTP API &middot; Python library
+28 devices &middot; 10 vendors &middot; CLI &middot; HTTP API &middot; Python library
 </p>
 
 <p align="center">

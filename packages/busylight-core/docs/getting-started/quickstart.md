@@ -40,8 +40,9 @@ from busylight_core import (
     EmbravaLights,
     KuandoLights,
     NoLightsFoundError,
-    VTDND,
+    VTLights,
 )
+from busylight_core.vendors.vt.implementation import FlashMode
 
 # Embrava devices support dim/bright and flash
 try:
@@ -60,13 +61,13 @@ try:
 except NoLightsFoundError:
     print("No Kuando devices found")
 
-# VT DND devices support RGB, brightness levels 1-3, and two flash modes
+# VT DND devices support three brightness levels and two flash modes
 try:
-    light = VTDND.first_light()
+    light = VTLights.first_light()
     light.on((0, 255, 0))
     light.dim()
     light.bright()
-    light.flash(1)
+    light.flash(FlashMode.ONE)
 except NoLightsFoundError:
     print("No VT DND devices found")
 ```

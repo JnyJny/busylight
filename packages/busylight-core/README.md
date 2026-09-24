@@ -35,7 +35,7 @@ pip install busylight_core
 
 ## Features
 
-- **Multi-vendor support** -- 26 devices from 9 vendors
+- **Multi-vendor support** -- 28 devices from 10 vendors
 - **HID and serial** -- multiple connection types
 - **Async effects** -- blink, pulse, rainbow, spectrum
 - **Multi-LED targeting** -- devices with 1-192 individual LEDs
@@ -55,6 +55,7 @@ pip install busylight_core
 | **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync |
 | **Plantronics** | Status Indicator |
 | **ThingM** | Blink(1), Blink(1) mk2 |
+| **VT** | DND Alpha, DND Omega |
 
 ## Usage
 
