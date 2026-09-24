@@ -4,11 +4,11 @@ This module defines BitField classes used to construct device commands.
 Each field represents a specific portion of the 40-bit command structure.
 """
 
-from busylight_core.word import BitField
+from busylight_core.word import BitField, ReadOnlyBitField
 
 
-class ReportField(BitField):
-    """8-bit report field for HID communication."""
+class ReportField(ReadOnlyBitField):
+    """8-bit report field for HID communication, fixed at construction."""
 
 
 class ActionField(BitField):

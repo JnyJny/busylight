@@ -18,7 +18,7 @@ class State(Word):
     """
 
     def __init__(self) -> None:
-        super().__init__(0, 40)
+        super().__init__(Report.ONE << 32, 40)
 
     report = ReportField(32, 8)
     action = ActionField(24, 8)
@@ -38,13 +38,11 @@ class State(Word):
         self.data0, self.data1, self.data2 = values
 
     def command(self, action: Action, data: tuple[int, int, int] = (0, 0, 0)) -> None:
-        """Replace the current report with a new command.
+        """Replace the current command, overwriting every non-report byte.
 
         :param action: Command to execute
         :param data: Command argument bytes
         """
-        self.clear()
-        self.report = Report.ONE
         self.action = action
         self.data = data
 

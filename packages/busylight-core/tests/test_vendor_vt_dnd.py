@@ -53,8 +53,18 @@ class TestState:
     """Test VT DND command report construction."""
 
     def test_default_state(self) -> None:
-        """Initialize an empty five-byte report."""
-        assert bytes(State()) == b"\x00" * 5
+        """Initialize a five-byte report with only the report number set."""
+        state = State()
+
+        assert state.report == Report.ONE
+        assert bytes(state) == bytes((0x01, 0x00, 0x00, 0x00, 0x00))
+
+    def test_report_is_read_only(self) -> None:
+        """Reject assignment to the fixed report number."""
+        state = State()
+
+        with pytest.raises(AttributeError, match="read only"):
+            state.report = 2
 
     def test_command_serializes_in_protocol_order(self) -> None:
         """Serialize report, action, and data bytes in big-endian order."""
