@@ -30,7 +30,7 @@ class Word:
 
         self.initial_value = value
         self.length = length
-        self.bits = array.array("B", [(value >> n) & 1 for n in self.range])
+        self.clear()
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(value={self.hex})"
@@ -86,8 +86,14 @@ class Word:
         return "0b" + bin(self.value)[2:].zfill(self.length)
 
     def clear(self) -> None:
-        """Clear all bits in the word."""
-        self.bits = array.array("B", [0] * self.length)
+        """Reset all bits to the word's initial value.
+
+        Fields seeded through the initial value, such as read-only
+        report numbers, survive a clear.
+        """
+        self.bits = array.array(
+            "B", [(self.initial_value >> n) & 1 for n in self.range]
+        )
 
     def __bytes__(self) -> bytes:
         return self.value.to_bytes(self.length // 8, byteorder="big")

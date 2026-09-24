@@ -30,14 +30,39 @@ def test_word_init_initializer_too_long(length: int) -> None:
 
 @pytest.mark.parametrize("value", list(range(1, 256, 16)))
 def test_word_method_clear(value) -> None:
-    """Test Word.clear() method resets value to 0."""
+    """Test Word.clear() method restores the initial value."""
     result = Word(value, 8)
+    result[0:8] = value ^ 0xFF
+
+    result.clear()
 
     assert result.value == value
+
+
+def test_word_method_clear_zero_initial_value() -> None:
+    """Test Word.clear() method zeroes a word created without a value."""
+    result = Word(0, 8)
+    result[0:8] = 0xFF
 
     result.clear()
 
     assert result.value == 0
+
+
+def test_word_method_clear_preserves_read_only_field() -> None:
+    """Test Word.clear() method keeps read-only fields seeded at creation."""
+
+    class Report(Word):
+        report = ReadOnlyBitField(8, 8)
+        data = BitField(0, 8)
+
+    result = Report(0x0100, 16)
+    result.data = 0xFF
+
+    result.clear()
+
+    assert result.report == 0x01
+    assert result.data == 0x00
 
 
 @pytest.mark.parametrize("value", [0, 0xFF])
