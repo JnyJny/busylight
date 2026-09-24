@@ -52,24 +52,17 @@ class DNDBase(ColorableMixin, VTBase):
     def _on(self, color: tuple[int, int, int], led: int = 0) -> None:
         """Turn on the DND light with the specified color.
 
+        Black sends the device's dedicated off command.
+
         :param color: RGB color tuple (red, green, blue) with values 0-255
         :param led: LED index (unused for DND devices)
         """
         self.color = color
         with self.batch_update():
-            self.state.set_color(self.color)
-
-    def off(self, led: int = 0) -> None:
-        """Turn off the DND light and cancel running tasks.
-
-        Overrides the base off() to send the device's dedicated off command.
-
-        :param led: LED index (unused for DND devices)
-        """
-        self.cancel_tasks()
-        self.color = (0, 0, 0)
-        with self.batch_update():
-            self.state.off()
+            if self.is_lit:
+                self.state.set_color(self.color)
+            else:
+                self.state.off()
 
     def dim(self) -> None:
         """Decrease brightness one level, stopping at the lowest level."""

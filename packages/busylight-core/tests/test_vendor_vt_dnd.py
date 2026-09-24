@@ -145,6 +145,13 @@ class TestDNDBase:
         assert light.color == (0, 0, 0)
         assert not light.is_lit
 
+    def test_on_black_writes_off_command(self, light: DNDOmega) -> None:
+        """Send the dedicated off command instead of a black color."""
+        light.on((0, 0, 0))
+
+        assert writes(light) == [call(OFF)]
+        assert not light.is_lit
+
     def test_off_cancels_tasks(self, light: DNDOmega) -> None:
         """Cancel running effects so they cannot relight the device."""
         with patch.object(light, "cancel_tasks") as mock_cancel:
