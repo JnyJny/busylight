@@ -32,7 +32,7 @@ class DNDBase(ColorableMixin, VTBase):
     def __bytes__(self) -> bytes:
         return bytes(self.state)
 
-    @property
+    @cached_property
     def write_strategy(self) -> Callable[[bytes], int]:
         """Write the VT HID report without the generic Windows prefix.
 

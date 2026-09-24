@@ -251,3 +251,7 @@ class TestDNDBase:
         await asyncio.sleep(light.BRIGHTNESS_SETTLE_DELAY * 2)
 
         assert writes(light)[-1] == call(OFF)
+
+    def test_write_strategy_is_cached(self, light: DNDOmega) -> None:
+        """Build the write function once per light."""
+        assert light.write_strategy is light.write_strategy
