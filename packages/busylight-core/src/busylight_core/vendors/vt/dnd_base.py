@@ -77,10 +77,14 @@ class DNDBase(ColorableMixin, VTBase):
     def flash(self, mode: FlashMode = FlashMode.ONE) -> None:
         """Start one of the firmware's predefined flash patterns.
 
+        Cancels any pending color resend from a brightness change so it
+        cannot replace the flash command.
+
         :param mode: Flash pattern to run
         :raises ValueError: If mode is not a FlashMode value
         """
         mode = FlashMode(mode)
+        self.cancel_task("restore_color")
         with self.batch_update():
             self.state.flash(mode)
 

@@ -272,3 +272,18 @@ class TestDNDBase:
     def test_write_strategy_is_cached(self, light: DNDOmega) -> None:
         """Build the write function once per light."""
         assert light.write_strategy is light.write_strategy
+
+    @pytest.mark.asyncio
+    async def test_flash_cancels_pending_color_restore(
+        self,
+        mock_hardware: Hardware,
+    ) -> None:
+        """Keep flashing when flash starts during a brightness change."""
+        light = DNDOmega(mock_hardware, reset=False, exclusive=False)
+        light.color = (10, 20, 30)
+        light.dim()
+
+        light.flash(FlashMode.ONE)
+        await asyncio.sleep(light.BRIGHTNESS_SETTLE_DELAY * 2)
+
+        assert writes(light)[-1] == call(bytes((0x01, 0x02, 0x01, 0x00, 0x00)))
