@@ -2,6 +2,7 @@
 
 import asyncio
 import contextlib
+import inspect
 import threading
 import time
 from collections.abc import Awaitable, Callable
@@ -181,7 +182,7 @@ class TaskableMixin:
             task = loop.create_task(
                 self._periodic_asyncio_runner(func, interval), name=name
             )
-        elif asyncio.iscoroutinefunction(func):
+        elif inspect.iscoroutinefunction(func):
             task = loop.create_task(func(self), name=name)
         else:
             task = loop.create_task(self._sync_to_async_wrapper(func), name=name)
@@ -209,7 +210,7 @@ class TaskableMixin:
             if interval:
                 timer = self._create_periodic_timer(name, func, interval)
             else:
-                if asyncio.iscoroutinefunction(func):
+                if inspect.iscoroutinefunction(func):
                     msg = (
                         f"Cannot run async function '{func.__name__}' in "
                         f"threading context. Use a synchronous function or "
@@ -230,7 +231,7 @@ class TaskableMixin:
         """Run function periodically in asyncio context."""
         while True:
             try:
-                if asyncio.iscoroutinefunction(func):
+                if inspect.iscoroutinefunction(func):
                     await func(self)
                 else:
                     func(self)
@@ -249,7 +250,7 @@ class TaskableMixin:
         """Create self-rescheduling timer for periodic execution."""
 
         def periodic_wrapper() -> None:
-            if asyncio.iscoroutinefunction(func):
+            if inspect.iscoroutinefunction(func):
                 msg = f"Cannot run async function in threading context: {func.__name__}"
                 logger.error(f"Periodic thread task '{name}' error: {msg}")
                 with self._task_lock:
