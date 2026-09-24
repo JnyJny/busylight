@@ -1,6 +1,6 @@
 # Supported Devices
 
-BusyLight supports 23 USB LED devices from 9 vendors. This page provides
+BusyLight supports 28 USB LED devices from 10 vendors. This page provides
 compatibility information and setup instructions for each device type.
 
 ## Compatibility Matrix
@@ -16,6 +16,7 @@ compatibility information and setup instructions for each device type.
 | [**Plantronics**](#plantronics) | Status Indicator | Single LED | Full support |
 | [**MuteMe**](#muteme) | Original, Mini, MuteSync | Single LED | Full support |
 | [**ThingM**](#thingm) | Blink(1), Blink(1) mk2 | mk2: Multi-LED | Full support |
+| [**VT**](#vt) | DND Alpha, DND Omega | Single LED | Untested by maintainer |
 
 ## LED Support Types
 
@@ -191,6 +192,22 @@ busylight on blue --led 2
 ```
 
 **Platform Support:** macOS, Linux, Windows (experimental)
+
+### VT
+
+**DND Series** - Do-not-disturb status lights.
+
+**Models:**
+- DND Alpha
+- DND Omega
+
+**Features:**
+- Single RGB LED
+- Three brightness levels
+- Two flash patterns stored in firmware
+
+**Platform Support:** Contributed by the manufacturer and developed on
+Windows. Not yet tested by the maintainer on any platform.
 
 ## Device Discovery
 

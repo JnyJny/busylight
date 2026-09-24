@@ -45,6 +45,7 @@ Human Interface Device (HID) application programming interface
 - [MuteSync MuteSync][8]
 - [Plantronics Status Indicator][2]
 - [ThingM blink(1)][5]
+- [VT DND Alpha and Omega][11]
 
 
 [0]: https://github.com/JnyJny/busylight
@@ -63,3 +64,4 @@ Human Interface Device (HID) application programming interface
 [8]: devices/mutesync.md
 [9]: devices/compulab.md
 [10]: devices/busytag.md
+[11]: devices/vt.md
