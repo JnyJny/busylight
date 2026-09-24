@@ -133,6 +133,29 @@ except NoLightsFoundError:
     print("No Omega devices found")
 ```
 
+### VT DND - Color, Brightness, and Flash
+
+```python
+from busylight_core import NoLightsFoundError, VTDND
+
+try:
+    light = VTDND.first_light(reset=False)
+
+    light.on((0, 255, 0))
+
+    # Brightness is tracked from level 1 through level 3.
+    light.dim()
+    light.bright()
+
+    # VT firmware provides two predefined flash modes.
+    light.flash(1)
+    light.flash(2)
+
+    light.off()
+except NoLightsFoundError:
+    print("No VT DND devices found")
+```
+
 ### Luxafor Flag - Multi-LED Control
 
 ```python

@@ -55,10 +55,12 @@ from .vendors.luxafor import Bluetooth, BusyTag, Flag, LuxaforLights, Mute, Orb
 from .vendors.muteme import MuteMe, MuteMeLights, MuteMeMini, MuteSync
 from .vendors.plantronics import PlantronicsLights, StatusIndicator
 from .vendors.thingm import Blink1, ThingMLights
+from .vendors.vt import VTDND, VTLights
 
 version = version("busylight-core")
 
 __all__ = [
+    "VTDND",
     "AgileInnovativeLights",
     "Blink1",
     "BlinkStick",
@@ -100,6 +102,7 @@ __all__ = [
     "PlantronicsLights",
     "StatusIndicator",
     "ThingMLights",
+    "VTLights",
     "version",
 ]
 

@@ -36,7 +36,12 @@ except NoLightsFoundError:
 **Vendor-specific devices (recommended for vendor-specific features):**
 
 ```python
-from busylight_core import EmbravaLights, KuandoLights, NoLightsFoundError
+from busylight_core import (
+    EmbravaLights,
+    KuandoLights,
+    NoLightsFoundError,
+    VTDND,
+)
 
 # Embrava devices support dim/bright and flash
 try:
@@ -54,6 +59,16 @@ try:
     light.on((0, 255, 0))  # Keepalive starts automatically
 except NoLightsFoundError:
     print("No Kuando devices found")
+
+# VT DND devices support RGB, brightness levels 1-3, and two flash modes
+try:
+    light = VTDND.first_light()
+    light.on((0, 255, 0))
+    light.dim()
+    light.bright()
+    light.flash(1)
+except NoLightsFoundError:
+    print("No VT DND devices found")
 ```
 
 ## Discovering Your Device
@@ -87,6 +102,7 @@ from busylight_core import (
     AgileInnovativeLights,
     ThingMLights,
     MuteMeLights,
+    VTLights,
 )
 
 vendors = [
@@ -96,6 +112,7 @@ vendors = [
     ("BlinkStick", AgileInnovativeLights),
     ("ThingM", ThingMLights),
     ("MuteMe", MuteMeLights),
+    ("VT", VTLights),
 ]
 
 for vendor_name, vendor_class in vendors:
