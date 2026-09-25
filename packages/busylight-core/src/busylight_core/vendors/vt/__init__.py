@@ -1,9 +1,11 @@
-"""VT Busylight support."""
+"""VT DND Support"""
 
-from .busylight import VTDND
+from .dnd_alpha import DNDAlpha
+from .dnd_omega import DNDOmega
 from .vt_base import VTBase as VTLights
 
 __all__ = [
-    "VTDND",
+    "DNDAlpha",
+    "DNDOmega",
     "VTLights",
 ]

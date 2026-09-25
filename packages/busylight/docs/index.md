@@ -49,7 +49,7 @@ curl http://localhost:8000/light/0/blink?color=blue&count=3
 
 - **Cross-platform**: macOS and Linux support (Windows in development)
 - **Multiple interfaces**: Command-line and HTTP API
-- **Device support**: 23 devices from 9 vendors
+- **Device support**: 28 devices from 10 vendors
 - **LED targeting**: Individual LED control for multi-LED devices
 - **Effects**: Blinking, rainbow, pulse, and custom effects
 - **Authentication**: Optional HTTP Basic Auth for API
@@ -61,7 +61,7 @@ curl http://localhost:8000/light/0/blink?color=blue&count=3
 | Agile Innovative (BlinkStick) | ✓ |
 | ThingM (Blink1 mk2) | ✓ |
 | Luxafor (Flag variants) | ✓ |
-| Kuando, Embrava, MuteMe | Single LED |
+| Kuando, Embrava, MuteMe, VT | Single LED |
 
 See the [devices overview](devices/index.md) for complete compatibility
 information.

@@ -12,6 +12,7 @@ from .luxafor import LUXAFOR_HARDWARE
 from .muteme import MUTEME_HARDWARE
 from .plantronics import PLANTRONICS_HARDWARE
 from .thingm import THINGM_HARDWARE
+from .vt import VT_HARDWARE
 
 HardwareCatalog = (
     AGILE_INNOVATIVE_HARDWARE
@@ -22,6 +23,7 @@ HardwareCatalog = (
     | MUTEME_HARDWARE
     | PLANTRONICS_HARDWARE
     | THINGM_HARDWARE
+    | VT_HARDWARE
 )
 
 __all__ = [
@@ -33,5 +35,6 @@ __all__ = [
     "MUTEME_HARDWARE",
     "PLANTRONICS_HARDWARE",
     "THINGM_HARDWARE",
+    "VT_HARDWARE",
     "HardwareCatalog",
 ]

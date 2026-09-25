@@ -82,20 +82,21 @@ and two predefined flash modes.
 
 | Device | Flash | Dim/Bright | Special |
 |--------|-------|------------|---------|
-| **VT DND Alpha** | Yes | Yes | Flash modes 1 and 2 |
-| **VT DND Omega** | Yes | Yes | Flash modes 1 and 2 |
+| **DND Alpha** | Yes | Yes | `FlashMode.ONE` and `FlashMode.TWO` |
+| **DND Omega** | Yes | Yes | `FlashMode.ONE` and `FlashMode.TWO` |
 
 **Usage:**
 
 ```python
-from busylight_core import NoLightsFoundError, VTDND
+from busylight_core import NoLightsFoundError, VTLights
+from busylight_core.vendors.vt.implementation import FlashMode
 
 try:
-    light = VTDND.first_light()
+    light = VTLights.first_light()
     light.on((0, 255, 0))
     light.dim()
     light.bright()
-    light.flash(1)
+    light.flash(FlashMode.ONE)
     light.off()
 except NoLightsFoundError:
     pass

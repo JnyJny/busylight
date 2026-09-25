@@ -136,20 +136,21 @@ except NoLightsFoundError:
 ### VT DND - Color, Brightness, and Flash
 
 ```python
-from busylight_core import NoLightsFoundError, VTDND
+from busylight_core import NoLightsFoundError, VTLights
+from busylight_core.vendors.vt.implementation import FlashMode
 
 try:
-    light = VTDND.first_light(reset=False)
+    light = VTLights.first_light(reset=False)
 
     light.on((0, 255, 0))
 
-    # Brightness is tracked from level 1 through level 3.
+    # Brightness steps between Low, Medium, and High, starting at Medium.
     light.dim()
     light.bright()
 
     # VT firmware provides two predefined flash modes.
-    light.flash(1)
-    light.flash(2)
+    light.flash(FlashMode.ONE)
+    light.flash(FlashMode.TWO)
 
     light.off()
 except NoLightsFoundError:

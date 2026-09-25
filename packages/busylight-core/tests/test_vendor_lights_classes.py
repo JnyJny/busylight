@@ -17,6 +17,7 @@ from busylight_core import (
     NoLightsFoundError,
     PlantronicsLights,
     ThingMLights,
+    VTLights,
 )
 from busylight_core.hardware import Hardware
 from busylight_core.vendors.agile_innovative.blinkstick_base import BlinkStickBase
@@ -67,6 +68,7 @@ class TestVendorLightsClasses:
             MuteMeLights,
             PlantronicsLights,
             ThingMLights,
+            VTLights,
         ]
 
         for vendor_class in vendor_classes:
@@ -85,6 +87,7 @@ class TestVendorLightsClasses:
             MuteMeLights,
             PlantronicsLights,
             ThingMLights,
+            VTLights,
         ]
 
         for vendor_class in vendor_classes:
@@ -290,6 +293,7 @@ class TestVendorLightsClasses:
             MuteMeLights,
             PlantronicsLights,
             ThingMLights,
+            VTLights,
         ]
 
         for vendor_class in vendor_classes:

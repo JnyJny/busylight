@@ -1,38 +1,19 @@
-"""Bit fields used by VT HID command reports."""
+"""VT DND bit field definitions.
 
-from busylight_core.word import BitField
+This module defines BitField classes used to construct device commands.
+Each field represents a specific portion of the 40-bit command structure.
+"""
+
+from busylight_core.word import BitField, ReadOnlyBitField
 
 
-class ReportField(BitField):
-    """Eight-bit HID report identifier field."""
-
-    def __init__(self) -> None:
-        super().__init__(32, 8)
+class ReportField(ReadOnlyBitField):
+    """8-bit report field for HID communication, fixed at construction."""
 
 
 class ActionField(BitField):
-    """Eight-bit VT command action field."""
-
-    def __init__(self) -> None:
-        super().__init__(24, 8)
+    """8-bit action field specifying the command to execute."""
 
 
-class RedField(BitField):
-    """Eight-bit red or first command data field."""
-
-    def __init__(self) -> None:
-        super().__init__(16, 8)
-
-
-class GreenField(BitField):
-    """Eight-bit green or second command data field."""
-
-    def __init__(self) -> None:
-        super().__init__(8, 8)
-
-
-class BlueField(BitField):
-    """Eight-bit blue or third command data field."""
-
-    def __init__(self) -> None:
-        super().__init__(0, 8)
+class DataField(BitField):
+    """8-bit command argument field, RGB components for SetColor."""
