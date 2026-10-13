@@ -1,6 +1,8 @@
 """Tests for VT DND Alpha and Omega devices."""
 
 import asyncio
+import gc
+import weakref
 from unittest.mock import Mock, call, patch
 
 import pytest
@@ -272,6 +274,22 @@ class TestDNDBase:
     def test_write_strategy_is_cached(self, light: DNDOmega) -> None:
         """Build the write function once per light."""
         assert light.write_strategy is light.write_strategy
+
+    def test_write_strategy_does_not_keep_light_alive(
+        self,
+        mock_hardware: Hardware,
+    ) -> None:
+        """Free the light, and its hardware handle, as soon as it is dropped."""
+        light = DNDOmega(mock_hardware, reset=False, exclusive=False)
+        light.on((10, 20, 30))
+        ref = weakref.ref(light)
+
+        gc.disable()
+        try:
+            del light
+            assert ref() is None
+        finally:
+            gc.enable()
 
     @pytest.mark.asyncio
     async def test_flash_cancels_pending_color_restore(
