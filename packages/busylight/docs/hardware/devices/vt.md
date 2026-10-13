@@ -75,8 +75,10 @@ or blue. The color set beforehand is ignored. An Off command sent
 while breathing takes effect after the current breath finishes,
 about one second later.
 
-A command written immediately after another, with no delay, may be
-dropped. A 100 millisecond gap was sufficient in testing.
+A command written soon after another may be dropped. In testing,
+gaps of 1 millisecond and shorter were unreliable and 100
+milliseconds was reliable, so the implementation waits 100
+milliseconds between back-to-back commands.
 
 ### Functionality Wishlist
 

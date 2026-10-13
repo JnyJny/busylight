@@ -171,10 +171,12 @@ class TestDNDBase:
         """Reset sets the default brightness level, then turns the light off."""
         light.brightness = Brightness.High
 
-        light.reset()
+        with patch("busylight_core.vendors.vt.dnd_base.sleep") as mock_sleep:
+            light.reset()
 
         assert light.brightness == Brightness.Medium
         assert writes(light) == [call(SET_BRIGHTNESS_MEDIUM), call(OFF)]
+        mock_sleep.assert_called_once_with(light.COMMAND_INTERVAL)
 
     @pytest.mark.parametrize("mode", list(DNDFlashMode))
     def test_flash_writes_mode(self, light: DNDOmega, mode: DNDFlashMode) -> None:
@@ -226,7 +228,7 @@ class TestDNDBase:
         assert light.brightness == level
         assert light.color == (10, 20, 30)
         assert writes(light) == [call(expected), call(SET_COLOR)]
-        mock_sleep.assert_called_once_with(light.BRIGHTNESS_SETTLE_DELAY)
+        mock_sleep.assert_called_once_with(light.COMMAND_INTERVAL)
 
     @pytest.mark.parametrize(
         ("method", "level"),
@@ -276,7 +278,7 @@ class TestDNDBase:
         light.dim()
 
         light.off()
-        await asyncio.sleep(light.BRIGHTNESS_SETTLE_DELAY * 2)
+        await asyncio.sleep(light.COMMAND_INTERVAL * 2)
 
         assert writes(light)[-1] == call(OFF)
 
@@ -311,6 +313,6 @@ class TestDNDBase:
         light.dim()
 
         light.flash(DNDFlashMode.Red)
-        await asyncio.sleep(light.BRIGHTNESS_SETTLE_DELAY * 2)
+        await asyncio.sleep(light.COMMAND_INTERVAL * 2)
 
         assert writes(light)[-1] == call(bytes((0x01, 0x02, 0x01, 0x00, 0x00)))
