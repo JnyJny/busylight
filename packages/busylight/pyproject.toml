@@ -187,8 +187,13 @@ if [ -n "$(git status --porcelain)" ]; then
   echo "ERROR: working tree is dirty" >&2
   exit 1
 fi
+git fetch --quiet origin main
+if [ -n "$(git rev-list HEAD..origin/main)" ]; then
+  echo "ERROR: main is behind origin/main, run git pull first" >&2
+  exit 1
+fi
 """
-_preflight.help = "Verify on main branch with clean working tree."
+_preflight.help = "Verify on an up-to-date main branch with clean working tree."
 
 _patch_bump = "uv version --bump patch"
 _minor_bump = "uv version --bump minor"
@@ -197,10 +202,10 @@ _major_bump = "uv version --bump major"
 _add = "git add pyproject.toml ../../uv.lock"
 _commit = {shell = "git commit -m busylight-cli/v`uv version --short`"}
 _tag = {shell = "git tag busylight-cli/v`uv version --short`"}
-_push = "git push --all"
-_push_tags = "git push --tags"
+_push = "git push origin main"
+_push_tag = {shell = "git push origin busylight-cli/v`uv version --short`"}
 
-_update_pyproject = ["_add", "_commit", "_tag", "_push_tags", "_push"]
+_update_pyproject = ["_add", "_commit", "_tag", "_push", "_push_tag"]
 
 publish_patch = ["_preflight", "_patch_bump", "_update_pyproject"]
 publish_minor = ["_preflight", "_minor_bump", "_update_pyproject"]
