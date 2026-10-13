@@ -6,7 +6,7 @@ command reports sent to VT DND devices.
 
 from busylight_core.word import Word
 
-from .enums import Action, Brightness, FlashMode, Report
+from .enums import Action, Brightness, DNDFlashMode, Report
 from .fields import ActionField, DataField, ReportField
 
 
@@ -60,7 +60,7 @@ class State(Word):
         """
         self.command(Action.SetBrightness, (level, 0, 0))
 
-    def flash(self, mode: FlashMode) -> None:
+    def flash(self, mode: DNDFlashMode) -> None:
         """Configure a command to start a predefined flash pattern.
 
         :param mode: Firmware flash pattern to run

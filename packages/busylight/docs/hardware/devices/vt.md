@@ -43,7 +43,7 @@ typedef struct {
 | Action | Value | Arguments |
 |--------|-------|-----------|
 | Off | 0x01 | none |
-| Flash | 0x02 | data0: flash mode, 1 or 2 |
+| Flash | 0x02 | data0: 1 breathes red, 2 breathes blue |
 | Set Color | 0x04 | data0-data2: red, green, blue |
 | Set Brightness | 0x09 | data0: level, 1 (low) to 3 (high) |
 
@@ -67,8 +67,18 @@ resend the current color with a Set Color command.
 The report number is non-zero, so on Windows the leading zero byte
 normally prepended to HID writes must be omitted.
 
-The current brightness level cannot be read from the device. The
-implementation assumes the device starts at level 2.
+The current brightness level cannot be read from the device and
+persists between connections. Resetting the light sets level 2.
+
+The Flash command starts a breathing pattern in a fixed color, red
+or blue. The color set beforehand is ignored. An Off command sent
+while breathing takes effect after the current breath finishes,
+about one second later.
+
+A command written soon after another may be dropped. In testing,
+gaps of 1 millisecond and shorter were unreliable and 100
+milliseconds was reliable, so the implementation waits 100
+milliseconds between back-to-back commands.
 
 ### Functionality Wishlist
 

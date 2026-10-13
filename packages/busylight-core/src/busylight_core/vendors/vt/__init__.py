@@ -2,10 +2,12 @@
 
 from .dnd_alpha import DNDAlpha
 from .dnd_omega import DNDOmega
+from .implementation import DNDFlashMode
 from .vt_base import VTBase as VTLights
 
 __all__ = [
     "DNDAlpha",
+    "DNDFlashMode",
     "DNDOmega",
     "VTLights",
 ]

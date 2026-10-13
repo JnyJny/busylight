@@ -7,20 +7,26 @@ from time import sleep
 
 from busylight_core.mixins import ColorableMixin
 
-from .implementation import Brightness, FlashMode, State
+from .implementation import Brightness, DNDFlashMode, State
 from .vt_base import VTBase
 
 
 class DNDBase(ColorableMixin, VTBase):
     """Base VT DND implementation.
 
-    VT DND devices accept one command per HID report. After a brightness
-    change the current color is resent following a short settling delay,
-    matching the command sequence supplied by the manufacturer. The delay
-    runs as a task in asyncio contexts so the event loop is not blocked.
+    VT DND devices accept one command per HID report. Commands sent back
+    to back are separated by COMMAND_INTERVAL, a delay found reliable on
+    hardware. After a brightness change the current color is resent
+    following that delay, which runs as a task in asyncio contexts so the
+    event loop is not blocked.
+
+    Firmware behavior observed on hardware: a command written immediately
+    after another may be dropped, the brightness level persists between
+    connections and cannot be read back, and turning off a breathing light
+    takes effect after the current breath completes.
     """
 
-    BRIGHTNESS_SETTLE_DELAY = 0.1
+    COMMAND_INTERVAL = 0.1
 
     brightness: Brightness = Brightness.Medium
 
@@ -79,19 +85,36 @@ class DNDBase(ColorableMixin, VTBase):
         if self.brightness < Brightness.High:
             self._change_brightness(Brightness(self.brightness + 1))
 
-    def flash(self, mode: FlashMode = FlashMode.ONE) -> None:
-        """Start one of the firmware's predefined flash patterns.
+    def flash(self, mode: DNDFlashMode = DNDFlashMode.Red) -> None:
+        """Start one of the firmware's breathing patterns.
+
+        Each pattern uses a fixed color; the light's current color is
+        ignored.
 
         Cancels any pending color resend from a brightness change so it
         cannot replace the flash command.
 
-        :param mode: Flash pattern to run
-        :raises ValueError: If mode is not a FlashMode value
+        :param mode: Breathing pattern to run
+        :raises ValueError: If mode is not a DNDFlashMode value
         """
-        mode = FlashMode(mode)
+        mode = DNDFlashMode(mode)
         self.cancel_task("restore_color")
         with self.batch_update():
             self.state.flash(mode)
+
+    def reset(self) -> None:
+        """Turn the light off and restore the default brightness level.
+
+        The device keeps its brightness level between connections, so
+        reset sets it explicitly to match the tracked level. The pause
+        between the two commands keeps the firmware from dropping the
+        off command.
+        """
+        self.brightness = Brightness.Medium
+        with self.batch_update():
+            self.state.set_brightness(self.brightness)
+        sleep(self.COMMAND_INTERVAL)
+        super().reset()
 
     def _change_brightness(self, level: Brightness) -> None:
         """Send a brightness command and then resend the current color.
@@ -105,16 +128,16 @@ class DNDBase(ColorableMixin, VTBase):
         try:
             asyncio.get_running_loop()
         except RuntimeError:
-            sleep(self.BRIGHTNESS_SETTLE_DELAY)
+            sleep(self.COMMAND_INTERVAL)
             self.on(self.color, interrupt=False)
         else:
             self.add_task("restore_color", self._restore_color, replace=True)
 
     @staticmethod
     async def _restore_color(light: "DNDBase") -> None:
-        """Resend the light's color after the brightness settling delay.
+        """Resend the light's color after the command interval.
 
         :param light: The light whose color is resent
         """
-        await asyncio.sleep(light.BRIGHTNESS_SETTLE_DELAY)
+        await asyncio.sleep(light.COMMAND_INTERVAL)
         light.on(light.color, interrupt=False)

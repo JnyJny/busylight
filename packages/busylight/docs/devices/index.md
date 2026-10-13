@@ -204,7 +204,7 @@ busylight on blue --led 2
 **Features:**
 - Single RGB LED
 - Three brightness levels
-- Two flash patterns stored in firmware
+- Red and blue breathing patterns stored in firmware
 
 **Platform Support:** Contributed by the manufacturer and developed on
 Windows. Not yet tested by the maintainer on any platform.

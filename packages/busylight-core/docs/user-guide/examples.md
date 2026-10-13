@@ -137,7 +137,7 @@ except NoLightsFoundError:
 
 ```python
 from busylight_core import NoLightsFoundError, VTLights
-from busylight_core.vendors.vt.implementation import FlashMode
+from busylight_core.vendors.vt import DNDFlashMode
 
 try:
     light = VTLights.first_light(reset=False)
@@ -148,9 +148,9 @@ try:
     light.dim()
     light.bright()
 
-    # VT firmware provides two predefined flash modes.
-    light.flash(FlashMode.ONE)
-    light.flash(FlashMode.TWO)
+    # Firmware breathing patterns use fixed colors; the current color is ignored.
+    light.flash(DNDFlashMode.Red)
+    light.flash(DNDFlashMode.Blue)
 
     light.off()
 except NoLightsFoundError:
