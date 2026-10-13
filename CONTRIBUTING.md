@@ -264,6 +264,16 @@ CI/CD pipeline: version bump → test → build → publish to PyPI + GitHub
 release → deploy docs. Changelogs are auto-generated from conventional
 commits via [git-cliff](https://git-cliff.org/).
 
+The publish tasks push `main` and then only the new release tag. They
+refuse to run unless you are on an up-to-date `main` with a clean
+working tree.
+
+Each release workflow pushes a changelog commit to `main` when it
+finishes. When releasing both packages, wait for the first release
+workflow to complete and `git pull` before publishing the second.
+Check that the release reached PyPI before announcing it; a failed
+test job stops the workflow before the publish step.
+
 ## Getting Help
 
 - [GitHub Issues](https://github.com/JnyJny/busylight/issues) — bugs and feature requests
