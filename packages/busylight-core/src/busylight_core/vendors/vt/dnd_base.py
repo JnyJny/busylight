@@ -39,11 +39,16 @@ class DNDBase(ColorableMixin, VTBase):
         VT devices use a non-zero HID report number, which must be the
         first byte written on every platform. Light.update() prepends a
         zero byte on Windows, so it is removed here.
+
+        The returned function must not reference self: caching it would
+        create a reference cycle that keeps the device open after the
+        light is discarded.
         """
         handle = self.hardware.handle
+        strip_prefix = self.platform == "Windows"
 
         def write(payload: bytes) -> int:
-            if self.platform == "Windows" and payload.startswith(b"\x00"):
+            if strip_prefix and payload.startswith(b"\x00"):
                 payload = payload[1:]
             return handle.write(payload)
 
