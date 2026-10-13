@@ -78,25 +78,25 @@ except NoLightsFoundError:
 ### VT (2 devices)
 
 VT DND Alpha and Omega lights support RGB colors, three brightness levels,
-and two predefined flash modes.
+and two firmware breathing patterns in fixed colors, red and blue.
 
 | Device | Flash | Dim/Bright | Special |
 |--------|-------|------------|---------|
-| **DND Alpha** | Yes | Yes | `FlashMode.ONE` and `FlashMode.TWO` |
-| **DND Omega** | Yes | Yes | `FlashMode.ONE` and `FlashMode.TWO` |
+| **DND Alpha** | Yes | Yes | `DNDFlashMode.Red` and `DNDFlashMode.Blue` |
+| **DND Omega** | Yes | Yes | `DNDFlashMode.Red` and `DNDFlashMode.Blue` |
 
 **Usage:**
 
 ```python
 from busylight_core import NoLightsFoundError, VTLights
-from busylight_core.vendors.vt.implementation import FlashMode
+from busylight_core.vendors.vt import DNDFlashMode
 
 try:
     light = VTLights.first_light()
     light.on((0, 255, 0))
     light.dim()
     light.bright()
-    light.flash(FlashMode.ONE)
+    light.flash(DNDFlashMode.Red)
     light.off()
 except NoLightsFoundError:
     pass

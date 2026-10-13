@@ -10,16 +10,18 @@ import pytest
 from busylight_core import DNDAlpha, DNDOmega, Light, VTLights
 from busylight_core.hardware import ConnectionType, Hardware
 from busylight_core.mixins import ColorableMixin
+from busylight_core.vendors import vt
 from busylight_core.vendors.vt.dnd_base import DNDBase
 from busylight_core.vendors.vt.implementation import (
     Action,
     Brightness,
-    FlashMode,
+    DNDFlashMode,
     Report,
     State,
 )
 
 SET_BRIGHTNESS_LOW = bytes((0x01, 0x09, 0x01, 0x00, 0x00))
+SET_BRIGHTNESS_MEDIUM = bytes((0x01, 0x09, 0x02, 0x00, 0x00))
 SET_BRIGHTNESS_HIGH = bytes((0x01, 0x09, 0x03, 0x00, 0x00))
 SET_COLOR = bytes((0x01, 0x04, 10, 20, 30))
 OFF = bytes((0x01, 0x01, 0x00, 0x00, 0x00))
@@ -90,7 +92,7 @@ class TestState:
         [
             (lambda s: s.set_color((10, 20, 30)), SET_COLOR),
             (lambda s: s.set_brightness(Brightness.High), SET_BRIGHTNESS_HIGH),
-            (lambda s: s.flash(FlashMode.TWO), bytes((0x01, 0x02, 0x02, 0, 0))),
+            (lambda s: s.flash(DNDFlashMode.Blue), bytes((0x01, 0x02, 0x02, 0, 0))),
             (lambda s: s.off(), OFF),
         ],
     )
@@ -104,6 +106,10 @@ class TestState:
 
 class TestDNDDevices:
     """Test VT DND device classes and discovery."""
+
+    def test_flash_mode_exported_from_vendor_package(self) -> None:
+        """Expose DNDFlashMode without reaching into the implementation."""
+        assert vt.DNDFlashMode is DNDFlashMode
 
     def test_supported_device_ids(self) -> None:
         """Give each device its own class and device id."""
@@ -161,14 +167,17 @@ class TestDNDBase:
 
         mock_cancel.assert_called_once()
 
-    def test_reset_turns_off(self, light: DNDOmega) -> None:
-        """Reset sends the off command."""
+    def test_reset_restores_brightness_and_turns_off(self, light: DNDOmega) -> None:
+        """Reset sets the default brightness level, then turns the light off."""
+        light.brightness = Brightness.High
+
         light.reset()
 
-        assert writes(light) == [call(OFF)]
+        assert light.brightness == Brightness.Medium
+        assert writes(light) == [call(SET_BRIGHTNESS_MEDIUM), call(OFF)]
 
-    @pytest.mark.parametrize("mode", list(FlashMode))
-    def test_flash_writes_mode(self, light: DNDOmega, mode: FlashMode) -> None:
+    @pytest.mark.parametrize("mode", list(DNDFlashMode))
+    def test_flash_writes_mode(self, light: DNDOmega, mode: DNDFlashMode) -> None:
         """Send the flash command without changing the tracked color."""
         light.on((10, 20, 30))
         light.flash(mode)
@@ -185,7 +194,7 @@ class TestDNDBase:
     @pytest.mark.parametrize("mode", [0, 3])
     def test_flash_rejects_unsupported_modes(self, light: DNDOmega, mode: int) -> None:
         """Reject flash modes the firmware does not define."""
-        with pytest.raises(ValueError, match="FlashMode"):
+        with pytest.raises(ValueError, match="DNDFlashMode"):
             light.flash(mode)
 
         light.hardware.handle.write.assert_not_called()
@@ -301,7 +310,7 @@ class TestDNDBase:
         light.color = (10, 20, 30)
         light.dim()
 
-        light.flash(FlashMode.ONE)
+        light.flash(DNDFlashMode.Red)
         await asyncio.sleep(light.BRIGHTNESS_SETTLE_DELAY * 2)
 
         assert writes(light)[-1] == call(bytes((0x01, 0x02, 0x01, 0x00, 0x00)))

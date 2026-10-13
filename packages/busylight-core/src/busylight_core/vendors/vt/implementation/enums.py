@@ -30,8 +30,12 @@ class Brightness(IntEnum):
     High = 3
 
 
-class FlashMode(IntEnum):
-    """Flash patterns predefined in VT DND firmware."""
+class DNDFlashMode(IntEnum):
+    """Breathing patterns built into VT DND firmware.
 
-    ONE = 1
-    TWO = 2
+    Each pattern fades a fixed color in and out; the light's current
+    color is ignored.
+    """
+
+    Red = 1
+    Blue = 2

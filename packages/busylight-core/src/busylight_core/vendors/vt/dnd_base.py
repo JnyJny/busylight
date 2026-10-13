@@ -7,7 +7,7 @@ from time import sleep
 
 from busylight_core.mixins import ColorableMixin
 
-from .implementation import Brightness, FlashMode, State
+from .implementation import Brightness, DNDFlashMode, State
 from .vt_base import VTBase
 
 
@@ -18,6 +18,11 @@ class DNDBase(ColorableMixin, VTBase):
     change the current color is resent following a short settling delay,
     matching the command sequence supplied by the manufacturer. The delay
     runs as a task in asyncio contexts so the event loop is not blocked.
+
+    Firmware behavior observed on hardware: a command written immediately
+    after another may be dropped, the brightness level persists between
+    connections and cannot be read back, and turning off a breathing light
+    takes effect after the current breath completes.
     """
 
     BRIGHTNESS_SETTLE_DELAY = 0.1
@@ -79,19 +84,33 @@ class DNDBase(ColorableMixin, VTBase):
         if self.brightness < Brightness.High:
             self._change_brightness(Brightness(self.brightness + 1))
 
-    def flash(self, mode: FlashMode = FlashMode.ONE) -> None:
-        """Start one of the firmware's predefined flash patterns.
+    def flash(self, mode: DNDFlashMode = DNDFlashMode.Red) -> None:
+        """Start one of the firmware's breathing patterns.
+
+        Each pattern uses a fixed color; the light's current color is
+        ignored.
 
         Cancels any pending color resend from a brightness change so it
         cannot replace the flash command.
 
-        :param mode: Flash pattern to run
-        :raises ValueError: If mode is not a FlashMode value
+        :param mode: Breathing pattern to run
+        :raises ValueError: If mode is not a DNDFlashMode value
         """
-        mode = FlashMode(mode)
+        mode = DNDFlashMode(mode)
         self.cancel_task("restore_color")
         with self.batch_update():
             self.state.flash(mode)
+
+    def reset(self) -> None:
+        """Turn the light off and restore the default brightness level.
+
+        The device keeps its brightness level between connections, so
+        reset sets it explicitly to match the tracked level.
+        """
+        self.brightness = Brightness.Medium
+        with self.batch_update():
+            self.state.set_brightness(self.brightness)
+        super().reset()
 
     def _change_brightness(self, level: Brightness) -> None:
         """Send a brightness command and then resend the current color.
