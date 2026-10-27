@@ -338,6 +338,9 @@ class TestThingMBlink1:
         mock_hardware.handle.write = Mock(return_value=8)
         mock_hardware.handle.read = Mock(return_value=b"\x00" * 8)
         mock_hardware.handle.send_feature_report = Mock(return_value=8)
+        mock_hardware.handle.get_feature_report = Mock(
+            return_value=b"\x01v\x003\x30\x00\x00\x00"
+        )
         return Blink1(mock_hardware, reset=False, exclusive=False)
 
     def test_vendor_method(self) -> None:
@@ -441,9 +444,30 @@ class TestThingMBlink1:
 
         assert blink1.nleds == expected
 
+    def test_on_method_mk1_ignores_led(self, blink1) -> None:
+        """Test on() drives the single LED of an mk1 regardless of led."""
+        blink1.__dict__["firmware"] = (1, 0)
+
+        for led in (0, 1, 2):
+            blink1.on((10, 20, 30), led=led)
+            assert blink1.state.leds == LEDS.All
+
+    @pytest.mark.parametrize("major", [2, 3])
+    @pytest.mark.parametrize(
+        ("led", "expected"), [(0, LEDS.All), (1, LEDS.Top), (2, LEDS.Bottom)]
+    )
+    def test_on_method_mk2_mk3_honor_led(self, blink1, major, led, expected) -> None:
+        """Test on() targets the requested LED on an mk2 or mk3."""
+        blink1.__dict__["firmware"] = (major, 0)
+
+        blink1.on((10, 20, 30), led=led)
+
+        assert blink1.state.leds == expected
+
     def test_on_method_default_led(self, blink1) -> None:
         """Test on() method with default LED."""
         color = (255, 128, 64)
+        blink1.__dict__["firmware"] = (3, 0)
         with patch.object(blink1, "batch_update") as mock_batch:
             mock_batch.return_value.__enter__ = Mock()
             mock_batch.return_value.__exit__ = Mock()
@@ -460,6 +484,7 @@ class TestThingMBlink1:
         """Test on() method with specific LED."""
         color = (200, 100, 50)
         led = 1
+        blink1.__dict__["firmware"] = (3, 0)
         with patch.object(blink1, "batch_update") as mock_batch:
             mock_batch.return_value.__enter__ = Mock()
             mock_batch.return_value.__exit__ = Mock()
@@ -493,6 +518,7 @@ class TestThingMBlink1:
     def test_on_method_batch_update_usage(self, blink1) -> None:
         """Test on() method uses batch_update correctly."""
         color = (150, 75, 25)
+        blink1.__dict__["firmware"] = (3, 0)
         with patch.object(blink1, "batch_update") as mock_batch:
             mock_batch.return_value.__enter__ = Mock()
             mock_batch.return_value.__exit__ = Mock()

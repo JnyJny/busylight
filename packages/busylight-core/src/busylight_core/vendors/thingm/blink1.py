@@ -69,8 +69,7 @@ class Blink1(ThingMBase):
         :param color: RGB color tuple (red, green, blue) with values 0-255
         :param led: LED index (0 for both LEDs, 1 for the top LED, 2 for the bottom LED)
         """
-        # EJO raises ValueError if led is out of range which is not
-        #     a consistent behavior across all devices.
+        leds = LEDS.All if self.is_mk1 else LEDS(led)
 
         with self.batch_update():
             self.state.clear()
@@ -78,7 +77,7 @@ class Blink1(ThingMBase):
             self.state.action = Action.FadeColor
             self.state.color = color
             self.state.fade = 10  # Default fade time in milliseconds
-            self.state.leds = LEDS(led)
+            self.state.leds = leds
 
     @property
     def color(self) -> tuple[int, int, int]:
