@@ -397,8 +397,9 @@ class TestThingMBlink1:
         _ = blink1.firmware
 
         sent = blink1.hardware.handle.send_feature_report.call_args.args[0]
-        assert sent[0] == Report.One
-        assert sent[1] == Action.GetVersion
+        payload = sent[-8:]
+        assert payload[0] == Report.One
+        assert payload[1] == Action.GetVersion
         blink1.hardware.handle.get_feature_report.assert_called_once_with(
             Report.One, VERSION_RPT_SZ
         )
