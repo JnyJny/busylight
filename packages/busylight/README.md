@@ -84,11 +84,11 @@ sudo udevadm control -R
 | **Luxafor** | Flag, Orb, Mute, Busy Tag, Bluetooth |
 | **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync |
 | **Plantronics** | Status Indicator |
-| **ThingM** | Blink(1), Blink(1) mk2 |
+| **ThingM** | Blink(1) mk3 (tested), Blink(1) mk1 and mk2 (likely work, untested) |
 | **VT** | DND Alpha, DND Omega |
 
 Multi-LED targeting supported on BlinkStick variants, Luxafor Flag,
-and Blink(1) mk2.
+and Blink(1) mk2 and mk3.
 
 ## Command Line
 

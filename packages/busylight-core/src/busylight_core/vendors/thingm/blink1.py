@@ -7,6 +7,10 @@ from typing import ClassVar
 from .implementation import LEDS, Action, Report, State
 from .thingm_base import ThingMBase
 
+VERSION_RPT_SZ = 8
+MK3_NDX = 2
+MK3_VALUE = 0
+
 
 class Blink1(ThingMBase):
     """ThingM Blink(1) USB RGB LED with feature report control.
@@ -35,8 +39,26 @@ class Blink1(ThingMBase):
 
     @property
     def nleds(self) -> int:
-        """The number of individually addressable LEDs."""
-        return self.state.nleds
+        """The number of individually addressable LEDs: one for mk1, two otherwise."""
+        return 1 if self.is_mk1 else 2
+
+    @cached_property
+    def firmware(self) -> tuple[int, int]:
+        """Returns major,minor version of device firmware."""
+        with self.batch_update():
+            self.state.clear()
+            self.state.report = Report.One
+            self.state.action = Action.GetVersion
+
+        buffer = self.read_strategy(Report.One, VERSION_RPT_SZ)
+
+        if len(buffer) != VERSION_RPT_SZ:
+            msg = f"failed to read {VERSION_RPT_SZ} bytes, got: {len(buffer)} {buffer}"
+            raise ValueError(msg)
+
+        start = 3 if buffer[MK3_NDX] == MK3_VALUE else 2
+
+        return (int(chr(buffer[start])), int(chr(buffer[start + 1])))
 
     def __bytes__(self) -> bytes:
         return bytes(self.state)
@@ -47,8 +69,7 @@ class Blink1(ThingMBase):
         :param color: RGB color tuple (red, green, blue) with values 0-255
         :param led: LED index (0 for both LEDs, 1 for the top LED, 2 for the bottom LED)
         """
-        # EJO raises ValueError if led is out of range which is not
-        #     a consistent behavior across all devices.
+        leds = LEDS.All if self.is_mk1 else LEDS(led)
 
         with self.batch_update():
             self.state.clear()
@@ -56,7 +77,7 @@ class Blink1(ThingMBase):
             self.state.action = Action.FadeColor
             self.state.color = color
             self.state.fade = 10  # Default fade time in milliseconds
-            self.state.leds = LEDS(led)
+            self.state.leds = leds
 
     @property
     def color(self) -> tuple[int, int, int]:
@@ -68,6 +89,26 @@ class Blink1(ThingMBase):
         self.state.color = value
 
     @property
-    def write_strategy(self) -> Callable:
+    def write_strategy(self) -> Callable[[bytes], int]:
         """The write strategy for communicating with the device."""
         return self.hardware.handle.send_feature_report
+
+    @property
+    def read_strategy(self) -> Callable[[int, int], bytes]:
+        """The read strategy for communicating with the device."""
+        return self.hardware.handle.get_feature_report
+
+    @property
+    def is_mk1(self) -> bool:
+        """Returns True if this device is a blink(1) mk1."""
+        return self.firmware[0] == 1
+
+    @property
+    def is_mk2(self) -> bool:
+        """Returns True if this device is a blink(1) mk2."""
+        return self.firmware[0] == 2
+
+    @property
+    def is_mk3(self) -> bool:
+        """Returns True if this device is a blink(1) mk3."""
+        return self.firmware[0] == 3

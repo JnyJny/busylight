@@ -15,7 +15,7 @@ compatibility information and setup instructions for each device type.
 | [**Luxafor**](#luxafor) | Flag, Orb, Mute variants | Multi/Single LED | Model-dependent |
 | [**Plantronics**](#plantronics) | Status Indicator | Single LED | Full support |
 | [**MuteMe**](#muteme) | Original, Mini, MuteSync | Single LED | Full support |
-| [**ThingM**](#thingm) | Blink(1), Blink(1) mk2 | mk2: Multi-LED | Full support |
+| [**ThingM**](#thingm) | Blink(1) mk3, mk1, mk2 | mk2, mk3: Multi-LED | mk3 tested; mk1, mk2 untested |
 | [**VT**](#vt) | DND Alpha, DND Omega | Single LED | Untested by maintainer |
 
 ## LED Support Types
@@ -28,7 +28,7 @@ parameter is ignored for these devices.
 Some devices have multiple independent LEDs that can display different
 colors simultaneously:
 
-- **Blink(1) mk2**: 2 LEDs (top and bottom)
+- **Blink(1) mk2, mk3**: 2 LEDs (top and bottom)
 - **BlinkStick variants**: 1-64 LEDs depending on model
 - **Luxafor Flag**: 6 LEDs in flag pattern
 
@@ -172,10 +172,11 @@ busylight on blue --led 6   # Bottom right LED
 **Blink(1) Series** - Original USB notification lights.
 
 **Models:**
-- Blink(1) (original, single LED)
-- Blink(1) mk2 (2 independent LEDs)
+- Blink(1) mk3 (2 independent LEDs, tested)
+- Blink(1) mk2 (2 independent LEDs, likely works, untested)
+- Blink(1) mk1 (original, single LED, likely works, untested)
 
-**LED Control for mk2:**
+**LED Control for mk2 and mk3:**
 ```bash
 # Control both LEDs
 busylight on red

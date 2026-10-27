@@ -6,6 +6,7 @@ import pytest
 
 from busylight_core.hardware import ConnectionType, Hardware
 from busylight_core.vendors.thingm import Blink1
+from busylight_core.vendors.thingm.blink1 import VERSION_RPT_SZ
 from busylight_core.vendors.thingm.implementation import (
     LEDS,
     Action,
@@ -337,6 +338,9 @@ class TestThingMBlink1:
         mock_hardware.handle.write = Mock(return_value=8)
         mock_hardware.handle.read = Mock(return_value=b"\x00" * 8)
         mock_hardware.handle.send_feature_report = Mock(return_value=8)
+        mock_hardware.handle.get_feature_report = Mock(
+            return_value=b"\x01v\x003\x30\x00\x00\x00"
+        )
         return Blink1(mock_hardware, reset=False, exclusive=False)
 
     def test_vendor_method(self) -> None:
@@ -367,9 +371,103 @@ class TestThingMBlink1:
         strategy = blink1.write_strategy
         assert strategy == blink1.hardware.handle.send_feature_report
 
+    def test_read_strategy_property(self, blink1) -> None:
+        """Test read_strategy property returns get_feature_report."""
+        assert blink1.read_strategy == blink1.hardware.handle.get_feature_report
+
+    @pytest.mark.parametrize(
+        ("buffer", "expected"),
+        [
+            pytest.param(b"\x01v2\x33\x00\x00\x00\x00", (2, 3), id="mk1-mk2"),
+            pytest.param(b"\x01v\x003\x34\x00\x00\x00", (3, 4), id="mk3"),
+        ],
+    )
+    def test_firmware_decodes_version(self, blink1, buffer, expected) -> None:
+        """Test firmware decodes ASCII digits at the offsets for each model."""
+        blink1.hardware.handle.get_feature_report = Mock(return_value=buffer)
+
+        assert blink1.firmware == expected
+
+    def test_firmware_requests_version(self, blink1) -> None:
+        """Test firmware sends a GetVersion request and reads a version report."""
+        blink1.hardware.handle.get_feature_report = Mock(
+            return_value=b"\x01v\x003\x34\x00\x00\x00"
+        )
+
+        _ = blink1.firmware
+
+        sent = blink1.hardware.handle.send_feature_report.call_args.args[0]
+        assert sent[0] == Report.One
+        assert sent[1] == Action.GetVersion
+        blink1.hardware.handle.get_feature_report.assert_called_once_with(
+            Report.One, VERSION_RPT_SZ
+        )
+
+    def test_firmware_is_cached(self, blink1) -> None:
+        """Test firmware only queries the device once."""
+        blink1.hardware.handle.get_feature_report = Mock(
+            return_value=b"\x01v2\x33\x00\x00\x00\x00"
+        )
+
+        assert blink1.firmware == blink1.firmware
+        blink1.hardware.handle.get_feature_report.assert_called_once()
+
+    @pytest.mark.parametrize("length", [0, VERSION_RPT_SZ - 1, VERSION_RPT_SZ + 1])
+    def test_firmware_rejects_wrong_report_size(self, blink1, length) -> None:
+        """Test firmware raises ValueError when the report is not eight bytes."""
+        blink1.hardware.handle.get_feature_report = Mock(return_value=b"\x00" * length)
+
+        with pytest.raises(ValueError, match="failed to read"):
+            _ = blink1.firmware
+
+    @pytest.mark.parametrize(
+        ("major", "mk1", "mk2", "mk3"),
+        [
+            (1, True, False, False),
+            (2, False, True, False),
+            (3, False, False, True),
+            (4, False, False, False),
+        ],
+    )
+    def test_model_identity_properties(self, blink1, major, mk1, mk2, mk3) -> None:
+        """Test is_mk1, is_mk2 and is_mk3 follow the firmware major version."""
+        blink1.__dict__["firmware"] = (major, 0)
+
+        assert blink1.is_mk1 is mk1
+        assert blink1.is_mk2 is mk2
+        assert blink1.is_mk3 is mk3
+
+    @pytest.mark.parametrize(("major", "expected"), [(1, 1), (2, 2), (3, 2)])
+    def test_nleds_follows_model(self, blink1, major, expected) -> None:
+        """Test nleds is one for the mk1 and two for the mk2 and mk3."""
+        blink1.__dict__["firmware"] = (major, 0)
+
+        assert blink1.nleds == expected
+
+    def test_on_method_mk1_ignores_led(self, blink1) -> None:
+        """Test on() drives the single LED of an mk1 regardless of led."""
+        blink1.__dict__["firmware"] = (1, 0)
+
+        for led in (0, 1, 2):
+            blink1.on((10, 20, 30), led=led)
+            assert blink1.state.leds == LEDS.All
+
+    @pytest.mark.parametrize("major", [2, 3])
+    @pytest.mark.parametrize(
+        ("led", "expected"), [(0, LEDS.All), (1, LEDS.Top), (2, LEDS.Bottom)]
+    )
+    def test_on_method_mk2_mk3_honor_led(self, blink1, major, led, expected) -> None:
+        """Test on() targets the requested LED on an mk2 or mk3."""
+        blink1.__dict__["firmware"] = (major, 0)
+
+        blink1.on((10, 20, 30), led=led)
+
+        assert blink1.state.leds == expected
+
     def test_on_method_default_led(self, blink1) -> None:
         """Test on() method with default LED."""
         color = (255, 128, 64)
+        blink1.__dict__["firmware"] = (3, 0)
         with patch.object(blink1, "batch_update") as mock_batch:
             mock_batch.return_value.__enter__ = Mock()
             mock_batch.return_value.__exit__ = Mock()
@@ -386,6 +484,7 @@ class TestThingMBlink1:
         """Test on() method with specific LED."""
         color = (200, 100, 50)
         led = 1
+        blink1.__dict__["firmware"] = (3, 0)
         with patch.object(blink1, "batch_update") as mock_batch:
             mock_batch.return_value.__enter__ = Mock()
             mock_batch.return_value.__exit__ = Mock()
@@ -419,6 +518,7 @@ class TestThingMBlink1:
     def test_on_method_batch_update_usage(self, blink1) -> None:
         """Test on() method uses batch_update correctly."""
         color = (150, 75, 25)
+        blink1.__dict__["firmware"] = (3, 0)
         with patch.object(blink1, "batch_update") as mock_batch:
             mock_batch.return_value.__enter__ = Mock()
             mock_batch.return_value.__exit__ = Mock()
