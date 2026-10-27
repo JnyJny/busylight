@@ -54,7 +54,7 @@ pip install busylight_core
 | **Luxafor** | Flag, Orb, Mute, Bluetooth |
 | **MuteMe** | MuteMe Original, MuteMe Mini, MuteSync |
 | **Plantronics** | Status Indicator |
-| **ThingM** | Blink(1), Blink(1) mk2 |
+| **ThingM** | Blink(1) mk3 (tested), Blink(1) mk1 and mk2 (likely work, untested) |
 | **VT** | DND Alpha, DND Omega |
 
 ## Usage
