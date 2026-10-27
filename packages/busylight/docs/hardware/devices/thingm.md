@@ -7,6 +7,16 @@ studio" and offer many different LED based devices; the consumer
 oriented blink(1) product line and for prototyping and hacking they
 offer the BlinkM line of products. I worked with the blink(1) mk3 device.
 
+### Tested Hardware
+
+Only the blink(1) mk3 has been tested on physical hardware. The mk1 and mk2
+devices share the same vendor and product ID and the same command set, so
+they likely work, but they have not been physically tested. Reports from
+mk1 and mk2 owners are welcome.
+
+The firmware major version distinguishes the models: 1 is an mk1, 2 is an
+mk2 and 3 is an mk3.
+
 ### Physical Description
 
 #### blink(1)
