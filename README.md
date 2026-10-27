@@ -66,7 +66,7 @@ light.off()
 | **ThingM** | Blink(1) mk3 (tested), Blink(1) mk1 and mk2 (likely work, untested) |
 | **VT** | DND Alpha, DND Omega |
 
-Multi-LED targeting supported on BlinkStick variants, Luxafor Flag, and Blink(1) mk2.
+Multi-LED targeting supported on BlinkStick variants, Luxafor Flag, and Blink(1) mk2 and mk3.
 
 ## Packages
 

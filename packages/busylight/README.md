@@ -88,7 +88,7 @@ sudo udevadm control -R
 | **VT** | DND Alpha, DND Omega |
 
 Multi-LED targeting supported on BlinkStick variants, Luxafor Flag,
-and Blink(1) mk2.
+and Blink(1) mk2 and mk3.
 
 ## Command Line
 
