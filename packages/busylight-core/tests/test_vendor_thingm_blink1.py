@@ -434,6 +434,13 @@ class TestThingMBlink1:
         assert blink1.is_mk2 is mk2
         assert blink1.is_mk3 is mk3
 
+    @pytest.mark.parametrize(("major", "expected"), [(1, 1), (2, 2), (3, 2)])
+    def test_nleds_follows_model(self, blink1, major, expected) -> None:
+        """Test nleds is one for the mk1 and two for the mk2 and mk3."""
+        blink1.__dict__["firmware"] = (major, 0)
+
+        assert blink1.nleds == expected
+
     def test_on_method_default_led(self, blink1) -> None:
         """Test on() method with default LED."""
         color = (255, 128, 64)

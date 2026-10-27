@@ -39,8 +39,8 @@ class Blink1(ThingMBase):
 
     @property
     def nleds(self) -> int:
-        """The number of individually addressable LEDs."""
-        return self.state.nleds
+        """The number of individually addressable LEDs: one for mk1, two otherwise."""
+        return 1 if self.is_mk1 else 2
 
     @cached_property
     def firmware(self) -> tuple[int, int]:
