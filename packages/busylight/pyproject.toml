@@ -144,7 +144,7 @@ extend-immutable-calls = [
 [dependency-groups]
 dev = [
     "anyio>=4.15.1",
-    "coverage>=7.17.1",
+    "coverage>=7.17.2",
     "httpx>=0.28.1",
 ]
 
