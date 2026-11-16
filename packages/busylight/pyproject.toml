@@ -12,7 +12,7 @@ requires-python = ">=3.11,<4.0"
 dependencies = [
     "busylight-core>=2.5.0",
     "hidapi>=0.14.0.post4",
-    "loguru>=0.7.3",
+    "loguru>=0.8.0",
     "pyserial>=3.5",
     "typer>=0.28.0",
     "webcolors>=24.11.1",
