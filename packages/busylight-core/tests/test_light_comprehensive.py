@@ -5,7 +5,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from busylight_core.exceptions import HardwareUnsupportedError, LightUnavailableError
+from busylight_core.exceptions import (
+    HardwareUnsupportedError,
+    LightUnavailableError,
+    NoLightsFoundError,
+)
 from busylight_core.hardware import ConnectionType, Hardware
 from busylight_core.light import Light
 from busylight_core.mixins import ColorableMixin
@@ -47,8 +51,8 @@ def create_mock_hardware(
 class TestLightFirstLight:
     """Test first_light method coverage."""
 
-    def test_first_light_with_exception_handling(self) -> None:
-        """Test first_light when subclass init raises exception."""
+    def test_first_light_raises_no_lights_found_when_acquisition_fails(self) -> None:
+        """Test first_light raises NoLightsFoundError when every device fails."""
         mock_hardware = create_mock_hardware()
 
         with (
@@ -61,8 +65,80 @@ class TestLightFirstLight:
         ):
             mock_available.return_value = {MockLightSubclass: [mock_hardware]}
 
-            with pytest.raises(Exception, match="Device initialization failed"):
+            with pytest.raises(NoLightsFoundError):
                 MockLightSubclass.first_light()
+
+    def test_first_light_skips_busy_device_and_returns_next(self) -> None:
+        """Test first_light falls through to the next device when one is busy.
+
+        A device held by another process raises during acquisition. That
+        must not abort the scan -- the next candidate should be returned.
+        """
+        busy_hardware = create_mock_hardware(path=b"/dev/hidraw0")
+        free_hardware = create_mock_hardware(path=b"/dev/hidraw1")
+
+        real_init = MockLightSubclass.__init__
+
+        def init_fails_for_busy(self, hardware, **kwargs: object) -> None:
+            if hardware is busy_hardware:
+                msg = "open failed -- device busy"
+                raise OSError(msg)
+            real_init(self, hardware, **kwargs)
+
+        with (
+            patch.object(MockLightSubclass, "available_hardware") as mock_available,
+            patch.object(MockLightSubclass, "reset"),
+            patch.object(MockLightSubclass, "__init__", init_fails_for_busy),
+        ):
+            mock_available.return_value = {
+                MockLightSubclass: [busy_hardware, free_hardware]
+            }
+
+            light = MockLightSubclass.first_light()
+
+        assert light.hardware is free_hardware
+
+    def test_first_light_does_not_leak_acquisition_exception(self) -> None:
+        """Test the raw acquisition error is not propagated to the caller.
+
+        The docstring promises NoLightsFoundError; a bare OSError from
+        the HID layer would be a contract violation.
+        """
+        mock_hardware = create_mock_hardware()
+
+        with (
+            patch.object(MockLightSubclass, "available_hardware") as mock_available,
+            patch.object(
+                MockLightSubclass,
+                "__init__",
+                side_effect=OSError("open failed -- device busy"),
+            ),
+        ):
+            mock_available.return_value = {MockLightSubclass: [mock_hardware]}
+
+            with pytest.raises(NoLightsFoundError):
+                MockLightSubclass.first_light()
+
+    def test_at_path_raises_no_lights_found_when_match_is_busy(self) -> None:
+        """Test at_path surfaces NoLightsFoundError when the match is busy.
+
+        at_path delegates to first_light with a path predicate, so it
+        inherits the same fall-through behaviour.
+        """
+        mock_hardware = create_mock_hardware(path=b"/dev/hidraw0")
+
+        with (
+            patch.object(MockLightSubclass, "available_hardware") as mock_available,
+            patch.object(
+                MockLightSubclass,
+                "__init__",
+                side_effect=OSError("open failed -- device busy"),
+            ),
+        ):
+            mock_available.return_value = {MockLightSubclass: [mock_hardware]}
+
+            with pytest.raises(NoLightsFoundError):
+                MockLightSubclass.at_path("/dev/hidraw0")
 
 
 class TestLightRepr:
@@ -300,6 +376,76 @@ class TestLightExclusiveAccess:
 
             # Should release after context
             mock_hardware.release.assert_called()
+
+    def test_exclusive_access_releases_when_body_raises(self) -> None:
+        """Test exclusive_access releases the handle when the block raises.
+
+        Without a try/finally the hardware handle leaks on every failed
+        device write, which is exactly when the device is misbehaving.
+        """
+        mock_hardware = create_mock_hardware()
+
+        with (
+            patch.object(mock_hardware, "acquire"),
+            patch.object(MockLightSubclass, "reset"),
+        ):
+            light = MockLightSubclass(mock_hardware, exclusive=False)
+
+            def raise_inside_context() -> None:
+                with light.exclusive_access():
+                    msg = "boom"
+                    raise RuntimeError(msg)
+
+            with pytest.raises(RuntimeError, match="boom"):
+                raise_inside_context()
+
+            mock_hardware.release.assert_called_once()
+
+    def test_exclusive_access_does_not_release_when_already_exclusive(self) -> None:
+        """Test exclusive_access leaves an exclusively-held device alone on error.
+
+        A light constructed with exclusive=True owns the handle for its
+        whole lifetime, so a raising block must not release it.
+        """
+        mock_hardware = create_mock_hardware()
+
+        with (
+            patch.object(mock_hardware, "acquire"),
+            patch.object(MockLightSubclass, "reset"),
+        ):
+            light = MockLightSubclass(mock_hardware, exclusive=True)
+            mock_hardware.release.reset_mock()
+
+            def raise_inside_context() -> None:
+                with light.exclusive_access():
+                    msg = "boom"
+                    raise RuntimeError(msg)
+
+            with pytest.raises(RuntimeError, match="boom"):
+                raise_inside_context()
+
+            mock_hardware.release.assert_not_called()
+
+    def test_update_releases_handle_when_write_fails(self) -> None:
+        """Test a failed write in update() still releases the hardware handle.
+
+        This is the real-world path the try/finally protects: update()
+        wraps write_strategy in exclusive_access, and the write raising
+        must not strand the handle.
+        """
+        mock_hardware = create_mock_hardware()
+
+        with (
+            patch.object(mock_hardware, "acquire"),
+            patch.object(MockLightSubclass, "reset"),
+        ):
+            light = MockLightSubclass(mock_hardware, exclusive=False)
+            mock_hardware.handle.write.side_effect = OSError("write failed")
+
+            with pytest.raises(LightUnavailableError):
+                light.update()
+
+            mock_hardware.release.assert_called_once()
 
 
 class TestLightUpdate:
