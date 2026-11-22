@@ -261,6 +261,11 @@ class Light(abc.ABC, TaskableMixin):
         for simple status indication and don't care about the specific
         device type or vendor.
 
+        A device that cannot be acquired, typically because another
+        process already holds it, is skipped in favour of the next
+        candidate. NoLightsFoundError is raised only once every
+        candidate has been exhausted.
+
         :param reset: Reset device to known state during initialization
         :param exclusive: Acquire exclusive access to prevent interference
         :param predicate: Optional callable to filter devices based on custom criteria
@@ -276,7 +281,6 @@ class Light(abc.ABC, TaskableMixin):
                     return subclass(device, reset=reset, exclusive=exclusive)
                 except Exception as error:
                     logger.info(f"Failed to acquire {device}: {error}")
-                    raise
 
         raise NoLightsFoundError(cls)
 
@@ -470,7 +474,9 @@ class Light(abc.ABC, TaskableMixin):
         """Manage exclusive access to the light.
 
         If the device is not acquired in exclusive mode, it will be
-        acquired and released automatically.
+        acquired and released automatically. The release happens even
+        if the wrapped block raises, so a failed device write cannot
+        leak the hardware handle.
 
         No actions are taken if the light is already acquired
         in exclusive mode.
@@ -478,10 +484,11 @@ class Light(abc.ABC, TaskableMixin):
         if not self._exclusive:
             self.hardware.acquire()
 
-        yield
-
-        if not self._exclusive:
-            self.hardware.release()
+        try:
+            yield
+        finally:
+            if not self._exclusive:
+                self.hardware.release()
 
     def update(self) -> None:
         """Send the current light state to the physical device.
